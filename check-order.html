@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เช็คสถานะออเดอร์</title>
+
+<style>
+body{font-family:Arial;background:#f4f6fa;padding:20px}
+.card{max-width:500px;margin:auto;background:#fff;padding:28px;border-radius:16px}
+input,button{width:100%;padding:14px;font-size:16px;margin-top:10px}
+button{background:#1e88e5;color:#fff;border:none;border-radius:10px}
+.result{margin-top:16px;background:#f7f9fd;padding:16px;border-radius:10px}
+.err{color:#c62828;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="card">
+<h2>เช็คสถานะคำสั่งซื้อ</h2>
+<input id="oid" placeholder="เช่น SB-000123">
+<button onclick="go()">ตรวจสอบ</button>
+<div id="out"></div>
+<div id="err" class="err"></div>
+</div>
+
+<script>
+const API="PUT_YOUR_APPS_SCRIPT_URL";
+
+function go(){
+ const id=document.getElementById("oid").value.trim();
+ fetch(API+"?id="+encodeURIComponent(id))
+ .then(r=>r.json())
+ .then(d=>{
+   if(!d.success){err.innerText="ไม่พบออเดอร์";return}
+   out.innerHTML=
+    "<div class='result'>"+
+    "บริการ: "+d.service+"<br>"+
+    "จำนวน: "+d.qty+"<br>"+
+    "สถานะ: "+d.status+"<br>"+
+    "อัปเดต: "+d.updated+
+    "</div>";
+ })
+}
+</script>
+</body>
+</html>
