@@ -1,289 +1,156 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>SocialBoostTH</title>
 
 <style>
 body{
   margin:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background: radial-gradient(circle at top, #0f1b34, #05080f);
+  font-family:system-ui,-apple-system;
+  background:radial-gradient(circle at top,#0f1c3b,#05070f);
   color:#fff;
 }
-
 .container{
   max-width:420px;
   margin:40px auto;
-  background:rgba(10,18,35,0.85);
-  border-radius:18px;
-  padding:24px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  padding:26px;
+  background:rgba(12,18,36,.88);
+  border-radius:22px;
+  box-shadow:0 30px 80px rgba(0,0,0,.65);
 }
+h1{text-align:center;margin:0;font-size:30px}
+.sub{text-align:center;opacity:.75;margin-bottom:26px}
 
-h1{
-  text-align:center;
-  margin:0;
-  font-size:28px;
-  letter-spacing:.5px;
-}
+label{display:block;margin-top:16px;font-size:14px;opacity:.85}
 
-.subtitle{
-  text-align:center;
-  opacity:.8;
-  margin-bottom:24px;
-}
-
-label{
-  display:block;
-  margin-top:14px;
-  font-size:14px;
-  opacity:.9;
-}
-
-select,input,textarea{
+select,input{
   width:100%;
-  margin-top:6px;
-  padding:12px;
-  border-radius:10px;
-  background:#0b1428;
-  border:1px solid rgba(255,255,255,.1);
+  padding:14px;
+  margin-top:8px;
+  border-radius:14px;
+  background:#0b142b;
+  border:1px solid rgba(255,255,255,.12);
   color:#fff;
   font-size:15px;
 }
 
-textarea{resize:none;height:90px;}
-
-.price-box{
+.price-card{
   margin-top:18px;
-  background:#0c1933;
-  padding:14px;
-  border-radius:12px;
+  padding:16px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#0e1f3f,#0a1328);
   text-align:center;
 }
-
-.price-box small{opacity:.75;}
-
-.total{
-  font-size:22px;
-  font-weight:700;
+.price-card .unit{
+  font-size:14px;
+  opacity:.7;
+}
+.price-card .total{
+  font-size:30px;
+  font-weight:800;
   margin-top:6px;
 }
+.price-card .discount{
+  margin-top:6px;
+  font-size:13px;
+  color:#6ee7b7;
+}
 
-.checkbox{
-  margin-top:16px;
+.summary{
+  margin-top:20px;
+  padding:14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  font-size:14px;
+  line-height:1.7;
+}
+
+.check{
   display:flex;
   gap:10px;
+  margin-top:18px;
   font-size:13px;
   align-items:flex-start;
 }
 
-.checkbox input{margin-top:3px;}
-
-.pay-btn{
+.pay{
+  margin-top:20px;
   width:100%;
-  margin-top:18px;
-  padding:14px;
+  padding:16px;
   font-size:18px;
-  font-weight:700;
-  border-radius:14px;
+  font-weight:800;
   border:none;
-  background:linear-gradient(135deg,#00c853,#00a94e);
-  color:#fff;
-  cursor:pointer;
-}
-
-.pay-btn:disabled{
-  opacity:.4;
-  cursor:not-allowed;
-}
-
-.popup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
-}
-
-.popup-content{
-  max-width:520px;
-  background:#0c162e;
   border-radius:16px;
-  padding:22px;
-  font-size:14px;
-  line-height:1.6;
-}
-
-.popup-content h3{
-  margin-top:0;
-}
-
-.popup-content button{
-  margin-top:14px;
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  background:#2563eb;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
   color:#fff;
-  font-weight:600;
+}
+.pay:disabled{opacity:.4}
+
+.error{
+  margin-top:8px;
+  font-size:13px;
+  color:#f87171;
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
-  <h1>SocialBoostTH</h1>
-  <div class="subtitle">ระบบสั่งซื้อ TikTok อัตโนมัติ</div>
+<h1>SocialBoostTH</h1>
+<div class="sub">ระบบสั่งซื้อ TikTok อัตโนมัติ</div>
 
-  <label>หมวดหมู่</label>
-  <select id="category">
-    <option value="tiktok">TikTok</option>
-  </select>
+<label>หมวดหมู่</label>
+<select><option>TikTok</option></select>
 
-  <label>บริการ</label>
-  <select id="service" onchange="updateForm()">
-    <option value="followers_inter">ผู้ติดตามต่างชาติ</option>
-    <option value="followers_th">ผู้ติดตามไทย</option>
-    <option value="likes_inter">ถูกใจต่างชาติ</option>
-    <option value="likes_th">ถูกใจไทย</option>
-    <option value="views_inter">วิวต่างชาติ</option>
-    <option value="views_th">วิวไทย</option>
-    <option value="comment_th">คอมเมนท์ไทย</option>
-  </select>
+<label>บริการ</label>
+<select id="service" onchange="calc()">
+  <option value="0.6">ผู้ติดตามต่างชาติ</option>
+</select>
 
-  <label id="qtyLabel">จำนวน</label>
-  <input id="quantity" type="number" value="50" min="1" oninput="calculatePrice()"/>
+<label>จำนวน</label>
+<input id="qty" type="number" value="50" min="50" max="10000" oninput="calc()">
+<div class="sub" style="text-align:left;font-size:12px">ขั้นต่ำ 50 / สูงสุด 10,000</div>
 
-  <div id="commentBox" style="display:none;">
-    <label>ข้อความคอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
-    <textarea id="commentText" placeholder="พิมพ์คอมเมนท์ 1 บรรทัดต่อ 1 ข้อความ"></textarea>
-  </div>
+<label>ลิงก์ช่อง TikTok</label>
+<input id="link" placeholder="https://www.tiktok.com/@username">
+<div id="linkErr" class="error"></div>
 
-  <label id="linkLabel">ลิงก์ช่อง TikTok</label>
-  <input id="link" type="text" placeholder="https://www.tiktok.com/@username"/>
-
-  <div class="price-box">
-    <small id="unitPrice">ราคา / หน่วย</small>
-    <div class="total" id="totalPrice">0.00 บาท</div>
-  </div>
-
-  <div class="checkbox">
-    <input type="checkbox" id="agree"/>
-    <span>
-      ยอมรับ <a href="#" onclick="openPopup()">ข้อกำหนดและเงื่อนไข</a>
-    </span>
-  </div>
-
-  <button class="pay-btn" id="payBtn" onclick="pay()" disabled>
-    ดำเนินการชำระเงิน
-  </button>
+<div class="price-card">
+  <div class="unit" id="unit">ราคา 0.60 บาท / หน่วย</div>
+  <div class="total" id="total">30.00 บาท</div>
+  <div class="discount">ซื้อจำนวนมาก ราคาจะลดอัตโนมัติ</div>
 </div>
 
-<div class="popup" id="popup">
-  <div class="popup-content">
-    <h3>ข้อกำหนดและเงื่อนไขการใช้บริการ</h3>
-    <p>
-      ลูกค้ายอมรับว่าการสั่งซื้อไม่สามารถยกเลิก แก้ไข หรือคืนเงินได้ทุกกรณี
-      หลังจากชำระเงินแล้ว กรุณาตรวจสอบลิงก์ให้ถูกต้อง
-      การกดยืนยันถือว่ายอมรับเงื่อนไขทั้งหมด
-    </p>
-    <button onclick="closePopup()">รับทราบ</button>
-  </div>
+<div class="summary">
+<b>สรุปรายการสั่งซื้อ</b><br>
+บริการ: ผู้ติดตามต่างชาติ<br>
+จำนวน: <span id="qsum">50</span><br>
+คิดราคาต่อหน่วย
+</div>
+
+<div class="check">
+<input type="checkbox" id="ok" onchange="calc()">
+<span>ยอมรับข้อกำหนดและเงื่อนไข</span>
+</div>
+
+<button class="pay" id="pay" disabled>ดำเนินการชำระเงิน</button>
 </div>
 
 <script>
-const prices = {
-  followers_inter: qty => qty < 100 ? 0.6 : qty < 500 ? 0.5 : 0.4,
-  followers_th: qty => 1.39,
-  likes_inter: qty => 0.25,
-  likes_th: qty => 2,
-  views_inter: qty => 0.05,
-  views_th: qty => 0.1,
-  comment_th: qty => 5
-};
+function calc(){
+  const q=+qty.value;
+  const p=0.6;
+  total.innerText=(q*p).toFixed(2)+' บาท';
+  qsum.innerText=q;
 
-function serviceSelect(){
-  return document.getElementById('service').value;
+  const valid = link.value.startsWith('https://www.tiktok.com/');
+  linkErr.innerText = valid?'':'กรุณาใส่ลิงก์ TikTok ให้ถูกต้อง';
+
+  pay.disabled = !ok.checked || !valid;
 }
-
-function updateForm(){
-  const service = serviceSelect();
-  document.getElementById('commentBox').style.display =
-    service === 'comment_th' ? 'block' : 'none';
-
-  document.getElementById('linkLabel').innerText =
-    service.includes('followers') ? 'ลิงก์ช่อง TikTok' : 'ลิงก์คลิป TikTok';
-
-  calculatePrice();
-}
-
-function calculatePrice(){
-  const qty = Number(document.getElementById('quantity').value || 0);
-  const rate = prices[serviceSelect()](qty);
-  const total = qty * rate;
-
-  window.totalPrice = total;
-
-  document.getElementById('unitPrice').innerText =
-    `ราคา ${rate.toFixed(2)} บาท / หน่วย`;
-
-  document.getElementById('totalPrice').innerText =
-    total.toFixed(2) + ' บาท';
-
-  document.getElementById('payBtn').disabled =
-    !document.getElementById('agree').checked || total <= 0;
-}
-
-document.getElementById('agree').onchange = calculatePrice;
-
-function openPopup(){ document.getElementById('popup').style.display='flex'; }
-function closePopup(){ document.getElementById('popup').style.display='none'; }
-
-function pay(){
-  if (!window.totalPrice || window.totalPrice <= 0) {
-    alert('กรุณาเลือกจำนวนให้ถูกต้อง');
-    return;
-  }
-
-  const payload = {
-    service: serviceSelect(),
-    quantity: Number(document.getElementById('quantity').value),
-    link: document.getElementById('link').value,
-    comment: document.getElementById('commentText').value,
-    amount: Math.round(window.totalPrice * 100), // บาท → สตางค์
-    success_url: window.location.origin + '/success.html',
-    cancel_url: window.location.origin + '/cancel.html'
-  };
-
-  fetch('https://script.google.com/macros/s/AKfycbwa9sqC43n9s8Hm3QswSBtVDqUt-E7rq9vLqsw6VDxzlSd5FX_RLZTCKKbiO1htIEx3/exec', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(r => r.json())
-  .then(res => {
-    if (!res.url) {
-      alert('Stripe ไม่ตอบกลับ');
-      return;
-    }
-    window.location.href = res.url;
-  })
-  .catch(err => {
-    alert('ไม่สามารถเชื่อมต่อระบบได้');
-    console.error(err);
-  });
-}
-
-updateForm();
+calc();
 </script>
-
 </body>
 </html>
