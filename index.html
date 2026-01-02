@@ -7,249 +7,150 @@
 
 <style>
 *{box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont;}
+body{margin:0;background:#0b1220;color:#fff}
 
-body{
-  margin:0;
-  background:#0b1220;
-  color:#fff;
-}
-
-/* ===== TOP NAV ===== */
+/* NAV */
 .navbar{
   background:linear-gradient(135deg,#0f1b34,#05080f);
   padding:14px 18px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  border-bottom:1px solid rgba(255,255,255,.08);
 }
-
-.nav-left{
-  font-size:20px;
-  font-weight:800;
-}
-
-.nav-center{
-  display:flex;
-  gap:18px;
-}
-
+.nav-left{font-size:20px;font-weight:800}
+.nav-center{display:flex;gap:18px}
 .nav-center a{
-  color:#cbd5f5;
-  text-decoration:none;
-  font-weight:600;
-  padding:6px 10px;
-  border-radius:8px;
+  color:#cbd5f5;text-decoration:none;font-weight:600;
+  padding:6px 10px;border-radius:8px
 }
-
-.nav-center a.active,
-.nav-center a:hover{
-  background:rgba(255,255,255,.08);
-  color:#fff;
+.nav-center a.active,.nav-center a:hover{
+  background:rgba(255,255,255,.08);color:#fff
 }
-
 .nav-right{
-  background:#0c1933;
-  padding:8px 14px;
-  border-radius:12px;
-  color:#22c55e;
-  font-weight:800;
+  background:#0c1933;padding:8px 14px;
+  border-radius:12px;color:#22c55e;font-weight:800
 }
 
-/* ===== CONTENT ===== */
-.wrapper{
-  max-width:420px;
-  margin:28px auto 60px;
-  padding:0 16px;
-}
-
+.wrapper{max-width:420px;margin:28px auto;padding:0 16px}
 .card{
-  background:#0c162e;
-  border-radius:20px;
-  padding:22px;
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
+  background:#0c162e;border-radius:20px;
+  padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5)
 }
 
-h1{text-align:center;margin:0;}
-.subtitle{
-  text-align:center;
-  opacity:.7;
-  margin-bottom:18px;
-}
+h1{text-align:center;margin:0}
+.subtitle{text-align:center;opacity:.7;margin-bottom:18px}
 
-label{
-  display:block;
-  margin-top:14px;
-  font-size:14px;
-}
-
+label{display:block;margin-top:14px;font-size:14px}
 select,input,textarea{
-  width:100%;
-  margin-top:6px;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.1);
-  background:#0b1428;
-  color:#fff;
+  width:100%;margin-top:6px;padding:12px;
+  border-radius:12px;border:1px solid rgba(255,255,255,.1);
+  background:#0b1428;color:#fff
 }
+textarea{resize:none;height:120px}
 
-textarea{resize:none;height:90px;}
+.hint{font-size:12px;opacity:.6;margin-top:4px}
 
-.hint{
-  font-size:12px;
-  opacity:.6;
-  margin-top:4px;
-}
-
-/* PRICE */
 .price-box{
-  margin-top:18px;
-  background:#0b1730;
-  padding:16px;
-  border-radius:14px;
-  text-align:center;
+  margin-top:18px;background:#0b1730;
+  padding:16px;border-radius:14px;text-align:center
 }
+.total{font-size:26px;font-weight:800;margin-top:6px}
+.discount{font-size:13px;color:#22c55e;margin-top:4px}
 
-.total{
-  font-size:26px;
-  font-weight:800;
-  margin-top:6px;
-}
-
-.discount{
-  font-size:13px;
-  color:#22c55e;
-  margin-top:4px;
-}
-
-/* SUMMARY */
 .summary{
-  margin-top:14px;
-  background:#0c1933;
-  padding:14px;
-  border-radius:12px;
-  font-size:14px;
-  line-height:1.6;
+  margin-top:14px;background:#0c1933;
+  padding:14px;border-radius:12px;font-size:14px;line-height:1.6
 }
 
-/* CHECKBOX */
 .checkbox{
-  margin-top:18px;
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  font-size:14px;
+  margin-top:18px;display:flex;gap:10px;
+  align-items:flex-start;font-size:14px
 }
-.checkbox input{
-  margin-top:4px;
-  width:18px;
-  height:18px;
-}
+.checkbox input{margin-top:4px;width:18px;height:18px}
 
-/* BUTTON */
 .btn{
-  width:100%;
-  margin-top:20px;
-  padding:16px;
-  border:none;
-  border-radius:16px;
-  font-size:18px;
-  font-weight:800;
+  width:100%;margin-top:20px;padding:16px;
+  border:none;border-radius:16px;
+  font-size:18px;font-weight:800;
   background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;
-  cursor:pointer;
+  color:#fff;cursor:pointer
 }
-.btn:disabled{
-  background:#374151;
-  cursor:not-allowed;
-}
+.btn:disabled{background:#374151;cursor:not-allowed}
 
-.footer-note{
-  margin-top:14px;
-  text-align:center;
-  font-size:12px;
-  opacity:.5;
-}
-
-/* MOBILE */
-@media(max-width:600px){
-  .nav-center{display:none;}
-}
+@media(max-width:600px){.nav-center{display:none}}
 </style>
 </head>
 
 <body>
 
-<!-- ===== NAV ===== -->
+<!-- NAV -->
 <div class="navbar">
   <div class="nav-left">SocialBoostTH</div>
-
   <div class="nav-center">
     <a href="index.html" class="active">สั่งซื้อ</a>
     <a href="wallet.html">กระเป๋าเงิน</a>
     <a href="history.html">ประวัติ</a>
   </div>
-
-  <div class="nav-right" id="balance">
-    💰 0.00 บาท
-  </div>
+  <div class="nav-right" id="balance">💰 0.00 บาท</div>
 </div>
 
-<!-- ===== CONTENT ===== -->
 <div class="wrapper">
-  <div class="card">
-    <h1>สั่งซื้อบริการ TikTok</h1>
-    <div class="subtitle">เลือกบริการ → ใส่จำนวน → ระบบคำนวณราคา</div>
+<div class="card">
 
-    <label>บริการ</label>
-    <select id="service">
-      <option value="followers_inter">ผู้ติดตามต่างชาติ</option>
-      <option value="followers_th">ผู้ติดตามไทย</option>
-      <option value="likes_inter">ถูกใจต่างชาติ</option>
-      <option value="likes_th">ถูกใจไทย</option>
-      <option value="views_inter">วิวต่างชาติ</option>
-      <option value="views_th">วิวไทย</option>
-      <option value="comment_th">คอมเมนท์ไทย</option>
-      <option value="share_inter">แชร์ต่างชาติ</option>
-      <option value="save_inter">บันทึกต่างชาติ</option>
-    </select>
+<h1>สั่งซื้อบริการ TikTok</h1>
+<div class="subtitle">เลือกบริการ → กรอกข้อมูล → ระบบคำนวณราคาอัตโนมัติ</div>
 
-    <label>จำนวน</label>
-    <input id="qty" type="number" placeholder="กรอกจำนวน">
-    <div class="hint" id="limit"></div>
+<label>บริการ</label>
+<select id="service">
+  <option value="followers_inter">ผู้ติดตามต่างชาติ</option>
+  <option value="followers_th">ผู้ติดตามไทย</option>
+  <option value="likes_inter">ถูกใจต่างชาติ</option>
+  <option value="likes_th">ถูกใจไทย</option>
+  <option value="views_inter">วิวต่างชาติ</option>
+  <option value="views_th">วิวไทย</option>
+  <option value="comment_th">คอมเมนท์ไทย</option>
+  <option value="share_inter">แชร์ต่างชาติ</option>
+  <option value="save_inter">บันทึกต่างชาติ</option>
+</select>
 
-    <div id="commentBox" style="display:none;">
-      <label>ข้อความคอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
-      <textarea id="commentText"></textarea>
-    </div>
+<!-- จำนวน -->
+<div id="qtyBox">
+<label>จำนวน</label>
+<input id="qty" type="number" placeholder="กรอกจำนวน">
+<div class="hint" id="limit"></div>
+</div>
 
-    <label id="linkLabel">ลิงก์ช่อง TikTok</label>
-    <input id="link" placeholder="https://www.tiktok.com/...">
+<!-- คอมเมนท์ -->
+<div id="commentBox" style="display:none">
+<label>ข้อความคอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
+<textarea id="commentText" placeholder="พิมพ์คอมเมนท์ขึ้นบรรทัดใหม่"></textarea>
+<div class="hint">ขั้นต่ำ 10 บรรทัด / สูงสุด 50 บรรทัด</div>
+</div>
 
-    <div class="price-box">
-      <div>ราคารวม</div>
-      <div class="total" id="total">0.00 บาท</div>
-      <div class="discount" id="discount"></div>
-    </div>
+<label id="linkLabel">ลิงก์ TikTok</label>
+<input id="link" placeholder="https://www.tiktok.com/...">
 
-    <div class="summary" id="summary">กรุณาเลือกบริการและจำนวน</div>
+<div class="price-box">
+  <div>ราคารวม</div>
+  <div class="total" id="total">0.00 บาท</div>
+  <div class="discount" id="discount"></div>
+</div>
 
-    <div class="checkbox">
-      <input type="checkbox" id="agree">
-      <span>ยอมรับเงื่อนไข (ไม่ยกเลิก / ไม่คืนเงิน)</span>
-    </div>
+<div class="summary" id="summary">กรุณาเลือกบริการ</div>
 
-    <button class="btn" id="buyBtn" disabled>ยืนยันคำสั่งซื้อ</button>
+<div class="checkbox">
+  <input type="checkbox" id="agree">
+  <span>ยอมรับเงื่อนไข (ไม่ยกเลิก / ไม่คืนเงิน)</span>
+</div>
 
-    <div class="footer-note">
-      ซื้อเยอะ ราคาจะลดอัตโนมัติ
-    </div>
-  </div>
+<button class="btn" id="buyBtn" disabled>ยืนยันคำสั่งซื้อ</button>
+
+</div>
 </div>
 
 <script>
-let balance = 3500;
-document.getElementById("balance").innerText = "💰 " + balance.toFixed(2) + " บาท";
+let balance=3500;
+balanceEl.innerText="💰 "+balance.toFixed(2)+" บาท";
 
 const services={
  followers_inter:{min:50,max:10000,price:q=>q<100?0.6:q<500?0.5:q<1000?0.4:0.256,link:"ช่อง"},
@@ -258,43 +159,45 @@ const services={
  likes_th:{min:20,max:2000,price:q=>q<100?2.5:q<500?2:1.8,link:"คลิป"},
  views_inter:{min:1000,max:100000,price:q=>0.05,link:"คลิป"},
  views_th:{min:1000,max:10000,price:q=>0.1,link:"คลิป"},
- comment_th:{min:10,max:50,price:q=>5,link:"คลิป"},
+ comment_th:{min:10,max:50,price:()=>5,link:"คลิป"},
  share_inter:{min:100,max:1000,price:q=>0.1,link:"คลิป"},
  save_inter:{min:100,max:1000,price:q=>0.1,link:"คลิป"}
 };
 
-const sEl=service;
-const qEl=qty;
-
 function calc(){
- const s=services[sEl.value];
- const q=Number(qEl.value||0);
+ const s=services[service.value];
+ let qty=0;
 
- limit.innerText=`ขั้นต่ำ ${s.min} / สูงสุด ${s.max}`;
+ qtyBox.style.display=service.value==="comment_th"?"none":"block";
+ commentBox.style.display=service.value==="comment_th"?"block":"none";
  linkLabel.innerText=s.link==="ช่อง"?"ลิงก์ช่อง TikTok":"ลิงก์คลิป TikTok";
- commentBox.style.display=sEl.value==="comment_th"?"block":"none";
 
- if(q<s.min||q>s.max){
-  total.innerText="0.00 บาท";
-  buyBtn.disabled=true;
-  return;
+ if(service.value==="comment_th"){
+   const lines=commentText.value.trim().split("\n").filter(l=>l.trim()).length;
+   qty=lines;
+   if(qty<s.min||qty>s.max){
+     total.innerText="0.00 บาท";buyBtn.disabled=true;return;
+   }
+ }else{
+   qty=Number(qtyEl.value||0);
+   limit.innerText=`ขั้นต่ำ ${s.min} / สูงสุด ${s.max}`;
+   if(qty<s.min||qty>s.max){
+     total.innerText="0.00 บาท";buyBtn.disabled=true;return;
+   }
  }
 
- const price=q*s.price(q);
+ const price=qty*s.price(qty);
  total.innerText=price.toFixed(2)+" บาท";
- discount.innerText=q>=500?"ซื้อเยอะ ราคาจะถูกลง":"";
+ discount.innerText=qty>=500?"ซื้อเยอะ ราคาจะลดลง":"";
+ summary.innerHTML=`บริการ: ${service.options[service.selectedIndex].text}<br>
+ จำนวน: ${qty}<br>ราคารวม: ${price.toFixed(2)} บาท`;
 
- summary.innerHTML=`บริการ: ${sEl.options[sEl.selectedIndex].text}<br>
- จำนวน: ${q}<br>
- ราคารวม: ${price.toFixed(2)} บาท`;
-
- buyBtn.disabled=!(
-  agree.checked && link.value
- );
+ buyBtn.disabled=!(agree.checked&&link.value);
 }
 
-sEl.onchange=calc;
-qEl.oninput=calc;
+service.onchange=calc;
+qty.oninput=calc;
+commentText.oninput=calc;
 agree.onchange=calc;
 link.oninput=calc;
 </script>
