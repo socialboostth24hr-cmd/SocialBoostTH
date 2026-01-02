@@ -16,46 +16,30 @@ body{
   min-height:100vh;
 }
 .container{
-  max-width:560px;
+  max-width:580px;
   margin:50px auto;
-  padding:28px;
-  background:rgba(15,23,42,.85);
-  backdrop-filter:blur(12px);
-  border-radius:18px;
-  box-shadow:0 25px 50px rgba(0,0,0,.5);
+  padding:30px;
+  background:rgba(15,23,42,.88);
+  backdrop-filter:blur(14px);
+  border-radius:20px;
+  box-shadow:0 30px 60px rgba(0,0,0,.55);
 }
-.header{
-  text-align:center;
-  margin-bottom:24px;
-}
-.header h1{
-  margin:0;
-  font-size:28px;
-  font-weight:700;
-}
-.header p{
-  margin:6px 0 0;
-  font-size:14px;
-  color:#9ca3af;
-}
+.header{text-align:center;margin-bottom:22px}
+.header h1{margin:0;font-size:28px;font-weight:700}
+.header p{margin-top:6px;font-size:14px;color:#9ca3af}
 
 .platform{
   display:flex;
   align-items:center;
-  gap:12px;
-  background:linear-gradient(135deg,#0f172a,#020617);
+  gap:14px;
+  background:linear-gradient(135deg,#020617,#020617);
   border:1px solid rgba(255,255,255,.08);
-  border-radius:14px;
-  padding:14px;
+  border-radius:16px;
+  padding:16px;
   margin-bottom:18px;
 }
-.platform img{
-  width:38px;
-  height:38px;
-}
-.platform span{
-  font-weight:600;
-}
+.platform img{width:40px;height:40px}
+.platform strong{font-size:17px}
 
 label{
   display:block;
@@ -73,14 +57,12 @@ select,input,button{
   color:#e5e7eb;
   font-size:15px;
 }
-select option{color:#000}
-input::placeholder{color:#6b7280}
 
 .price{
   margin-top:16px;
   background:linear-gradient(135deg,#1d4ed8,#7c3aed);
-  padding:16px;
-  border-radius:14px;
+  padding:18px;
+  border-radius:16px;
   text-align:center;
   font-size:20px;
   font-weight:700;
@@ -90,9 +72,9 @@ input::placeholder{color:#6b7280}
   margin-top:12px;
   background:#052e16;
   border-left:4px solid #22c55e;
-  padding:10px 14px;
+  padding:12px 16px;
   font-size:14px;
-  border-radius:10px;
+  border-radius:12px;
   display:none;
 }
 
@@ -103,31 +85,29 @@ button{
   font-size:17px;
   font-weight:600;
   cursor:pointer;
-  transition:.2s;
 }
-button:hover{transform:translateY(-1px);opacity:.95}
+button:hover{opacity:.95}
 
 .notice{
   margin-top:22px;
   font-size:13px;
   color:#9ca3af;
-  line-height:1.6;
+  line-height:1.7;
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <div class="header">
   <h1>SocialBoostTH</h1>
-  <p>ระบบสั่งซื้อโซเชียลมีเดียอัตโนมัติ 24 ชม.</p>
+  <p>ระบบสั่งซื้อ TikTok อัตโนมัติ</p>
 </div>
 
 <div class="platform">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/TikTok_logo.svg">
-  <span>TikTok Services</span>
+  <img src="https://cdn-icons-png.flaticon.com/512/3046/3046121.png">
+  <strong>TikTok Services</strong>
 </div>
 
 <label>เลือกบริการ</label>
@@ -159,20 +139,22 @@ button:hover{transform:translateY(-1px);opacity:.95}
 <label>จำนวน</label>
 <input type="number" id="qty" placeholder="กรอกจำนวน" oninput="calculate()">
 
-<label id="linkLabel">ลิงก์</label>
-<input type="text" id="link" placeholder="กรอกลิงก์">
+<label id="linkTitleFollowers" style="display:none">ลิงก์ช่อง TikTok</label>
+<input type="text" id="linkFollowers" style="display:none" placeholder="https://www.tiktok.com/@username">
+
+<label id="linkTitleClip" style="display:none">ลิงก์คลิป TikTok</label>
+<input type="text" id="linkClip" style="display:none" placeholder="https://www.tiktok.com/@username/video/xxxx">
 
 <div id="discount" class="discount"></div>
-
 <div id="price" class="price">ราคารวม: 0 บาท</div>
 
-<button onclick="submitOrder()">ชำระเงิน / ดำเนินการต่อ</button>
+<button onclick="submitOrder()">ดำเนินการชำระเงิน</button>
 
 <div class="notice">
-• ผู้ติดตามใช้ลิงก์ช่อง TikTok<br>
-• บริการอื่นใช้ลิงก์คลิป TikTok<br>
-• ซื้อจำนวนมาก ระบบจะลดราคาต่อหน่วยอัตโนมัติ<br>
-• ไม่สามารถยกเลิกหรือคืนเงินได้หลังชำระเงิน
+• ผู้ติดตาม → ใช้ลิงก์ช่อง TikTok<br>
+• ถูกใจ / วิว / คอมเมนท์ → ใช้ลิงก์คลิป TikTok<br>
+• ซื้อจำนวนมาก ระบบลดราคาต่อหน่วยอัตโนมัติ<br>
+• ไม่สามารถยกเลิกหรือคืนเงินได้
 </div>
 
 </div>
@@ -182,8 +164,19 @@ let current="";
 
 function updateForm(){
   current=document.getElementById("service").value;
-  const label=document.getElementById("linkLabel");
-  label.innerText=current.includes("followers")?"ลิงก์ช่อง TikTok":"ลิงก์คลิป TikTok";
+
+  document.getElementById("linkFollowers").style.display="none";
+  document.getElementById("linkClip").style.display="none";
+  document.getElementById("linkTitleFollowers").style.display="none";
+  document.getElementById("linkTitleClip").style.display="none";
+
+  if(current.includes("followers")){
+    document.getElementById("linkFollowers").style.display="block";
+    document.getElementById("linkTitleFollowers").style.display="block";
+  }else if(current){
+    document.getElementById("linkClip").style.display="block";
+    document.getElementById("linkTitleClip").style.display="block";
+  }
   calculate();
 }
 
@@ -192,18 +185,34 @@ function calculate(){
   let p=0,msg="";
 
   if(current==="followers-foreign"){
-    if(q>=1000){p=q*0.256;msg="1,000+ คน ราคาพิเศษ"}
-    else if(q>=500){p=q*0.4;msg="500+ คน ราคาลด"}
-    else if(q>=100){p=q*0.5}
-    else if(q>=50){p=q*0.6}
+    if(q>=1000){p=q*0.256;msg="🔥 1,000+ ผู้ติดตาม เหลือ 0.256 บาท/คน"}
+    else if(q>=500){p=q*0.4;msg="500+ คน เหลือ 0.40 บาท/คน"}
+    else if(q>=100){p=q*0.5;msg="100+ คน เหลือ 0.50 บาท/คน"}
+    else if(q>=50){p=q*0.6;msg="ขั้นต่ำ 50 คน"}
   }
-  if(current==="followers-thai"&&q>=20){p=q*1.39}
-  if(current==="likes-foreign"){p=q*(q>=5000?0.2:q>=1000?0.22:q>=500?0.25:0.3)}
-  if(current==="likes-thai"){p=q*(q>=500?1.8:q>=100?2:2.5)}
-  if(current==="views-foreign")p=q*0.05;
-  if(current==="views-thai")p=q*0.1;
-  if(current==="share-foreign"||current==="save-foreign")p=q*0.1;
-  if(current==="comment-thai")p=q*5;
+
+  if(current==="followers-thai"&&q>=20){
+    p=q*1.39;
+    msg="🇹🇭 ผู้ติดตามไทย ราคา 1.39 บาท/คน";
+  }
+
+  if(current==="likes-foreign"){
+    if(q>=5000){p=q*0.20;msg="🔥 5,000+ ไลก์ เหลือ 0.20 บาท"}
+    else if(q>=1000){p=q*0.22;msg="1,000+ ไลก์ เหลือ 0.22 บาท"}
+    else if(q>=500){p=q*0.25;msg="500+ ไลก์ เหลือ 0.25 บาท"}
+    else if(q>=50){p=q*0.3;msg="ขั้นต่ำ 50 ไลก์"}
+  }
+
+  if(current==="likes-thai"){
+    p=q*(q>=500?1.8:q>=100?2:2.5);
+    msg="🇹🇭 ถูกใจไทย ยิ่งเยอะยิ่งลด";
+  }
+
+  if(current==="views-foreign"){p=q*0.05;msg="วิวต่างชาติ ราคาเหมาจ่าย"}
+  if(current==="views-thai"){p=q*0.1;msg="วิวไทย ราคาเหมาจ่าย"}
+  if(current==="share-foreign"){p=q*0.1;msg="แชร์ต่างชาติ"}
+  if(current==="save-foreign"){p=q*0.1;msg="บันทึกต่างชาติ"}
+  if(current==="comment-thai"){p=q*5;msg="คอมเมนท์ไทย"}
 
   document.getElementById("price").innerText="ราคารวม: "+p.toFixed(2)+" บาท";
 
@@ -212,9 +221,16 @@ function calculate(){
 }
 
 function submitOrder(){
-  if(document.getElementById("link").value.trim()===""){
-    alert("กรุณากรอกลิงก์ก่อนดำเนินการ");
-    return;
+  if(current.includes("followers")){
+    if(document.getElementById("linkFollowers").value.trim()===""){
+      alert("กรุณากรอกลิงก์ช่อง TikTok");
+      return;
+    }
+  }else{
+    if(document.getElementById("linkClip").value.trim()===""){
+      alert("กรุณากรอกลิงก์คลิป TikTok");
+      return;
+    }
   }
   window.location.href="https://buy.stripe.com/test_fZubIT3Uwdru85mekufAc00";
 }
