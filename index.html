@@ -8,11 +8,34 @@
 <style>
 *{box-sizing:border-box}
 
-body{
-  margin:0;
-  font-family: system-ui,-apple-system,BlinkMacSystemFont;
-  background: radial-gradient(circle at top,#0f1b34,#05080f);
+.pay-btn{
+  width:100%;
+  margin-top:18px;
+  padding:16px;
+  font-size:18px;
+  font-weight:700;
+  border-radius:14px;
+  border:none;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
   color:#fff;
+  cursor:pointer;
+  transition:all .25s ease;
+  box-shadow:0 10px 25px rgba(34,197,94,.35);
+}
+
+.pay-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 32px rgba(34,197,94,.45);
+}
+
+.pay-btn:active{
+  transform:scale(.99);
+}
+
+.pay-btn:disabled{
+  background:linear-gradient(135deg,#374151,#1f2933);
+  box-shadow:none;
+  cursor:not-allowed;
 }
 
 .container{
@@ -294,13 +317,24 @@ function calc(){
 function openPopup(){popup.style.display='flex'}
 function closePopup(){popup.style.display='none'}
 
-function pay(){
-  const payload={
-    service:service.value,
-    quantity:qty.value,
-    link:link.value,
-    comment:commentText.value
-  };
+<script>
+function canPay(){
+  const agree = document.getElementById('agree').checked;
+  const qty = Number(document.getElementById('quantity').value);
+  const link = document.getElementById('link').value.trim();
+
+  return agree && qty > 0 && link !== "";
+}
+
+function updatePayButton(){
+  const btn = document.getElementById('payBtn');
+  btn.disabled = !canPay();
+}
+
+document.getElementById('agree').addEventListener('change', updatePayButton);
+document.getElementById('quantity').addEventListener('input', updatePayButton);
+document.getElementById('link').addEventListener('input', updatePayButton);
+</script>
 
   fetch('https://script.google.com/macros/s/AKfycbxuODw2SOc82M3HoXYzYRajzk73Fk4xqqGVSxGHX-EIlcenI9-KZ6_d0jI3qM-prULt/exec',{
     method:'POST',
