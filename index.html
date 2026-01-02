@@ -262,7 +262,12 @@ function calculate(){
  const s=services[service.value];
  const q=Number(quantity.value||0);
  limitText.innerText=`ขั้นต่ำ ${s.min} / สูงสุด ${s.max}`;
- if(q<s.min||q>s.max){totalPrice.innerText='-';return;}
+if(q<s.min||q>s.max){
+  totalPrice.innerText='-';
+  discountText.innerText='กรุณาใส่จำนวนตามเงื่อนไข';
+  payBtn.disabled = true;
+  return;
+}
  const r=s.rate(q);
  unitPrice.innerText=`ราคา ${r.toFixed(2)} บาท / หน่วย`;
  totalPrice.innerText=(q*r).toFixed(2)+' บาท';
@@ -281,23 +286,36 @@ function checkButton(){
 function openPopup(){popup.style.display='flex'}
 function closePopup(){popup.style.display='none'}
 
+<script>
 function pay(){
  const payload={
   service:service.value,
   quantity:quantity.value,
   link:link.value,
-  comment:commentText?.value||''
+  comment: typeof commentText !== "undefined" ? commentText.value : ""
  };
+
  fetch('https://script.google.com/macros/s/AKfycbw0qmn67SXdN0RPPS9wPUyp8L4MpBfUXxWrqGP5GsXd5SyreFcPtcoVgwv6PDauweqG/exec',{
   method:'POST',
+  headers:{
+    "Content-Type":"application/json"
+  },
   body:JSON.stringify(payload)
  })
  .then(r=>r.json())
- .then(d=>window.location.href=d.checkout_url)
- .catch(()=>alert('ไม่สามารถเชื่อมต่อระบบได้'));
+ .then(d=>{
+   if(d.checkout_url){
+     window.location.href = d.checkout_url;
+   }else{
+     alert("ระบบไม่สามารถสร้างลิงก์ชำระเงินได้");
+     console.log(d);
+   }
+ })
+ .catch(err=>{
+   alert('ไม่สามารถเชื่อมต่อระบบได้');
+   console.error(err);
+ });
 }
-
-updateForm();
 </script>
 
 </body>
