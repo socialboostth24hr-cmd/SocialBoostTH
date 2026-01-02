@@ -3,219 +3,149 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>SocialBoostTH</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: linear-gradient(180deg,#070b1a,#020617);
-  color: #fff;
-}
-
-.container {
-  max-width: 420px;
-  margin: auto;
-  padding: 20px;
-}
-
-.card {
-  background: rgba(255,255,255,0.05);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 0 25px rgba(0,0,0,.4);
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 6px;
-}
-
-.subtitle {
-  text-align: center;
-  opacity: .7;
-  margin-bottom: 20px;
-}
-
-select, input, textarea {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  background: rgba(0,0,0,.5);
-  color: white;
-  margin-top: 6px;
-}
-
-textarea {
-  min-height: 90px;
-}
-
-label {
-  display: block;
-  margin-top: 14px;
-  font-size: 14px;
-  opacity: .9;
-}
-
-.hint {
-  font-size: 12px;
-  opacity: .6;
-  margin-top: 4px;
-}
-
-.price-box {
-  margin-top: 20px;
-  padding: 14px;
-  border-radius: 10px;
-  background: rgba(0,0,0,.4);
-  text-align: center;
-}
-
-.pay-btn {
-  margin-top: 20px;
-  width: 100%;
-  padding: 16px;
-  font-size: 18px;
-  border-radius: 12px;
-  border: none;
-  background: linear-gradient(90deg,#22c55e,#16a34a);
-  color: white;
-  cursor: pointer;
-}
-
-.pay-btn:disabled {
-  opacity: .4;
-}
-
-.terms {
-  margin-top: 14px;
-  font-size: 13px;
-}
-
-.terms input {
-  width: auto;
-}
-
-.popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.8);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.popup-content {
-  background: #020617;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 20px;
-  border-radius: 12px;
-}
-
-.popup button {
-  margin-top: 15px;
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  background: #2563eb;
-  color: white;
-}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#060b1e,#020617);color:#fff}
+.container{max-width:430px;margin:auto;padding:20px}
+.card{background:rgba(255,255,255,.05);border-radius:18px;padding:22px;box-shadow:0 0 30px rgba(0,0,0,.45)}
+h1{text-align:center;margin-bottom:4px}
+.sub{text-align:center;opacity:.7;margin-bottom:20px}
+label{margin-top:14px;display:block;font-size:14px}
+select,input,textarea{width:100%;padding:14px;border-radius:12px;border:none;background:#020617;color:#fff;margin-top:6px}
+textarea{min-height:90px}
+.hint{font-size:12px;opacity:.6;margin-top:4px}
+.price-box{margin-top:18px;padding:14px;border-radius:12px;background:rgba(0,0,0,.45);text-align:center}
+.pay{margin-top:20px;width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(90deg,#22c55e,#16a34a);font-size:18px;color:#fff}
+.pay:disabled{opacity:.4}
+.terms{margin-top:14px;font-size:13px}
+.popup{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:999}
+.pop{background:#020617;border-radius:14px;padding:20px;max-width:520px;max-height:80vh;overflow:auto}
+.pop button{margin-top:16px;width:100%;padding:12px;border:none;border-radius:10px;background:#2563eb;color:#fff}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <div class="card">
-    <h1>SocialBoostTH</h1>
-    <div class="subtitle">ระบบสั่งซื้อ TikTok อัตโนมัติ</div>
+<div class="card">
+<h1>SocialBoostTH</h1>
+<div class="sub">ระบบสั่งซื้อ TikTok อัตโนมัติ</div>
 
-    <label>หมวดหมู่</label>
-    <select id="category">
-      <option>TikTok</option>
-    </select>
+<label>หมวดหมู่</label>
+<select><option>TikTok</option></select>
 
-    <label>บริการ</label>
-    <select id="service"></select>
+<label>บริการ</label>
+<select id="service"></select>
 
-    <label>จำนวน</label>
-    <input type="number" id="qty" value="100">
-    <div class="hint" id="limitText"></div>
+<label>จำนวน</label>
+<input type="number" id="qty">
+<div class="hint" id="limit"></div>
 
-    <label id="linkLabel">ลิงก์ TikTok</label>
-    <input type="text" id="link" placeholder="https://www.tiktok.com/...">
+<label id="linkLabel">ลิงก์ TikTok</label>
+<input id="link" placeholder="https://www.tiktok.com/...">
 
-    <div id="commentBox" style="display:none">
-      <label>ข้อความคอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
-      <textarea id="comments" placeholder="พิมพ์ 1 คอมเมนท์ ต่อ 1 บรรทัด"></textarea>
-    </div>
+<div id="commentBox" style="display:none">
+<label>ข้อความคอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
+<textarea id="comments"></textarea>
+</div>
 
-    <div class="price-box">
-      <div id="pricePer">ราคา / หน่วย</div>
-      <strong id="totalPrice">ราคารวม: 0 บาท</strong>
-    </div>
+<div class="price-box">
+<div id="unitPrice"></div>
+<div id="discountText"></div>
+<strong id="total"></strong>
+</div>
 
-    <div class="terms">
-      <input type="checkbox" id="accept">
-      ยอมรับ <a href="#" onclick="openPopup()">ข้อกำหนดและเงื่อนไข</a>
-    </div>
+<div class="terms">
+<input type="checkbox" id="accept"> ยอมรับ <a href="#" onclick="openPop()">ข้อกำหนดและเงื่อนไข</a>
+</div>
 
-    <button class="pay-btn" id="payBtn" disabled>ดำเนินการชำระเงิน</button>
-  </div>
+<button class="pay" id="pay" disabled>ดำเนินการชำระเงิน</button>
+
+</div>
 </div>
 
 <div class="popup" id="popup">
-  <div class="popup-content">
-    <h3>ข้อกำหนดและเงื่อนไขการใช้บริการ</h3>
-    <p>
-      การชำระเงินถือว่ายอมรับว่าไม่สามารถยกเลิก แก้ไข หรือคืนเงินได้ทุกกรณี  
-      ผู้ใช้บริการต้องตรวจสอบลิงก์ให้ถูกต้องก่อนยืนยันคำสั่งซื้อ  
-      บริการบางประเภทไม่มีการรับประกันหรือเติมยอดในกรณีที่ระบบของ TikTok มีการอัปเดตหรือจำกัดการมองเห็น  
-      คอมเมนท์ 1 บรรทัด ถือเป็น 1 คอมเมนท์  
-    </p>
-    <button onclick="closePopup()">เข้าใจแล้ว</button>
-  </div>
+<div class="pop">
+<h3>ข้อกำหนดและเงื่อนไขการใช้บริการ</h3>
+<p>
+เมื่อกดชำระเงินแล้ว ถือว่ายอมรับว่าไม่สามารถยกเลิก แก้ไข หรือขอคืนเงินได้ทุกกรณี
+ลูกค้าจำเป็นต้องตรวจสอบลิงก์ให้ถูกต้องก่อนยืนยันคำสั่งซื้อ
+การรับประกันหรือการเติมยอดเป็นไปตามเงื่อนไขของแต่ละบริการ
+คอมเมนท์ 1 บรรทัด นับเป็น 1 คอมเมนท์
+</p>
+<button onclick="closePop()">รับทราบ</button>
+</div>
 </div>
 
 <script>
-const services = {
-  "ผู้ติดตามต่างชาติ": {min:50,max:10000,price:0.4,type:"profile"},
-  "ผู้ติดตามไทย": {min:20,max:5000,price:1.39,type:"profile"},
-  "ถูกใจต่างชาติ": {min:50,max:10000,price:0.3,type:"video"},
-  "ถูกใจไทย": {min:20,max:2000,price:2.5,type:"video"},
-  "วิวต่างชาติ": {min:1000,max:100000,price:0.05,type:"video"},
-  "วิวไทย": {min:1000,max:10000,price:0.1,type:"video"},
-  "คอมเมนท์ไทย": {min:10,max:50,price:5,type:"video",comment:true}
-};
-
-const serviceSelect = document.getElementById("service");
-Object.keys(services).forEach(s=>serviceSelect.add(new Option(s)));
-
-function calc(){
-  const s = services[serviceSelect.value];
-  const q = Number(qty.value);
-  limitText.innerText = `ขั้นต่ำ ${s.min} | สูงสุด ${s.max}`;
-  pricePer.innerText = `ราคา ${s.price} บาท / หน่วย`;
-  totalPrice.innerText = `ราคารวม: ${(q*s.price).toFixed(2)} บาท`;
-  linkLabel.innerText = s.type==="profile"?"ลิงก์โปรไฟล์ TikTok":"ลิงก์คลิป TikTok";
-  commentBox.style.display = s.comment?"block":"none";
-  payBtn.disabled = !(accept.checked && q>=s.min && q<=s.max);
+const services={
+"ผู้ติดตามต่างชาติ":{
+min:50,max:10000,type:"profile",
+tiers:[[50,99,0.6],[100,499,0.5],[500,999,0.4],[1000,10000,0.256]]
+},
+"ผู้ติดตามไทย":{
+min:20,max:5000,type:"profile",
+tiers:[[20,5000,1.39]]
+},
+"ถูกใจต่างชาติ":{
+min:50,max:10000,type:"video",
+tiers:[[50,499,0.3],[500,999,0.25],[1000,4999,0.22],[5000,10000,0.2]]
+},
+"ถูกใจไทย":{
+min:20,max:2000,type:"video",
+tiers:[[20,99,2.5],[100,499,2],[500,2000,1.8]]
+},
+"วิวต่างชาติ":{
+min:1000,max:100000,type:"video",
+tiers:[[1000,100000,0.05]]
+},
+"วิวไทย":{
+min:1000,max:10000,type:"video",
+tiers:[[1000,10000,0.1]]
+},
+"คอมเมนท์ไทย":{
+min:10,max:50,type:"video",comment:true,price:5
+}
 }
 
-serviceSelect.onchange = calc;
-qty.oninput = calc;
-accept.onchange = calc;
-calc();
+const serviceEl=service
+Object.keys(services).forEach(s=>serviceEl.add(new Option(s)))
 
-function openPopup(){ popup.style.display="flex"; }
-function closePopup(){ popup.style.display="none"; }
+function getPrice(service,qty){
+if(service.comment)return service.price
+for(let t of service.tiers){
+if(qty>=t[0]&&qty<=t[1])return t[2]
+}
+return 0
+}
+
+function calc(){
+const s=services[serviceEl.value]
+let q=Number(qty.value||0)
+if(s.comment){
+q=comments.value.split("\n").filter(x=>x.trim()).length
+qty.value=q
+}
+const price=getPrice(s,q)
+unitPrice.innerText=`ราคา ${price.toFixed(2)} บาท / หน่วย`
+total.innerText=`ราคารวม: ${(q*price).toFixed(2)} บาท`
+limit.innerText=`ขั้นต่ำ ${s.min} | สูงสุด ${s.max}`
+discountText.innerText=s.tiers?`ซื้อจำนวนมาก ราคาจะลดลงอัตโนมัติ`:``
+
+linkLabel.innerText=s.type=="profile"?"ลิงก์ช่อง TikTok":"ลิงก์คลิป TikTok"
+commentBox.style.display=s.comment?"block":"none"
+pay.disabled=!(accept.checked&&q>=s.min&&q<=s.max)
+}
+
+service.onchange=calc
+qty.oninput=calc
+comments.oninput=calc
+accept.onchange=calc
+calc()
+
+function openPop(){popup.style.display="flex"}
+function closePop(){popup.style.display="none"}
 </script>
 
 </body>
