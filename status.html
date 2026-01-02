@@ -3,44 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เช็คสถานะออเดอร์ | SocialBoostTH</title>
+<title>เช็คสถานะคำสั่งซื้อ | SocialBoostTH</title>
 
 <style>
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:linear-gradient(180deg,#060b1e,#020617);
-  color:#fff;
+  color:#ffffff;
 }
 .container{
   max-width:420px;
   margin:auto;
-  padding:20px;
+  padding:24px;
 }
 .card{
-  background:rgba(255,255,255,.05);
-  border-radius:18px;
-  padding:22px;
-  box-shadow:0 0 30px rgba(0,0,0,.45);
+  background:rgba(255,255,255,0.06);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 0 40px rgba(0,0,0,.5);
 }
-h1{text-align:center;margin-bottom:4px}
-.sub{text-align:center;opacity:.7;margin-bottom:20px}
-.row{margin-bottom:10px;font-size:15px}
-.status{font-weight:700}
-.pending{color:#facc15}
-.processing{color:#60a5fa}
-.completed{color:#22c55e}
+h1{
+  text-align:center;
+  margin:0 0 6px;
+}
+.sub{
+  text-align:center;
+  opacity:.75;
+  margin-bottom:22px;
+  font-size:14px;
+}
+.row{
+  margin-bottom:12px;
+  font-size:15px;
+  line-height:1.6;
+}
+.status{
+  font-weight:700;
+}
+.pending{color:#facc15;}
+.processing{color:#60a5fa;}
+.completed{color:#22c55e;}
 .error{
   text-align:center;
   color:#f87171;
-  margin-top:20px;
+  font-size:15px;
+  margin-top:16px;
 }
 .note{
-  margin-top:16px;
+  margin-top:18px;
   font-size:13px;
   opacity:.7;
   line-height:1.6;
 }
+a{color:#93c5fd;word-break:break-all;}
 </style>
 </head>
 
@@ -48,6 +64,7 @@ h1{text-align:center;margin-bottom:4px}
 
 <div class="container">
 <div class="card">
+
 <h1>สถานะคำสั่งซื้อ</h1>
 <div class="sub">SocialBoostTH</div>
 
@@ -55,69 +72,63 @@ h1{text-align:center;margin-bottom:4px}
   <div class="row"><b>เลขออเดอร์:</b> <span id="o_id"></span></div>
   <div class="row"><b>บริการ:</b> <span id="o_service"></span></div>
   <div class="row"><b>จำนวน:</b> <span id="o_qty"></span></div>
-  <div class="row"><b>ลิงก์:</b> <span id="o_link"></span></div>
+  <div class="row"><b>ลิงก์:</b> <a id="o_link" target="_blank"></a></div>
   <div class="row"><b>สถานะ:</b> <span id="o_status" class="status"></span></div>
   <div class="row"><b>วันที่สั่ง:</b> <span id="o_date"></span></div>
 </div>
 
-<div id="error" class="error" style="display:none">
-❌ ไม่พบข้อมูลคำสั่งซื้อนี้
-</div>
+<div id="error" class="error" style="display:none"></div>
 
 <div class="note">
 กรุณาเก็บลิงก์นี้ไว้เพื่อติดตามสถานะคำสั่งซื้อ  
-ระบบจะอัปเดตข้อมูลให้อัตโนมัติ
+ระบบจะอัปเดตข้อมูลอัตโนมัติเมื่อมีความคืบหน้า
 </div>
 
 </div>
 </div>
 
 <script>
-const demoData={
-  "tkn_a12Bcd9":{
-    order_id:"SB-0007",
-    service:"ผู้ติดตามต่างชาติ",
-    qty:"500 คน",
-    link:"https://www.tiktok.com/@demo",
-    status:"รอดำเนินการ",
-    state:"pending",
-    date:"2 ม.ค. 2026"
-  },
-  "tkn_f9Xq81L":{
-    order_id:"SB-0008",
-    service:"คอมเมนท์ไทย",
-    qty:"20 คอมเมนท์",
-    link:"https://www.tiktok.com/video/demo",
-    status:"กำลังดำเนินการ",
-    state:"processing",
-    date:"2 ม.ค. 2026"
-  },
-  "tkn_ZZ8891":{
-    order_id:"SB-0009",
-    service:"วิวต่างชาติ",
-    qty:"10,000 วิว",
-    link:"https://www.tiktok.com/video/demo",
-    status:"ดำเนินการเสร็จสิ้น",
-    state:"completed",
-    date:"1 ม.ค. 2026"
-  }
-};
+var API_URL = "https://script.google.com/macros/s/AKfycbyEiHTGYqMyLRLuB3Wq1QleAUpm2KD_Kg-cyHcaEUvcfNdKz5gtbeWMgb2ZCGTG6mWP/exec";
 
-const params=new URLSearchParams(window.location.search);
-const token=params.get("token");
+var params = new URLSearchParams(window.location.search);
+var token = params.get("token");
 
-if(token && demoData[token]){
-  const d=demoData[token];
-  o_id.innerText=d.order_id;
-  o_service.innerText=d.service;
-  o_qty.innerText=d.qty;
-  o_link.innerText=d.link;
-  o_date.innerText=d.date;
-  o_status.innerText=d.status;
-  o_status.classList.add(d.state);
-  content.style.display="block";
+function showError(msg){
+  var el=document.getElementById("error");
+  el.innerText=msg;
+  el.style.display="block";
+}
+
+if(!token){
+  showError("❌ ลิงก์ไม่ถูกต้อง");
 }else{
-  error.style.display="block";
+  fetch(API_URL + "?token=" + encodeURIComponent(token))
+    .then(res=>res.json())
+    .then(res=>{
+      if(res.status!=="ok"){
+        showError("❌ ไม่พบข้อมูลคำสั่งซื้อนี้");
+        return;
+      }
+      var d=res.data;
+      document.getElementById("o_id").innerText=d.order_id;
+      document.getElementById("o_service").innerText=d.service;
+      document.getElementById("o_qty").innerText=d.qty;
+      document.getElementById("o_link").innerText=d.link;
+      document.getElementById("o_link").href=d.link;
+      document.getElementById("o_date").innerText=d.created_at;
+
+      var st=document.getElementById("o_status");
+      st.innerText=d.status;
+
+      if(d.status==="รอดำเนินการ") st.classList.add("pending");
+      if(d.status==="กำลังดำเนินการ") st.classList.add("processing");
+      if(d.status==="เสร็จสิ้น") st.classList.add("completed");
+
+      document.getElementById("content").style.display="block";
+    })
+    .catch(()=>{
+      showError("❌ ไม่สามารถเชื่อมต่อระบบได้");
+    });
 }
 </script>
 
