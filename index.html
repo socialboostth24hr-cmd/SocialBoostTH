@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ปั้มผู้ติดตาม TikTok</title>
+
+<style>
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background:#f4f6fa;
+  margin:0;
+  padding:20px;
+}
+.box{
+  max-width:420px;
+  margin:auto;
+  background:#ffffff;
+  border-radius:12px;
+  padding:24px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.1);
+}
+h1{
+  font-size:22px;
+  margin-bottom:10px;
+}
+label{
+  font-weight:bold;
+  display:block;
+  margin-top:16px;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  font-size:16px;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+.price{
+  margin-top:16px;
+  font-size:18px;
+}
+.total{
+  font-size:22px;
+  font-weight:bold;
+  color:#1e88e5;
+}
+button{
+  margin-top:20px;
+  width:100%;
+  padding:14px;
+  font-size:18px;
+  background:#1e88e5;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+}
+button:disabled{
+  background:#bbb;
+}
+.note{
+  margin-top:12px;
+  font-size:13px;
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>ปั้มผู้ติดตาม TikTok</h1>
+  <p>กรอกจำนวนผู้ติดตามที่ต้องการ ระบบคำนวณราคาให้อัตโนมัติ</p>
+
+  <label>จำนวนผู้ติดตาม</label>
+  <input type="number" id="qty" placeholder="เช่น 532" min="100" />
+
+  <div class="price">
+    ราคาต่อหน่วย: <b>2 บาท / คน</b>
+  </div>
+
+  <div class="total">
+    ราคารวม: <span id="total">0</span> บาท
+  </div>
+
+  <button id="payBtn" disabled>ชำระเงิน</button>
+
+  <div class="note">
+    • ขั้นต่ำ 100 ผู้ติดตาม<br>
+    • ใช้เวลาดำเนินการ 1–24 ชม.
+  </div>
+</div>
+
+<script>
+const PRICE_PER_UNIT = 2;
+const qtyInput = document.getElementById("qty");
+const totalSpan = document.getElementById("total");
+const payBtn = document.getElementById("payBtn");
+
+qtyInput.addEventListener("input", () => {
+  const qty = parseInt(qtyInput.value);
+  if(qty >= 100){
+    const total = qty * PRICE_PER_UNIT;
+    totalSpan.innerText = total.toLocaleString();
+    payBtn.disabled = false;
+  } else {
+    totalSpan.innerText = "0";
+    payBtn.disabled = true;
+  }
+});
+
+payBtn.addEventListener("click", () => {
+  const qty = qtyInput.value;
+  const total = qty * PRICE_PER_UNIT;
+
+  // 🔴 STEP ถัดไป: ส่งไป Stripe
+  alert(
+    "จำนวน: " + qty +
+    "\\nยอดเงิน: " + total +
+    " บาท\\n(ขั้นต่อไปคือเชื่อม Stripe)"
+  );
+});
+</script>
+
+</body>
+</html>
