@@ -168,7 +168,7 @@ function pay(){
     amount: parseFloat(totalEl.innerText.replace(" บาท",""))
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbynbP2epKwQOrh-hsM3RhmLpUMkGEaZwXrZta8qMVotTVa3SIg5P5-ARWatJOY2jNZI/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzL_YYC6yZR_rc_Mzrj6HAQ80tpNZ3wcFqEVKOLWgn3J9_OucVwfN18GIhUP-c_qcP7/exec", {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify(payload)
