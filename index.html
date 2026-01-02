@@ -2,204 +2,234 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SocialBoostTH – สั่งซื้อ</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SocialBoostTH</title>
 
 <style>
-*{box-sizing:border-box;font-family:system-ui,-apple-system,BlinkMacSystemFont;}
-body{margin:0;background:#0b1220;color:#fff}
-
-/* NAV */
-.navbar{
-  background:linear-gradient(135deg,#0f1b34,#05080f);
-  padding:14px 18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#0b1220;
+  color:#fff;
 }
-.nav-left{font-size:20px;font-weight:800}
-.nav-center{display:flex;gap:18px}
-.nav-center a{
-  color:#cbd5f5;text-decoration:none;font-weight:600;
-  padding:6px 10px;border-radius:8px
+.hidden{display:none}
+.container{
+  max-width:420px;
+  margin:40px auto;
+  background:#0c162e;
+  padding:26px;
+  border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
 }
-.nav-center a.active,.nav-center a:hover{
-  background:rgba(255,255,255,.08);color:#fff
-}
-.nav-right{
-  background:#0c1933;padding:8px 14px;
-  border-radius:12px;color:#22c55e;font-weight:800
-}
-
-.wrapper{max-width:420px;margin:28px auto;padding:0 16px}
-.card{
-  background:#0c162e;border-radius:20px;
-  padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.5)
-}
-
 h1{text-align:center;margin:0}
-.subtitle{text-align:center;opacity:.7;margin-bottom:18px}
-
-label{display:block;margin-top:14px;font-size:14px}
-select,input,textarea{
-  width:100%;margin-top:6px;padding:12px;
-  border-radius:12px;border:1px solid rgba(255,255,255,.1);
-  background:#0b1428;color:#fff
+p{text-align:center;opacity:.7;margin:8px 0 20px}
+input,select{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  background:#0b1428;
+  border:1px solid rgba(255,255,255,.1);
+  color:#fff;
+  margin-bottom:14px;
 }
-textarea{resize:none;height:120px}
-
-.hint{font-size:12px;opacity:.6;margin-top:4px}
-
-.price-box{
-  margin-top:18px;background:#0b1730;
-  padding:16px;border-radius:14px;text-align:center
-}
-.total{font-size:26px;font-weight:800;margin-top:6px}
-.discount{font-size:13px;color:#22c55e;margin-top:4px}
-
-.summary{
-  margin-top:14px;background:#0c1933;
-  padding:14px;border-radius:12px;font-size:14px;line-height:1.6
-}
-
-.checkbox{
-  margin-top:18px;display:flex;gap:10px;
-  align-items:flex-start;font-size:14px
-}
-.checkbox input{margin-top:4px;width:18px;height:18px}
-
-.btn{
-  width:100%;margin-top:20px;padding:16px;
-  border:none;border-radius:16px;
-  font-size:18px;font-weight:800;
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
   background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;cursor:pointer
+  color:#fff;
+  font-weight:800;
+  font-size:16px;
+  cursor:pointer;
 }
-.btn:disabled{background:#374151;cursor:not-allowed}
-
-@media(max-width:600px){.nav-center{display:none}}
+.nav{
+  display:flex;
+  justify-content:space-around;
+  background:#0b1428;
+  padding:12px 0;
+  border-radius:14px;
+  margin-bottom:18px;
+}
+.nav span{
+  cursor:pointer;
+  font-weight:700;
+  opacity:.7;
+}
+.nav span.active{
+  opacity:1;
+  color:#22c55e;
+}
+.card{
+  background:#0b1730;
+  padding:16px;
+  border-radius:14px;
+  margin-bottom:14px;
+  font-size:14px;
+}
+.logout{
+  background:none;
+  border:none;
+  color:#ef4444;
+  font-weight:700;
+  margin-top:10px;
+}
+.center{text-align:center}
 </style>
 </head>
 
 <body>
 
-<!-- NAV -->
-<div class="navbar">
-  <div class="nav-left">SocialBoostTH</div>
-  <div class="nav-center">
-    <a href="index.html" class="active">สั่งซื้อ</a>
-    <a href="wallet.html">กระเป๋าเงิน</a>
-    <a href="history.html">ประวัติ</a>
+<!-- AUTH -->
+<div class="container" id="auth">
+  <h1>SocialBoostTH</h1>
+  <p id="authText">เข้าสู่ระบบ</p>
+
+  <input id="username" placeholder="ชื่อผู้ใช้">
+  <input id="email" placeholder="อีเมล" class="hidden">
+  <input id="password" type="password" placeholder="รหัสผ่าน">
+
+  <button onclick="submitAuth()">ยืนยัน</button>
+  <p class="center" style="margin-top:14px">
+    <span onclick="toggleAuth()" style="color:#60a5fa;cursor:pointer">
+      สมัคร / เข้าสู่ระบบ
+    </span>
+  </p>
+</div>
+
+<!-- APP -->
+<div class="container hidden" id="app">
+
+  <div class="center" style="font-size:18px;font-weight:800">
+    ยอดเงินคงเหลือ: <span id="balance">0</span> บาท
   </div>
-  <div class="nav-right" id="balance">💰 0.00 บาท</div>
-</div>
 
-<div class="wrapper">
-<div class="card">
+  <div class="nav">
+    <span class="active" onclick="go('order')">สั่งซื้อ</span>
+    <span onclick="go('wallet')">เติมเงิน</span>
+    <span onclick="go('history')">ประวัติ</span>
+  </div>
 
-<h1>สั่งซื้อบริการ TikTok</h1>
-<div class="subtitle">เลือกบริการ → กรอกข้อมูล → ระบบคำนวณราคาอัตโนมัติ</div>
+  <!-- ORDER -->
+  <div id="orderPage">
+    <select id="service">
+      <option>ผู้ติดตามต่างชาติ</option>
+      <option>ผู้ติดตามไทย</option>
+      <option>ถูกใจต่างชาติ</option>
+      <option>ถูกใจไทย</option>
+      <option>วิวต่างชาติ</option>
+      <option>วิวไทย</option>
+      <option>คอมเมนท์ไทย</option>
+    </select>
 
-<label>บริการ</label>
-<select id="service">
-  <option value="followers_inter">ผู้ติดตามต่างชาติ</option>
-  <option value="followers_th">ผู้ติดตามไทย</option>
-  <option value="likes_inter">ถูกใจต่างชาติ</option>
-  <option value="likes_th">ถูกใจไทย</option>
-  <option value="views_inter">วิวต่างชาติ</option>
-  <option value="views_th">วิวไทย</option>
-  <option value="comment_th">คอมเมนท์ไทย</option>
-  <option value="share_inter">แชร์ต่างชาติ</option>
-  <option value="save_inter">บันทึกต่างชาติ</option>
-</select>
+    <input id="amount" type="number" placeholder="จำนวนที่ต้องการ">
+    <input id="link" placeholder="ลิงก์ TikTok">
 
-<!-- จำนวน -->
-<div id="qtyBox">
-<label>จำนวน</label>
-<input id="qty" type="number" placeholder="กรอกจำนวน">
-<div class="hint" id="limit"></div>
-</div>
+    <button onclick="order()">สั่งซื้อ</button>
+  </div>
 
-<!-- คอมเมนท์ -->
-<div id="commentBox" style="display:none">
-<label>ข้อความคอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
-<textarea id="commentText" placeholder="พิมพ์คอมเมนท์ขึ้นบรรทัดใหม่"></textarea>
-<div class="hint">ขั้นต่ำ 10 บรรทัด / สูงสุด 50 บรรทัด</div>
-</div>
+  <!-- WALLET -->
+  <div id="walletPage" class="hidden">
+    <input id="topupAmount" type="number" placeholder="จำนวนเงินที่ต้องการเพิ่ม">
+    <button onclick="topup()">เพิ่มยอด (จำลอง)</button>
+  </div>
 
-<label id="linkLabel">ลิงก์ TikTok</label>
-<input id="link" placeholder="https://www.tiktok.com/...">
+  <!-- HISTORY -->
+  <div id="historyPage" class="hidden"></div>
 
-<div class="price-box">
-  <div>ราคารวม</div>
-  <div class="total" id="total">0.00 บาท</div>
-  <div class="discount" id="discount"></div>
-</div>
-
-<div class="summary" id="summary">กรุณาเลือกบริการ</div>
-
-<div class="checkbox">
-  <input type="checkbox" id="agree">
-  <span>ยอมรับเงื่อนไข (ไม่ยกเลิก / ไม่คืนเงิน)</span>
-</div>
-
-<button class="btn" id="buyBtn" disabled>ยืนยันคำสั่งซื้อ</button>
-
-</div>
+  <button class="logout" onclick="logout()">ออกจากระบบ</button>
 </div>
 
 <script>
-let balance=3500;
-balanceEl.innerText="💰 "+balance.toFixed(2)+" บาท";
+let isLogin=true;
 
-const services={
- followers_inter:{min:50,max:10000,price:q=>q<100?0.6:q<500?0.5:q<1000?0.4:0.256,link:"ช่อง"},
- followers_th:{min:20,max:5000,price:q=>1.39,link:"ช่อง"},
- likes_inter:{min:50,max:10000,price:q=>q<500?0.3:q<1000?0.25:q<5000?0.22:0.2,link:"คลิป"},
- likes_th:{min:20,max:2000,price:q=>q<100?2.5:q<500?2:1.8,link:"คลิป"},
- views_inter:{min:1000,max:100000,price:q=>0.05,link:"คลิป"},
- views_th:{min:1000,max:10000,price:q=>0.1,link:"คลิป"},
- comment_th:{min:10,max:50,price:()=>5,link:"คลิป"},
- share_inter:{min:100,max:1000,price:q=>0.1,link:"คลิป"},
- save_inter:{min:100,max:1000,price:q=>0.1,link:"คลิป"}
-};
-
-function calc(){
- const s=services[service.value];
- let qty=0;
-
- qtyBox.style.display=service.value==="comment_th"?"none":"block";
- commentBox.style.display=service.value==="comment_th"?"block":"none";
- linkLabel.innerText=s.link==="ช่อง"?"ลิงก์ช่อง TikTok":"ลิงก์คลิป TikTok";
-
- if(service.value==="comment_th"){
-   const lines=commentText.value.trim().split("\n").filter(l=>l.trim()).length;
-   qty=lines;
-   if(qty<s.min||qty>s.max){
-     total.innerText="0.00 บาท";buyBtn.disabled=true;return;
-   }
- }else{
-   qty=Number(qtyEl.value||0);
-   limit.innerText=`ขั้นต่ำ ${s.min} / สูงสุด ${s.max}`;
-   if(qty<s.min||qty>s.max){
-     total.innerText="0.00 บาท";buyBtn.disabled=true;return;
-   }
- }
-
- const price=qty*s.price(qty);
- total.innerText=price.toFixed(2)+" บาท";
- discount.innerText=qty>=500?"ซื้อเยอะ ราคาจะลดลง":"";
- summary.innerHTML=`บริการ: ${service.options[service.selectedIndex].text}<br>
- จำนวน: ${qty}<br>ราคารวม: ${price.toFixed(2)} บาท`;
-
- buyBtn.disabled=!(agree.checked&&link.value);
+function toggleAuth(){
+  isLogin=!isLogin;
+  authText.innerText=isLogin?"เข้าสู่ระบบ":"สมัครสมาชิก";
+  email.classList.toggle("hidden");
 }
 
-service.onchange=calc;
-qty.oninput=calc;
-commentText.oninput=calc;
-agree.onchange=calc;
-link.oninput=calc;
+function submitAuth(){
+  const u=username.value.trim();
+  const p=password.value;
+  const e=email.value.trim();
+
+  let users=JSON.parse(localStorage.getItem("users")||"{}");
+
+  if(isLogin){
+    if(users[u]&&users[u].password===p){
+      localStorage.setItem("currentUser",u);
+      showApp();
+    }else alert("ข้อมูลไม่ถูกต้อง");
+  }else{
+    if(!u||!p||!e)return alert("กรอกข้อมูลให้ครบ");
+    if(users[u])return alert("ชื่อผู้ใช้ซ้ำ");
+    users[u]={password:p,email:e,balance:0,history:[]};
+    localStorage.setItem("users",JSON.stringify(users));
+    alert("สมัครสำเร็จ");
+    toggleAuth();
+  }
+}
+
+function showApp(){
+  auth.classList.add("hidden");
+  app.classList.remove("hidden");
+  update();
+}
+
+function logout(){
+  localStorage.removeItem("currentUser");
+  location.reload();
+}
+
+function getUser(){
+  const u=localStorage.getItem("currentUser");
+  const users=JSON.parse(localStorage.getItem("users"));
+  return {u,users};
+}
+
+function update(){
+  const {u,users}=getUser();
+  balance.innerText=users[u].balance;
+  historyPage.innerHTML="";
+  users[u].history.forEach(h=>{
+    historyPage.innerHTML+=`<div class="card">${h}</div>`;
+  });
+}
+
+function go(page){
+  document.querySelectorAll(".nav span").forEach(s=>s.classList.remove("active"));
+  event.target.classList.add("active");
+
+  orderPage.classList.add("hidden");
+  walletPage.classList.add("hidden");
+  historyPage.classList.add("hidden");
+
+  if(page==="order")orderPage.classList.remove("hidden");
+  if(page==="wallet")walletPage.classList.remove("hidden");
+  if(page==="history")historyPage.classList.remove("hidden");
+}
+
+function topup(){
+  const a=Number(topupAmount.value);
+  const {u,users}=getUser();
+  users[u].balance+=a;
+  users[u].history.push("เติมเงิน "+a+" บาท");
+  localStorage.setItem("users",JSON.stringify(users));
+  update();
+}
+
+function order(){
+  const {u,users}=getUser();
+  const price=Number(amount.value);
+  if(users[u].balance<price)return alert("เงินไม่พอ");
+  users[u].balance-=price;
+  users[u].history.push("สั่งซื้อ "+service.value+" "+price+" บาท");
+  localStorage.setItem("users",JSON.stringify(users));
+  update();
+}
+
+if(localStorage.getItem("currentUser"))showApp();
 </script>
 
 </body>
