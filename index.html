@@ -208,6 +208,10 @@ const prices = {
   comment_th: qty => 5
 };
 
+function serviceSelect(){
+  return document.getElementById('service').value;
+}
+
 function updateForm(){
   const service = serviceSelect();
   document.getElementById('commentBox').style.display =
@@ -219,21 +223,21 @@ function updateForm(){
   calculatePrice();
 }
 
-function serviceSelect(){
-  return document.getElementById('service').value;
-}
-
 function calculatePrice(){
   const qty = Number(document.getElementById('quantity').value || 0);
   const rate = prices[serviceSelect()](qty);
+  const total = qty * rate;
+
+  window.totalPrice = total;
+
   document.getElementById('unitPrice').innerText =
     `ราคา ${rate.toFixed(2)} บาท / หน่วย`;
 
   document.getElementById('totalPrice').innerText =
-    (qty * rate).toFixed(2) + ' บาท';
+    total.toFixed(2) + ' บาท';
 
   document.getElementById('payBtn').disabled =
-    !document.getElementById('agree').checked;
+    !document.getElementById('agree').checked || total <= 0;
 }
 
 document.getElementById('agree').onchange = calculatePrice;
@@ -242,20 +246,40 @@ function openPopup(){ document.getElementById('popup').style.display='flex'; }
 function closePopup(){ document.getElementById('popup').style.display='none'; }
 
 function pay(){
-  const data = {
+  if (!window.totalPrice || window.totalPrice <= 0) {
+    alert('กรุณาเลือกจำนวนให้ถูกต้อง');
+    return;
+  }
+
+  const payload = {
     service: serviceSelect(),
-    quantity: document.getElementById('quantity').value,
+    quantity: Number(document.getElementById('quantity').value),
     link: document.getElementById('link').value,
-    comment: document.getElementById('commentText').value
+    comment: document.getElementById('commentText').value,
+    amount: Math.round(window.totalPrice * 100), // บาท → สตางค์
+    success_url: window.location.origin + '/success.html',
+    cancel_url: window.location.origin + '/cancel.html'
   };
 
   fetch('https://script.google.com/macros/s/AKfycbwa9sqC43n9s8Hm3QswSBtVDqUt-E7rq9vLqsw6VDxzlSd5FX_RLZTCKKbiO1htIEx3/exec', {
-    method:'POST',
-    body:JSON.stringify(data)
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
   })
-  .then(r=>r.json())
-  .then(res=>window.location.href=res.checkout_url)
-  .catch(()=>alert('ไม่สามารถเชื่อมต่อระบบได้'));
+  .then(r => r.json())
+  .then(res => {
+    if (!res.url) {
+      alert('Stripe ไม่ตอบกลับ');
+      return;
+    }
+    window.location.href = res.url;
+  })
+  .catch(err => {
+    alert('ไม่สามารถเชื่อมต่อระบบได้');
+    console.error(err);
+  });
 }
 
 updateForm();
