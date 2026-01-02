@@ -2,95 +2,122 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>เช็คสถานะออเดอร์ | SocialBoostTH</title>
+
 <style>
 body{
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#00c6ff,#0072ff);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:linear-gradient(180deg,#060b1e,#020617);
+  color:#fff;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:20px;
 }
 .card{
-  background:#fff;
-  padding:30px;
-  border-radius:16px;
-  width:100%;
-  max-width:420px;
-  box-shadow:0 20px 40px rgba(0,0,0,.2);
+  background:rgba(255,255,255,.05);
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 0 30px rgba(0,0,0,.45);
 }
-h1{
+h1{text-align:center;margin-bottom:4px}
+.sub{text-align:center;opacity:.7;margin-bottom:20px}
+.row{margin-bottom:10px;font-size:15px}
+.status{font-weight:700}
+.pending{color:#facc15}
+.processing{color:#60a5fa}
+.completed{color:#22c55e}
+.error{
   text-align:center;
-  margin-bottom:20px;
-}
-input{
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  margin-bottom:12px;
-}
-button{
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  border:none;
-  border-radius:10px;
-  background:#0072ff;
-  color:#fff;
-  cursor:pointer;
-}
-.result{
+  color:#f87171;
   margin-top:20px;
-  background:#f6f8fa;
-  border-radius:10px;
-  padding:15px;
-  display:none;
 }
-.row{
-  margin-bottom:6px;
+.note{
+  margin-top:16px;
+  font-size:13px;
+  opacity:.7;
+  line-height:1.6;
 }
-.label{font-weight:bold;}
 </style>
 </head>
+
 <body>
 
+<div class="container">
 <div class="card">
-  <h1>🔍 เช็คสถานะออเดอร์</h1>
+<h1>สถานะคำสั่งซื้อ</h1>
+<div class="sub">SocialBoostTH</div>
 
-  <input id="orderId" placeholder="กรอกเลขออเดอร์ เช่น SB-0001">
-  <button onclick="checkOrder()">ตรวจสอบ</button>
+<div id="content" style="display:none">
+  <div class="row"><b>เลขออเดอร์:</b> <span id="o_id"></span></div>
+  <div class="row"><b>บริการ:</b> <span id="o_service"></span></div>
+  <div class="row"><b>จำนวน:</b> <span id="o_qty"></span></div>
+  <div class="row"><b>ลิงก์:</b> <span id="o_link"></span></div>
+  <div class="row"><b>สถานะ:</b> <span id="o_status" class="status"></span></div>
+  <div class="row"><b>วันที่สั่ง:</b> <span id="o_date"></span></div>
+</div>
 
-  <div id="result" class="result"></div>
+<div id="error" class="error" style="display:none">
+❌ ไม่พบข้อมูลคำสั่งซื้อนี้
+</div>
+
+<div class="note">
+กรุณาเก็บลิงก์นี้ไว้เพื่อติดตามสถานะคำสั่งซื้อ  
+ระบบจะอัปเดตข้อมูลให้อัตโนมัติ
+</div>
+
+</div>
 </div>
 
 <script>
-function checkOrder(){
-  const id = document.getElementById('orderId').value.trim();
-  if(!id){ alert("กรุณากรอกเลขออเดอร์"); return; }
+const demoData={
+  "tkn_a12Bcd9":{
+    order_id:"SB-0007",
+    service:"ผู้ติดตามต่างชาติ",
+    qty:"500 คน",
+    link:"https://www.tiktok.com/@demo",
+    status:"รอดำเนินการ",
+    state:"pending",
+    date:"2 ม.ค. 2026"
+  },
+  "tkn_f9Xq81L":{
+    order_id:"SB-0008",
+    service:"คอมเมนท์ไทย",
+    qty:"20 คอมเมนท์",
+    link:"https://www.tiktok.com/video/demo",
+    status:"กำลังดำเนินการ",
+    state:"processing",
+    date:"2 ม.ค. 2026"
+  },
+  "tkn_ZZ8891":{
+    order_id:"SB-0009",
+    service:"วิวต่างชาติ",
+    qty:"10,000 วิว",
+    link:"https://www.tiktok.com/video/demo",
+    status:"ดำเนินการเสร็จสิ้น",
+    state:"completed",
+    date:"1 ม.ค. 2026"
+  }
+};
 
-  fetch("https://script.google.com/macros/s/AKfycbz6JqkIY-yEvEsAq-cCbrHIgU6H7hFmTyy12s9RFg000xKQ92kXMQSHUBnglgGq1r7e/exec?id="+id)
-  .then(res=>res.json())
-  .then(data=>{
-    const box = document.getElementById("result");
-    if(!data.สถานะ){
-      box.style.display="block";
-      box.innerHTML="❌ ไม่พบออเดอร์";
-      return;
-    }
+const params=new URLSearchParams(window.location.search);
+const token=params.get("token");
 
-    box.style.display="block";
-    box.innerHTML=`
-      <div class="row"><span class="label">เลขออเดอร์:</span> ${data.เลขออเดอร์}</div>
-      <div class="row"><span class="label">บริการ:</span> ${data.บริการ}</div>
-      <div class="row"><span class="label">จำนวน:</span> ${data.จำนวน}</div>
-      <div class="row"><span class="label">ลิงก์:</span> ${data.ลิงก์}</div>
-      <div class="row"><span class="label">สถานะ:</span> ${data.สถานะออเดอร์}</div>
-      <div class="row"><span class="label">อัปเดตล่าสุด:</span> ${data.วันที่}</div>
-    `;
-  });
+if(token && demoData[token]){
+  const d=demoData[token];
+  o_id.innerText=d.order_id;
+  o_service.innerText=d.service;
+  o_qty.innerText=d.qty;
+  o_link.innerText=d.link;
+  o_date.innerText=d.date;
+  o_status.innerText=d.status;
+  o_status.classList.add(d.state);
+  content.style.display="block";
+}else{
+  error.style.display="block";
 }
 </script>
 
