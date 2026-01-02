@@ -12,6 +12,7 @@ body{
   background:radial-gradient(circle at top,#0f1b34,#05080f);
   color:#fff;
 }
+
 .container{
   max-width:420px;
   margin:40px auto;
@@ -20,43 +21,81 @@ body{
   padding:26px;
   box-shadow:0 25px 70px rgba(0,0,0,.6);
 }
-h1{text-align:center;margin:0;font-size:28px}
-.subtitle{text-align:center;opacity:.8;margin-bottom:26px}
-label{display:block;margin-top:16px;font-size:14px;opacity:.85}
+
+h1{text-align:center;margin:0;font-size:28px;}
+.subtitle{text-align:center;opacity:.8;margin-bottom:24px;}
+
+label{display:block;margin-top:16px;font-size:14px;opacity:.85;}
+
 select,input,textarea{
-  width:100%;margin-top:6px;padding:13px;border-radius:12px;
-  background:#0b1428;border:1px solid rgba(255,255,255,.1);
-  color:#fff;font-size:15px
+  width:100%;
+  margin-top:6px;
+  padding:13px;
+  border-radius:12px;
+  background:#0b1428;
+  border:1px solid rgba(255,255,255,.1);
+  color:#fff;
+  font-size:15px;
 }
-textarea{resize:none;height:96px}
-.hint{font-size:12px;opacity:.6;margin-top:4px}
+
+textarea{resize:none;height:90px;}
+
+.hint{font-size:12px;opacity:.6;margin-top:4px;}
+
 .price-box{
-  margin-top:20px;background:#0c1933;padding:18px;
-  border-radius:14px;text-align:center
+  margin-top:20px;
+  background:#0c1933;
+  padding:18px;
+  border-radius:14px;
+  text-align:center;
 }
-.total{font-size:26px;font-weight:800;margin-top:6px}
-.discount{font-size:13px;color:#22c55e;margin-top:4px}
-.checkbox{margin-top:18px;display:flex;gap:10px;align-items:center;font-size:14px}
-.checkbox input{width:18px;height:18px}
+
+.total{font-size:26px;font-weight:800;}
+.discount{font-size:13px;color:#22c55e;margin-top:6px;}
+
+.checkbox{
+  margin-top:18px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  font-size:14px;
+}
+
 .pay-btn{
-  width:100%;margin-top:22px;padding:16px;font-size:18px;
-  font-weight:800;border-radius:16px;border:none;
+  width:100%;
+  margin-top:22px;
+  padding:16px;
+  font-size:18px;
+  font-weight:800;
+  border-radius:16px;
+  border:none;
   background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;cursor:pointer
+  color:#fff;
+  cursor:pointer;
 }
-.pay-btn:disabled{background:#374151;cursor:not-allowed}
+
+.pay-btn:disabled{
+  background:#374151;
+  cursor:not-allowed;
+}
+
 .popup{
-  position:fixed;inset:0;background:rgba(0,0,0,.75);
-  display:none;align-items:center;justify-content:center
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
 }
+
 .popup-content{
-  max-width:520px;background:#0c162e;
-  border-radius:18px;padding:24px;font-size:14px
-}
-.popup-content button{
-  margin-top:16px;width:100%;padding:12px;
-  border-radius:12px;border:none;
-  background:#2563eb;color:#fff;font-weight:700
+  max-width:520px;
+  background:#0c162e;
+  border-radius:18px;
+  padding:24px;
+  font-size:14px;
+  line-height:1.6;
 }
 </style>
 </head>
@@ -103,79 +142,94 @@ textarea{resize:none;height:96px}
 <div class="popup" id="popup">
   <div class="popup-content">
     <p>
-      ไม่สามารถยกเลิก แก้ไข หรือคืนเงินได้ทุกกรณี<br>
-      กรุณาตรวจสอบลิงก์ให้ถูกต้องก่อนสั่งซื้อ
+      ❗ การสั่งซื้อไม่สามารถยกเลิกหรือคืนเงินได้<br>
+      กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนชำระเงิน
     </p>
     <button onclick="closePopup()">รับทราบ</button>
   </div>
 </div>
 
 <script>
+const SCRIPT_URL =
+"https://script.google.com/macros/s/AKfycbynbP2epKwQOrh-hsM3RhmLpUMkGEaZwXrZta8qMVotTVa3SIg5P5-ARWatJOY2jNZI/exec";
+
 const services={
-  followers_inter:{min:50,max:10000,rate:q=>q<100?0.6:q<500?0.5:q<1000?0.4:0.256},
-  followers_th:{min:20,max:5000,rate:q=>1.39},
-  likes_inter:{min:50,max:10000,rate:q=>q<500?0.3:q<1000?0.25:q<5000?0.22:0.2},
-  likes_th:{min:20,max:2000,rate:q=>q<100?2.5:q<500?2:1.8},
-  views_inter:{min:1000,max:100000,rate:q=>0.05},
-  views_th:{min:1000,max:10000,rate:q=>0.1},
-  comment_th:{min:10,max:50,rate:q=>5}
+ followers_inter:{min:50,max:10000,rate:q=>q<100?0.6:q<500?0.5:q<1000?0.4:0.256},
+ followers_th:{min:20,max:5000,rate:q=>1.39},
+ likes_inter:{min:50,max:10000,rate:q=>0.25},
+ likes_th:{min:20,max:2000,rate:q=>2},
+ views_inter:{min:1000,max:100000,rate:q=>0.05},
+ views_th:{min:1000,max:10000,rate:q=>0.1},
+ comment_th:{min:10,max:50,rate:q=>5}
 };
 
-const serviceEl = document.getElementById('service');
-const qtyEl = document.getElementById('quantity');
-const totalEl = document.getElementById('totalPrice');
-const limitEl = document.getElementById('limitText');
-const discountEl = document.getElementById('discountText');
-const payBtn = document.getElementById('payBtn');
+const service=document.getElementById('service');
+const quantity=document.getElementById('quantity');
+const totalPrice=document.getElementById('totalPrice');
+const limitText=document.getElementById('limitText');
+const discountText=document.getElementById('discountText');
+const payBtn=document.getElementById('payBtn');
 
 function calculate(){
-  const s = services[serviceEl.value];
-  const q = Number(qtyEl.value);
+ const s=services[service.value];
+ const q=Number(quantity.value);
 
-  limitEl.innerText = `ขั้นต่ำ ${s.min} | สูงสุด ${s.max}`;
+ limitText.innerText=`ขั้นต่ำ ${s.min} | สูงสุด ${s.max}`;
 
-  if(!q || q < s.min || q > s.max){
-    totalEl.innerText = '0.00 บาท';
-    payBtn.disabled = true;
-    return;
-  }
+ if(!q||q<s.min||q>s.max){
+  totalPrice.innerText="0.00 บาท";
+  payBtn.disabled=true;
+  return;
+ }
 
-  const total = q * s.rate(q);
-  totalEl.innerText = total.toFixed(2) + ' บาท';
-  discountEl.innerText = q >= 500 ? 'ซื้อจำนวนมาก ราคาจะลดอัตโนมัติ' : '';
-  checkReady();
+ const total=q*s.rate(q);
+ totalPrice.innerText=total.toFixed(2)+" บาท";
+ discountText.innerText=q>=500?"ซื้อจำนวนมาก ราคาจะลดอัตโนมัติ":"";
+ checkReady();
 }
 
 function checkReady(){
-  payBtn.disabled = !(
-    document.getElementById('agree').checked &&
-    document.getElementById('link').value &&
-    Number(qtyEl.value)
-  );
+ payBtn.disabled=!(
+  document.getElementById('agree').checked &&
+  document.getElementById('link').value &&
+  Number(quantity.value)
+ );
 }
 
-serviceEl.onchange = ()=>{ qtyEl.value=''; calculate(); };
-qtyEl.oninput = calculate;
-document.getElementById('agree').onchange = checkReady;
-document.getElementById('link').oninput = checkReady;
+service.onchange=()=>{quantity.value="";calculate();}
+quantity.oninput=calculate;
+document.getElementById('agree').onchange=checkReady;
+document.getElementById('link').oninput=checkReady;
 
-function openPopup(){ popup.style.display='flex'; }
-function closePopup(){ popup.style.display='none'; }
+function openPopup(){popup.style.display='flex'}
+function closePopup(){popup.style.display='none'}
 
 function pay(){
-  const payload = {
-    service: serviceEl.options[serviceEl.selectedIndex].text,
-    amount: parseFloat(totalEl.innerText.replace(" บาท",""))
-  };
+ const payload={
+  service: service.options[service.selectedIndex].text,
+  quantity: Number(quantity.value),
+  link: document.getElementById('link').value,
+  amount: parseFloat(totalPrice.innerText.replace(" บาท",""))
+ };
 
-  fetch("https://script.google.com/macros/s/AKfycbyN6sPvZSg5fkhLCW8q8riKQWrlR9VHa3VaGg7r6KgYQULy7c01J1cVMfOiYxDI3ExX/exec", {
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify(payload)
-  })
-  .then(r=>r.json())
-  .then(d=>window.location.href=d.checkout_url)
-  .catch(()=>alert("ไม่สามารถเชื่อมต่อระบบได้"));
+ fetch(SCRIPT_URL,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify(payload)
+ })
+ .then(r=>r.json())
+ .then(d=>{
+  if(d.checkout_url){
+    window.location.href=d.checkout_url;
+  }else{
+    alert("ไม่สามารถสร้างลิงก์ชำระเงินได้");
+    console.log(d);
+  }
+ })
+ .catch(err=>{
+  alert("เชื่อมต่อระบบไม่ได้");
+  console.error(err);
+ });
 }
 </script>
 
