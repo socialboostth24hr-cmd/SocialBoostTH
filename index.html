@@ -252,10 +252,17 @@ const services={
 };
 
 function updateForm(){
- const s=service.value;
- commentBox.style.display=s==='comment_th'?'block':'none';
- linkLabel.innerText=s.includes('followers')?'ลิงก์ช่อง TikTok':'ลิงก์คลิป TikTok';
- calculate();
+  const s = services[service.value];
+  quantity.min = s.min;
+  quantity.max = s.max;
+
+  commentBox.style.display = service.value === 'comment_th' ? 'block' : 'none';
+  linkLabel.innerText = service.value.includes('followers')
+    ? 'ลิงก์ช่อง TikTok'
+    : 'ลิงก์คลิป TikTok';
+
+  quantity.value = s.min; // ⭐ สำคัญมาก
+  calculate();
 }
 
 function calculate(){
