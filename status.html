@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>เช็คสถานะออเดอร์ | SocialBoostTH</title>
+<style>
+body{
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg,#00c6ff,#0072ff);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.card{
+  background:#fff;
+  padding:30px;
+  border-radius:16px;
+  width:100%;
+  max-width:420px;
+  box-shadow:0 20px 40px rgba(0,0,0,.2);
+}
+h1{
+  text-align:center;
+  margin-bottom:20px;
+}
+input{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-bottom:12px;
+}
+button{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  background:#0072ff;
+  color:#fff;
+  cursor:pointer;
+}
+.result{
+  margin-top:20px;
+  background:#f6f8fa;
+  border-radius:10px;
+  padding:15px;
+  display:none;
+}
+.row{
+  margin-bottom:6px;
+}
+.label{font-weight:bold;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>🔍 เช็คสถานะออเดอร์</h1>
+
+  <input id="orderId" placeholder="กรอกเลขออเดอร์ เช่น SB-0001">
+  <button onclick="checkOrder()">ตรวจสอบ</button>
+
+  <div id="result" class="result"></div>
+</div>
+
+<script>
+function checkOrder(){
+  const id = document.getElementById('orderId').value.trim();
+  if(!id){ alert("กรุณากรอกเลขออเดอร์"); return; }
+
+  fetch("https://script.google.com/macros/s/AKfycbz6JqkIY-yEvEsAq-cCbrHIgU6H7hFmTyy12s9RFg000xKQ92kXMQSHUBnglgGq1r7e/exec?id="+id)
+  .then(res=>res.json())
+  .then(data=>{
+    const box = document.getElementById("result");
+    if(!data.สถานะ){
+      box.style.display="block";
+      box.innerHTML="❌ ไม่พบออเดอร์";
+      return;
+    }
+
+    box.style.display="block";
+    box.innerHTML=`
+      <div class="row"><span class="label">เลขออเดอร์:</span> ${data.เลขออเดอร์}</div>
+      <div class="row"><span class="label">บริการ:</span> ${data.บริการ}</div>
+      <div class="row"><span class="label">จำนวน:</span> ${data.จำนวน}</div>
+      <div class="row"><span class="label">ลิงก์:</span> ${data.ลิงก์}</div>
+      <div class="row"><span class="label">สถานะ:</span> ${data.สถานะออเดอร์}</div>
+      <div class="row"><span class="label">อัปเดตล่าสุด:</span> ${data.วันที่}</div>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
