@@ -2,132 +2,91 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+<title>ตรวจสอบสถานะคำสั่งซื้อ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เช็คสถานะคำสั่งซื้อ | SocialBoostTH</title>
-
 <style>
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:linear-gradient(180deg,#060b1e,#020617);
-  color:#ffffff;
+body {
+  background:#0b1220;
+  font-family:Arial, sans-serif;
+  color:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
-.container{
+.card {
+  background:#111827;
+  padding:24px;
+  border-radius:14px;
+  width:100%;
   max-width:420px;
-  margin:auto;
-  padding:24px;
 }
-.card{
-  background:rgba(255,255,255,0.06);
-  border-radius:20px;
-  padding:24px;
-  box-shadow:0 0 40px rgba(0,0,0,.5);
+h1 { text-align:center; margin-bottom:10px; }
+input, button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
 }
-h1{
-  text-align:center;
-  margin:0 0 6px;
+input { background:#1f2937; color:#fff; }
+button {
+  background:#22c55e;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
 }
-.sub{
-  text-align:center;
-  opacity:.75;
-  margin-bottom:22px;
-  font-size:14px;
-}
-.row{
-  margin-bottom:12px;
-  font-size:15px;
-  line-height:1.6;
-}
-.status{
-  font-weight:700;
-}
-.pending{color:#facc15;}
-.processing{color:#60a5fa;}
-.completed{color:#22c55e;}
-.error{
-  text-align:center;
-  color:#f87171;
-  font-size:15px;
+.result {
   margin-top:16px;
+  background:#020617;
+  padding:12px;
+  border-radius:8px;
 }
-.note{
-  margin-top:18px;
-  font-size:13px;
-  opacity:.7;
-  line-height:1.6;
-}
-a{color:#93c5fd;word-break:break-all;}
+.error { color:#f87171; text-align:center; }
 </style>
 </head>
-
 <body>
 
-<div class="container">
 <div class="card">
+<h1>เช็คสถานะคำสั่งซื้อ</h1>
 
-<h1>สถานะคำสั่งซื้อ</h1>
-<div class="sub">SocialBoostTH</div>
+<input id="order" placeholder="เลขคำสั่งซื้อ เช่น SB-0001">
+<input id="token" placeholder="Token">
 
-<div id="content" style="display:none">
-  <div class="row"><b>เลขออเดอร์:</b> <span id="o_id"></span></div>
-  <div class="row"><b>บริการ:</b> <span id="o_service"></span></div>
-  <div class="row"><b>จำนวน:</b> <span id="o_qty"></span></div>
-  <div class="row"><b>ลิงก์:</b> <a id="o_link" target="_blank"></a></div>
-  <div class="row"><b>สถานะ:</b> <span id="o_status" class="status"></span></div>
-  <div class="row"><b>วันที่สั่ง:</b> <span id="o_date"></span></div>
-</div>
+<button onclick="checkStatus()">ตรวจสอบสถานะ</button>
 
-<div id="error" class="error" style="display:none"></div>
-
-<div class="note">
-กรุณาเก็บลิงก์นี้ไว้เพื่อติดตามสถานะคำสั่งซื้อ  
-ระบบจะอัปเดตข้อมูลอัตโนมัติเมื่อมีความคืบหน้า
-</div>
-
-</div>
+<div id="output"></div>
 </div>
 
 <script>
-var API_URL = "https://script.google.com/macros/s/AKfycbyEiHTGYqMyLRLuB3Wq1QleAUpm2KD_Kg-cyHcaEUvcfNdKz5gtbeWMgb2ZCGTG6mWP/exec";
+const API = 'https://script.google.com/macros/s/AKfycbz4zp7bQGfKP0_hGPJpEWa7bJ8N4UOtI_jCdVRGBnO8nbq22tZ7uAzzbBt2iEwvaoFz/exec';
 
-var params = new URLSearchParams(window.location.search);
-var token = params.get("token");
+function checkStatus() {
+  const order = document.getElementById('order').value.trim();
+  const token = document.getElementById('token').value.trim();
+  const out = document.getElementById('output');
+  out.innerHTML = 'กำลังตรวจสอบ...';
 
-function showError(msg){
-  var el=document.getElementById("error");
-  el.innerText=msg;
-  el.style.display="block";
-}
-
-if(!token){
-  showError("❌ ลิงก์ไม่ถูกต้อง");
-}else{
-  fetch(API_URL + "?token=" + encodeURIComponent(token))
-    .then(res=>res.json())
-    .then(res=>{
-      if(res.status!=="ok"){
-        showError("❌ ไม่พบข้อมูลคำสั่งซื้อนี้");
+  fetch(`${API}?order_id=${order}&token=${token}`)
+    .then(r => r.json())
+    .then(d => {
+      if (!d.success) {
+        out.innerHTML = `<p class="error">${d.message}</p>`;
         return;
       }
-      var d=res.data;
-      document.getElementById("o_id").innerText=d.order_id;
-      document.getElementById("o_service").innerText=d.service;
-      document.getElementById("o_qty").innerText=d.qty;
-      document.getElementById("o_link").innerText=d.link;
-      document.getElementById("o_link").href=d.link;
-      document.getElementById("o_date").innerText=d.created_at;
-
-      var st=document.getElementById("o_status");
-      st.innerText=d.status;
-
-      if(d.status==="รอดำเนินการ") st.classList.add("pending");
-      if(d.status==="กำลังดำเนินการ") st.classList.add("processing");
-      if(d.status==="เสร็จสิ้น") st.classList.add("completed");
-
-      document.getElementById("content").style.display="block";
+      out.innerHTML = `
+        <div class="result">
+          <b>เลขออเดอร์:</b> ${d.order_id}<br>
+          <b>บริการ:</b> ${d.service}<br>
+          <b>จำนวน:</b> ${d.quantity}<br>
+          <b>ลิงก์:</b> <a href="${d.link}" target="_blank">${d.link}</a><br>
+          <b>สถานะ:</b> ${d.status}<br>
+          <b>วันที่:</b> ${d.created_at}
+        </div>
+      `;
     })
-    .catch(()=>{
-      showError("❌ ไม่สามารถเชื่อมต่อระบบได้");
+    .catch(() => {
+      out.innerHTML = '<p class="error">ไม่สามารถเชื่อมต่อระบบได้</p>';
     });
 }
 </script>
