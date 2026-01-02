@@ -12,8 +12,6 @@ body{
   background:#f5f7fb;
   color:#111;
 }
-
-/* ===== NAVBAR ===== */
 .navbar{
   display:flex;
   justify-content:space-between;
@@ -35,21 +33,16 @@ body{
 }
 .menu a:hover{ color:#2563eb; }
 
-/* ===== CONTAINER ===== */
 .container{
-  max-width:520px;
+  max-width:560px;
   margin:30px auto;
   background:#fff;
   padding:22px;
   border-radius:12px;
   box-shadow:0 10px 25px rgba(0,0,0,.05);
 }
-h2{
-  margin-top:0;
-  font-size:22px;
-}
+h2{ margin-top:0; }
 
-/* ===== FORM ===== */
 label{
   display:block;
   margin-top:14px;
@@ -63,18 +56,50 @@ select,input{
   border-radius:8px;
   border:1px solid #d1d5db;
 }
+
+.hint{
+  font-size:13px;
+  color:#2563eb;
+  margin-top:4px;
+}
+
 .total{
-  margin-top:20px;
+  margin-top:18px;
   padding:14px;
   background:#f1f5ff;
-  font-size:18px;
-  font-weight:700;
+  font-size:20px;
+  font-weight:800;
   border-radius:8px;
   text-align:center;
 }
+.unit{
+  font-size:14px;
+  color:#555;
+  margin-top:6px;
+  text-align:center;
+}
+
+.terms{
+  margin-top:20px;
+  padding:14px;
+  background:#f9fafb;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  font-size:13px;
+  line-height:1.6;
+  color:#374151;
+}
+
+.checkbox{
+  margin-top:14px;
+  display:flex;
+  gap:8px;
+  font-size:14px;
+}
+
 button{
   width:100%;
-  margin-top:20px;
+  margin-top:18px;
   padding:14px;
   font-size:18px;
   background:#22c55e;
@@ -83,19 +108,14 @@ button{
   border-radius:10px;
   font-weight:700;
 }
-button:active{ transform:scale(.98); }
-.note{
-  margin-top:12px;
-  font-size:13px;
-  color:#6b7280;
-  text-align:center;
+button:disabled{
+  background:#9ca3af;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== MENU ===== -->
 <div class="navbar">
   <div class="logo">SocialBoostTH</div>
   <div class="menu">
@@ -105,55 +125,90 @@ button:active{ transform:scale(.98); }
   </div>
 </div>
 
-<!-- ===== ORDER FORM ===== -->
 <div class="container">
   <h2>สั่งซื้อบริการ</h2>
 
   <label>บริการ</label>
   <select id="service">
-    <option value="0" data-price="0">-- เลือกบริการ --</option>
-    <option value="followers" data-price="0.6">TikTok เพิ่มผู้ติดตาม</option>
-    <option value="likes" data-price="0.3">TikTok เพิ่มไลก์</option>
-    <option value="views" data-price="0.1">TikTok เพิ่มวิว</option>
+    <option data-base="0">-- เลือกบริการ --</option>
+
+    <optgroup label="ผู้ติดตาม TikTok">
+      <option data-base="0.7">ผู้ติดตาม ต่างชาติ</option>
+      <option data-base="1.39">ผู้ติดตาม ไทย</option>
+    </optgroup>
+
+    <optgroup label="ไลก์ TikTok">
+      <option data-base="0.3">ไลก์ ต่างชาติ</option>
+      <option data-base="2.5">ไลก์ ไทย</option>
+    </optgroup>
+
+    <optgroup label="วิว TikTok">
+      <option data-base="0.05">วิว ต่างชาติ</option>
+      <option data-base="0.1">วิว ไทย</option>
+    </optgroup>
+
+    <optgroup label="คอมเมนต์">
+      <option data-base="5">คอมเมนต์ ไทย</option>
+    </optgroup>
   </select>
 
   <label>จำนวน</label>
-  <input type="number" id="qty" placeholder="ใส่จำนวน" min="1">
+  <input type="number" id="qty" placeholder="ใส่จำนวนที่ต้องการ" min="1">
+  <div class="hint">📉 ซื้อจำนวนมาก ระบบจะลดราคาต่อหน่วยให้อัตโนมัติ</div>
 
   <label>ลิงก์ TikTok</label>
   <input type="text" placeholder="https://www.tiktok.com/...">
 
   <div class="total">
-    ราคารวม: <span id="total">0</span> บาท
+    ราคารวม: <span id="total">0.00</span> บาท
+  </div>
+  <div class="unit" id="unitText">ราคา / หน่วย: -</div>
+
+  <div class="terms">
+    <b>เงื่อนไขการให้บริการ</b><br>
+    • ไม่สามารถยกเลิก แก้ไข หรือคืนเงินได้ทุกกรณี<br>
+    • กรุณาตรวจสอบลิงก์ TikTok ให้ถูกต้องก่อนสั่งซื้อ<br>
+    • ระบบจะเริ่มดำเนินการภายใน 0–24 ชั่วโมง<br>
+    • การกดยืนยันคำสั่งซื้อ ถือว่ายอมรับเงื่อนไขทั้งหมดแล้ว
   </div>
 
-  <button onclick="order()">ยืนยันสั่งซื้อ</button>
-
-  <div class="note">
-    * ระบบจะหักเงินจากกระเป๋าเงินอัตโนมัติ
+  <div class="checkbox">
+    <input type="checkbox" id="agree">
+    <span>ยอมรับเงื่อนไขการให้บริการ</span>
   </div>
+
+  <button id="btn" onclick="order()" disabled>ยืนยันสั่งซื้อ</button>
 </div>
 
 <script>
-const service = document.getElementById("service");
-const qty = document.getElementById("qty");
-const total = document.getElementById("total");
+const service=document.getElementById("service");
+const qty=document.getElementById("qty");
+const total=document.getElementById("total");
+const unitText=document.getElementById("unitText");
+const btn=document.getElementById("btn");
+const agree=document.getElementById("agree");
 
-function calc(){
-  const price = service.options[service.selectedIndex].dataset.price || 0;
-  const q = qty.value || 0;
-  total.textContent = (price * q).toFixed(2);
+function getPrice(base, q){
+  if(q>=1000) return base*0.75;
+  if(q>=500) return base*0.85;
+  return base;
 }
 
-service.addEventListener("change", calc);
-qty.addEventListener("input", calc);
+function calc(){
+  const base=service.options[service.selectedIndex].dataset.base||0;
+  const q=qty.value||0;
+  const price=getPrice(base,q);
+  total.textContent=(price*q).toFixed(2);
+  unitText.textContent=`ราคา / หน่วย: ${price.toFixed(2)} บาท`;
+  btn.disabled=!(agree.checked && q>0 && base>0);
+}
+
+service.onchange=calc;
+qty.oninput=calc;
+agree.onchange=calc;
 
 function order(){
-  if(!service.value || qty.value <= 0){
-    alert("กรุณาเลือกบริการและใส่จำนวน");
-    return;
-  }
-  alert("ตัวอย่าง: สั่งซื้อสำเร็จ\n(ต่อ backend ทีหลัง)");
+  alert("สั่งซื้อสำเร็จ (ตัวอย่าง)\nระบบจะหักเงินจากกระเป๋าอัตโนมัติ");
 }
 </script>
 
