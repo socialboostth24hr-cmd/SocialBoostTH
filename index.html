@@ -267,24 +267,36 @@ document.getElementById('link').oninput = checkReady;
 function openPopup(){ popup.style.display='flex'; }
 function closePopup(){ popup.style.display='none'; }
 
+<script>
 function pay(){
-  const payload: {
-  service: service.options[service.selectedIndex].text,
-  amount: parseFloat(
-    document.getElementById("totalPrice").innerText.replace(" บาท","")
-  )
-}
+  const payload = {
+    service: serviceEl.options[serviceEl.selectedIndex].text,
+    amount: parseFloat(
+      document.getElementById("totalPrice").innerText.replace(" บาท","")
+    )
+  };
 
   fetch("https://script.google.com/macros/s/AKfycbynbP2epKwQOrh-hsM3RhmLpUMkGEaZwXrZta8qMVotTVa3SIg5P5-ARWatJOY2jNZI/exec", {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(payload)
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
   })
-  .then(r=>r.json())
-  .then(d=>window.location.href=d.checkout_url)
-  .catch(()=>alert('ไม่สามารถเชื่อมต่อระบบได้'));
+  .then(r => r.json())
+  .then(d => {
+    if(d.checkout_url){
+      window.location.href = d.checkout_url;
+    }else{
+      alert("ระบบไม่สามารถสร้างลิงก์ชำระเงินได้");
+      console.log(d);
+    }
+  })
+  .catch(err => {
+    alert("ไม่สามารถเชื่อมต่อระบบได้");
+    console.error(err);
+  });
 }
 </script>
-
 </body>
 </html>
