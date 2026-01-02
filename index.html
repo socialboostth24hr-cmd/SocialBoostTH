@@ -2,134 +2,158 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SocialBoostTH | สั่งซื้อบริการ</title>
 
 <style>
 body{
   margin:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-  background:radial-gradient(circle at top,#0f1b34,#05080f);
-  color:#fff;
+  font-family: system-ui, sans-serif;
+  background:#f5f7fb;
+  color:#111;
 }
-.container{
-  max-width:420px;
-  margin:40px auto;
-  background:#0a1223;
-  border-radius:18px;
-  padding:24px;
+
+/* ===== NAVBAR ===== */
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  background:#fff;
+  border-bottom:1px solid #e5e7eb;
 }
-h1{text-align:center;margin:0}
-.subtitle{text-align:center;opacity:.7;margin-bottom:20px}
-label{display:block;margin-top:14px;font-size:14px}
-input,select{
-  width:100%;
-  padding:12px;
-  margin-top:6px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.1);
-  background:#0b1428;
-  color:#fff;
-}
-.price{
-  margin:18px 0;
-  text-align:center;
-  font-size:28px;
+.logo{
+  font-size:18px;
   font-weight:700;
+  color:#2563eb;
+}
+.menu a{
+  margin-left:16px;
+  text-decoration:none;
+  color:#111;
+  font-weight:500;
+}
+.menu a:hover{ color:#2563eb; }
+
+/* ===== CONTAINER ===== */
+.container{
+  max-width:520px;
+  margin:30px auto;
+  background:#fff;
+  padding:22px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
+h2{
+  margin-top:0;
+  font-size:22px;
+}
+
+/* ===== FORM ===== */
+label{
+  display:block;
+  margin-top:14px;
+  font-weight:600;
+}
+select,input{
+  width:100%;
+  margin-top:6px;
+  padding:12px;
+  font-size:16px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+}
+.total{
+  margin-top:20px;
+  padding:14px;
+  background:#f1f5ff;
+  font-size:18px;
+  font-weight:700;
+  border-radius:8px;
+  text-align:center;
 }
 button{
   width:100%;
-  padding:16px;
+  margin-top:20px;
+  padding:14px;
   font-size:18px;
-  font-weight:700;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
+  background:#22c55e;
   color:#fff;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
 }
-button:disabled{background:#374151}
+button:active{ transform:scale(.98); }
+.note{
+  margin-top:12px;
+  font-size:13px;
+  color:#6b7280;
+  text-align:center;
+}
 </style>
 </head>
 
 <body>
 
+<!-- ===== MENU ===== -->
+<div class="navbar">
+  <div class="logo">SocialBoostTH</div>
+  <div class="menu">
+    <a href="index.html">สั่งซื้อ</a>
+    <a href="wallet.html">กระเป๋าเงิน</a>
+    <a href="status.html">ประวัติ</a>
+  </div>
+</div>
+
+<!-- ===== ORDER FORM ===== -->
 <div class="container">
-  <h1>SocialBoostTH</h1>
-  <div class="subtitle">ระบบสั่งซื้อ TikTok อัตโนมัติ</div>
+  <h2>สั่งซื้อบริการ</h2>
 
   <label>บริการ</label>
   <select id="service">
-    <option value="followers_inter">ผู้ติดตามต่างชาติ</option>
-    <option value="followers_th">ผู้ติดตามไทย</option>
-    <option value="likes_inter">ไลก์ต่างชาติ</option>
-    <option value="views_inter">วิวต่างชาติ</option>
+    <option value="0" data-price="0">-- เลือกบริการ --</option>
+    <option value="followers" data-price="0.6">TikTok เพิ่มผู้ติดตาม</option>
+    <option value="likes" data-price="0.3">TikTok เพิ่มไลก์</option>
+    <option value="views" data-price="0.1">TikTok เพิ่มวิว</option>
   </select>
 
   <label>จำนวน</label>
-  <input id="qty" type="number" placeholder="เช่น 50">
+  <input type="number" id="qty" placeholder="ใส่จำนวน" min="1">
 
   <label>ลิงก์ TikTok</label>
-  <input id="link" placeholder="https://www.tiktok.com/...">
+  <input type="text" placeholder="https://www.tiktok.com/...">
 
-  <div class="price" id="price">0.00 บาท</div>
+  <div class="total">
+    ราคารวม: <span id="total">0</span> บาท
+  </div>
 
-  <button id="payBtn" onclick="pay()" disabled>
-    ดำเนินการชำระเงิน
-  </button>
+  <button onclick="order()">ยืนยันสั่งซื้อ</button>
+
+  <div class="note">
+    * ระบบจะหักเงินจากกระเป๋าเงินอัตโนมัติ
+  </div>
 </div>
 
 <script>
-/* ราคาต่อหน่วย */
-const rate = {
-  followers_inter: 0.6,
-  followers_th: 1.39,
-  likes_inter: 0.3,
-  views_inter: 0.05
-};
-
-const qty = document.getElementById("qty");
 const service = document.getElementById("service");
-const priceBox = document.getElementById("price");
-const payBtn = document.getElementById("payBtn");
+const qty = document.getElementById("qty");
+const total = document.getElementById("total");
 
 function calc(){
-  const q = Number(qty.value);
-  if(!q || q <= 0){
-    priceBox.innerText = "0.00 บาท";
-    payBtn.disabled = true;
-    return;
-  }
-  const total = q * rate[service.value];
-  priceBox.innerText = total.toFixed(2) + " บาท";
-  payBtn.disabled = false;
+  const price = service.options[service.selectedIndex].dataset.price || 0;
+  const q = qty.value || 0;
+  total.textContent = (price * q).toFixed(2);
 }
 
-qty.oninput = calc;
-service.onchange = calc;
+service.addEventListener("change", calc);
+qty.addEventListener("input", calc);
 
-function pay(){
-  const amount = parseFloat(priceBox.innerText);
-  
-  fetch("https://socialboostth24hr.workers.dev", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      service: service.options[service.selectedIndex].text,
-      quantity: qty.value,
-      link: document.getElementById("link").value,
-      amount: amount
-    })
-  })
-  .then(r => r.json())
-  .then(d => {
-    if(d.checkout_url){
-      window.location.href = d.checkout_url;
-    }else{
-      alert("สร้างลิงก์ชำระเงินไม่สำเร็จ");
-      console.log(d);
-    }
-  })
-  .catch(() => alert("ไม่สามารถเชื่อมต่อระบบได้"));
+function order(){
+  if(!service.value || qty.value <= 0){
+    alert("กรุณาเลือกบริการและใส่จำนวน");
+    return;
+  }
+  alert("ตัวอย่าง: สั่งซื้อสำเร็จ\n(ต่อ backend ทีหลัง)");
 }
 </script>
 
