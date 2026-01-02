@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ปั้มผู้ติดตาม TikTok</title>
 
 <style>
 body{
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, sans-serif;
   background:#f4f6fa;
-  margin:0;
   padding:20px;
 }
-.box{
-  max-width:420px;
+.card{
+  max-width:480px;
   margin:auto;
-  background:#ffffff;
+  background:#fff;
   border-radius:12px;
   padding:24px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.1);
+  box-shadow:0 8px 25px rgba(0,0,0,.1);
 }
 h1{
   font-size:22px;
@@ -26,16 +25,16 @@ h1{
 }
 label{
   font-weight:bold;
+  margin-top:14px;
   display:block;
-  margin-top:16px;
 }
-input{
+select,input{
   width:100%;
   padding:12px;
-  margin-top:6px;
   font-size:16px;
-  border:1px solid #ccc;
+  margin-top:6px;
   border-radius:8px;
+  border:1px solid #ccc;
 }
 .price{
   margin-top:16px;
@@ -45,6 +44,11 @@ input{
   font-size:22px;
   font-weight:bold;
   color:#1e88e5;
+}
+.note{
+  font-size:13px;
+  color:#666;
+  margin-top:12px;
 }
 button{
   margin-top:20px;
@@ -57,68 +61,103 @@ button{
   border-radius:10px;
 }
 button:disabled{
-  background:#bbb;
-}
-.note{
-  margin-top:12px;
-  font-size:13px;
-  color:#777;
+  background:#aaa;
 }
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="card">
   <h1>ปั้มผู้ติดตาม TikTok</h1>
-  <p>กรอกจำนวนผู้ติดตามที่ต้องการ ระบบคำนวณราคาให้อัตโนมัติ</p>
+
+  <label>เลือกประเภทบริการ</label>
+  <select id="type">
+    <option value="">-- เลือกบริการ --</option>
+    <option value="thai">ผู้ติดตามไทยล้วน</option>
+    <option value="inter">ผู้ติดตามต่างชาติ</option>
+  </select>
 
   <label>จำนวนผู้ติดตาม</label>
-  <input type="number" id="qty" placeholder="เช่น 532" min="100" />
+  <input type="number" id="qty" placeholder="เช่น 532">
 
   <div class="price">
-    ราคาต่อหน่วย: <b>2 บาท / คน</b>
+    ราคาต่อคน: <span id="unit">-</span> บาท
   </div>
 
   <div class="total">
     ราคารวม: <span id="total">0</span> บาท
   </div>
 
-  <button id="payBtn" disabled>ชำระเงิน</button>
+  <button id="payBtn" disabled>ดำเนินการชำระเงิน</button>
 
   <div class="note">
-    • ขั้นต่ำ 100 ผู้ติดตาม<br>
-    • ใช้เวลาดำเนินการ 1–24 ชม.
+    • กรุณาตรวจสอบลิงก์ให้ถูกต้องก่อนสั่งซื้อ<br>
+    • ระบบคำนวณราคาอัตโนมัติตามจำนวนที่เลือก
   </div>
 </div>
 
 <script>
-const PRICE_PER_UNIT = 2;
-const qtyInput = document.getElementById("qty");
-const totalSpan = document.getElementById("total");
+const typeEl = document.getElementById("type");
+const qtyEl = document.getElementById("qty");
+const unitEl = document.getElementById("unit");
+const totalEl = document.getElementById("total");
 const payBtn = document.getElementById("payBtn");
 
-qtyInput.addEventListener("input", () => {
-  const qty = parseInt(qtyInput.value);
-  if(qty >= 100){
-    const total = qty * PRICE_PER_UNIT;
-    totalSpan.innerText = total.toLocaleString();
-    payBtn.disabled = false;
-  } else {
-    totalSpan.innerText = "0";
-    payBtn.disabled = true;
+function getPrice(type, qty){
+  if(type === "inter"){ // ต่างชาติ
+    if(qty >= 1000) return 0.256;
+    if(qty >= 500) return 0.4;
+    if(qty >= 100) return 0.5;
+    if(qty >= 51) return 0.6;
+    if(qty >= 50) return 0.7;
+    return null;
   }
-});
 
-payBtn.addEventListener("click", () => {
-  const qty = qtyInput.value;
-  const total = qty * PRICE_PER_UNIT;
+  if(type === "thai"){ // ไทย
+    if(qty >= 20 && qty <= 5000) return 1.39;
+    return null;
+  }
 
-  // 🔴 STEP ถัดไป: ส่งไป Stripe
+  return null;
+}
+
+function calculate(){
+  const type = typeEl.value;
+  const qty = parseInt(qtyEl.value);
+
+  if(!type || !qty){
+    reset();
+    return;
+  }
+
+  const unit = getPrice(type, qty);
+  if(unit === null){
+    reset();
+    return;
+  }
+
+  const total = qty * unit;
+  unitEl.innerText = unit.toFixed(3);
+  totalEl.innerText = total.toLocaleString(undefined,{minimumFractionDigits:2});
+  payBtn.disabled = false;
+}
+
+function reset(){
+  unitEl.innerText = "-";
+  totalEl.innerText = "0";
+  payBtn.disabled = true;
+}
+
+typeEl.addEventListener("change", calculate);
+qtyEl.addEventListener("input", calculate);
+
+payBtn.addEventListener("click", ()=>{
   alert(
-    "จำนวน: " + qty +
-    "\\nยอดเงิน: " + total +
-    " บาท\\n(ขั้นต่อไปคือเชื่อม Stripe)"
+    "ตัวอย่าง:\n" +
+    "ประเภท: " + (typeEl.value === "thai" ? "ไทย" : "ต่างชาติ") +
+    "\nจำนวน: " + qtyEl.value +
+    "\nราคารวม: " + totalEl.innerText + " บาท\n\n(ขั้นต่อไป = ต่อ Stripe)"
   );
 });
 </script>
