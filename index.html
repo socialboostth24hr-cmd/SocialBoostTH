@@ -42,9 +42,11 @@ textarea{resize:vertical;min-height:110px}
 
 .price{
   margin-top:18px;
-  background:linear-gradient(135deg,#1d4ed8,#7c3aed);
-  padding:18px;border-radius:16px;
-  text-align:center;font-size:20px;font-weight:700;
+  background:#020617;
+  border:1px solid #1e293b;
+  padding:16px;border-radius:14px;
+  text-align:center;font-size:18px;font-weight:600;
+  color:#cbd5f5;
 }
 
 .discount{
@@ -54,31 +56,10 @@ textarea{resize:vertical;min-height:110px}
   border-radius:12px;display:none;
 }
 
-.notice{
-  margin-top:22px;font-size:13px;line-height:1.8;
-  background:#020617;border:1px solid #1e293b;
-  padding:16px;border-radius:14px;color:#cbd5f5;
-}
-
-.terms{
-  margin-top:18px;
-  padding:16px;border-radius:14px;
-  background:#020617;border:1px solid #1e293b;
-  font-size:13px;line-height:1.7;
-}
-
-.terms label{
-  display:flex;gap:10px;cursor:pointer;
-}
-.terms input{
-  accent-color:#22c55e;
-  width:18px;height:18px;margin-top:3px;
-}
-
 .pay-btn{
   width:100%;margin-top:20px;
   padding:16px;border-radius:16px;
-  border:none;font-size:17px;font-weight:700;
+  border:none;font-size:18px;font-weight:700;
   cursor:not-allowed;
   background:linear-gradient(135deg,#334155,#1e293b);
   color:#94a3b8;
@@ -88,10 +69,85 @@ textarea{resize:vertical;min-height:110px}
   background:linear-gradient(135deg,#22c55e,#16a34a);
   color:#022c22;
 }
+
+.terms-trigger{
+  margin-top:16px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:#020617;
+  border:1px solid #1e293b;
+  color:#e5e7eb;
+  font-size:14px;
+  cursor:pointer;
+}
+
+/* Popup */
+.popup{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;align-items:center;justify-content:center;
+  z-index:999;
+}
+.popup-box{
+  max-width:700px;
+  max-height:85vh;
+  overflow:auto;
+  background:#020617;
+  border-radius:18px;
+  padding:24px;
+  border:1px solid #334155;
+  box-shadow:0 40px 80px rgba(0,0,0,.7);
+  font-size:13.5px;
+  line-height:1.8;
+}
+.popup-box h2{
+  margin-top:0;font-size:18px;
+}
+.popup-box button{
+  margin-top:16px;
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:none;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  font-size:16px;
+  font-weight:700;
+  color:#022c22;
+  cursor:pointer;
+}
 </style>
 </head>
 
 <body>
+
+<div class="popup" id="termsPopup">
+  <div class="popup-box">
+    <h2>ข้อกำหนดและเงื่อนไขการใช้บริการ</h2>
+    <p>
+❌ บริษัทไม่รับยกเลิก แก้ไข หรือคืนเงินไม่ว่ากรณีใด ๆ ภายหลังจากการชำระเงินเสร็จสมบูรณ์แล้ว<br><br>
+
+ลูกค้าต้องตรวจสอบลิงก์ TikTok และรายละเอียดคำสั่งซื้อให้ถูกต้องก่อนกดยืนยัน
+หากมีการกรอกข้อมูลผิด บริษัทจะไม่รับผิดชอบความเสียหายใด ๆ ที่เกิดขึ้น<br><br>
+
+<b>หลักเกณฑ์การนับบริการ</b><br>
+• ผู้ติดตาม: คิดตามจำนวนต่อหนึ่ง (1) บัญชีผู้ใช้งาน<br>
+• ถูกใจ: คิดตามจำนวนต่อหนึ่ง (1) การกดถูกใจ<br>
+• วิว: คิดตามจำนวนต่อหนึ่ง (1) การรับชม<br>
+• คอมเมนท์ไทย: หนึ่ง (1) บรรทัดข้อความ เท่ากับหนึ่ง (1) คอมเมนท์<br><br>
+
+<b>เงื่อนไขการรับประกัน / เติมยอด</b><br>
+บริษัทขอสงวนสิทธิ์ไม่รับประกันหรือเติมยอดในกรณีที่เกิดจากการเปลี่ยนแปลงของแพลตฟอร์ม
+การตั้งค่าบัญชีแบบส่วนตัว การลบหรือแก้ไขลิงก์ภายหลัง หรือการร่วงตามธรรมชาติของระบบ<br><br>
+
+การดำเนินการทั้งหมดเป็นไปตามลำดับคิวอัตโนมัติ
+ระยะเวลาขึ้นงานขึ้นอยู่กับปริมาณคำสั่งซื้อและนโยบายของ TikTok ในขณะนั้น<br><br>
+
+การกด “ยอมรับเงื่อนไข” ถือว่าลูกค้าได้อ่านและยอมรับข้อกำหนดทั้งหมดนี้แล้วโดยสมบูรณ์
+    </p>
+    <button onclick="closeTerms()">อ่านและเข้าใจแล้ว</button>
+  </div>
+</div>
+
 <div class="container">
 
 <div class="header">
@@ -107,59 +163,22 @@ textarea{resize:vertical;min-height:110px}
 <label>เลือกบริการ</label>
 <select id="service" onchange="updateForm()">
   <option value="">-- เลือกบริการ --</option>
-  <optgroup label="ผู้ติดตาม">
-    <option value="followers-foreign">ผู้ติดตามต่างชาติ</option>
-    <option value="followers-thai">ผู้ติดตามไทย</option>
-  </optgroup>
-  <optgroup label="ถูกใจ">
-    <option value="likes-foreign">ถูกใจต่างชาติ</option>
-    <option value="likes-thai">ถูกใจไทย</option>
-  </optgroup>
-  <optgroup label="วิว">
-    <option value="views-foreign">วิวต่างชาติ</option>
-    <option value="views-thai">วิวไทย</option>
-  </optgroup>
-  <optgroup label="อื่นๆ">
-    <option value="comment-thai">คอมเมนท์ไทย</option>
-    <option value="share-foreign">แชร์ต่างชาติ</option>
-    <option value="save-foreign">บันทึกต่างชาติ</option>
-  </optgroup>
+  <option value="comment-thai">คอมเมนท์ไทย</option>
 </select>
 
-<div id="qtyBox">
-  <label>จำนวน</label>
-  <input type="number" id="qty" placeholder="กรอกจำนวน" oninput="calculate()">
-  <div class="hint" id="rangeText">เลือกบริการเพื่อดูขั้นต่ำ / สูงสุด</div>
+<label>พิมพ์คอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
+<textarea id="commentBox" oninput="countComments()"></textarea>
+
+<div class="price" id="priceBox">ราคารวม: 0 บาท</div>
+
+<div class="terms-trigger" onclick="openTerms()">
+📄 อ่านข้อกำหนดและเงื่อนไขการใช้บริการ
 </div>
 
-<label id="fLinkLabel" style="display:none">ลิงก์ช่อง TikTok</label>
-<input id="fLink" style="display:none" placeholder="https://www.tiktok.com/@username">
-
-<label id="vLinkLabel" style="display:none">ลิงก์คลิป TikTok</label>
-<input id="vLink" style="display:none" placeholder="https://www.tiktok.com/@username/video/xxxx">
-
-<label id="cLabel" style="display:none">พิมพ์คอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
-<textarea id="cText" style="display:none" oninput="countComments()"></textarea>
-
-<div id="discount" class="discount"></div>
-<div id="price" class="price">ราคารวม: 0 บาท</div>
-
-<div class="notice">
-• ผู้ติดตาม → ราคา / คน<br>
-• ถูกใจ → ราคา / ไลก์<br>
-• วิว → ราคา / วิว<br>
-• คอมเมนท์ → 1 บรรทัด = 1 คอมเมนท์
-</div>
-
-<div class="terms">
-  <label>
-    <input type="checkbox" id="accept">
-    <span>
-      ข้าพเจ้าได้อ่านและยอมรับเงื่อนไขทั้งหมดแล้ว<br>
-      ไม่สามารถยกเลิก แก้ไข หรือคืนเงินได้ทุกกรณี
-    </span>
-  </label>
-</div>
+<label style="display:flex;gap:10px;margin-top:14px;cursor:pointer">
+  <input type="checkbox" id="acceptBox" onchange="togglePay()">
+  <span>ข้าพเจ้าได้อ่านและยอมรับข้อกำหนดทั้งหมด</span>
+</label>
 
 <button id="payBtn" class="pay-btn">ดำเนินการชำระเงิน</button>
 
@@ -167,83 +186,27 @@ textarea{resize:vertical;min-height:110px}
 
 <script>
 const payLink="https://buy.stripe.com/test_fZubIT3Uwdru85mekufAc00";
-let cur="";
 
-const ranges={
-  "followers-foreign":[50,10000],
-  "followers-thai":[20,5000],
-  "likes-foreign":[50,10000],
-  "likes-thai":[20,2000],
-  "views-foreign":[1000,100000],
-  "views-thai":[1000,10000],
-  "share-foreign":[100,1000],
-  "save-foreign":[100,1000]
-};
-
-function updateForm(){
-  cur=service.value;
-  qtyBox.style.display="block";
-  fLink.style.display=fLinkLabel.style.display="none";
-  vLink.style.display=vLinkLabel.style.display="none";
-  cText.style.display=cLabel.style.display="none";
-
-  if(cur.includes("followers")){
-    fLink.style.display=fLinkLabel.style.display="block";
-  }else if(cur){
-    vLink.style.display=vLinkLabel.style.display="block";
-  }
-  if(cur==="comment-thai"){
-    qtyBox.style.display="none";
-    cText.style.display=cLabel.style.display="block";
-    countComments();
-    return;
-  }
-  if(ranges[cur]){
-    rangeText.innerText=`ขั้นต่ำ ${ranges[cur][0]} | สูงสุด ${ranges[cur][1]}`;
-  }
-  calculate();
-}
-
-function calculate(){
-  const q=parseInt(qty.value)||0;
-  let p=0,msg="";
-  if(cur==="followers-foreign"){
-    if(q>=1000){p=q*0.256;msg="1,000+ เหลือ 0.256 บาท/คน"}
-    else if(q>=500){p=q*0.4;msg="500+ เหลือ 0.40 บาท/คน"}
-    else if(q>=100){p=q*0.5;msg="100+ เหลือ 0.50 บาท/คน"}
-    else if(q>=50){p=q*0.6;msg="ขั้นต่ำ 50 คน (0.60 บาท/คน)"}
-  }
-  if(cur==="followers-thai"&&q>=20){p=q*1.39;msg="ราคา 1.39 บาท/คน"}
-  if(cur==="likes-foreign"){
-    p=q*(q>=5000?0.2:q>=1000?0.22:q>=500?0.25:0.3);
-    msg=`ราคา ${p/q} บาท/ไลก์`;
-  }
-  if(cur==="likes-thai"){
-    p=q*(q>=500?1.8:q>=100?2:2.5);
-    msg=`ราคา ${p/q} บาท/ไลก์`;
-  }
-  if(cur==="views-foreign"){p=q*0.05;msg="ราคา 0.05 บาท/วิว"}
-  if(cur==="views-thai"){p=q*0.1;msg="ราคา 0.10 บาท/วิว"}
-  if(cur==="share-foreign"||cur==="save-foreign"){p=q*0.1;msg="ราคา 0.10 บาท"}
-  price.innerText=`ราคารวม: ${p.toFixed(2)} บาท`;
-  discount.innerText=msg;
-  discount.style.display=msg?"block":"none";
-}
+function openTerms(){termsPopup.style.display="flex"}
+function closeTerms(){termsPopup.style.display="none"}
 
 function countComments(){
-  const lines=cText.value.split("\n").filter(x=>x.trim());
+  const lines=commentBox.value.split("\n").filter(l=>l.trim());
   const total=lines.length*5;
-  price.innerText=`จำนวนคอมเมนท์: ${lines.length} | ราคารวม: ${total} บาท`;
+  priceBox.innerText=`จำนวนคอมเมนท์: ${lines.length} | ราคารวม: ${total} บาท`;
 }
 
-accept.onchange=()=>{
-  payBtn.classList.toggle("active",accept.checked);
-  payBtn.disabled=!accept.checked;
-};
+function togglePay(){
+  payBtn.classList.toggle("active",acceptBox.checked);
+  payBtn.disabled=!acceptBox.checked;
+}
 
 payBtn.onclick=()=>{
-  if(!accept.checked)return;
-  if(cur==="comment-thai" && !cText.value.trim())return;
+  if(!acceptBox.checked)return;
+  if(!commentBox.value.trim()){
+    alert("กรุณาพิมพ์คอมเมนท์อย่างน้อย 1 บรรทัด");
+    return;
+  }
   window.location.href=payLink;
 };
 </script>
