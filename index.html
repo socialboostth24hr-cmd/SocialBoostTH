@@ -268,14 +268,14 @@ function openPopup(){ popup.style.display='flex'; }
 function closePopup(){ popup.style.display='none'; }
 
 function pay(){
-  const payload={
-    service:serviceEl.value,
-    quantity:qtyEl.value,
-    link:document.getElementById('link').value,
-    comment:document.getElementById('commentText')?.value || ''
-  };
+  const payload: {
+  service: service.options[service.selectedIndex].text,
+  amount: parseFloat(
+    document.getElementById("totalPrice").innerText.replace(" บาท","")
+  )
+}
 
-  fetch('https://script.google.com/macros/s/AKfycbwfpoFHvc8g-T_zMPEHyo4YlQ-yJ_6wrPPmdmovMU6UH0E_uj_0Qs5FqTwYm5EGCWsJ/exec',{
+  fetch("https://script.google.com/macros/s/AKfycbynbP2epKwQOrh-hsM3RhmLpUMkGEaZwXrZta8qMVotTVa3SIg5P5-ARWatJOY2jNZI/exec", {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload)
