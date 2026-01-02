@@ -5,16 +5,16 @@
 <title>SocialBoostTH | ระบบสั่งซื้อ TikTok</title>
 <style>
 body{
-    font-family: 'Segoe UI', sans-serif;
+    font-family:'Segoe UI',sans-serif;
     background:#f5f7fb;
 }
 .container{
-    max-width:520px;
+    max-width:540px;
     background:#fff;
     margin:40px auto;
     padding:25px;
-    border-radius:12px;
-    box-shadow:0 10px 30px rgba(0,0,0,.1);
+    border-radius:14px;
+    box-shadow:0 12px 30px rgba(0,0,0,.1);
 }
 h2{text-align:center;margin-bottom:20px}
 label{font-weight:bold;margin-top:15px;display:block}
@@ -26,13 +26,20 @@ select,input,button{
     border:1px solid #ccc;
 }
 .price-box{
-    background:#f0f4ff;
-    padding:15px;
-    border-radius:8px;
+    background:#eef2ff;
+    padding:16px;
+    border-radius:10px;
     margin-top:15px;
     font-size:18px;
     font-weight:bold;
     text-align:center;
+}
+.discount{
+    background:#f0fdf4;
+    border-left:5px solid #22c55e;
+    padding:12px;
+    margin-top:12px;
+    font-size:14px;
 }
 button{
     background:#4f46e5;
@@ -41,7 +48,6 @@ button{
     cursor:pointer;
     border:none;
 }
-button:hover{opacity:.9}
 .notice{
     background:#fff7e6;
     border-left:5px solid #f59e0b;
@@ -49,6 +55,7 @@ button:hover{opacity:.9}
     margin-top:20px;
     font-size:14px;
 }
+.small{font-size:13px;color:#555}
 </style>
 </head>
 
@@ -58,28 +65,28 @@ button:hover{opacity:.9}
 
 <label>เลือกบริการ</label>
 <select id="service" onchange="updateForm()">
-    <option value="">-- กรุณาเลือก --</option>
+<option value="">-- กรุณาเลือก --</option>
 
-    <optgroup label="👤 ผู้ติดตาม">
-        <option value="followers-foreign">ผู้ติดตามต่างชาติ</option>
-        <option value="followers-thai">ผู้ติดตามไทย</option>
-    </optgroup>
+<optgroup label="👤 ผู้ติดตาม">
+  <option value="followers-foreign">ผู้ติดตามต่างชาติ</option>
+  <option value="followers-thai">ผู้ติดตามไทย</option>
+</optgroup>
 
-    <optgroup label="❤️ ถูกใจ">
-        <option value="likes-foreign">ถูกใจต่างชาติ</option>
-        <option value="likes-thai">ถูกใจไทย</option>
-    </optgroup>
+<optgroup label="❤️ ถูกใจ">
+  <option value="likes-foreign">ถูกใจต่างชาติ</option>
+  <option value="likes-thai">ถูกใจไทย</option>
+</optgroup>
 
-    <optgroup label="👁️‍🗨️ วิว">
-        <option value="views-foreign">วิวต่างชาติ</option>
-        <option value="views-thai">วิวไทย</option>
-    </optgroup>
+<optgroup label="👁️‍🗨️ วิว">
+  <option value="views-foreign">วิวต่างชาติ</option>
+  <option value="views-thai">วิวไทย</option>
+</optgroup>
 
-    <optgroup label="💬 อื่นๆ">
-        <option value="comment-thai">คอมเมนท์ไทย</option>
-        <option value="share-foreign">แชร์ต่างชาติ</option>
-        <option value="save-foreign">บันทึกต่างชาติ</option>
-    </optgroup>
+<optgroup label="💬 อื่นๆ">
+  <option value="comment-thai">คอมเมนท์ไทย</option>
+  <option value="share-foreign">แชร์ต่างชาติ</option>
+  <option value="save-foreign">บันทึกต่างชาติ</option>
+</optgroup>
 </select>
 
 <label>จำนวน</label>
@@ -88,15 +95,17 @@ button:hover{opacity:.9}
 <label id="linkLabel">ลิงก์</label>
 <input type="text" id="link" placeholder="กรอกลิงก์">
 
+<div class="discount" id="discountBox" style="display:none"></div>
+
 <div class="price-box" id="price">ราคารวม: 0 บาท</div>
 
 <button onclick="submitOrder()">🧾 ดำเนินการชำระเงิน</button>
 
 <div class="notice">
-<b>เงื่อนไขสำคัญ</b><br>
-- กรุณาตรวจสอบลิงก์ก่อนสั่งซื้อ<br>
-- ไม่สามารถยกเลิกหรือคืนเงินได้<br>
-- ลิงก์ต้องตรงกับประเภทบริการเท่านั้น
+<b>เงื่อนไข</b><br>
+- ซื้อจำนวนมาก ราคาต่อหน่วยจะถูกลงอัตโนมัติ<br>
+- กรุณาตรวจสอบลิงก์ก่อนชำระเงิน<br>
+- ไม่สามารถยกเลิกหรือคืนเงินได้
 </div>
 
 </div>
@@ -109,14 +118,10 @@ function updateForm(){
     currentService=s;
 
     const label=document.getElementById("linkLabel");
-    const link=document.getElementById("link");
-
     if(s.includes("followers")){
         label.innerText="ลิงก์ช่อง TikTok";
-        link.placeholder="https://www.tiktok.com/@username";
     }else{
         label.innerText="ลิงก์คลิป TikTok";
-        link.placeholder="https://www.tiktok.com/@username/video/xxxxxxxx";
     }
     calculate();
 }
@@ -124,43 +129,51 @@ function updateForm(){
 function calculate(){
     const qty=parseInt(document.getElementById("qty").value)||0;
     let price=0;
+    let msg="";
 
     if(currentService==="followers-foreign"){
-        if(qty>=1000) price=qty*0.256;
-        else if(qty>=500) price=qty*0.4;
-        else if(qty>=100) price=qty*0.5;
-        else if(qty>=50) price=qty*0.6;
+        if(qty>=1000){price=qty*0.256;msg="💎 1,000+ คน ราคาพิเศษ 0.256 บาท/คน";}
+        else if(qty>=500){price=qty*0.4;msg="🔥 500+ คน เหลือ 0.40 บาท/คน";}
+        else if(qty>=100){price=qty*0.5;msg="👍 100+ คน เหลือ 0.50 บาท/คน";}
+        else if(qty>=50){price=qty*0.6;msg="✨ เริ่มต้น 50 คน ราคา 0.60 บาท/คน";}
     }
 
-    if(currentService==="followers-thai"){
-        if(qty>=20) price=qty*1.39;
+    if(currentService==="followers-thai" && qty>=20){
+        price=qty*1.39;
+        msg="📌 ราคาพิเศษ 1.39 บาท/คน";
     }
 
     if(currentService==="likes-foreign"){
-        if(qty>=5000) price=qty*0.20;
-        else if(qty>=1000) price=qty*0.22;
-        else if(qty>=500) price=qty*0.25;
-        else if(qty>=50) price=qty*0.3;
+        if(qty>=5000){price=qty*0.20;msg="🔥 5,000+ ไลก์ เหลือ 0.20 บาท/ไลก์";}
+        else if(qty>=1000){price=qty*0.22;msg="👍 1,000+ ไลก์ เหลือ 0.22 บาท/ไลก์";}
+        else if(qty>=500){price=qty*0.25;msg="✨ 500+ ไลก์ เหลือ 0.25 บาท/ไลก์";}
+        else if(qty>=50){price=qty*0.3;msg="เริ่มต้น 0.30 บาท/ไลก์";}
     }
 
-    if(currentService==="likes-thai"){
-        if(qty>=500) price=qty*1.8;
-        else if(qty>=100) price=qty*2;
-        else if(qty>=20) price=qty*2.5;
+    if(currentService==="likes-thai" && qty>=20){
+        price = qty>=500 ? qty*1.8 : qty>=100 ? qty*2 : qty*2.5;
+        msg="🇹🇭 ถูกใจไทย ยิ่งเยอะยิ่งถูก";
     }
 
-    if(currentService==="views-foreign") price=qty*0.05;
-    if(currentService==="views-thai") price=qty*0.1;
-    if(currentService==="share-foreign") price=qty*0.1;
-    if(currentService==="save-foreign") price=qty*0.1;
-    if(currentService==="comment-thai") price=qty*5;
+    if(currentService==="views-foreign"){price=qty*0.05;msg="👀 วิวต่างชาติ ราคาเหมาจ่าย";}
+    if(currentService==="views-thai"){price=qty*0.1;msg="👀 วิวไทย ราคาเหมาจ่าย";}
+    if(currentService==="share-foreign"){price=qty*0.1;msg="🔁 แชร์ต่างชาติ";}
+    if(currentService==="save-foreign"){price=qty*0.1;msg="💾 บันทึกต่างชาติ";}
+    if(currentService==="comment-thai"){price=qty*5;msg="💬 คอมเมนท์ไทย เหมาต่อข้อความ";}
 
     document.getElementById("price").innerText="ราคารวม: "+price.toFixed(2)+" บาท";
+
+    const box=document.getElementById("discountBox");
+    if(msg){
+        box.style.display="block";
+        box.innerText=msg;
+    }else{
+        box.style.display="none";
+    }
 }
 
 function submitOrder(){
-    const link=document.getElementById("link").value.trim();
-    if(link===""){
+    if(document.getElementById("link").value.trim()===""){
         alert("กรุณากรอกลิงก์ก่อนชำระเงิน");
         return;
     }
