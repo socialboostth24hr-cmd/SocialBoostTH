@@ -33,8 +33,7 @@ input{
 }
 button{
   background:#22c55e;
-  font-weight:bold;
-  cursor:pointer
+  font-weight:bold
 }
 .box{
   background:#020617;
@@ -44,8 +43,7 @@ button{
 }
 .small{
   font-size:13px;
-  opacity:.85;
-  margin-top:8px
+  opacity:.85
 }
 </style>
 </head>
@@ -65,18 +63,10 @@ button{
 
 <!-- PANEL -->
 <div id="panel" style="display:none">
-
   <div class="box">
     👤 <b id="name"></b><br>
     💰 เครดิตคงเหลือ: <b id="credit"></b>
   </div>
-
-  <input id="service" placeholder="บริการ">
-  <input id="qty" type="number" placeholder="จำนวน">
-  <input id="link" placeholder="ลิงก์ TikTok">
-  <button onclick="order()">สั่งซื้อ</button>
-
-  <div id="orders" class="small"></div>
 </div>
 
 </div>
@@ -91,68 +81,38 @@ function login(){
   msg.innerText = "กำลังเชื่อมต่อ...";
 
   fetch(API,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      type: "login",
+    method: "POST",
+    headers: {
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+      action: "login",     // 🔴 สำคัญ ต้องใช้ action
       email: email.value,
       password: password.value
     })
   })
   .then(res => res.json())
-  .then(d=>{
-    console.log("LOGIN RESPONSE:", d);
+  .then(d => {
+    console.log("RESPONSE:", d);
 
-    if(!d.success){
-      msg.innerText = d.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+    if (!d.success) {
+      msg.innerText = d.message || "อีเมลหรือรหัสผ่านไม่ถูก";
       return;
     }
 
+    // ✅ ตรงกับ JSON จาก Make
     user = d.user;
 
-    name.innerText   = user.fullname;
+    name.innerText = user.fullname;
     credit.innerText = user.credit;
 
     loginBox.style.display = "none";
     panel.style.display = "block";
     msg.innerText = "";
   })
-  .catch(err=>{
+  .catch(err => {
     console.error(err);
     msg.innerText = "เชื่อมต่อระบบไม่ได้";
-  });
-}
-
-/* ===== ORDER ===== */
-function order(){
-  if(!user){
-    alert("กรุณาเข้าสู่ระบบก่อน");
-    return;
-  }
-
-  fetch(API,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      type: "order",
-      user_id: user.user_id,
-      service: service.value,
-      qty: qty.value,
-      link: link.value
-    })
-  })
-  .then(res => res.json())
-  .then(d=>{
-    if(!d.success){
-      alert(d.message || "สั่งซื้อไม่สำเร็จ");
-      return;
-    }
-
-    orders.innerHTML += "📦 Order: "+d.order_id+"<br>";
-    credit.innerText = d.credit;
-  })
-  .catch(()=>{
-    alert("เชื่อมต่อระบบไม่ได้");
   });
 }
 </script>
