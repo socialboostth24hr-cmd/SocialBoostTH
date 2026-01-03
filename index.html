@@ -43,7 +43,7 @@ button{
 }
 .small{
   font-size:13px;
-  opacity:.8
+  opacity:.85
 }
 </style>
 </head>
@@ -53,6 +53,7 @@ button{
 
 <h2>เข้าสู่ระบบ</h2>
 
+<!-- LOGIN -->
 <div id="loginBox">
   <input id="email" placeholder="อีเมล">
   <input id="password" type="password" placeholder="รหัสผ่าน">
@@ -60,11 +61,12 @@ button{
   <div id="msg" class="small"></div>
 </div>
 
+<!-- PANEL -->
 <div id="panel" style="display:none">
 
   <div class="box">
     👤 <b id="name"></b><br>
-    💰 เครดิตคงเหลือ: <b id="credit"></b> บาท
+    💰 เครดิตคงเหลือ: <b id="credit"></b>
   </div>
 
   <input id="service" placeholder="บริการ">
@@ -78,60 +80,69 @@ button{
 </div>
 
 <script>
+/* ===== CONFIG ===== */
 const API = "https://hook.us2.make.com/i91b675rawoy52l11v5msfwjerf7uv31";
 let user = null;
 
-/* LOGIN */
+/* ===== LOGIN ===== */
 function login(){
   msg.innerText = "กำลังเชื่อมต่อ...";
+
   fetch(API,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
-      action:"login",
-      email:email.value,
-      password:password.value
+      type:"login",          // ✅ ตรงกับ Make
+      email: email.value,
+      password: password.value
     })
   })
-  .then(r=>r.json())
-  .then(d=>{
-    if(!d.success){
+  .then(res => res.json())
+  .then(d => {
+
+    if(d.status !== "success"){
       msg.innerText = d.message || "เข้าสู่ระบบไม่สำเร็จ";
       return;
     }
 
-    user = d.user;
-    name.innerText = user.fullname;
-    credit.innerText = user.credit;
+    // เก็บ user
+    user = d;
+
+    name.innerText = d.fullname;
+    credit.innerText = d.credit;
 
     loginBox.style.display = "none";
     panel.style.display = "block";
     msg.innerText = "";
   })
-  .catch(()=>{
+  .catch(err=>{
+    console.error(err);
     msg.innerText = "เชื่อมต่อระบบไม่ได้";
   });
 }
 
-/* ORDER */
+/* ===== ORDER (ไว้ต่อ Make ภายหลัง) ===== */
 function order(){
+  if(!user) return alert("กรุณาเข้าสู่ระบบก่อน");
+
   fetch(API,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
-      action:"order",
-      user_id:user.user_id,
-      service:service.value,
-      qty:qty.value,
-      link:link.value
+      type:"order",
+      user_id: user.user_id,
+      service: service.value,
+      qty: qty.value,
+      link: link.value
     })
   })
   .then(r=>r.json())
   .then(d=>{
-    if(!d.success){
+    if(d.status !== "success"){
       alert(d.message || "สั่งซื้อไม่สำเร็จ");
       return;
     }
+
     orders.innerHTML += "📦 "+d.order_id+"<br>";
     credit.innerText = d.credit;
   });
