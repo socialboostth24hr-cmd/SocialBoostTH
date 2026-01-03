@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SocialBoostTH</title>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:linear-gradient(180deg,#0f172a,#020617);
+  color:#fff;
+}
+.container{
+  max-width:420px;
+  margin:60px auto;
+  padding:26px;
+  background:#020617;
+  border-radius:18px;
+}
+h2{text-align:center}
+input,button{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border-radius:10px;
+  border:none;
+  font-size:15px;
+}
+input{
+  background:#020617;
+  color:#fff;
+  border:1px solid #1e293b;
+}
+button{
+  background:#22c55e;
+  font-weight:bold;
+}
+.small{font-size:13px;opacity:.8;text-align:center;margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>SocialBoostTH</h2>
+
+  <input id="email" placeholder="อีเมล">
+  <input id="password" type="password" placeholder="รหัสผ่าน">
+
+  <button onclick="login()">เข้าสู่ระบบ</button>
+  <div id="loginMsg" class="small"></div>
+</div>
+
+<script>
+const API = "ใส่_API_URL_ของคุณ";
+
+function login(){
+  document.getElementById("loginMsg").innerText="(ยังไม่เชื่อม API)";
+}
+</script>
+
+</body>
+</html>
