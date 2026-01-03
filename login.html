@@ -19,10 +19,6 @@ body{
   background:rgba(255,255,255,0.06);
   border-radius:18px;
 }
-h2{
-  text-align:center;
-  margin-bottom:20px;
-}
 input{
   width:100%;
   padding:14px;
@@ -31,7 +27,6 @@ input{
   border:none;
   background:#020617;
   color:#fff;
-  font-size:15px;
 }
 button{
   width:100%;
@@ -40,48 +35,39 @@ button{
   border-radius:12px;
   background:#22c55e;
   color:#000;
-  font-size:16px;
   font-weight:700;
-  cursor:pointer;
-}
-.link{
-  text-align:center;
-  margin-top:14px;
-}
-.link a{
-  color:#93c5fd;
-  text-decoration:none;
 }
 .msg{
   text-align:center;
-  margin-top:10px;
+  margin-top:12px;
+}
+a{
+  color:#93c5fd;
+  text-decoration:none;
 }
 </style>
 </head>
 
 <body>
 <div class="container">
-  <h2>เข้าสู่ระบบ</h2>
+  <h2 style="text-align:center">เข้าสู่ระบบ</h2>
 
-  <input id="email" placeholder="อีเมล">
-  <input id="password" type="password" placeholder="รหัสผ่าน">
+  <input placeholder="อีเมล">
+  <input type="password" placeholder="รหัสผ่าน">
 
-  <button onclick="login()">เข้าสู่ระบบ</button>
+  <button onclick="fakeLogin()">เข้าสู่ระบบ</button>
 
   <div class="msg" id="msg"></div>
-
-  <div class="link">
-    ยังไม่มีบัญชี?
+  <div style="text-align:center;margin-top:12px;">
     <a href="register.html">สมัครสมาชิก</a>
   </div>
 </div>
 
 <script>
-function login(){
-  msg.innerText = "ระบบ Login จะเปิดใช้งานในขั้นถัดไป";
+function fakeLogin(){
+  msg.innerText = "ระบบ Login จะเชื่อม API ในขั้นถัดไป";
   msg.style.color = "#facc15";
 }
 </script>
-
 </body>
 </html>
