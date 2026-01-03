@@ -2,21 +2,111 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SocialBoostTH | สั่งซื้อ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SocialBoostTH</title>
+
 <style>
-body{margin:0;font-family:system-ui;background:#f5f7fb}
-header{background:#0f172a;color:#fff;padding:14px 20px;display:flex;justify-content:space-between}
-nav{background:#fff;border-bottom:1px solid #e5e7eb}
-nav a{padding:14px;display:inline-block;text-decoration:none;color:#374151;font-weight:600}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system;
+  background:#f5f7fb;
+  color:#111827;
+}
+header{
+  background:#0f172a;
+  color:#fff;
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+header b{font-size:18px}
+nav{
+  background:#fff;
+  border-bottom:1px solid #e5e7eb;
+}
+nav a{
+  display:inline-block;
+  padding:14px 18px;
+  text-decoration:none;
+  color:#374151;
+  font-weight:600;
+}
 nav a:hover{color:#2563eb}
-.container{max-width:520px;margin:30px auto;background:#fff;padding:26px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-label{margin-top:14px;display:block;font-weight:600}
-input,select,textarea{width:100%;padding:12px;margin-top:6px;border-radius:10px;border:1px solid #d1d5db}
-textarea{height:100px}
-.price{text-align:center;font-size:26px;font-weight:800;margin:20px 0}
-button{width:100%;padding:16px;border-radius:14px;border:none;background:#2563eb;color:#fff;font-weight:800}
-.note{background:#fff7ed;padding:14px;border-radius:12px;font-size:13px;margin-top:16px}
+
+.container{
+  max-width:520px;
+  margin:30px auto;
+  background:#fff;
+  padding:26px;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+label{
+  display:block;
+  margin-top:16px;
+  font-weight:600;
+  font-size:14px;
+}
+select,input,textarea{
+  width:100%;
+  margin-top:6px;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  font-size:15px;
+}
+textarea{height:100px;resize:none}
+
+.wallet{
+  background:#f1f5f9;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:16px;
+  font-size:15px;
+}
+.wallet b{font-size:18px}
+
+.price-box{
+  margin-top:18px;
+  text-align:center;
+}
+.total{
+  font-size:28px;
+  font-weight:800;
+}
+.note{
+  margin-top:16px;
+  background:#fff7ed;
+  padding:14px;
+  border-radius:12px;
+  font-size:13px;
+  color:#92400e;
+  line-height:1.6;
+}
+button{
+  width:100%;
+  margin-top:20px;
+  padding:16px;
+  border-radius:14px;
+  border:none;
+  font-size:17px;
+  font-weight:800;
+  background:#2563eb;
+  color:#fff;
+  cursor:pointer;
+}
+button:disabled{
+  background:#9ca3af;
+  cursor:not-allowed;
+}
+footer{
+  text-align:center;
+  font-size:12px;
+  color:#6b7280;
+  margin:20px 0;
+}
 </style>
 </head>
 
@@ -24,84 +114,138 @@ button{width:100%;padding:16px;border-radius:14px;border:none;background:#2563eb
 
 <header>
   <b>SocialBoostTH</b>
-  <div>ยอดเงิน: 0.00 บาท</div>
+  <div>Wallet System</div>
 </header>
 
 <nav>
-  <a href="index.html">สั่งซื้อ</a>
-  <a href="check-order.html">เช็คออเดอร์</a>
-  <a href="wallet.html">กระเป๋าเงิน</a>
+  <a href="#">สั่งซื้อ</a>
+  <a href="#">ประวัติ</a>
+  <a href="#">ติดต่อ</a>
 </nav>
 
 <div class="container">
+
+  <div class="wallet">
+    ผู้ใช้:
+    <select id="userSelect"></select>
+    <div style="margin-top:8px">
+      ยอดเงินคงเหลือ:
+      <b id="balance">0.00</b> บาท
+    </div>
+  </div>
+
   <label>บริการ</label>
   <select id="service">
-    <option value="followers_inter">ผู้ติดตามต่างชาติ</option>
-    <option value="followers_th">ผู้ติดตามไทย</option>
-    <option value="likes_inter">ไลก์ต่างชาติ</option>
-    <option value="comments">คอมเมนต์ไทย</option>
+    <option value="followers_inter">ผู้ติดตาม (ต่างชาติ)</option>
+    <option value="followers_th">ผู้ติดตาม (ไทย)</option>
+    <option value="likes_inter">ถูกใจ (ต่างชาติ)</option>
+    <option value="views_inter">วิว (ต่างชาติ)</option>
+    <option value="comments_th">คอมเมนต์ (ไทย)</option>
   </select>
 
   <div id="qtyBox">
     <label>จำนวน</label>
-    <input type="number" id="qty">
+    <input type="number" id="qty" placeholder="กรอกจำนวน">
   </div>
 
   <div id="commentBox" style="display:none">
     <label>คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
-    <textarea id="comments"></textarea>
+    <textarea id="comments" placeholder="พิมพ์คอมเมนต์ คนละบรรทัด"></textarea>
+    <div style="font-size:12px;color:#6b7280" id="commentCount">0 คอมเมนต์</div>
   </div>
 
-  <label>ลิงก์</label>
-  <input id="link">
+  <label>ลิงก์ TikTok</label>
+  <input id="link" placeholder="https://www.tiktok.com/...">
 
-  <div class="price" id="price">0.00 บาท</div>
+  <div class="price-box">
+    <div class="total" id="totalPrice">0.00 บาท</div>
+  </div>
 
-  <button onclick="sendOrder()">สั่งซื้อ</button>
+  <button id="orderBtn" disabled>ยืนยันสั่งซื้อ</button>
 
   <div class="note">
-    • ซื้อเยอะราคาถูกลงอัตโนมัติ<br>
-    • ไม่สามารถยกเลิกหรือคืนเงินได้
+    • ซื้อจำนวนมาก ราคาจะลดลงอัตโนมัติ<br>
+    • ตรวจสอบลิงก์ให้ถูกต้องก่อนสั่งซื้อ<br>
+    • ไม่สามารถยกเลิกหรือคืนเงินได้ทุกกรณี
   </div>
+
 </div>
 
+<footer>© SocialBoostTH</footer>
+
 <script>
-const priceMap={
+const users = {
+  U001:{name:"ลูกค้า A",balance:0},
+  U002:{name:"ลูกค้า B",balance:0},
+  U003:{name:"ลูกค้า C",balance:0}
+};
+
+const services = {
   followers_inter:q=>q>=1000?0.25:0.35,
-  followers_th:q=>1.2,
+  followers_th:q=>1.39,
   likes_inter:q=>0.25,
-  comments:q=>5
+  views_inter:q=>0.05,
+  comments_th:q=>5
+};
+
+const userSelect = document.getElementById("userSelect");
+const balanceEl = document.getElementById("balance");
+const serviceEl = document.getElementById("service");
+const qtyEl = document.getElementById("qty");
+const totalEl = document.getElementById("totalPrice");
+const btn = document.getElementById("orderBtn");
+
+Object.keys(users).forEach(id=>{
+  const o=document.createElement("option");
+  o.value=id;
+  o.textContent=`${id} - ${users[id].name}`;
+  userSelect.appendChild(o);
+});
+
+function updateBalance(){
+  balanceEl.innerText = users[userSelect.value].balance.toFixed(2);
+  calc();
 }
 
-service.onchange=calc;
-qty.oninput=calc;
-comments.oninput=calc;
+userSelect.onchange = updateBalance;
 
-function calc(){
-  if(service.value==="comments"){
+serviceEl.onchange = ()=>{
+  if(serviceEl.value==="comments_th"){
     qtyBox.style.display="none";
     commentBox.style.display="block";
-    const c=comments.value.split("\n").filter(x=>x).length;
-    price.innerText=(c*5).toFixed(2)+" บาท";
-    return;
+  }else{
+    qtyBox.style.display="block";
+    commentBox.style.display="none";
   }
-  qtyBox.style.display="block";
-  commentBox.style.display="none";
-  if(!qty.value){price.innerText="0.00 บาท";return}
-  price.innerText=(qty.value*priceMap[service.value](qty.value)).toFixed(2)+" บาท";
+  calc();
+};
+
+qtyEl.oninput = calc;
+comments.oninput = ()=>{
+  const c = comments.value.split("\n").filter(l=>l.trim()).length;
+  document.getElementById("commentCount").innerText = c+" คอมเมนต์";
+  calc();
+};
+
+function calc(){
+  let total = 0;
+
+  if(serviceEl.value==="comments_th"){
+    const c = comments.value.split("\n").filter(l=>l.trim()).length;
+    total = c * services.comments_th(c);
+  }else{
+    const q = Number(qtyEl.value||0);
+    total = q * services[serviceEl.value](q);
+  }
+
+  totalEl.innerText = total.toFixed(2)+" บาท";
+
+  const balance = users[userSelect.value].balance;
+  btn.disabled = !(total>0 && balance>=total && link.value);
 }
 
-function sendOrder(){
-  fetch("วาง_APPS_SCRIPT_URL_ของคุณ",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      service:service.options[service.selectedIndex].text,
-      quantity: service.value==="comments"?comments.value.split("\n").filter(x=>x).length:Number(qty.value),
-      link:link.value
-    })
-  }).then(()=>alert("บันทึกออเดอร์แล้ว"));
-}
+updateBalance();
 </script>
+
 </body>
 </html>
