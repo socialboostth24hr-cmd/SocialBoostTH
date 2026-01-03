@@ -2,64 +2,86 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SocialBoostTH</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:linear-gradient(180deg,#0f172a,#020617);
-  color:#fff;
-}
-.container{
-  max-width:420px;
-  margin:60px auto;
-  padding:26px;
-  background:#020617;
-  border-radius:18px;
-}
-h2{text-align:center}
-input,button{
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border-radius:10px;
-  border:none;
-  font-size:15px;
-}
-input{
-  background:#020617;
-  color:#fff;
-  border:1px solid #1e293b;
-}
-button{
-  background:#22c55e;
-  font-weight:bold;
-}
-.small{font-size:13px;opacity:.8;text-align:center;margin-top:10px}
+body{margin:0;font-family:system-ui;background:#0f172a;color:#fff}
+.container{max-width:420px;margin:40px auto;padding:24px;background:#020617;border-radius:16px}
+input,button{width:100%;padding:14px;margin-top:10px;border-radius:10px;border:none}
+input{background:#020617;color:#fff;border:1px solid #1e293b}
+button{background:#22c55e;font-weight:bold}
+.box{background:#020617;padding:12px;border-radius:10px;margin-top:12px}
+.small{font-size:13px;opacity:.7}
 </style>
 </head>
 
 <body>
-
 <div class="container">
-  <h2>SocialBoostTH</h2>
+<h2>เข้าสู่ระบบ</h2>
 
-  <input id="email" placeholder="อีเมล">
-  <input id="password" type="password" placeholder="รหัสผ่าน">
+<input id="email" placeholder="อีเมล">
+<input id="password" type="password" placeholder="รหัสผ่าน">
+<button onclick="login()">เข้าสู่ระบบ</button>
+<div id="msg" class="small"></div>
 
-  <button onclick="login()">เข้าสู่ระบบ</button>
-  <div id="loginMsg" class="small"></div>
+<div id="panel" style="display:none">
+  <div class="box">
+    👤 <b id="name"></b><br>
+    💰 เครดิตคงเหลือ: <b id="credit"></b> บาท
+  </div>
+
+  <input id="service" placeholder="บริการ">
+  <input id="qty" type="number" placeholder="จำนวน">
+  <input id="link" placeholder="ลิงก์ TikTok">
+  <button onclick="order()">สั่งซื้อ</button>
+
+  <div id="orders" class="small"></div>
+</div>
 </div>
 
 <script>
-const API = "ใส่_API_URL_ของคุณ";
+const API="ใส่ลิงก์_APPS_SCRIPT_exec";
+let user=null;
 
 function login(){
-  document.getElementById("loginMsg").innerText="(ยังไม่เชื่อม API)";
+ fetch(API,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+   action:"login",
+   email:email.value,
+   password:password.value
+  })
+ })
+ .then(r=>r.json())
+ .then(d=>{
+  if(!d.success){msg.innerText=d.message;return;}
+  user=d.user;
+  name.innerText=user.fullname;
+  credit.innerText=user.credit;
+  panel.style.display="block";
+ });
+}
+
+function order(){
+ fetch(API,{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify({
+   action:"create_order",
+   user_id:user.user_id,
+   service:service.value,
+   quantity:qty.value,
+   link:link.value,
+   amount:0
+  })
+ })
+ .then(r=>r.json())
+ .then(d=>{
+  orders.innerHTML += "📦 "+d.order_id+"<br>";
+  credit.innerText = Number(credit.innerText);
+ });
 }
 </script>
-
 </body>
 </html>
