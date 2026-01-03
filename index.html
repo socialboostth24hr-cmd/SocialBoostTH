@@ -2,168 +2,151 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SocialBoostTH | ระบบสั่งซื้อ TikTok</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SocialBoostTH</title>
 
 <style>
 body{
   margin:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(180deg,#0f172a,#020617);
+  font-family:system-ui;
+  background:#0f172a;
   color:#fff;
 }
-
 .container{
   max-width:420px;
   margin:40px auto;
-  padding:26px;
-  background:rgba(255,255,255,0.06);
-  backdrop-filter: blur(10px);
-  border-radius:18px;
-  box-shadow:0 25px 70px rgba(0,0,0,.6);
-}
-
-h1{
-  text-align:center;
-  margin:0;
-  font-size:26px;
-  font-weight:800;
-}
-
-.subtitle{
-  text-align:center;
-  opacity:.8;
-  margin:8px 0 24px;
-  font-size:14px;
-}
-
-label{
-  display:block;
-  margin-top:16px;
-  font-size:14px;
-  opacity:.85;
-}
-
-select,input{
-  width:100%;
-  margin-top:6px;
-  padding:13px;
-  border-radius:12px;
+  padding:24px;
   background:#020617;
-  border:1px solid rgba(255,255,255,.15);
-  color:#fff;
+  border-radius:16px;
+}
+h2{text-align:center}
+input,select,button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border-radius:10px;
+  border:none;
   font-size:15px;
 }
-
-.price-box{
-  margin-top:20px;
-  background:#020617;
-  padding:18px;
-  border-radius:14px;
-  text-align:center;
-  border:1px solid rgba(255,255,255,.12);
-}
-
-.total{
-  font-size:26px;
-  font-weight:800;
-  margin-top:6px;
-}
-
-.checkbox{
-  margin-top:18px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-  font-size:14px;
-}
-
-.checkbox input{
-  width:18px;
-  height:18px;
-}
-
-.pay-btn{
-  width:100%;
-  margin-top:22px;
-  padding:16px;
-  font-size:18px;
-  font-weight:800;
-  border-radius:16px;
-  border:none;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#022c22;
-  cursor:pointer;
-}
-
-.pay-btn:disabled{
-  background:#334155;
-  color:#94a3b8;
-  cursor:not-allowed;
-}
-
-.footer-links{
-  text-align:center;
-  margin-top:22px;
-  font-size:14px;
-}
-
-.footer-links a{
-  color:#60a5fa;
-  text-decoration:none;
-  font-weight:600;
-}
-
-.footer-links span{
-  margin:0 8px;
-  color:#94a3b8;
-}
+input,select{background:#020617;color:#fff;border:1px solid #1e293b}
+button{background:#22c55e;font-weight:bold}
+button:disabled{opacity:.4}
+hr{margin:20px 0;border:none;border-top:1px solid #1e293b}
+.box{background:#020617;padding:14px;border-radius:10px;margin-top:12px}
+.small{font-size:13px;opacity:.7}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+<h2>SocialBoostTH</h2>
 
-  <h1>SocialBoostTH</h1>
-  <div class="subtitle">ระบบสั่งซื้อบริการ TikTok อัตโนมัติ</div>
+<!-- LOGIN -->
+<div id="loginBox">
+  <input id="email" placeholder="อีเมล">
+  <input id="password" type="password" placeholder="รหัสผ่าน">
+  <button onclick="login()">เข้าสู่ระบบ</button>
+  <div id="loginMsg" class="small"></div>
+</div>
 
-  <label>บริการ</label>
-  <select>
-    <option>ผู้ติดตาม TikTok</option>
-    <option>ถูกใจ TikTok</option>
-    <option>วิว TikTok</option>
-    <option>คอมเมนท์ TikTok</option>
+<!-- USER PANEL -->
+<div id="panel" style="display:none">
+
+  <div class="box">
+    👤 <b id="userName"></b><br>
+    💰 เครดิตคงเหลือ: <b id="credit"></b> บาท
+  </div>
+
+  <hr>
+
+  <select id="service">
+    <option>ผู้ติดตามต่างชาติ</option>
+    <option>ผู้ติดตามไทย</option>
+    <option>ถูกใจต่างชาติ</option>
+    <option>วิวไทย</option>
   </select>
 
-  <label>จำนวน</label>
-  <input type="number" placeholder="กรอกจำนวนที่ต้องการ">
+  <input id="quantity" type="number" placeholder="จำนวน">
+  <input id="link" placeholder="ลิงก์ TikTok">
 
-  <label>ลิงก์ TikTok</label>
-  <input type="text" placeholder="https://www.tiktok.com/...">
+  <button onclick="createOrder()">สั่งซื้อ</button>
+  <div id="orderMsg" class="small"></div>
 
-  <div class="price-box">
-    <div>ราคารวม</div>
-    <div class="total">0.00 บาท</div>
-  </div>
+  <hr>
 
-  <div class="checkbox">
-    <input type="checkbox">
-    <span>ยอมรับเงื่อนไขการให้บริการ</span>
-  </div>
-
-  <button class="pay-btn" disabled>
-    ดำเนินการสั่งซื้อ
-  </button>
-
-  <!-- 🔽 ลิงก์ไปหน้าอื่น -->
-  <div class="footer-links">
-    <a href="login.html">เข้าสู่ระบบ</a>
-    <span>|</span>
-    <a href="register.html">สมัครสมาชิก</a>
-  </div>
+  <button onclick="loadOrders()">ดูประวัติการสั่งซื้อ</button>
+  <div id="orders" class="small"></div>
+</div>
 
 </div>
+
+<script>
+/* 🔴 ใส่ลิงก์ API ของคุณตรงนี้ */
+const API = "https://script.google.com/macros/s/AKfycbyRywrSGmTtKrjDIOU01AYXujhq1qaXSFI41IeNfxC_6hLHMwFyy9rY23WXr2PBLYA9/exec";
+
+let currentUser = null;
+
+/* LOGIN */
+function login(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"login",
+      email:email.value,
+      password:password.value
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d.success){
+      loginMsg.innerText=d.message;
+      return;
+    }
+    currentUser=d.user;
+    loginBox.style.display="none";
+    panel.style.display="block";
+    userName.innerText=d.user.firstname+" "+d.user.lastname;
+    credit.innerText=d.user.credit;
+  });
+}
+
+/* CREATE ORDER */
+function createOrder(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"create_order",
+      user_id:currentUser.user_id,
+      service:service.value,
+      quantity:quantity.value,
+      amount:0
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    orderMsg.innerText="สั่งซื้อสำเร็จ เลขออเดอร์ "+d.order_id;
+  });
+}
+
+/* LOAD ORDERS */
+function loadOrders(){
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"get_orders",
+      user_id:currentUser.user_id
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    orders.innerHTML="";
+    d.orders.forEach(o=>{
+      orders.innerHTML +=📦 ${o[0]} | ${o[2]} | ${o[5]}<br>`;
+    });
+  });
+}
+</script>
 
 </body>
 </html>
