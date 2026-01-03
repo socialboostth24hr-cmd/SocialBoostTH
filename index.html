@@ -2,150 +2,243 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SocialBoostTH – Dashboard</title>
 
 <style>
+*{box-sizing:border-box;font-family:Inter,system-ui}
+
 body{
   margin:0;
-  font-family:system-ui;
-  background:#0b1220;
-  color:#fff;
+  background:#f4f6f9;
+  color:#1f2937;
 }
-.hidden{display:none}
-.container{
-  max-width:420px;
-  margin:40px auto;
-  background:#0c162e;
-  padding:26px;
-  border-radius:20px;
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
-}
-h1{text-align:center;margin:0}
-p{text-align:center;opacity:.7;margin:8px 0 20px}
-input,select{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  background:#0b1428;
-  border:1px solid rgba(255,255,255,.1);
-  color:#fff;
-  margin-bottom:14px;
-}
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#fff;
-  font-weight:800;
-  font-size:16px;
-  cursor:pointer;
-}
-.nav{
+
+/* ---------- HEADER ---------- */
+header{
+  background:#ffffff;
+  border-bottom:1px solid #e5e7eb;
+  padding:14px 20px;
   display:flex;
-  justify-content:space-around;
-  background:#0b1428;
-  padding:12px 0;
-  border-radius:14px;
-  margin-bottom:18px;
+  justify-content:space-between;
+  align-items:center;
 }
-.nav span{
+
+.brand{
+  font-size:20px;
+  font-weight:800;
+  color:#1d4ed8;
+}
+
+nav{
+  display:flex;
+  gap:18px;
+}
+
+nav span{
   cursor:pointer;
+  font-weight:600;
+  color:#374151;
+}
+
+nav span.active{
+  color:#1d4ed8;
+  border-bottom:2px solid #1d4ed8;
+  padding-bottom:4px;
+}
+
+.balance{
+  background:#f1f5f9;
+  padding:8px 14px;
+  border-radius:10px;
   font-weight:700;
-  opacity:.7;
 }
-.nav span.active{
-  opacity:1;
-  color:#22c55e;
+
+/* ---------- CONTAINER ---------- */
+.container{
+  max-width:900px;
+  margin:30px auto;
+  padding:0 16px;
 }
+
 .card{
-  background:#0b1730;
-  padding:16px;
+  background:#ffffff;
   border-radius:14px;
+  padding:20px;
+  box-shadow:0 8px 24px rgba(0,0,0,.05);
+  margin-bottom:20px;
+}
+
+h2{
+  margin-top:0;
+  font-size:18px;
+}
+
+/* ---------- FORM ---------- */
+label{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:6px;
+  display:block;
+}
+
+select,input,textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #d1d5db;
+  border-radius:10px;
   margin-bottom:14px;
   font-size:14px;
 }
-.logout{
+
+textarea{resize:none;height:90px}
+
+.price{
+  font-size:20px;
+  font-weight:800;
+  color:#1d4ed8;
+}
+
+button.primary{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#1d4ed8;
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button.secondary{
   background:none;
   border:none;
-  color:#ef4444;
-  font-weight:700;
+  color:#dc2626;
+  font-weight:600;
+  cursor:pointer;
   margin-top:10px;
 }
-.center{text-align:center}
+
+/* ---------- TABLE ---------- */
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+
+.table th,.table td{
+  padding:10px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:left;
+}
+
+/* ---------- AUTH ---------- */
+#auth{
+  max-width:360px;
+  margin:120px auto;
+}
+
+.auth-title{
+  text-align:center;
+  font-size:22px;
+  font-weight:800;
+  color:#1d4ed8;
+}
+
+.auth-sub{
+  text-align:center;
+  margin-bottom:20px;
+  color:#6b7280;
+}
+
+.hidden{display:none}
 </style>
 </head>
 
 <body>
 
 <!-- AUTH -->
-<div class="container" id="auth">
-  <h1>SocialBoostTH</h1>
-  <p id="authText">เข้าสู่ระบบ</p>
+<div id="auth" class="card">
+  <div class="auth-title">SocialBoostTH</div>
+  <div class="auth-sub" id="authText">เข้าสู่ระบบ</div>
 
   <input id="username" placeholder="ชื่อผู้ใช้">
   <input id="email" placeholder="อีเมล" class="hidden">
   <input id="password" type="password" placeholder="รหัสผ่าน">
 
-  <button onclick="submitAuth()">ยืนยัน</button>
-  <p class="center" style="margin-top:14px">
-    <span onclick="toggleAuth()" style="color:#60a5fa;cursor:pointer">
-      สมัคร / เข้าสู่ระบบ
-    </span>
+  <button class="primary" onclick="submitAuth()">ยืนยัน</button>
+
+  <p style="text-align:center;margin-top:14px">
+    <a href="#" onclick="toggleAuth()">สมัครสมาชิก / เข้าสู่ระบบ</a>
   </p>
 </div>
 
 <!-- APP -->
-<div class="container hidden" id="app">
+<div id="app" class="hidden">
 
-  <div class="center" style="font-size:18px;font-weight:800">
-    ยอดเงินคงเหลือ: <span id="balance">0</span> บาท
-  </div>
-
-  <div class="nav">
+<header>
+  <div class="brand">SocialBoostTH</div>
+  <nav>
     <span class="active" onclick="go('order')">สั่งซื้อ</span>
-    <span onclick="go('wallet')">เติมเงิน</span>
     <span onclick="go('history')">ประวัติ</span>
-  </div>
+  </nav>
+  <div class="balance">ยอดเงิน: <span id="balance">0</span> บาท</div>
+</header>
+
+<div class="container">
 
   <!-- ORDER -->
-  <div id="orderPage">
-    <select id="service">
+  <div class="card" id="orderPage">
+    <h2>สั่งซื้อบริการ</h2>
+
+    <label>บริการ</label>
+    <select id="service" onchange="calculate()">
       <option>ผู้ติดตามต่างชาติ</option>
       <option>ผู้ติดตามไทย</option>
       <option>ถูกใจต่างชาติ</option>
-      <option>ถูกใจไทย</option>
       <option>วิวต่างชาติ</option>
-      <option>วิวไทย</option>
       <option>คอมเมนท์ไทย</option>
     </select>
 
-    <input id="amount" type="number" placeholder="จำนวนที่ต้องการ">
-    <input id="link" placeholder="ลิงก์ TikTok">
+    <label>จำนวน</label>
+    <input id="qty" type="number" oninput="calculate()">
 
-    <button onclick="order()">สั่งซื้อ</button>
-  </div>
+    <div id="commentBox" class="hidden">
+      <label>คอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
+      <textarea id="comments" oninput="calculate()"></textarea>
+    </div>
 
-  <!-- WALLET -->
-  <div id="walletPage" class="hidden">
-    <input id="topupAmount" type="number" placeholder="จำนวนเงินที่ต้องการเพิ่ม">
-    <button onclick="topup()">เพิ่มยอด (จำลอง)</button>
+    <label>ลิงก์ TikTok</label>
+    <input id="link">
+
+    <div class="price" id="total">0.00 บาท</div>
+
+    <button class="primary" onclick="order()">ยืนยันการสั่งซื้อ</button>
   </div>
 
   <!-- HISTORY -->
-  <div id="historyPage" class="hidden"></div>
+  <div class="card hidden" id="historyPage">
+    <h2>ประวัติการทำรายการ</h2>
+    <table class="table">
+      <thead>
+        <tr><th>รายการ</th><th>ยอดเงิน</th></tr>
+      </thead>
+      <tbody id="historyTable"></tbody>
+    </table>
+    <button class="secondary" onclick="logout()">ออกจากระบบ</button>
+  </div>
 
-  <button class="logout" onclick="logout()">ออกจากระบบ</button>
+</div>
 </div>
 
 <script>
-let isLogin=true;
+/* ---------- AUTH ---------- */
+let loginMode=true;
 
 function toggleAuth(){
-  isLogin=!isLogin;
-  authText.innerText=isLogin?"เข้าสู่ระบบ":"สมัครสมาชิก";
+  loginMode=!loginMode;
+  authText.innerText=loginMode?"เข้าสู่ระบบ":"สมัครสมาชิก";
   email.classList.toggle("hidden");
 }
 
@@ -153,153 +246,100 @@ function submitAuth(){
   const u=username.value.trim();
   const p=password.value;
   const e=email.value.trim();
-
   let users=JSON.parse(localStorage.getItem("users")||"{}");
 
-  if(isLogin){
+  if(loginMode){
     if(users[u]&&users[u].password===p){
-      localStorage.setItem("currentUser",u);
+      localStorage.setItem("user",u);
       showApp();
     }else alert("ข้อมูลไม่ถูกต้อง");
   }else{
     if(!u||!p||!e)return alert("กรอกข้อมูลให้ครบ");
-    if(users[u])return alert("ชื่อผู้ใช้ซ้ำ");
-    users[u]={password:p,email:e,balance:0,history:[]};
+    users[u]={password:p,email:e,balance:3000,history:[]};
     localStorage.setItem("users",JSON.stringify(users));
     alert("สมัครสำเร็จ");
     toggleAuth();
   }
 }
 
+/* ---------- APP ---------- */
 function showApp(){
   auth.classList.add("hidden");
   app.classList.remove("hidden");
   update();
 }
 
-function logout(){
-  localStorage.removeItem("currentUser");
-  location.reload();
-}
-
 function getUser(){
-  const u=localStorage.getItem("currentUser");
+  const u=localStorage.getItem("user");
   const users=JSON.parse(localStorage.getItem("users"));
   return {u,users};
 }
 
-function update(){
-  const {u,users}=getUser();
-  balance.innerText=users[u].balance;
-  historyPage.innerHTML="";
-  users[u].history.forEach(h=>{
-    historyPage.innerHTML+=`<div class="card">${h}</div>`;
-  });
+/* ---------- PRICE ---------- */
+function rate(name,qty){
+  if(name==="ผู้ติดตามต่างชาติ"){
+    if(qty<100)return 0.6;
+    if(qty<500)return 0.5;
+    return 0.4;
+  }
+  if(name==="ผู้ติดตามไทย")return 1.39;
+  if(name==="ถูกใจต่างชาติ")return 0.25;
+  if(name==="วิวต่างชาติ")return 0.05;
+  if(name==="คอมเมนท์ไทย")return 5;
 }
 
-function go(page){
-  document.querySelectorAll(".nav span").forEach(s=>s.classList.remove("active"));
-  event.target.classList.add("active");
+function calculate(){
+  const s=service.value;
+  let q=0;
 
-  orderPage.classList.add("hidden");
-  walletPage.classList.add("hidden");
-  historyPage.classList.add("hidden");
+  commentBox.classList.toggle("hidden",s!=="คอมเมนท์ไทย");
 
-  if(page==="order")orderPage.classList.remove("hidden");
-  if(page==="wallet")walletPage.classList.remove("hidden");
-  if(page==="history")historyPage.classList.remove("hidden");
-}
+  if(s==="คอมเมนท์ไทย"){
+    q=comments.value.split("\n").filter(x=>x.trim()).length;
+  }else{
+    q=Number(qty.value);
+  }
 
-function topup(){
-  const a=Number(topupAmount.value);
-  const {u,users}=getUser();
-  users[u].balance+=a;
-  users[u].history.push("เติมเงิน "+a+" บาท");
-  localStorage.setItem("users",JSON.stringify(users));
-  update();
+  if(!q){total.innerText="0.00 บาท";return}
+
+  total.innerText=(q*rate(s,q)).toFixed(2)+" บาท";
 }
 
 function order(){
   const {u,users}=getUser();
-  const price=Number(amount.value);
-  if(users[u].balance<price)return alert("เงินไม่พอ");
-  users[u].balance-=price;
-  users[u].history.push("สั่งซื้อ "+service.value+" "+price+" บาท");
-  localStorage.setItem("users",JSON.stringify(users));
-  update();
-}
-
-if(localStorage.getItem("currentUser"))showApp();
-</script>
-
-<script>
-const PRICE_TABLE = {
-  "ผู้ติดตามต่างชาติ": qty => {
-    if(qty <= 50) return 0.7;
-    if(qty <= 99) return 0.6;
-    if(qty <= 499) return 0.5;
-    if(qty <= 999) return 0.4;
-    return 0.256;
-  },
-  "ผู้ติดตามไทย": qty => 1.39,
-  "ถูกใจต่างชาติ": qty => {
-    if(qty < 500) return 0.3;
-    if(qty < 1000) return 0.25;
-    if(qty < 5000) return 0.22;
-    return 0.20;
-  },
-  "วิวต่างชาติ": qty => 0.05,
-  "คอมเมนท์ไทย": qty => 5
-};
-</script>
-<script>
-function calculateTotal(){
-  const serviceName = service.value;
-  const qty = serviceName === "คอมเมนท์ไทย"
-    ? commentText.value.split("\n").filter(x=>x.trim()).length
-    : Number(amount.value);
-
-  if(!qty || qty <= 0){
-    totalDisplay.innerText = "0 บาท";
-    return 0;
-  }
-
-  const unitPrice = PRICE_TABLE[serviceName](qty);
-  const total = qty * unitPrice;
-
-  totalDisplay.innerText =
-    `ราคา ${unitPrice} บาท × ${qty} = ${total.toFixed(2)} บาท`;
-
-  return total;
-}
-</script>
-<input id="amount" oninput="calculateTotal()">
-<textarea id="commentText" oninput="calculateTotal()"></textarea>
-
-<div id="totalDisplay" style="margin-top:10px;font-weight:800">
-  0 บาท
-</div>
-<script>
-function order(){
-  const serviceName = service.value;
-  const total = calculateTotal();
-
-  const {u,users} = getUser();
-
-  if(users[u].balance < total){
-    alert("ยอดเงินไม่เพียงพอ");
-    return;
-  }
-
-  users[u].balance -= total;
-  users[u].history.push(
-    `สั่งซื้อ ${serviceName} | จำนวน ${total.toFixed(2)} บาท`
-  );
-
+  const amount=parseFloat(total.innerText);
+  if(users[u].balance<amount)return alert("ยอดเงินไม่เพียงพอ");
+  users[u].balance-=amount;
+  users[u].history.push({name:service.value,amount});
   localStorage.setItem("users",JSON.stringify(users));
   update();
   alert("สั่งซื้อสำเร็จ");
 }
+
+/* ---------- UI ---------- */
+function update(){
+  const {u,users}=getUser();
+  balance.innerText=users[u].balance.toFixed(2);
+  historyTable.innerHTML="";
+  users[u].history.forEach(h=>{
+    historyTable.innerHTML+=`<tr><td>${h.name}</td><td>${h.amount.toFixed(2)} บาท</td></tr>`;
+  });
+}
+
+function go(p){
+  document.querySelectorAll("nav span").forEach(n=>n.classList.remove("active"));
+  event.target.classList.add("active");
+  orderPage.classList.toggle("hidden",p!=="order");
+  historyPage.classList.toggle("hidden",p!=="history");
+}
+
+function logout(){
+  localStorage.removeItem("user");
+  location.reload();
+}
+
+if(localStorage.getItem("user"))showApp();
 </script>
+
 </body>
 </html>
