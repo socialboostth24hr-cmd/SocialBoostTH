@@ -2,107 +2,31 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
+<title>เช็คออเดอร์</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>เช็คสถานะคำสั่งซื้อ | SocialBoostTH</title>
-
 <style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:radial-gradient(circle at top,#0f1b34,#05080f);
-  color:#fff;
-}
-.card{
-  max-width:420px;
-  margin:60px auto;
-  background:#0b1428;
-  border-radius:18px;
-  padding:24px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
-}
-h1{
-  text-align:center;
-  margin:0 0 20px;
-}
-.row{
-  margin-bottom:12px;
-  font-size:15px;
-}
-.label{
-  opacity:.6;
-  font-size:13px;
-}
-.status{
-  display:inline-block;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:600;
-}
-.wait{background:#facc15;color:#000;}
-.done{background:#22c55e;color:#000;}
-.error{background:#ef4444;color:#fff;}
-.footer{
-  margin-top:20px;
-  font-size:13px;
-  opacity:.7;
-  text-align:center;
-}
+body{font-family:system-ui;background:#f5f7fb}
+.box{max-width:420px;margin:60px auto;background:#fff;padding:24px;border-radius:14px}
+input,button{width:100%;padding:12px;margin-top:12px}
 </style>
 </head>
-
 <body>
 
-<div class="card">
-  <h1>ตรวจสอบคำสั่งซื้อ</h1>
-
-  <div id="content">กำลังโหลดข้อมูล...</div>
-
-  <div class="footer">
-    หากพบปัญหา กรุณาติดต่อร้าน
-  </div>
+<div class="box">
+  <h2>เช็คสถานะออเดอร์</h2>
+  <input id="oid" placeholder="เช่น SB-0001">
+  <button onclick="check()">ตรวจสอบ</button>
+  <div id="result"></div>
 </div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const orderId = params.get("order");
-
-if(!orderId){
-  document.getElementById("content").innerHTML =
-    "<span class='status error'>ไม่พบเลขออเดอร์</span>";
-}else{
-  fetch("YOUR_GOOGLE_SCRIPT_URL?order="+orderId)
-    .then(r=>r.json())
-    .then(d=>{
-      if(!d.found){
-        document.getElementById("content").innerHTML =
-          "<span class='status error'>ไม่พบข้อมูลคำสั่งซื้อ</span>";
-        return;
-      }
-
-      document.getElementById("content").innerHTML = `
-        <div class="row">
-          <div class="label">เลขคำสั่งซื้อ</div>
-          <b>${d.order_id}</b>
-        </div>
-        <div class="row">
-          <div class="label">บริการ</div>
-          ${d.service}
-        </div>
-        <div class="row">
-          <div class="label">จำนวน</div>
-          ${d.quantity}
-        </div>
-        <div class="row">
-          <div class="label">สถานะ</div>
-          <span class="status ${d.status=='เสร็จแล้ว'?'done':'wait'}">
-            ${d.status}
-          </span>
-        </div>
-      `;
-    });
+function check(){
+  fetch("วาง_APPS_SCRIPT_URL?order="+oid.value)
+  .then(r=>r.json())
+  .then(d=>{
+    result.innerHTML=`สถานะ: <b>${d.status}</b>`;
+  });
 }
 </script>
-
 </body>
 </html>
