@@ -1,187 +1,148 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>SocialBoostTH – สั่งซื้อ</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SocialBoostTH</title>
+
 <style>
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#f5f7fb;
-  color:#222;
-}
-header{
-  background:#0b5cff;
+  font-family: system-ui,-apple-system;
+  background:#0f172a;
   color:#fff;
-  padding:14px 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
 }
-header .logo{font-weight:700;}
-header .balance{
-  background:#fff;
-  color:#0b5cff;
-  padding:6px 12px;
-  border-radius:20px;
-  font-weight:600;
-}
-nav{
-  background:#fff;
-  border-bottom:1px solid #e5e7eb;
-}
-nav a{
-  display:inline-block;
-  padding:12px 16px;
-  text-decoration:none;
-  color:#333;
-  font-weight:500;
-}
-nav a:hover{color:#0b5cff;}
 .container{
-  max-width:520px;
-  margin:24px auto;
-  background:#fff;
-  border-radius:10px;
-  padding:20px;
-  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  max-width:420px;
+  margin:40px auto;
+  background:#020617;
+  padding:24px;
+  border-radius:18px;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
 }
-h1{
-  font-size:20px;
-  margin-bottom:16px;
-}
-label{
-  display:block;
-  margin-top:14px;
-  font-weight:600;
-}
+h1{text-align:center;margin:0;font-size:26px}
+label{display:block;margin-top:16px;font-size:14px;opacity:.85}
 select,input,textarea{
   width:100%;
-  padding:10px;
   margin-top:6px;
-  border:1px solid #d1d5db;
-  border-radius:8px;
-  font-size:14px;
-}
-textarea{min-height:90px;}
-.note{
-  background:#f9fafb;
-  border-left:4px solid #0b5cff;
-  padding:10px;
-  margin-top:14px;
-  font-size:13px;
-}
-.price{
-  margin-top:16px;
-  font-size:18px;
-  font-weight:700;
-  text-align:right;
-}
-button{
-  margin-top:20px;
-  width:100%;
   padding:12px;
-  background:#0b5cff;
+  border-radius:10px;
+  background:#020617;
+  border:1px solid #334155;
   color:#fff;
-  border:none;
-  border-radius:8px;
-  font-size:16px;
-  cursor:pointer;
+  font-size:15px;
 }
-button:hover{background:#094ad1;}
-.footer-note{
-  margin-top:12px;
-  font-size:12px;
-  color:#666;
+textarea{resize:none;height:90px}
+.hint{font-size:12px;opacity:.6;margin-top:4px}
+.price{
+  margin-top:20px;
+  padding:16px;
+  background:#020617;
+  border:1px solid #334155;
+  border-radius:14px;
+  text-align:center;
+}
+.total{font-size:28px;font-weight:800;margin-top:4px}
+.error{color:#f87171;font-size:13px}
+.success{color:#4ade80;font-size:13px}
+.footer{
+  margin-top:20px;
+  font-size:11px;
+  opacity:.6;
+  line-height:1.6;
 }
 </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">SocialBoostTH</div>
-  <div class="balance">ยอดเงิน: 1,200.00 ฿</div>
-</header>
-
-<nav>
-  <a href="index.html">สั่งซื้อ</a>
-  <a href="check-order.html">เช็คออเดอร์</a>
-</nav>
-
 <div class="container">
-  <h1>สร้างรายการสั่งซื้อ</h1>
+  <h1>SocialBoostTH</h1>
 
   <label>บริการ</label>
-  <select id="service" onchange="updatePrice()">
-    <option value="follower_th">ผู้ติดตาม (คนไทย)</option>
-    <option value="follower_inter">ผู้ติดตาม (ต่างชาติ)</option>
-    <option value="like">ไลก์โพสต์</option>
-    <option value="comment">คอมเมนต์</option>
+  <select id="service" onchange="calc()">
+    <option value="followers_inter">ผู้ติดตามต่างชาติ</option>
+    <option value="followers_th">ผู้ติดตามไทย</option>
+    <option value="likes_inter">ถูกใจต่างชาติ</option>
+    <option value="likes_th">ถูกใจไทย</option>
+    <option value="views_inter">วิวต่างชาติ</option>
+    <option value="views_th">วิวไทย</option>
+    <option value="comment_th">คอมเมนท์ไทย</option>
+    <option value="share_inter">แชร์ต่างชาติ</option>
+    <option value="save_inter">บันทึกต่างชาติ</option>
   </select>
 
-  <div id="quantityBox">
+  <div id="qtyBox">
     <label>จำนวน</label>
-    <input type="number" id="quantity" value="100" min="10" max="10000" oninput="updatePrice()">
-    <div class="note">ขั้นต่ำ 10 / สูงสุด 10,000 • ซื้อเยอะราคาจะถูกลง</div>
+    <input id="qty" type="number" oninput="calc()">
+    <div class="hint" id="limit"></div>
   </div>
 
-  <div id="commentBox" style="display:none;">
-    <label>คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
-    <textarea id="comments" placeholder="พิมพ์ 1 บรรทัด ต่อ 1 คอมเมนต์" oninput="updatePrice()"></textarea>
-    <div class="note">ระบบคิดราคาตามจำนวนบรรทัดอัตโนมัติ</div>
+  <div id="commentBox" style="display:none">
+    <label>ข้อความคอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
+    <textarea id="comment" oninput="calc()"></textarea>
+    <div class="hint">ขั้นต่ำ 10 / สูงสุด 50 บรรทัด</div>
   </div>
-
-  <label>ลิงก์เป้าหมาย</label>
-  <input type="url" id="link" placeholder="https://www.tiktok.com/...">
 
   <div class="price">
-    ราคารวม: <span id="total">0.00</span> ฿
+    <div id="result">กรุณากรอกข้อมูล</div>
+    <div class="total" id="total">0.00 บาท</div>
   </div>
 
-  <button onclick="submitOrder()">สั่งซื้อ</button>
-
-  <div class="footer-note">
-    เมื่อกดสั่งซื้อแล้ว ไม่สามารถยกเลิกหรือขอคืนเงินได้
+  <div class="footer">
+⚠️ ชำระเงินแล้วไม่สามารถยกเลิกหรือคืนเงินได้  
+กรุณาตรวจสอบลิงก์ให้ถูกต้องก่อนสั่งซื้อ  
+ผู้ติดตาม = ราคา/คน | ถูกใจ = ราคา/ไลก์ | วิว = ราคา/วิว | คอมเมนท์ = 1 บรรทัด / 1 คอมเมนท์
   </div>
 </div>
 
 <script>
-function updatePrice(){
-  const service = document.getElementById("service").value;
-  let pricePerUnit = 0;
-  let quantity = 0;
+const S={
+followers_inter:{min:50,max:10000,t:[[99,.7],[499,.6],[999,.4],[10000,.256]],tpe:'q'},
+followers_th:{min:20,max:5000,t:[[99,2.5],[499,2],[999,1.7],[5000,1.39]],tpe:'q'},
+likes_inter:{min:50,max:10000,t:[[499,.3],[999,.25],[4999,.22],[10000,.2]],tpe:'q'},
+likes_th:{min:20,max:2000,t:[[99,2.5],[499,2],[2000,1.8]],tpe:'q'},
+views_inter:{min:1000,max:100000,p:.05,tpe:'q'},
+views_th:{min:1000,max:10000,p:.1,tpe:'q'},
+comment_th:{min:10,max:50,p:5,tpe:'l'},
+share_inter:{min:100,max:1000,p:.1,tpe:'q'},
+save_inter:{min:100,max:1000,p:.1,tpe:'q'}
+};
 
-  document.getElementById("quantityBox").style.display = "block";
-  document.getElementById("commentBox").style.display = "none";
+function priceOf(s,q){
+  if(s.t){
+    for(let i of s.t){if(q<=i[0]) return i[1]}
+  }
+  return s.p;
+}
 
-  if(service === "follower_th") pricePerUnit = 0.12;
-  if(service === "follower_inter") pricePerUnit = 0.08;
-  if(service === "like") pricePerUnit = 0.05;
+function calc(){
+  const key=service.value;
+  const s=S[key];
 
-  if(service === "comment"){
-    document.getElementById("quantityBox").style.display = "none";
-    document.getElementById("commentBox").style.display = "block";
-    const lines = document.getElementById("comments").value
-      .split("\n").filter(l => l.trim() !== "");
-    quantity = lines.length;
-    pricePerUnit = 1;
+  qtyBox.style.display=s.tpe==='q'?'block':'none';
+  commentBox.style.display=s.tpe==='l'?'block':'none';
+
+  let q=0;
+  if(s.tpe==='l'){
+    q=comment.value.split('\n').filter(x=>x.trim()).length;
+    limit.textContent='';
   }else{
-    quantity = Number(document.getElementById("quantity").value || 0);
+    q=Number(qty.value||0);
+    limit.textContent=`ขั้นต่ำ ${s.min} / สูงสุด ${s.max}`;
   }
 
-  let total = quantity * pricePerUnit;
+  if(!q||q<s.min||q>s.max){
+    result.innerHTML='<div class="error">ข้อมูลไม่ถูกต้อง</div>';
+    total.textContent='0.00 บาท';
+    return;
+  }
 
-  if(quantity >= 1000) total *= 0.9;
-  if(quantity >= 5000) total *= 0.8;
-
-  document.getElementById("total").innerText = total.toFixed(2);
+  const u=priceOf(s,q);
+  total.textContent=(q*u).toFixed(2)+' บาท';
+  result.innerHTML=`<div class="success">${q} × ${u} บาท</div>`;
 }
-
-function submitOrder(){
-  alert("ตัวอย่างเท่านั้น: พร้อมต่อ API แล้ว");
-}
-updatePrice();
+calc();
 </script>
 
 </body>
