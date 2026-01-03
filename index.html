@@ -64,17 +64,24 @@ function login(){
 }
 
 function order(){
- fetch(API,{
-  method:"POST",
-  headers:{"Content-Type":"application/json"},
-  body:JSON.stringify({
-   action:"create_order",
-   user_id:user.user_id,
-   service:service.value,
-   quantity:qty.value,
-   link:link.value,
-   amount:0
+ fetch(API, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    email: email.value,
+    password: password.value
   })
+})
+.then(res => res.json())
+.then(data => {
+  if(!data.success){
+    alert("ล็อกอินไม่ผ่าน");
+    return;
+  }
+  alert("ล็อกอินสำเร็จ เครดิต: " + data.user.credit);
+})
  })
  .then(r=>r.json())
  .then(d=>{
