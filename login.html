@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เข้าสู่ระบบ | SocialBoostTH</title>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui,sans-serif;
+  background:linear-gradient(180deg,#0f172a,#020617);
+  color:#fff;
+}
+.container{
+  max-width:420px;
+  margin:80px auto;
+  padding:28px;
+  background:rgba(255,255,255,0.06);
+  border-radius:18px;
+}
+h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+input{
+  width:100%;
+  padding:14px;
+  margin-bottom:14px;
+  border-radius:12px;
+  border:none;
+  background:#020617;
+  color:#fff;
+  font-size:15px;
+}
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#22c55e;
+  color:#000;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+}
+.link{
+  text-align:center;
+  margin-top:14px;
+}
+.link a{
+  color:#93c5fd;
+  text-decoration:none;
+}
+.msg{
+  text-align:center;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>เข้าสู่ระบบ</h2>
+
+  <input id="email" placeholder="อีเมล">
+  <input id="password" type="password" placeholder="รหัสผ่าน">
+
+  <button onclick="login()">เข้าสู่ระบบ</button>
+
+  <div class="msg" id="msg"></div>
+
+  <div class="link">
+    ยังไม่มีบัญชี?
+    <a href="register.html">สมัครสมาชิก</a>
+  </div>
+</div>
+
+<script>
+function login(){
+  msg.innerText = "ระบบ Login จะเปิดใช้งานในขั้นถัดไป";
+  msg.style.color = "#facc15";
+}
+</script>
+
+</body>
+</html>
