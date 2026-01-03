@@ -1,179 +1,63 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SocialBoostTH | ระบบเพิ่มผู้ติดตาม</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SocialBoostTH</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f7fb;
-      color: #333;
-    }
-
-    header {
-      background: #0f172a;
-      color: #fff;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header .logo {
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    nav a {
-      color: #cbd5f5;
-      margin-left: 15px;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    nav a:hover {
-      color: #fff;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .hero {
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-      margin-bottom: 25px;
-    }
-
-    .hero h1 {
-      margin-top: 0;
-      font-size: 26px;
-    }
-
-    .hero p {
-      line-height: 1.7;
-      color: #555;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-    }
-
-    .card h3 {
-      margin-top: 0;
-      font-size: 18px;
-    }
-
-    .card p {
-      font-size: 14px;
-      color: #555;
-      line-height: 1.6;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 13px;
-      color: #777;
-    }
-
-    .notice {
-      background: #fff7ed;
-      border-left: 5px solid #f59e0b;
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 20px;
-      font-size: 14px;
-      color: #7c2d12;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:system-ui,sans-serif;
+  background:#f1f5f9;
+}
+header{
+  background:#0f172a;
+  color:#fff;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+nav a{
+  color:#93c5fd;
+  margin-left:16px;
+  text-decoration:none;
+  font-weight:500;
+}
+main{
+  padding:40px 20px;
+  max-width:900px;
+  margin:auto;
+}
+.card{
+  background:#fff;
+  padding:24px;
+  border-radius:14px;
+  box-shadow:0 10px 20px rgba(0,0,0,.08);
+}
+</style>
 </head>
 
 <body>
+<header>
+  <div><strong>SocialBoostTH</strong></div>
+  <nav>
+    <a href="login.html">เข้าสู่ระบบ</a>
+    <a href="register.html">สมัครสมาชิก</a>
+  </nav>
+</header>
 
-  <header>
-    <div class="logo">SocialBoostTH</div>
-    <nav>
-      <a href="index.html">หน้าแรก</a>
-      <a href="order.html">สั่งซื้อ</a>
-      <a href="orders.html">เช็คออเดอร์</a>
-      <a href="login.html">เข้าสู่ระบบ</a>
-    </nav>
-  </header>
-
-  <div class="container">
-
-    <div class="hero">
-      <h1>ระบบเพิ่มผู้ติดตาม & บริการโซเชียล</h1>
-      <p>
-        SocialBoostTH ให้บริการเพิ่มผู้ติดตาม ไลค์ วิว และคอมเมนต์  
-        สำหรับ TikTok / Instagram / Facebook  
-        ใช้งานง่าย คิดราคาอัตโนมัติ ตรวจสอบออเดอร์ได้ด้วยตัวเอง
-      </p>
-    </div>
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>📌 บริการของเรา</h3>
-        <p>
-          • ผู้ติดตามไทย / ต่างชาติ<br>
-          • ไลค์ / วิว / แชร์<br>
-          • คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)<br>
-          • คิดราคาตามจำนวนที่สั่ง
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>💰 ระบบเครดิต</h3>
-        <p>
-          ลูกค้าเติมเงินผ่านแอดมินทาง LINE  
-          จากนั้นระบบจะเพิ่มเครดิตเข้าเว็บ  
-          และหักเงินอัตโนมัติเมื่อมีการสั่งซื้อ
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>🔍 เช็คออเดอร์</h3>
-        <p>
-          ลูกค้าสามารถเช็คสถานะออเดอร์ได้ตลอด  
-          ด้วยรหัสออเดอร์ เช่น SB-0001  
-          ดูประวัติการสั่งซื้อย้อนหลังได้
-        </p>
-      </div>
-
-    </div>
-
-    <div class="notice">
-      <strong>การเติมเงิน:</strong><br>
-      โอนเงินผ่านบัญชี<br>
-      ธนาคารกสิกรไทย<br>
-      เลขบัญชี: <strong>066-1213-728</strong><br>
-      ชื่อบัญชี: <strong>สรวงสุดา ศรีสุวรรณ์</strong><br>
-      จากนั้นติดต่อแอดมินทาง LINE เพื่อเพิ่มเครดิต
-    </div>
-
+<main>
+  <div class="card">
+    <h2>ระบบเพิ่มผู้ติดตาม & บริการโซเชียล</h2>
+    <p>
+      ✔ ผู้ติดตามไทย / ต่างชาติ<br>
+      ✔ คิดราคาตามจำนวนอัตโนมัติ<br>
+      ✔ ระบบเครดิตในเว็บไซต์<br>
+      ✔ ลูกค้าเช็คสถานะออเดอร์เองได้
+    </p>
   </div>
-
-  <footer>
-    © 2026 SocialBoostTH — ระบบให้บริการโซเชียลมีเดีย
-  </footer>
-
+</main>
 </body>
 </html>
