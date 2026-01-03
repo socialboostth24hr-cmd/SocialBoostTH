@@ -56,7 +56,7 @@ function check(){
     return;
   }
 
-  fetch(API + "?order=" + encodeURIComponent(id))
+  fetch(API + "?order=" + encodeURIComponent(id) + "&t=" + Date.now())
     .then(res => res.json())
     .then(data => {
       if(!data.success){
