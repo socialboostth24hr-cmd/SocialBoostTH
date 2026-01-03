@@ -232,5 +232,74 @@ function order(){
 if(localStorage.getItem("currentUser"))showApp();
 </script>
 
+<script>
+const PRICE_TABLE = {
+  "ผู้ติดตามต่างชาติ": qty => {
+    if(qty <= 50) return 0.7;
+    if(qty <= 99) return 0.6;
+    if(qty <= 499) return 0.5;
+    if(qty <= 999) return 0.4;
+    return 0.256;
+  },
+  "ผู้ติดตามไทย": qty => 1.39,
+  "ถูกใจต่างชาติ": qty => {
+    if(qty < 500) return 0.3;
+    if(qty < 1000) return 0.25;
+    if(qty < 5000) return 0.22;
+    return 0.20;
+  },
+  "วิวต่างชาติ": qty => 0.05,
+  "คอมเมนท์ไทย": qty => 5
+};
+</script>
+<script>
+function calculateTotal(){
+  const serviceName = service.value;
+  const qty = serviceName === "คอมเมนท์ไทย"
+    ? commentText.value.split("\n").filter(x=>x.trim()).length
+    : Number(amount.value);
+
+  if(!qty || qty <= 0){
+    totalDisplay.innerText = "0 บาท";
+    return 0;
+  }
+
+  const unitPrice = PRICE_TABLE[serviceName](qty);
+  const total = qty * unitPrice;
+
+  totalDisplay.innerText =
+    `ราคา ${unitPrice} บาท × ${qty} = ${total.toFixed(2)} บาท`;
+
+  return total;
+}
+</script>
+<input id="amount" oninput="calculateTotal()">
+<textarea id="commentText" oninput="calculateTotal()"></textarea>
+
+<div id="totalDisplay" style="margin-top:10px;font-weight:800">
+  0 บาท
+</div>
+<script>
+function order(){
+  const serviceName = service.value;
+  const total = calculateTotal();
+
+  const {u,users} = getUser();
+
+  if(users[u].balance < total){
+    alert("ยอดเงินไม่เพียงพอ");
+    return;
+  }
+
+  users[u].balance -= total;
+  users[u].history.push(
+    `สั่งซื้อ ${serviceName} | จำนวน ${total.toFixed(2)} บาท`
+  );
+
+  localStorage.setItem("users",JSON.stringify(users));
+  update();
+  alert("สั่งซื้อสำเร็จ");
+}
+</script>
 </body>
 </html>
