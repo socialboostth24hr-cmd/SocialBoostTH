@@ -2,31 +2,72 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>เช็คออเดอร์</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เช็คสถานะออเดอร์</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{font-family:system-ui;background:#f5f7fb}
-.box{max-width:420px;margin:60px auto;background:#fff;padding:24px;border-radius:14px}
-input,button{width:100%;padding:12px;margin-top:12px}
+body{
+  font-family:sans-serif;
+  background:#f5f7fb;
+}
+.box{
+  max-width:420px;
+  margin:60px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+}
+button{
+  background:#0b5cff;
+  border:none;
+  color:#fff;
+  border-radius:8px;
+}
+.result{
+  margin-top:16px;
+  font-size:14px;
+}
 </style>
 </head>
 <body>
 
 <div class="box">
-  <h2>เช็คสถานะออเดอร์</h2>
-  <input id="oid" placeholder="เช่น SB-0001">
-  <button onclick="check()">ตรวจสอบ</button>
-  <div id="result"></div>
+  <h2>เช็คออเดอร์</h2>
+  <input id="orderId" placeholder="เช่น SB-0001">
+  <button onclick="checkOrder()">เช็ค</button>
+
+  <div class="result" id="result"></div>
 </div>
 
 <script>
-function check(){
-  fetch("วาง_APPS_SCRIPT_URL?order="+oid.value)
-  .then(r=>r.json())
-  .then(d=>{
-    result.innerHTML=`สถานะ: <b>${d.status}</b>`;
-  });
+const API_URL = "https://script.google.com/macros/s/AKfycbwhoax_2Lc9Vrz5rqlHrW1qJA0JqhypKzbOsCKd2IgL_1sR_au58D1n1jZhagtj4zN0vw/exec";
+
+function checkOrder(){
+  const id = document.getElementById("orderId").value.trim();
+  if(!id) return alert("กรุณากรอกเลขออเดอร์");
+
+  fetch(API_URL + "?order=" + id)
+    .then(res => res.json())
+    .then(data => {
+      if(!data.success){
+        document.getElementById("result").innerText = data.message;
+        return;
+      }
+
+      const o = data.order;
+      document.getElementById("result").innerHTML = `
+        <b>บริการ:</b> ${o.service}<br>
+        <b>จำนวน:</b> ${o.quantity}<br>
+        <b>สถานะ:</b> ${o.status}<br>
+        <b>ลิงก์:</b> <a href="${o.link}" target="_blank">เปิด</a>
+      `;
+    });
 }
 </script>
+
 </body>
 </html>
