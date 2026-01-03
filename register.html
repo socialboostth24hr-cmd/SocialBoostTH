@@ -1,100 +1,25 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>สมัครสมาชิก | SocialBoostTH</title>
-
-<style>
-body{
-  margin:0;
-  font-family:system-ui,sans-serif;
-  background:linear-gradient(180deg,#0f172a,#020617);
-  color:#fff;
-}
-.container{
-  max-width:420px;
-  margin:40px auto;
-  padding:25px;
-  background:rgba(255,255,255,.05);
-  border-radius:16px;
-}
-h2{ text-align:center; margin-bottom:20px }
-input{
-  width:100%;
-  padding:14px;
-  margin-bottom:12px;
-  border-radius:10px;
-  border:none;
-  background:#020617;
-  color:#fff;
-}
-button{
-  width:100%;
-  padding:14px;
-  background:#22c55e;
-  border:none;
-  border-radius:12px;
-  color:#000;
-  font-size:16px;
-  font-weight:bold;
-}
-.msg{
-  text-align:center;
-  margin-top:12px;
-}
-</style>
-</head>
-
-<body>
-<div class="container">
-  <h2>สมัครสมาชิก</h2>
-
-  <input id="firstname" placeholder="ชื่อ">
-  <input id="lastname" placeholder="นามสกุล">
-  <input id="bank" placeholder="ธนาคาร (เช่น กสิกรไทย)">
-  <input id="bank_account" placeholder="เลขบัญชี">
-  <input id="email" placeholder="อีเมล">
-  <input id="password" type="password" placeholder="รหัสผ่าน">
-
-  <button onclick="register()">สมัครสมาชิก</button>
-  <div class="msg" id="msg"></div>
-</div>
-
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzXWDs9MhxmrK5-BXrOhd3-JcO_Zpv4flCEs2l9hhz7W9sqcGtfQBnRcc2F5gzpnnmDvw/exec";
-
 function register(){
-  msg.style.color="#fff";
-  msg.innerText="กำลังสมัครสมาชิก...";
-
-  const data={
-    firstname:firstname.value.trim(),
-    lastname:lastname.value.trim(),
-    bank:bank.value.trim(),
-    bank_account:bank_account.value.trim(),
-    email:email.value.trim(),
-    password:password.value
+  const data = {
+    action: "register",
+    firstname: firstname.value,
+    lastname: lastname.value,
+    bank: bank.value,
+    bank_account: bank_account.value,
+    email: email.value,
+    password: password.value
   };
 
   fetch(API_URL,{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify(data)
+    body: JSON.stringify(data)
   })
-  .then(res=>res.json())
+  .then(r=>r.json())
   .then(res=>{
-    msg.innerText=res.message;
-    msg.style.color=res.success ? "#22c55e" : "#f87171";
+    msg.innerText = res.message;
+    msg.style.color = res.success ? "#22c55e" : "#f87171";
   })
-  .catch(err=>{
-    console.error(err);
-    msg.innerText="❌ เชื่อมต่อระบบไม่ได้ (API)";
-    msg.style.color="#f87171";
+  .catch(()=>{
+    msg.innerText = "เชื่อมต่อระบบไม่ได้";
+    msg.style.color = "#f87171";
   });
 }
-</script>
-</body>
-</html>
