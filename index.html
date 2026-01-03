@@ -2,288 +2,106 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SocialBoostTH</title>
-
+<title>SocialBoostTH | สั่งซื้อ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-*{box-sizing:border-box;font-family:Inter,system-ui}
-body{margin:0;background:#f4f6f9;color:#1f2937}
-
-/* HEADER */
-header{
-  background:#fff;
-  border-bottom:1px solid #e5e7eb;
-  padding:14px 22px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:20px;
-  font-weight:800;
-  color:#1d4ed8;
-}
-nav{display:flex;gap:18px}
-nav span{
-  cursor:pointer;
-  font-weight:600;
-  color:#374151;
-}
-nav span.active{
-  color:#1d4ed8;
-  border-bottom:2px solid #1d4ed8;
-  padding-bottom:4px;
-}
-.balance{
-  background:#f1f5f9;
-  padding:8px 14px;
-  border-radius:10px;
-  font-weight:700;
-}
-
-/* LAYOUT */
-.container{
-  max-width:900px;
-  margin:30px auto;
-  padding:0 16px;
-}
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:22px;
-  margin-bottom:20px;
-  box-shadow:0 8px 24px rgba(0,0,0,.05);
-}
-h2{margin-top:0}
-
-/* FORM */
-label{font-size:14px;font-weight:600;margin-bottom:6px;display:block}
-input,select,textarea{
-  width:100%;
-  padding:12px;
-  border:1px solid #d1d5db;
-  border-radius:10px;
-  margin-bottom:14px;
-}
-textarea{resize:none;height:90px}
-
-/* BUTTON */
-button.primary{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  background:#1d4ed8;
-  color:#fff;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-}
-button.danger{
-  background:none;
-  border:none;
-  color:#dc2626;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:10px;
-}
-
-/* TABLE */
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left}
-
-.price{
-  font-size:20px;
-  font-weight:800;
-  color:#1d4ed8;
-  margin:8px 0;
-}
-
-.hidden{display:none}
-
-/* AUTH */
-#auth{
-  max-width:360px;
-  margin:120px auto;
-}
-.auth-title{text-align:center;font-size:22px;font-weight:800;color:#1d4ed8}
-.auth-sub{text-align:center;color:#6b7280;margin-bottom:20px}
+body{margin:0;font-family:system-ui;background:#f5f7fb}
+header{background:#0f172a;color:#fff;padding:14px 20px;display:flex;justify-content:space-between}
+nav{background:#fff;border-bottom:1px solid #e5e7eb}
+nav a{padding:14px;display:inline-block;text-decoration:none;color:#374151;font-weight:600}
+nav a:hover{color:#2563eb}
+.container{max-width:520px;margin:30px auto;background:#fff;padding:26px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+label{margin-top:14px;display:block;font-weight:600}
+input,select,textarea{width:100%;padding:12px;margin-top:6px;border-radius:10px;border:1px solid #d1d5db}
+textarea{height:100px}
+.price{text-align:center;font-size:26px;font-weight:800;margin:20px 0}
+button{width:100%;padding:16px;border-radius:14px;border:none;background:#2563eb;color:#fff;font-weight:800}
+.note{background:#fff7ed;padding:14px;border-radius:12px;font-size:13px;margin-top:16px}
 </style>
 </head>
 
 <body>
 
-<!-- AUTH -->
-<div id="auth" class="card">
-  <div class="auth-title">SocialBoostTH</div>
-  <div class="auth-sub" id="authText">เข้าสู่ระบบ</div>
-  <input id="username" placeholder="ชื่อผู้ใช้">
-  <input id="email" placeholder="อีเมล" class="hidden">
-  <input id="password" type="password" placeholder="รหัสผ่าน">
-  <button class="primary" onclick="submitAuth()">ยืนยัน</button>
-  <p style="text-align:center;margin-top:14px">
-    <a href="#" onclick="toggleAuth()">สมัครสมาชิก / เข้าสู่ระบบ</a>
-  </p>
-</div>
-
-<!-- APP -->
-<div id="app" class="hidden">
-
 <header>
-  <div class="brand">
-    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg"
-     style="width:22px">
-    SocialBoostTH
-  </div>
-
-  <nav>
-    <span class="active" onclick="go('order')">สั่งซื้อ</span>
-    <span onclick="go('status')">เช็คออเดอร์</span>
-    <span onclick="go('history')">ประวัติ</span>
-    <span onclick="go('admin')">หลังบ้าน</span>
-  </nav>
-
-  <div class="balance">ยอดเงิน: <span id="balance">0</span> บาท</div>
+  <b>SocialBoostTH</b>
+  <div>ยอดเงิน: 0.00 บาท</div>
 </header>
 
+<nav>
+  <a href="index.html">สั่งซื้อ</a>
+  <a href="check-order.html">เช็คออเดอร์</a>
+  <a href="wallet.html">กระเป๋าเงิน</a>
+</nav>
+
 <div class="container">
+  <label>บริการ</label>
+  <select id="service">
+    <option value="followers_inter">ผู้ติดตามต่างชาติ</option>
+    <option value="followers_th">ผู้ติดตามไทย</option>
+    <option value="likes_inter">ไลก์ต่างชาติ</option>
+    <option value="comments">คอมเมนต์ไทย</option>
+  </select>
 
-<!-- ORDER -->
-<div class="card" id="orderPage">
-<h2>สั่งซื้อบริการ</h2>
+  <div id="qtyBox">
+    <label>จำนวน</label>
+    <input type="number" id="qty">
+  </div>
 
-<label>บริการ</label>
-<select id="service" onchange="calculate()">
-  <option>ผู้ติดตามต่างชาติ</option>
-  <option>ผู้ติดตามไทย</option>
-  <option>ถูกใจต่างชาติ</option>
-  <option>วิวต่างชาติ</option>
-  <option>คอมเมนท์ไทย</option>
-</select>
+  <div id="commentBox" style="display:none">
+    <label>คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
+    <textarea id="comments"></textarea>
+  </div>
 
-<label>จำนวน</label>
-<input id="qty" type="number" oninput="calculate()">
+  <label>ลิงก์</label>
+  <input id="link">
 
-<div id="commentBox" class="hidden">
-<label>คอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
-<textarea id="comments" oninput="calculate()"></textarea>
-</div>
+  <div class="price" id="price">0.00 บาท</div>
 
-<label>ลิงก์ TikTok</label>
-<input id="link">
+  <button onclick="sendOrder()">สั่งซื้อ</button>
 
-<div class="price" id="total">0.00 บาท</div>
-<button class="primary" onclick="order()">ยืนยันการสั่งซื้อ</button>
-</div>
-
-<!-- STATUS -->
-<div class="card hidden" id="statusPage">
-<h2>เช็คสถานะคำสั่งซื้อ</h2>
-<input id="orderId" placeholder="เช่น SB-0001">
-<button class="primary" onclick="checkStatus()">ตรวจสอบ</button>
-<div id="statusResult" style="margin-top:14px;font-weight:600"></div>
-</div>
-
-<!-- HISTORY -->
-<div class="card hidden" id="historyPage">
-<h2>ประวัติการทำรายการ</h2>
-<table>
-<thead><tr><th>รายการ</th><th>ยอดเงิน</th></tr></thead>
-<tbody id="historyTable"></tbody>
-</table>
-<button class="danger" onclick="logout()">ออกจากระบบ</button>
-</div>
-
-<!-- ADMIN -->
-<div class="card hidden" id="adminPage">
-<h2>หลังบ้าน (Admin)</h2>
-<table>
-<tr><th>Order</th><th>บริการ</th><th>สถานะ</th></tr>
-<tr><td>SB-0001</td><td>ผู้ติดตามต่างชาติ</td><td>กำลังดำเนินการ</td></tr>
-<tr><td>SB-0002</td><td>คอมเมนท์ไทย</td><td>เสร็จสิ้น</td></tr>
-</table>
-</div>
-
-</div>
+  <div class="note">
+    • ซื้อเยอะราคาถูกลงอัตโนมัติ<br>
+    • ไม่สามารถยกเลิกหรือคืนเงินได้
+  </div>
 </div>
 
 <script>
-let login=true;
-function toggleAuth(){
-login=!login;
-authText.innerText=login?"เข้าสู่ระบบ":"สมัครสมาชิก";
-email.classList.toggle("hidden");
+const priceMap={
+  followers_inter:q=>q>=1000?0.25:0.35,
+  followers_th:q=>1.2,
+  likes_inter:q=>0.25,
+  comments:q=>5
 }
 
-function submitAuth(){
-const u=username.value.trim(),p=password.value,e=email.value.trim();
-let users=JSON.parse(localStorage.getItem("users")||"{}");
-if(login){
-if(users[u]&&users[u].password===p){
-localStorage.setItem("user",u);showApp();
-}else alert("ข้อมูลไม่ถูกต้อง");
-}else{
-if(!u||!p||!e)return alert("กรอกข้อมูลไม่ครบ");
-users[u]={password:p,email:e,balance:3000,history:[]};
-localStorage.setItem("users",JSON.stringify(users));
-alert("สมัครสำเร็จ");toggleAuth();
-}
-}
+service.onchange=calc;
+qty.oninput=calc;
+comments.oninput=calc;
 
-function showApp(){auth.classList.add("hidden");app.classList.remove("hidden");update();}
-function getUser(){const u=localStorage.getItem("user");const users=JSON.parse(localStorage.getItem("users"));return{u,users};}
-
-function rate(s,q){
-if(s==="ผู้ติดตามต่างชาติ"){if(q<100)return.6;if(q<500)return.5;return.4;}
-if(s==="ผู้ติดตามไทย")return1.39;
-if(s==="ถูกใจต่างชาติ")return.25;
-if(s==="วิวต่างชาติ")return.05;
-if(s==="คอมเมนท์ไทย")return5;
+function calc(){
+  if(service.value==="comments"){
+    qtyBox.style.display="none";
+    commentBox.style.display="block";
+    const c=comments.value.split("\n").filter(x=>x).length;
+    price.innerText=(c*5).toFixed(2)+" บาท";
+    return;
+  }
+  qtyBox.style.display="block";
+  commentBox.style.display="none";
+  if(!qty.value){price.innerText="0.00 บาท";return}
+  price.innerText=(qty.value*priceMap[service.value](qty.value)).toFixed(2)+" บาท";
 }
 
-function calculate(){
-commentBox.classList.toggle("hidden",service.value!=="คอมเมนท์ไทย");
-let q=service.value==="คอมเมนท์ไทย"?comments.value.split("\n").filter(x=>x.trim()).length:Number(qty.value);
-if(!q){total.innerText="0.00 บาท";return;}
-total.innerText=(q*rate(service.value,q)).toFixed(2)+" บาท";
+function sendOrder(){
+  fetch("วาง_APPS_SCRIPT_URL_ของคุณ",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      service:service.options[service.selectedIndex].text,
+      quantity: service.value==="comments"?comments.value.split("\n").filter(x=>x).length:Number(qty.value),
+      link:link.value
+    })
+  }).then(()=>alert("บันทึกออเดอร์แล้ว"));
 }
-
-function order(){
-const{u,users}=getUser();const a=parseFloat(total.innerText);
-if(users[u].balance<a)return alert("ยอดเงินไม่พอ");
-users[u].balance-=a;
-users[u].history.push({name:service.value,amount:a});
-localStorage.setItem("users",JSON.stringify(users));
-update();alert("สั่งซื้อสำเร็จ");
-}
-
-function update(){
-const{u,users}=getUser();
-balance.innerText=users[u].balance.toFixed(2);
-historyTable.innerHTML="";
-users[u].history.forEach(h=>historyTable.innerHTML+=`<tr><td>${h.name}</td><td>${h.amount.toFixed(2)} บาท</td></tr>`);
-}
-
-function checkStatus(){
-const d={SB-0001:"กำลังดำเนินการ",SB-0002:"เสร็จสิ้น"};
-statusResult.innerText=d[orderId.value]||"ไม่พบข้อมูล";
-}
-
-function go(p){
-document.querySelectorAll("nav span").forEach(n=>n.classList.remove("active"));
-event.target.classList.add("active");
-orderPage.classList.toggle("hidden",p!=="order");
-statusPage.classList.toggle("hidden",p!=="status");
-historyPage.classList.toggle("hidden",p!=="history");
-adminPage.classList.toggle("hidden",p!=="admin");
-}
-
-function logout(){localStorage.removeItem("user");location.reload();}
-if(localStorage.getItem("user"))showApp();
 </script>
-
 </body>
 </html>
