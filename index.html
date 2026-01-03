@@ -97,7 +97,11 @@ function login(){
       password: password.value
     })
   })
-  .then(res => res.json())
+.then(async res => {
+  const t = await res.text();
+  console.log("RAW RESPONSE:", t);
+  return JSON.parse(t);
+})
   .then(d => {
 
     if(d.status !== "success"){
