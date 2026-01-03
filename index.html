@@ -102,15 +102,13 @@ function login(){
   console.log("RAW RESPONSE:", t);
   return JSON.parse(t);
 })
-  .then(d => {
+.then(d=>{
+  if(!d.success){
+    msg.innerText = d.message || "เข้าสู่ระบบไม่สำเร็จ";
+    return;
+  }
 
-    if(d.status !== "success"){
-      msg.innerText = d.message || "เข้าสู่ระบบไม่สำเร็จ";
-      return;
-    }
-
-    // เก็บ user
-    user = d;
+  user = d.user;
 
     name.innerText = d.fullname;
     credit.innerText = d.credit;
