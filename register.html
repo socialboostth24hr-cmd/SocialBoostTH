@@ -2,110 +2,95 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>สมัครสมาชิก - SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สมัครสมาชิก | SocialBoostTH</title>
 
 <style>
-body{
-  background:#0f172a;
-  color:#fff;
-  font-family:system-ui;
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: linear-gradient(180deg,#0f172a,#020617);
+  color: #fff;
 }
-.box{
-  max-width:420px;
-  margin:40px auto;
-  background:#020617;
-  padding:24px;
-  border-radius:16px;
+.container {
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 25px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
 }
-h2{text-align:center;margin-top:0}
-label{display:block;margin-top:14px;font-size:14px}
-input{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  background:#020617;
-  border:1px solid #334155;
-  border-radius:8px;
-  color:#fff;
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
 }
-button{
-  width:100%;
-  margin-top:20px;
-  padding:12px;
-  font-size:16px;
-  font-weight:bold;
-  border:none;
-  border-radius:10px;
-  background:#22c55e;
-  color:#000;
-  cursor:pointer;
+input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #020617;
+  color: #fff;
 }
-.msg{margin-top:12px;font-size:14px}
-.error{color:#f87171}
-.success{color:#4ade80}
+button {
+  width: 100%;
+  padding: 14px;
+  background: #22c55e;
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-size: 16px;
+  font-weight: bold;
+}
+.msg {
+  text-align: center;
+  margin-top: 12px;
+}
 </style>
 </head>
 
 <body>
-
-<div class="box">
+<div class="container">
   <h2>สมัครสมาชิก</h2>
 
-  <label>ชื่อ</label>
-  <input id="first_name">
-
-  <label>นามสกุล</label>
-  <input id="last_name">
-
-  <label>ธนาคาร</label>
-  <input id="bank_name" placeholder="เช่น กสิกรไทย">
-
-  <label>เลขบัญชี</label>
-  <input id="bank_account">
-
-  <label>อีเมล</label>
-  <input id="email" type="email">
-
-  <label>รหัสผ่าน</label>
-  <input id="password" type="password">
+  <input id="firstname" placeholder="ชื่อ">
+  <input id="lastname" placeholder="นามสกุล">
+  <input id="bank" placeholder="ธนาคาร (เช่น กสิกรไทย)">
+  <input id="bank_account" placeholder="เลขบัญชี">
+  <input id="email" placeholder="อีเมล">
+  <input id="password" type="password" placeholder="รหัสผ่าน">
 
   <button onclick="register()">สมัครสมาชิก</button>
-
-  <div id="msg" class="msg"></div>
+  <div class="msg" id="msg"></div>
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbywQ6tRdQuZvta5x3zaDfmwIujlZkeMJ58Oi57j1LJmUcRkswd8K-uJ_M1iP1oa2LaDMA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwKbvoQytKr0OhFdOslIigtfdRE3mIZIQDge7VmAwbdcEVdtQeNqahtoFCyY4zrt4vHLQ/exec";
 
 function register(){
   const data = {
-    action: "register",
-    first_name: first_name.value,
-    last_name: last_name.value,
-    bank_name: bank_name.value,
+    firstname: firstname.value,
+    lastname: lastname.value,
+    bank: bank.value,
     bank_account: bank_account.value,
     email: email.value,
     password: password.value
   };
 
-  fetch(API,{
+  fetch(API_URL,{
     method:"POST",
-    body:JSON.stringify(data)
+    body: JSON.stringify(data)
   })
   .then(r=>r.json())
-  .then(d=>{
-    if(d.success){
-      msg.innerHTML = "<span class='success'>สมัครสมาชิกสำเร็จ</span>";
+  .then(res=>{
+    msg.innerText = res.message;
+    if(res.success){
+      msg.style.color = "#22c55e";
     }else{
-      msg.innerHTML = "<span class='error'>สมัครไม่สำเร็จ</span>";
+      msg.style.color = "#f87171";
     }
-  })
-  .catch(()=>{
-    msg.innerHTML = "<span class='error'>เชื่อมต่อระบบไม่ได้</span>";
   });
 }
 </script>
-
 </body>
 </html>
