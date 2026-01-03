@@ -82,7 +82,6 @@ hr{margin:20px 0;border:none;border-top:1px solid #1e293b}
 </div>
 
 <script>
-/* 🔴 ใส่ลิงก์ API ของคุณตรงนี้ */
 const API = "https://script.google.com/macros/s/AKfycbyRywrSGmTtKrjDIOU01AYXujhq1qaXSFI41IeNfxC_6hLHMwFyy9rY23WXr2PBLYA9/exec";
 
 let currentUser = null;
@@ -91,6 +90,7 @@ let currentUser = null;
 function login(){
   fetch(API,{
     method:"POST",
+    headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
       action:"login",
       email:email.value,
@@ -108,6 +108,10 @@ function login(){
     panel.style.display="block";
     userName.innerText=d.user.firstname+" "+d.user.lastname;
     credit.innerText=d.user.credit;
+  })
+  .catch(err=>{
+    loginMsg.innerText="เชื่อมต่อระบบไม่ได้";
+    console.error(err);
   });
 }
 
@@ -115,6 +119,7 @@ function login(){
 function createOrder(){
   fetch(API,{
     method:"POST",
+    headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
       action:"create_order",
       user_id:currentUser.user_id,
@@ -133,6 +138,7 @@ function createOrder(){
 function loadOrders(){
   fetch(API,{
     method:"POST",
+    headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
       action:"get_orders",
       user_id:currentUser.user_id
@@ -142,7 +148,7 @@ function loadOrders(){
   .then(d=>{
     orders.innerHTML="";
     d.orders.forEach(o=>{
-      orders.innerHTML +=📦 ${o[0]} | ${o[2]} | ${o[5]}<br>`;
+      orders.innerHTML += 📦 ${o[0]} | ${o[2]} | ${o[5]}<br>;
     });
   });
 }
