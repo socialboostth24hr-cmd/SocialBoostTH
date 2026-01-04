@@ -2,119 +2,227 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SocialBoostTH</title>
+<title>SocialBoostTH | Login</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
+:root{
+  --purple:#7c3aed;
+  --purple-dark:#5b21b6;
+  --bg:#0b0216;
+  --card:#120726;
+  --border:#2e1065;
+}
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:system-ui;
-  background:#0f172a;
-  color:#fff
+  font-family:system-ui,-apple-system;
+  background:linear-gradient(180deg,#0b0216,#1a0438);
+  color:#fff;
 }
+
 .container{
   max-width:420px;
-  margin:40px auto;
-  padding:24px;
-  background:#020617;
-  border-radius:16px
+  margin:60px auto;
+  padding:28px;
+  background:var(--card);
+  border-radius:20px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
 }
-input,button{
+
+.logo{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.logo img{
+  width:90px;
+}
+
+h2{
+  text-align:center;
+  margin:10px 0 4px;
+}
+
+.desc{
+  text-align:center;
+  font-size:14px;
+  opacity:.8;
+  margin-bottom:22px;
+}
+
+label{
+  font-size:14px;
+  margin-top:12px;
+  display:block;
+}
+
+.input-group{
+  position:relative;
+}
+
+input{
   width:100%;
   padding:14px;
-  margin-top:10px;
-  border-radius:10px;
-  border:none
-}
-input{
-  background:#020617;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#0f0220;
   color:#fff;
-  border:1px solid #1e293b
+  outline:none;
+  font-size:15px;
 }
+
+input:focus{
+  border-color:var(--purple);
+}
+
+.eye{
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  opacity:.7;
+}
+
 button{
-  background:#22c55e;
-  font-weight:bold
+  width:100%;
+  padding:15px;
+  margin-top:22px;
+  border-radius:14px;
+  border:none;
+  background:linear-gradient(90deg,var(--purple),var(--purple-dark));
+  color:#fff;
+  font-weight:bold;
+  font-size:16px;
 }
+
+button:active{
+  transform:scale(.98);
+}
+
+.msg{
+  margin-top:12px;
+  font-size:14px;
+  text-align:center;
+  opacity:.9;
+}
+
+.register{
+  margin-top:18px;
+  text-align:center;
+  font-size:14px;
+  opacity:.85;
+}
+
+.register a{
+  color:#c4b5fd;
+  text-decoration:none;
+  font-weight:bold;
+}
+
 .box{
-  background:#020617;
-  padding:12px;
-  border-radius:10px;
-  margin-top:12px
-}
-.small{
-  font-size:13px;
-  opacity:.85
+  background:#0f0220;
+  padding:16px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  margin-top:16px;
+  font-size:15px;
 }
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
-<h2>เข้าสู่ระบบ</h2>
-
-<!-- LOGIN -->
-<div id="loginBox">
-  <input id="email" placeholder="อีเมล">
-  <input id="password" type="password" placeholder="รหัสผ่าน">
-  <button onclick="login()">เข้าสู่ระบบ</button>
-  <div id="msg" class="small"></div>
-</div>
-
-<!-- PANEL -->
-<div id="panel" style="display:none">
-  <div class="box">
-    👤 <b id="name"></b><br>
-    💰 เครดิตคงเหลือ: <b id="credit"></b>
+  <div class="logo">
+    <!-- เปลี่ยนเป็นโลโก้ร้านคุณได้ -->
+    <img src="https://i.imgur.com/5cX1F9G.png" alt="logo">
   </div>
-</div>
+
+  <h2>เข้าสู่ระบบ</h2>
+  <div class="desc">กรอกอีเมลและรหัสผ่านเพื่อเข้าสู่ระบบ</div>
+
+  <!-- LOGIN -->
+  <div id="loginBox">
+
+    <label>อีเมล</label>
+    <input id="email" placeholder="example@email.com">
+
+    <label>รหัสผ่าน</label>
+    <div class="input-group">
+      <input id="password" type="password" placeholder="รหัสผ่าน">
+      <span class="eye" onclick="togglePassword()">👁</span>
+    </div>
+
+    <button onclick="login()">เข้าสู่ระบบ</button>
+
+    <div id="msg" class="msg"></div>
+
+    <div class="register">
+      ยังไม่มีบัญชี? ติดต่อ LINE  
+      <a href="https://line.me/R/ti/p/@geg4960w" target="_blank">
+        @geg4960w
+      </a> เพื่อสมัคร
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div id="panel" style="display:none">
+    <div class="box">
+      👤 <b id="name"></b><br>
+      💰 เครดิตคงเหลือ: <b id="credit"></b>
+    </div>
+  </div>
 
 </div>
 
 <script>
-/* ===== CONFIG ===== */
 const API = "https://hook.us2.make.com/i91b675rawoy52l11v5msfwjerf7uv31";
 let user = null;
 
-/* ===== LOGIN ===== */
+function togglePassword(){
+  const pw = document.getElementById("password");
+  pw.type = pw.type === "password" ? "text" : "password";
+}
+
 function login(){
-  msg.innerText = "กำลังเชื่อมต่อ...";
+  msg.innerText = "กำลังเชื่อมต่อระบบ...";
 
   fetch(API,{
-    method: "POST",
-    headers: {
-      "Content-Type":"application/json"
-    },
-    body: JSON.stringify({
-      action: "login",     // 🔴 สำคัญ ต้องใช้ action
-      email: email.value,
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      action:"login",
+      email: email.value.trim(),
       password: password.value
     })
   })
   .then(res => res.json())
-  .then(d => {
-    console.log("RESPONSE:", d);
+  .then(d=>{
+    console.log("RESPONSE:",d);
 
-    if (!d.success) {
-      msg.innerText = d.message || "อีเมลหรือรหัสผ่านไม่ถูก";
+    if(!d.success){
+      msg.innerText = d.message || "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
       return;
     }
 
-    // ✅ ตรงกับ JSON จาก Make
     user = d.user;
-
     name.innerText = user.fullname;
     credit.innerText = user.credit;
 
-    loginBox.style.display = "none";
-    panel.style.display = "block";
-    msg.innerText = "";
+    loginBox.style.display="none";
+    panel.style.display="block";
   })
-  .catch(err => {
-    console.error(err);
-    msg.innerText = "เชื่อมต่อระบบไม่ได้";
+  .catch(()=>{
+    msg.innerText="ไม่สามารถเชื่อมต่อระบบได้";
   });
 }
 </script>
+
 </body>
 </html>
