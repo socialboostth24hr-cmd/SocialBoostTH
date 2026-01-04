@@ -2,41 +2,251 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>เติมเงิน</title>
+<title>เติมเงิน | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-body{margin:0;font-family:system-ui;background:#0b0216;color:#fff}
-.container{max-width:420px;margin:30px auto;padding:24px;background:#14062b;border-radius:20px}
-.card{background:#1a0936;padding:16px;border-radius:16px;margin-bottom:12px}
-button{width:100%;padding:14px;border:none;border-radius:16px}
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --green:#22c55e;
+  --soft:rgba(255,255,255,.75);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:
+    radial-gradient(1200px 600px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+  min-height:100vh;
+}
+
+/* CONTAINER */
+.container{
+  max-width:420px;
+  margin:30px auto;
+  padding:26px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:26px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+
+/* HEADER */
+h1{
+  margin:0;
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  margin:12px 0 26px;
+  font-size:14px;
+  color:var(--soft);
+  line-height:1.7;
+}
+
+/* CARD */
+.card{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+/* USER */
+.user{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.user small{
+  color:#c4b5fd;
+  font-size:12px;
+}
+
+.user b{
+  font-size:15px;
+  font-weight:900;
+}
+
+.credit{
+  text-align:right;
+}
+
+.credit span{
+  font-size:12px;
+  color:#c4b5fd;
+}
+
+.credit b{
+  display:block;
+  font-size:26px;
+  font-weight:900;
+  color:#fbcfe8;
+  margin-top:4px;
+}
+
+/* BANK */
+.bank{
+  text-align:center;
+}
+
+.bank-badge{
+  display:inline-block;
+  margin-bottom:12px;
+  font-size:12px;
+  font-weight:900;
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(139,92,246,.15);
+  border:1px solid rgba(139,92,246,.4);
+  color:#c4b5fd;
+}
+
+.bank-no{
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:1.4px;
+  margin:8px 0;
+}
+
+.bank-owner{
+  font-size:14px;
+  color:#e9d5ff;
+}
+
+/* COPY */
+.copy{
+  margin-top:14px;
+  padding:13px;
+  border-radius:18px;
+  font-size:14px;
+  font-weight:900;
+  color:#fff;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--pink),#f472b6);
+  box-shadow:0 12px 30px rgba(236,72,153,.45);
+}
+
+.copy:hover{filter:brightness(1.08)}
+
+/* LINE */
+.line-btn{
+  display:block;
+  margin-top:18px;
+  padding:16px;
+  border-radius:22px;
+  text-align:center;
+  font-weight:900;
+  font-size:16px;
+  text-decoration:none;
+  color:#022c22;
+  background:linear-gradient(90deg,#22c55e,#4ade80);
+  box-shadow:0 12px 30px rgba(34,197,94,.45);
+}
+
+/* NOTICE */
+.notice{
+  margin-top:16px;
+  font-size:13px;
+  color:#c4b5fd;
+  text-align:center;
+  line-height:1.7;
+}
+
+/* BACK */
+button{
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  border:none;
+  border-radius:18px;
+  font-weight:800;
+  background:#1e293b;
+  color:#fff;
+  cursor:pointer;
+}
 </style>
 </head>
 
 <body>
+
 <script>
-const user=JSON.parse(localStorage.getItem("user"));
+const user = JSON.parse(localStorage.getItem("user"));
 if(!user) location.href="index.html";
 </script>
 
 <div class="container">
-  <h2>เติมเงิน</h2>
-  <div class="card">
-    ผู้ใช้: <b id="name"></b><br>
-    เครดิต: <b id="credit"></b>
+  <h1>เติมเงิน</h1>
+  <div class="sub">
+    เติมเครดิตเพื่อใช้งานบริการ<br>
+    โอนเงินตามข้อมูลด้านล่าง แล้วส่งสลิปให้แอดมิน
   </div>
 
-  <div class="card">
-    ธนาคารกสิกรไทย<br>
-    066-1213-728<br>
-    สรวงสุดา ศรีสุวรรณ์
+  <!-- USER INFO -->
+  <div class="card user">
+    <div>
+      <small>ผู้ใช้งาน</small><br>
+      <b id="username">-</b>
+    </div>
+    <div class="credit">
+      <span>เครดิตคงเหลือ</span>
+      <b id="credit">0</b>
+    </div>
   </div>
 
-  <button onclick="location.href='dashboard.html'">⬅ กลับ</button>
+  <!-- BANK -->
+  <div class="card bank">
+    <div class="bank-badge">🏦 ธนาคารกสิกรไทย</div>
+    <div class="bank-no" id="bankNo">066-1213-728</div>
+    <div class="bank-owner">สรวงสุดา ศรีสุวรรณ์</div>
+    <div class="copy" id="copyBtn" onclick="copyBank()">📋 คัดลอกเลขบัญชี</div>
+  </div>
+
+  <!-- LINE -->
+  <a class="line-btn"
+     href="https://line.me/R/ti/p/@geg4960w"
+     target="_blank">
+     💬 ส่งสลิปให้แอดมินทาง LINE
+  </a>
+
+  <div class="notice">
+    ⏱ หลังโอนเงิน กรุณาส่งสลิปให้แอดมิน<br>
+    เครดิตจะได้รับการเพิ่มภายในไม่เกิน 24 ชั่วโมง
+  </div>
+
+  <button onclick="goBack()">⬅ กลับหน้า Dashboard</button>
 </div>
 
 <script>
-name.innerText=user.fullname;
-credit.innerText=user.credit;
+username.innerText = user.fullname;
+credit.innerText = Number(user.credit||0).toLocaleString();
+
+function copyBank(){
+  navigator.clipboard.writeText(bankNo.innerText);
+  copyBtn.innerText = "✅ คัดลอกแล้ว";
+  setTimeout(()=>copyBtn.innerText="📋 คัดลอกเลขบัญชี",1500);
+}
+
+function goBack(){
+  location.href="dashboard.html";
+}
 </script>
+
 </body>
 </html>
