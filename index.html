@@ -55,6 +55,14 @@ button{
 .processing{color:#38bdf8}
 .completed{color:#22c55e}
 .small{opacity:.7;font-size:13px}
+.toggle-pass{
+  position:absolute;
+  right:16px;
+  top:42px;
+  opacity:.7;
+  cursor:pointer;
+}
+.relative{position:relative}
 </style>
 </head>
 
@@ -63,11 +71,20 @@ button{
 <!-- LOGIN -->
 <div class="container" id="loginBox">
   <h1>SocialBoostTH</h1>
-  <div class="sub">เข้าสู่ระบบ</div>
+  <div class="sub">
+    เข้าสู่ระบบ<br>
+    <span class="small">หากยังไม่มีบัญชี 👉 ทัก LINE ร้านเพื่อสมัคร</span>
+  </div>
+
   <label>อีเมล</label>
   <input id="email">
+
   <label>รหัสผ่าน</label>
-  <input id="password" type="password">
+  <div class="relative">
+    <input id="password" type="password">
+    <span class="toggle-pass" onclick="togglePass()">👁</span>
+  </div>
+
   <button onclick="login()">เข้าสู่ระบบ</button>
   <div id="loginMsg" class="small"></div>
 </div>
@@ -89,7 +106,7 @@ button{
   <input id="qty" type="number" value="20">
 
   <label>ลิงก์งาน</label>
-  <input id="link" placeholder="https://tiktok.com/...">
+  <input id="link">
 
   <div id="total" class="total">รวม 0 บาท</div>
 
@@ -106,30 +123,38 @@ button{
 </div>
 
 <script>
+/* ===== CONFIG ===== */
 const SHEET_ID="10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
 const USERS_API=`https://opensheet.elk.sh/${SHEET_ID}/users`;
 const SERVICES_API=`https://opensheet.elk.sh/${SHEET_ID}/services`;
 const ORDERS_API=`https://opensheet.elk.sh/${SHEET_ID}/orders`;
 const GAS_API="https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
 
-let user=null,services=[];
+let user=null, services=[];
 let orderTimer=null;
 
-/* INIT */
+/* ===== INIT ===== */
 document.addEventListener("DOMContentLoaded",()=>{
   const s=localStorage.getItem("user");
-  if(s){user=JSON.parse(s);showPanel();loadServices();}
+  if(s){ user=JSON.parse(s); showPanel(); loadServices(); }
 });
 
-/* LOGIN */
+/* ===== LOGIN ===== */
 async function login(){
   const users=await (await fetch(USERS_API)).json();
-  const u=users.find(x=>x.email?.toLowerCase()===email.value.toLowerCase()
-    && String(x.password).trim()===password.value.trim());
-  if(!u){loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง";return;}
+  const u=users.find(x =>
+    x.email?.toLowerCase()===email.value.toLowerCase() &&
+    String(x.password).trim()===password.value.trim()
+  );
+  if(!u){ loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง"; return; }
+
   user={user_id:u.user_id,fullname:u.fullname,credit:Number(u.credit)};
   localStorage.setItem("user",JSON.stringify(user));
-  showPanel();loadServices();
+  showPanel(); loadServices();
+}
+
+function togglePass(){
+  password.type = password.type === "password" ? "text" : "password";
 }
 
 function showPanel(){
@@ -141,9 +166,9 @@ function showPanel(){
   clearInterval(orderTimer);
 }
 
-function logout(){localStorage.clear();location.reload();}
+function logout(){ localStorage.clear(); location.reload(); }
 
-/* SERVICES */
+/* ===== SERVICES ===== */
 async function loadServices(){
   services=(await (await fetch(SERVICES_API)).json()).filter(s=>s.status==="active");
   serviceSelect.innerHTML='<option value="">-- เลือกบริการ --</option>';
@@ -151,20 +176,22 @@ async function loadServices(){
     serviceSelect.innerHTML+=`<option value="${i}">${s.platform} | ${s.service_name}</option>`;
   });
 }
+
 serviceSelect.onchange=calc; qty.oninput=calc;
 
 function calc(){
-  if(!serviceSelect.value){total.innerText="รวม 0 บาท";return;}
-  const s=services[serviceSelect.value],q=Number(qty.value);
-  if(q<s.min_qty||q>s.max_qty){total.innerText="❌ จำนวนไม่ถูกต้อง";return;}
+  if(!serviceSelect.value){ total.innerText="รวม 0 บาท"; return; }
+  const s=services[serviceSelect.value], q=Number(qty.value);
+  if(q<s.min_qty||q>s.max_qty){ total.innerText="❌ จำนวนไม่ถูกต้อง"; return; }
   total.innerText=`รวม ${(q*s.price_th).toFixed(2)} บาท`;
 }
 
-/* ORDER */
+/* ===== ORDER ===== */
 async function order(){
-  const s=services[serviceSelect.value],q=Number(qty.value);
+  const s=services[serviceSelect.value], q=Number(qty.value);
   const amount=q*s.price_th;
-  if(amount>user.credit){alert("เครดิตไม่พอ");return;}
+  if(amount>user.credit){ alert("เครดิตไม่พอ"); return; }
+
   const res=await fetch(GAS_API,{method:"POST",body:JSON.stringify({
     user_id:user.user_id,
     service_code:s.service_code,
@@ -174,14 +201,15 @@ async function order(){
     link:link.value
   })});
   const d=JSON.parse(await res.text());
-  if(!d.success){alert(d.message);return;}
+  if(!d.success){ alert(d.message); return; }
+
   user.credit=d.credit;
-  localStorage.setItem("user",JSON.stringify(user));
   credit.innerText=d.credit;
+  localStorage.setItem("user",JSON.stringify(user));
   alert("สั่งซื้อสำเร็จ");
 }
 
-/* ORDERS + AUTO REFRESH */
+/* ===== ORDERS + REALTIME REFRESH ===== */
 async function showOrders(){
   panel.style.display="none";
   ordersBox.style.display="block";
@@ -191,20 +219,24 @@ async function showOrders(){
 
 async function loadMyOrders(){
   const data=await (await fetch(ORDERS_API)).json();
-  const my=data.filter(o=>String(o.user_id).trim()===String(user.user_id)).reverse();
-  if(!my.length){ordersList.innerText="ยังไม่มีออเดอร์";return;}
+  const my=data.filter(o=>String(o.user_id)===String(user.user_id)).reverse();
+  if(!my.length){ ordersList.innerText="ยังไม่มีออเดอร์"; return; }
 
-  ordersList.innerHTML=my.map(o=>`
-    <div class="order">
-      <b>${o.platform} | ${o.service_code}</b><br>
-      จำนวน: ${o.qty} | ${o.price} บาท<br>
-      สถานะ: <span class="${o.status}">${o.status}</span><br>
-      <span class="small">${o.created_at}</span>
-    </div>
-  `).join("");
+  ordersList.innerHTML=my.map(o=>{
+    const sv=services.find(s=>s.service_code===o.service_code);
+    const name=sv ? `${sv.platform} | ${sv.service_name}` : o.service_code;
+    return `
+      <div class="order">
+        <b>${name}</b><br>
+        จำนวน: ${o.qty} | ${o.price} บาท<br>
+        สถานะ: <span class="${o.status}">${o.status}</span><br>
+        <span class="small">${o.created_at}</span>
+      </div>
+    `;
+  }).join("");
 }
 
-function backToPanel(){showPanel();}
+function backToPanel(){ showPanel(); }
 </script>
 
 </body>
