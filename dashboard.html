@@ -2,46 +2,182 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<title>Dashboard | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-body{
-  margin:0;font-family:system-ui;
-  background:linear-gradient(180deg,#0b0216,#14032a);
-  color:#fff;
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.7);
 }
-.wrap{max-width:420px;margin:30px auto;padding:24px}
-.card{background:#14062b;border-radius:20px;padding:16px;margin-bottom:14px}
-.btn{width:100%;padding:14px;border-radius:16px;border:none;
-  margin-top:10px;font-weight:800;
-  background:linear-gradient(90deg,#8b5cf6,#ec4899);color:#fff}
-.secondary{background:#1e293b}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+  min-height:100vh;
+}
+
+.wrap{
+  max-width:420px;
+  margin:30px auto;
+  padding:24px;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.header h1{
+  margin:0;
+  font-size:26px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.header .sub{
+  margin-top:8px;
+  font-size:14px;
+  color:var(--soft);
+}
+
+/* CARD */
+.card{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:18px;
+}
+
+.user-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.user-label{
+  font-size:13px;
+  color:#c4b5fd;
+}
+
+.user-name{
+  margin-top:2px;
+  font-size:15px;
+  font-weight:800;
+}
+
+.credit{
+  text-align:right;
+}
+
+.credit span{
+  font-size:12px;
+  color:#c4b5fd;
+}
+
+.credit b{
+  display:block;
+  margin-top:4px;
+  font-size:26px;
+  font-weight:900;
+  color:#fbcfe8;
+}
+
+/* BUTTONS */
+.btn{
+  width:100%;
+  padding:16px;
+  border-radius:18px;
+  border:none;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:800;
+  color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  box-shadow:0 14px 30px rgba(139,92,246,.35);
+  margin-bottom:12px;
+}
+
+.btn:hover{filter:brightness(1.06)}
+
+.btn.secondary{
+  background:linear-gradient(135deg,#1e293b,#334155);
+  box-shadow:none;
+}
+
+/* FOOTER */
+.footer{
+  margin-top:22px;
+  text-align:center;
+  font-size:12px;
+  color:var(--soft);
+}
 </style>
 </head>
+
 <body>
 
 <div class="wrap">
-  <div class="card">
-    <div>ผู้ใช้งาน</div>
-    <b id="name"></b>
-    <div>เครดิตคงเหลือ</div>
-    <b id="credit"></b>
+
+  <div class="header">
+    <h1>SocialBoostTH</h1>
+    <div class="sub">ระบบจัดการบัญชีลูกค้า</div>
   </div>
 
+  <!-- USER CARD -->
+  <div class="card">
+    <div class="user-row">
+      <div>
+        <div class="user-label">ผู้ใช้งาน</div>
+        <div class="user-name" id="name">-</div>
+      </div>
+      <div class="credit">
+        <span>เครดิตคงเหลือ</span>
+        <b id="credit">0</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
   <button class="btn" onclick="go('services.html')">🛍️ เลือกบริการ</button>
   <button class="btn" onclick="go('orders.html')">📦 ออเดอร์ของฉัน</button>
   <button class="btn secondary" onclick="go('topup.html')">➕ เติมเงิน</button>
   <button class="btn secondary" onclick="logout()">🚪 ออกจากระบบ</button>
+
+  <div class="footer">
+    © SocialBoostTH
+  </div>
+
 </div>
 
 <script>
-const user=JSON.parse(localStorage.getItem("user"));
-if(!user) location.href="index.html";
+/* ===== AUTH GUARD ===== */
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user){
+  location.href="index.html";
+}
 
-name.innerText=user.fullname;
-credit.innerText=user.credit.toLocaleString();
+/* ===== SHOW USER ===== */
+document.getElementById("name").innerText = user.fullname;
+document.getElementById("credit").innerText =
+  Number(user.credit || 0).toLocaleString();
 
-function go(p){location.href=p}
+/* ===== NAV ===== */
+function go(p){ location.href=p; }
 function logout(){
   localStorage.removeItem("user");
   location.href="index.html";
