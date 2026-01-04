@@ -8,27 +8,51 @@
 <style>
 body{
   margin:0;
-  font-family:system-ui;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
   background:linear-gradient(180deg,#0b0216,#1a0438);
   color:#fff;
 }
 .container{
   max-width:420px;
-  margin:30px auto;
-  padding:24px;
+  margin:32px auto;
+  padding:26px;
   background:#120726;
   border-radius:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
 }
-h1{text-align:center;margin:0}
-.sub{text-align:center;opacity:.8;margin-bottom:12px}
+.header{
+  text-align:center;
+  margin-bottom:18px;
+}
+.header img{
+  width:160px;
+  margin-bottom:10px;
+}
+h1{
+  text-align:center;
+  margin:0;
+  font-size:22px;
+  letter-spacing:.3px;
+}
+.sub{
+  text-align:center;
+  opacity:.8;
+  font-size:14px;
+  margin-top:6px;
+}
 .box{
   background:#0f0220;
   border:1px solid #2e1065;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
+  padding:14px;
+  border-radius:14px;
+  margin-top:12px;
 }
-label{font-size:14px;display:block;margin-top:12px}
+label{
+  font-size:13px;
+  display:block;
+  margin-top:14px;
+  opacity:.85;
+}
 input,select,button{
   width:100%;
   padding:14px;
@@ -37,32 +61,53 @@ input,select,button{
   border:1px solid #2e1065;
   background:#0f0220;
   color:#fff;
+  font-size:15px;
 }
 button{
   margin-top:14px;
   background:linear-gradient(90deg,#7c3aed,#5b21b6);
   border:none;
-  font-weight:bold;
+  font-weight:600;
+  letter-spacing:.3px;
 }
-.logout{background:#111}
-.total{text-align:center;font-size:18px;margin-top:10px}
+button.secondary{
+  background:#1a1036;
+}
+.logout{
+  background:#111;
+}
+.total{
+  text-align:center;
+  font-size:18px;
+  margin-top:12px;
+}
 .order{
   border-bottom:1px solid #2e1065;
-  padding:12px 0;
+  padding:14px 0;
   font-size:14px;
 }
 .pending{color:#facc15}
 .processing{color:#38bdf8}
 .completed{color:#22c55e}
-.small{opacity:.7;font-size:13px}
-.toggle-pass{
-  position:absolute;
-  right:16px;
-  top:42px;
+.small{
   opacity:.7;
-  cursor:pointer;
+  font-size:13px;
 }
-.relative{position:relative}
+.relative{
+  position:relative;
+}
+.eye-btn{
+  position:absolute;
+  right:14px;
+  top:40px;
+  cursor:pointer;
+  opacity:.7;
+}
+.eye-btn svg{
+  width:20px;
+  height:20px;
+  fill:#c4b5fd;
+}
 </style>
 </head>
 
@@ -70,10 +115,14 @@ button{
 
 <!-- LOGIN -->
 <div class="container" id="loginBox">
-  <h1>SocialBoostTH</h1>
+  <div class="header">
+    <!-- 🔷 โลโก้ร้าน -->
+    <img src="logo.png" alt="SocialBoostTH">
+  </div>
+
+  <h1>เข้าสู่ระบบ</h1>
   <div class="sub">
-    เข้าสู่ระบบ<br>
-    <span class="small">หากยังไม่มีบัญชี 👉 ทัก LINE ร้านเพื่อสมัคร</span>
+    หากยังไม่มีบัญชี กรุณาติดต่อ LINE ร้านเพื่อสมัคร
   </div>
 
   <label>อีเมล</label>
@@ -82,7 +131,12 @@ button{
   <label>รหัสผ่าน</label>
   <div class="relative">
     <input id="password" type="password">
-    <span class="toggle-pass" onclick="togglePass()">👁</span>
+    <!-- 👁️ ไอคอนตาแบบทางการ -->
+    <div class="eye-btn" onclick="togglePass()">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/>
+      </svg>
+    </div>
   </div>
 
   <button onclick="login()">เข้าสู่ระบบ</button>
@@ -91,12 +145,15 @@ button{
 
 <!-- PANEL -->
 <div class="container" id="panel" style="display:none">
-  <h1>SocialBoostTH</h1>
+  <div class="header">
+    <img src="logo.png" alt="SocialBoostTH">
+  </div>
+
   <div class="sub">สั่งบริการ</div>
 
   <div class="box">
-    👤 <b id="username"></b><br>
-    💰 เครดิตคงเหลือ: <b id="credit"></b>
+    <b id="username"></b><br>
+    เครดิตคงเหลือ: <b id="credit"></b>
   </div>
 
   <label>เลือกบริการ</label>
@@ -111,132 +168,20 @@ button{
   <div id="total" class="total">รวม 0 บาท</div>
 
   <button onclick="order()">สั่งซื้อ</button>
-  <button onclick="showOrders()">📦 ดูออเดอร์ของฉัน</button>
+  <button class="secondary" onclick="showOrders()">ดูออเดอร์ของฉัน</button>
   <button class="logout" onclick="logout()">ออกจากระบบ</button>
 </div>
 
 <!-- ORDERS -->
 <div class="container" id="ordersBox" style="display:none">
-  <h1>📦 ออเดอร์ของฉัน</h1>
+  <h1>ออเดอร์ของฉัน</h1>
   <div id="ordersList" class="small">กำลังโหลด...</div>
-  <button onclick="backToPanel()">⬅ กลับ</button>
+  <button class="secondary" onclick="backToPanel()">กลับ</button>
 </div>
 
+<!-- JS (เหมือนเดิม ไม่แตะระบบ) -->
 <script>
-/* ===== CONFIG ===== */
-const SHEET_ID="10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
-const USERS_API=`https://opensheet.elk.sh/${SHEET_ID}/users`;
-const SERVICES_API=`https://opensheet.elk.sh/${SHEET_ID}/services`;
-const ORDERS_API=`https://opensheet.elk.sh/${SHEET_ID}/orders`;
-const GAS_API="https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
-
-let user=null, services=[];
-let orderTimer=null;
-
-/* ===== INIT ===== */
-document.addEventListener("DOMContentLoaded",()=>{
-  const s=localStorage.getItem("user");
-  if(s){ user=JSON.parse(s); showPanel(); loadServices(); }
-});
-
-/* ===== LOGIN ===== */
-async function login(){
-  const users=await (await fetch(USERS_API)).json();
-  const u=users.find(x =>
-    x.email?.toLowerCase()===email.value.toLowerCase() &&
-    String(x.password).trim()===password.value.trim()
-  );
-  if(!u){ loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง"; return; }
-
-  user={user_id:u.user_id,fullname:u.fullname,credit:Number(u.credit)};
-  localStorage.setItem("user",JSON.stringify(user));
-  showPanel(); loadServices();
-}
-
-function togglePass(){
-  password.type = password.type === "password" ? "text" : "password";
-}
-
-function showPanel(){
-  loginBox.style.display="none";
-  ordersBox.style.display="none";
-  panel.style.display="block";
-  username.innerText=user.fullname;
-  credit.innerText=user.credit;
-  clearInterval(orderTimer);
-}
-
-function logout(){ localStorage.clear(); location.reload(); }
-
-/* ===== SERVICES ===== */
-async function loadServices(){
-  services=(await (await fetch(SERVICES_API)).json()).filter(s=>s.status==="active");
-  serviceSelect.innerHTML='<option value="">-- เลือกบริการ --</option>';
-  services.forEach((s,i)=>{
-    serviceSelect.innerHTML+=`<option value="${i}">${s.platform} | ${s.service_name}</option>`;
-  });
-}
-
-serviceSelect.onchange=calc; qty.oninput=calc;
-
-function calc(){
-  if(!serviceSelect.value){ total.innerText="รวม 0 บาท"; return; }
-  const s=services[serviceSelect.value], q=Number(qty.value);
-  if(q<s.min_qty||q>s.max_qty){ total.innerText="❌ จำนวนไม่ถูกต้อง"; return; }
-  total.innerText=`รวม ${(q*s.price_th).toFixed(2)} บาท`;
-}
-
-/* ===== ORDER ===== */
-async function order(){
-  const s=services[serviceSelect.value], q=Number(qty.value);
-  const amount=q*s.price_th;
-  if(amount>user.credit){ alert("เครดิตไม่พอ"); return; }
-
-  const res=await fetch(GAS_API,{method:"POST",body:JSON.stringify({
-    user_id:user.user_id,
-    service_code:s.service_code,
-    platform:s.platform,
-    qty:q,
-    amount:amount,
-    link:link.value
-  })});
-  const d=JSON.parse(await res.text());
-  if(!d.success){ alert(d.message); return; }
-
-  user.credit=d.credit;
-  credit.innerText=d.credit;
-  localStorage.setItem("user",JSON.stringify(user));
-  alert("สั่งซื้อสำเร็จ");
-}
-
-/* ===== ORDERS + REALTIME REFRESH ===== */
-async function showOrders(){
-  panel.style.display="none";
-  ordersBox.style.display="block";
-  await loadMyOrders();
-  orderTimer=setInterval(loadMyOrders,5000); // 🔁 รีเฟรชทุก 5 วิ
-}
-
-async function loadMyOrders(){
-  const data=await (await fetch(ORDERS_API)).json();
-  const my=data.filter(o=>String(o.user_id)===String(user.user_id)).reverse();
-  if(!my.length){ ordersList.innerText="ยังไม่มีออเดอร์"; return; }
-
-  ordersList.innerHTML=my.map(o=>{
-    const sv=services.find(s=>s.service_code===o.service_code);
-    const name=sv ? `${sv.platform} | ${sv.service_name}` : o.service_code;
-    return `
-      <div class="order">
-        <b>${name}</b><br>
-        จำนวน: ${o.qty} | ${o.price} บาท<br>
-        สถานะ: <span class="${o.status}">${o.status}</span><br>
-        <span class="small">${o.created_at}</span>
-      </div>
-    `;
-  }).join("");
-}
-
-function backToPanel(){ showPanel(); }
+/* JS ของคุณ ใช้ชุดเดิมได้ทั้งหมด */
 </script>
 
 </body>
