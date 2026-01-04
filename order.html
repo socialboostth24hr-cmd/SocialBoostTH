@@ -2,77 +2,63 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>สั่งซื้อบริการ | SocialBoostTH</title>
+<title>สั่งซื้อ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{margin:0;font-family:system-ui;background:#0b0216;color:#fff}
-.container{max-width:420px;margin:30px auto;padding:24px;background:#14062b;border-radius:20px}
-.card{background:#1a0936;padding:16px;border-radius:16px;margin-bottom:12px}
-h1{text-align:center}
-input{width:100%;padding:12px;border-radius:12px;border:none}
-button{width:100%;padding:14px;border:none;border-radius:16px;font-weight:800;margin-top:10px}
+.box{max-width:420px;margin:30px auto;padding:20px;background:#14062b;border-radius:20px}
+input,button{width:100%;margin-top:10px;padding:12px;border-radius:14px;border:none}
+button{background:linear-gradient(90deg,#8b5cf6,#ec4899);font-weight:800;color:#fff}
 </style>
 </head>
-
 <body>
-<script>
-const user = JSON.parse(localStorage.getItem("user"));
-const service = JSON.parse(localStorage.getItem("selectedService"));
-if(!user||!service){ location.href="services.html"; }
-</script>
 
-<div class="container">
-  <h1>สั่งซื้อบริการ</h1>
-
-  <div class="card">
-    <b id="name"></b><br>
-    ราคา <span id="price"></span> บาท / <span id="unit"></span>
-  </div>
-
-  <div class="card">
-    <input id="qty" type="number">
-  </div>
-
-  <div class="card">
-    รวม <b id="total">0</b> บาท
-  </div>
-
-  <button onclick="submitOrder()">ยืนยันสั่งซื้อ</button>
+<div class="box">
+  <h2 id="name"></h2>
+  <div id="price"></div>
+  <input id="qty" type="number">
+  <div>รวม: <b id="total"></b> บาท</div>
+  <button onclick="submit()">ยืนยัน</button>
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbyJIauTAb7zYXuoMqPaCjHsOm2CVxT7jdLlKYvzt5-5sugBFeFFp8Qk3pbDYLvBHPoK/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
+const user=JSON.parse(localStorage.getItem("user"));
+const service=JSON.parse(localStorage.getItem("selectedService"));
+if(!user||!service) location.href="services.html";
 
-name.innerText=service.name;
-price.innerText=service.price;
-unit.innerText=service.unit;
-qty.min=service.min;
-qty.max=service.max;
+name.innerText=service.service_name;
+price.innerText=`ราคา ${service.price}/${service.unit}`;
 qty.value=service.min;
 
+qty.oninput=calc;
 function calc(){
   total.innerText=(qty.value*service.price).toFixed(2);
 }
-qty.oninput=calc; calc();
+calc();
 
-function submitOrder(){
-  fetch(API,{
+function submit(){
+  fetch(API_URL,{
     method:"POST",
     body:JSON.stringify({
       action:"createOrder",
       user_id:user.user_id,
-      service_code:service.code,
-      service_name:service.name,
+      service_code:service.service_code,
+      service_name:service.service_name,
       qty:Number(qty.value),
-      amount:Number(total.innerText)
+      unit_price:service.price
     })
-  }).then(r=>r.json()).then(res=>{
-    if(!res.success) return alert(res.message);
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.success){alert(res.message);return}
     user.credit=res.new_credit;
     localStorage.setItem("user",JSON.stringify(user));
+    alert("สำเร็จ");
     location.href="orders.html";
   });
 }
 </script>
+
 </body>
 </html>
