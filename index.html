@@ -3,178 +3,164 @@
 <head>
 <meta charset="UTF-8">
 <title>SocialBoostTH</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root{
-  --p:#7c3aed;
-  --p2:#5b21b6;
-  --bg:#0b0216;
-  --card:#120726;
-  --bd:#2e1065;
-}
-*{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui;
-  background:radial-gradient(circle at top,#2a0b5e,#0b0216 60%);
-  color:#fff;
-}
-.container{
-  max-width:420px;
-  margin:60px auto;
-  padding:28px;
-  background:var(--card);
-  border-radius:22px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
-}
-h2{text-align:center;margin:0 0 6px}
-.small{opacity:.75;font-size:14px;text-align:center}
-label{display:block;margin-top:14px;font-size:14px}
-input,select{
-  width:100%;
-  padding:14px;
-  margin-top:6px;
-  border-radius:14px;
-  border:1px solid var(--bd);
-  background:#0f0220;
-  color:#fff;
-  font-size:15px;
-}
-button{
-  width:100%;
-  padding:16px;
-  margin-top:18px;
-  border-radius:16px;
-  border:none;
-  font-weight:bold;
-  background:linear-gradient(90deg,var(--p),var(--p2));
+  background:linear-gradient(180deg,#12002b,#2a004f);
   color:#fff;
 }
 .box{
-  border:1px solid var(--bd);
-  border-radius:16px;
-  padding:16px;
-  background:#0f0220;
-  margin-bottom:16px;
+  max-width:420px;
+  margin:40px auto;
+  padding:24px;
+  background:#16002f;
+  border-radius:18px;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
 }
-.row{
-  position:relative;
+h1{text-align:center;margin:0}
+.sub{text-align:center;opacity:.8;margin-bottom:20px}
+label{display:block;margin-top:12px}
+input,select,button{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid #3b0764;
+  background:#0f0122;
+  color:#fff;
+  margin-top:6px;
+  font-size:15px;
+}
+button{
+  margin-top:18px;
+  background:linear-gradient(90deg,#7c3aed,#5b21b6);
+  border:none;
+  font-weight:bold;
 }
 .eye{
   position:absolute;
-  right:14px;
+  right:15px;
   top:50%;
   transform:translateY(-50%);
   cursor:pointer;
-}
-.logout{
-  margin-top:10px;
-  text-align:center;
   opacity:.7;
-  cursor:pointer;
 }
+.group{position:relative}
+.msg{text-align:center;margin-top:10px;opacity:.9}
+.hr{height:1px;background:#3b0764;margin:16px 0}
+.logout{margin-top:10px;background:#222}
+.total{margin-top:12px;font-size:18px;text-align:center}
 </style>
 </head>
 
 <body>
-<div class="container">
-
-<h2>SocialBoostTH</h2>
-<div class="small">เข้าสู่ระบบเพื่อสั่งบริการ</div>
 
 <!-- LOGIN -->
-<div id="loginBox">
+<div class="box" id="loginBox">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">เข้าสู่ระบบ</div>
+
   <label>อีเมล</label>
   <input id="email">
+
   <label>รหัสผ่าน</label>
-  <div class="row">
+  <div class="group">
     <input id="password" type="password">
     <span class="eye" onclick="togglePW()">👁</span>
   </div>
+
   <button onclick="login()">เข้าสู่ระบบ</button>
-  <div id="msg" class="small"></div>
-  <div class="small" style="margin-top:10px">
-    ยังไม่มีบัญชี? ติดต่อ LINE <b>@geg4960w</b>
+  <div id="loginMsg" class="msg"></div>
+
+  <div class="msg">ไม่มีบัญชี ติดต่อ LINE  
+    <a style="color:#c4b5fd" href="https://line.me/R/ti/p/@geg4960w" target="_blank">@geg4960w</a>
   </div>
 </div>
 
 <!-- PANEL -->
-<div id="panel" style="display:none">
-  <div class="box">
-    👤 <b id="name"></b><br>
+<div class="box" id="panel" style="display:none">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">สั่งบริการ</div>
+
+  <div class="msg">
+    👤 <b id="username"></b><br>
     💰 เครดิต: <b id="credit"></b>
   </div>
 
+  <div class="hr"></div>
+
   <label>เลือกบริการ</label>
-  <select id="serviceSelect" onchange="recalc()">
+  <select id="service">
     <option>กำลังโหลดบริการ...</option>
   </select>
 
   <label>จำนวน</label>
-  <input id="qty" type="number" value="50" oninput="recalc()">
+  <input id="qty" type="number" value="50">
 
   <label>ลิงก์งาน</label>
   <input id="link" placeholder="https://tiktok.com/...">
 
-  <div class="box" style="margin-top:14px;text-align:center">
-    💸 รวม <b id="total">0</b> บาท
-  </div>
+  <div id="total" class="total">รวม 0 บาท</div>
 
   <button onclick="order()">สั่งซื้อ</button>
-  <div class="logout" onclick="logout()">ออกจากระบบ</div>
-</div>
-
+  <button class="logout" onclick="logout()">ออกจากระบบ</button>
 </div>
 
 <script>
-const LOGIN_API = "https://hook.us2.make.com/i91b675rawoy52l11v5msfwjerf7uv31";
+/* ===== CONFIG ===== */
+const LOGIN_API   = "https://hook.us2.make.com/i91b675rawoy52l11v5msfwjerf7uv31";
 const SERVICE_API = "https://hook.us2.make.com/4gxvw3n89yq5nlkt8gc6n1xeqvuaupd2";
 
+/* ===== STATE ===== */
 let user = null;
 let services = [];
 
-function togglePW(){
-  password.type = password.type === "password" ? "text" : "password";
-}
+/* ===== INIT ===== */
+document.addEventListener("DOMContentLoaded",()=>{
+  const saved = localStorage.getItem("user");
+  if(saved){
+    user = JSON.parse(saved);
+    showPanel();
+    loadServices();
+  }
+});
 
 /* ===== LOGIN ===== */
+function togglePW(){
+  password.type = password.type==="password"?"text":"password";
+}
+
 function login(){
-  msg.innerText="กำลังเชื่อมต่อ...";
+  loginMsg.innerText="กำลังเข้าสู่ระบบ...";
   fetch(LOGIN_API,{
     method:"POST",
-    headers:{ "Content-Type":"application/json" },
+    headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
       action:"login",
-      email: email.value.trim(),
-      password: password.value
+      email:email.value,
+      password:password.value
     })
   })
   .then(r=>r.json())
   .then(d=>{
-    if(!d.success){
-      msg.innerText=d.message||"เข้าสู่ระบบไม่สำเร็จ";
-      return;
-    }
-    localStorage.setItem("user",JSON.stringify(d.user));
-    showPanel(d.user);
+    if(!d.success) throw d.message;
+    user = d.user;
+    localStorage.setItem("user",JSON.stringify(user));
+    showPanel();
+    loadServices();
   })
-  .catch(()=> msg.innerText="เชื่อมต่อไม่ได้");
+  .catch(e=>{
+    loginMsg.innerText=e||"เข้าสู่ระบบไม่สำเร็จ";
+  });
 }
 
-/* ===== LOAD SESSION ===== */
-const saved = localStorage.getItem("user");
-if(saved){
-  showPanel(JSON.parse(saved));
-}
-
-function showPanel(u){
-  user=u;
-  name.innerText=u.fullname;
-  credit.innerText=u.credit;
+function showPanel(){
   loginBox.style.display="none";
   panel.style.display="block";
-  loadServices();
+  username.innerText=user.fullname;
+  credit.innerText=user.credit;
 }
 
 function logout(){
@@ -183,40 +169,49 @@ function logout(){
 }
 
 /* ===== SERVICES ===== */
-function loadServices(){
-  fetch(SERVICE_API)
-  .then(r=>r.json())
-  .then(d=>{
-    services = d.services || [];
-    serviceSelect.innerHTML='<option value="">-- เลือกบริการ --</option>';
+async function loadServices(){
+  service.innerHTML=`<option>กำลังโหลดบริการ...</option>`;
+  try{
+    const r = await fetch(SERVICE_API);
+    const d = await r.json();
+    services = d.services.filter(s=>s.status==="active");
+
+    service.innerHTML=`<option value="">-- เลือกบริการ --</option>`;
     services.forEach((s,i)=>{
-      serviceSelect.innerHTML +=
-        `<option value="${i}">
-          ${s.platform} | ${s.service_name}
-        </option>`;
+      const o=document.createElement("option");
+      o.value=i;
+      o.textContent=`${s.platform} | ${s.service_name}`;
+      service.appendChild(o);
     });
-  })
-  .catch(()=>{
-    serviceSelect.innerHTML='<option>โหลดบริการไม่สำเร็จ</option>';
-  });
+  }catch{
+    service.innerHTML=`<option>โหลดไม่สำเร็จ</option>`;
+  }
 }
 
 /* ===== PRICE ===== */
-function recalc(){
-  if(serviceSelect.value==="") return;
-  const s = services[serviceSelect.value];
-  const q = +qty.value;
+service.onchange = calc;
+qty.oninput = calc;
+
+function calc(){
+  if(service.value===""){ total.innerText="รวม 0 บาท"; return; }
+
+  const s = services[service.value];
+  const q = Number(qty.value);
+  const price = Number(s.price_th);
+
   if(q < s.min_qty || q > s.max_qty){
-    total.innerText="จำนวนไม่ถูกต้อง";
+    total.innerText="❌ จำนวนไม่ถูกต้อง";
     return;
   }
-  total.innerText = (q * s.price_th).toFixed(2);
+
+  total.innerText=`💰 รวม ${(q*price).toFixed(2)} บาท`;
 }
 
-/* ===== ORDER (ยังไม่ส่งจริง) ===== */
+/* ===== ORDER (placeholder) ===== */
 function order(){
-  alert("ระบบสั่งซื้อจะต่อ webhook เพิ่มในขั้นถัดไป");
+  alert("สั่งซื้อ OK (ขั้นถัดไปคือตัดเครดิต / log order)");
 }
 </script>
+
 </body>
 </html>
