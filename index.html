@@ -45,12 +45,12 @@ button{
 .small{font-size:13px;opacity:.7}
 .hidden{display:none}
 
-/* STATUS COLORS */
+/* ===== STATUS COLORS ===== */
 .status-pending{color:#facc15;font-weight:bold}
 .status-processing{color:#38bdf8;font-weight:bold}
 .status-completed{color:#22c55e;font-weight:bold}
 
-/* === POPUP SAFARI SAFE === */
+/* ===== POPUP (Safari Safe) ===== */
 #policyPopup{
   position:fixed;
   top:0;left:0;right:0;bottom:0;
@@ -58,15 +58,12 @@ button{
   display:none;
   align-items:center;
   justify-content:center;
-  z-index:100000;
+  z-index:99999;
   touch-action:auto;
 }
+#policyPopup.active{display:flex}
 
-#policyPopup.active{
-  display:flex;
-}
-
-#policyPopup .policy-box{
+.policy-box{
   background:#120726;
   border:1px solid #2e1065;
   border-radius:16px;
@@ -77,10 +74,7 @@ button{
   overflow:auto;
 }
 
-body.lock{
-  overflow:hidden;
-}
-
+body.lock{overflow:hidden}
 </style>
 </head>
 
@@ -99,7 +93,7 @@ body.lock{
   <div id="loginMsg" class="small"></div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- PANEL -->
 <div class="container hidden" id="panel">
   <h1>SocialBoostTH</h1>
   <div class="box">
@@ -114,9 +108,9 @@ body.lock{
 <!-- SERVICES -->
 <div class="container hidden" id="serviceBox">
   <h1>เลือกบริการ</h1>
-  <button onclick="showCategory('thai')">🇹🇭 บริการไทย</button>
-  <button onclick="showCategory('inter')">🌍 บริการต่างชาติ</button>
-  <button onclick="showCategory('guarantee')">♻️ บริการมีประกัน</button>
+  <button onclick="showCategory('thai')">🇹🇭 ไทย</button>
+  <button onclick="showCategory('inter')">🌍 ต่างชาติ</button>
+  <button onclick="showCategory('guarantee')">♻️ มีประกัน</button>
   <div id="serviceList"></div>
   <button onclick="back()">⬅ กลับ</button>
 </div>
@@ -137,19 +131,21 @@ body.lock{
 </div>
 
 <!-- POLICY POPUP -->
-<div class="popup hidden" id="policyPopup">
-  <div class="box">
+<div id="policyPopup">
+  <div class="policy-box">
     <b>เงื่อนไขการใช้บริการ</b><br><br>
     <div class="small">
-      • บริการเป็นการโปรโมททางการตลาด ไม่รับประกันผลลัพธ์เชิงพาณิชย์<br>
-      • ไม่สามารถยกเลิกหรือคืนเงินได้หลังการสั่งซื้อ<br>
+      • บริการเป็นการโปรโมททางการตลาด<br>
+      • ไม่สามารถยกเลิกหรือคืนเงินหลังการสั่งซื้อได้<br>
       • ลูกค้าต้องเป็นเจ้าของลิงก์ที่สั่งงาน<br>
-      • ระยะเวลาดำเนินการขึ้นอยู่กับระบบของแพลตฟอร์ม
-    </div><br>
-    <label>
+      • ระยะเวลาดำเนินการขึ้นอยู่กับแพลตฟอร์ม
+    </div>
+
+    <label style="display:block;margin-top:12px">
       <input type="checkbox" id="acceptPolicy"> ยอมรับเงื่อนไขทั้งหมด
     </label>
-    <button onclick="confirmOrder()">ดำเนินการสั่งซื้อ</button>
+
+    <button onclick="confirmOrderFinal()">ดำเนินการสั่งซื้อ</button>
     <button onclick="closePolicy()">ยกเลิก</button>
   </div>
 </div>
@@ -170,6 +166,7 @@ const GAS_API="https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHV
 
 let user=null,services=[],selected=null,timer=null;
 
+/* INIT */
 document.addEventListener("DOMContentLoaded",async()=>{
   services=(await fetch(SERVICES_API).then(r=>r.json())).filter(s=>s.status==="active");
   const u=localStorage.getItem("user");
@@ -237,17 +234,19 @@ function updateTotal(){
 
 /* POLICY */
 function openPolicy(){
-  document.body.classList.add("popup-open");
-  policyPopup.classList.remove("hidden");
+  document.body.classList.add("lock");
+  document.getElementById("policyPopup").classList.add("active");
 }
 function closePolicy(){
-  document.body.classList.remove("popup-open");
-  policyPopup.classList.add("hidden");
+  document.body.classList.remove("lock");
+  document.getElementById("policyPopup").classList.remove("active");
 }
 
 /* ORDER */
-async function confirmOrder(){
+async function confirmOrderFinal(){
   if(!acceptPolicy.checked){alert("กรุณายอมรับเงื่อนไข");return;}
+  closePolicy();
+
   const q=Number(qty.value),amount=q*selected.price_th;
   if(amount>user.credit){alert("เครดิตไม่เพียงพอ");return;}
 
@@ -266,7 +265,6 @@ async function confirmOrder(){
   const d=JSON.parse(await res.text());
   if(!d.success){alert(d.message);return;}
 
-  document.body.classList.remove("popup-open");
   user.credit=d.credit;
   localStorage.setItem("user",JSON.stringify(user));
   alert("สั่งซื้อสำเร็จ");
@@ -283,7 +281,6 @@ async function openOrders(){
 async function loadOrders(){
   const data=await fetch(ORDERS_API).then(r=>r.json());
   const my=data.filter(o=>String(o.user_id)===String(user.user_id)).reverse();
-  if(!my.length){ordersList.innerText="ยังไม่มีออเดอร์";return;}
   ordersList.innerHTML=my.map(o=>`
     <div class="box">
       <b>${o.service_code}</b><br>
@@ -292,8 +289,7 @@ async function loadOrders(){
         ${o.status==="pending"?"รอดำเนินการ":
           o.status==="processing"?"กำลังดำเนินการ":"ดำเนินการสำเร็จ"}
       </span>
-    </div>
-  `).join("");
+    </div>`).join("")||"ยังไม่มีออเดอร์";
 }
 
 /* UTIL */
