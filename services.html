@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>เลือกบริการ | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.7);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:
+    radial-gradient(1000px 500px at top, #2a0d52, transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+  min-height:100vh;
+}
+
+.container{
+  max-width:420px;
+  margin:30px auto;
+  padding:26px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+
+h1{
+  margin:0;
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  margin:10px 0 22px;
+  color:var(--soft);
+  font-size:14px;
+}
+
+.section{
+  margin-top:20px;
+}
+
+.section-title{
+  font-weight:800;
+  margin-bottom:10px;
+  color:#e9d5ff;
+}
+
+.card{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:12px;
+  cursor:pointer;
+}
+
+.card:hover{
+  border-color:var(--purple);
+  background:rgba(255,255,255,.06);
+}
+
+.service-name{
+  font-weight:800;
+}
+
+.service-desc{
+  font-size:13px;
+  color:var(--soft);
+  margin-top:4px;
+}
+
+.back{
+  width:100%;
+  margin-top:24px;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  font-weight:700;
+  color:#fff;
+  background:linear-gradient(135deg,#1e293b,#334155);
+  cursor:pointer;
+}
+
+.back:hover{filter:brightness(1.05)}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>เลือกบริการ</h1>
+  <div class="sub">หมวดหมู่ TikTok</div>
+
+  <!-- THAI -->
+  <div class="section">
+    <div class="section-title">🇹🇭 บริการไทย</div>
+
+    <div class="card" onclick="selectService('ผู้ติดตามไทย')">
+      <div class="service-name">ผู้ติดตามไทย</div>
+      <div class="service-desc">ผู้ติดตามจริง มี/ไม่มีประกัน</div>
+    </div>
+
+    <div class="card" onclick="selectService('ไลก์ไทย')">
+      <div class="service-name">ไลก์ไทย</div>
+      <div class="service-desc">เพิ่มความน่าเชื่อถือคลิป</div>
+    </div>
+  </div>
+
+  <!-- INTER -->
+  <div class="section">
+    <div class="section-title">🌍 บริการต่างชาติ</div>
+
+    <div class="card" onclick="selectService('ผู้ติดตามต่างชาติ')">
+      <div class="service-name">ผู้ติดตามต่างชาติ</div>
+      <div class="service-desc">ราคาประหยัด งานไว</div>
+    </div>
+
+    <div class="card" onclick="selectService('วิวต่างชาติ')">
+      <div class="service-name">วิวต่างชาติ</div>
+      <div class="service-desc">ดันยอดเข้าถึง</div>
+    </div>
+  </div>
+
+  <button class="back" onclick="goBack()">⬅ กลับหน้า Dashboard</button>
+</div>
+
+<script>
+function selectService(name){
+  alert("เลือกบริการ: " + name + "\n(ขั้นถัดไปจะไปหน้าสั่งซื้อ)");
+}
+
+function goBack(){
+  location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>
