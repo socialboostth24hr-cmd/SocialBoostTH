@@ -50,26 +50,37 @@ button{
 .status-processing{color:#38bdf8;font-weight:bold}
 .status-completed{color:#22c55e;font-weight:bold}
 
-/* POPUP FIX iOS */
-.popup{
+/* === POPUP SAFARI SAFE === */
+#policyPopup{
   position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.75);
-  display:flex;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.8);
+  display:none;
   align-items:center;
   justify-content:center;
-  z-index:9999;
-  pointer-events:auto;
+  z-index:100000;
+  touch-action:auto;
 }
-.popup .box{
+
+#policyPopup.active{
+  display:flex;
+}
+
+#policyPopup .policy-box{
+  background:#120726;
+  border:1px solid #2e1065;
+  border-radius:16px;
+  padding:20px;
+  width:90%;
+  max-width:380px;
   max-height:80vh;
   overflow:auto;
-  pointer-events:auto;
 }
-body.popup-open > *:not(.popup){
-  pointer-events:none;
-  user-select:none;
+
+body.lock{
+  overflow:hidden;
 }
+
 </style>
 </head>
 
