@@ -89,13 +89,6 @@ button{
 
   <button onclick="login()">เข้าสู่ระบบ</button>
   <div id="loginMsg" class="msg"></div>
-
-  <div class="msg" style="margin-top:10px">
-    หากไม่มีบัญชี ติดต่อ LINE  
-    <a style="color:#c4b5fd" href="https://line.me/R/ti/p/@geg4960w" target="_blank">
-      @geg4960w
-    </a>
-  </div>
 </div>
 
 <!-- PANEL -->
@@ -151,7 +144,6 @@ function togglePW(){
 
 function login(){
   loginMsg.innerText = "กำลังเข้าสู่ระบบ...";
-
   fetch(LOGIN_API,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
@@ -189,29 +181,24 @@ function logout(){
 /* ================= LOAD SERVICES ================= */
 async function loadServices(){
   serviceSelect.innerHTML = `<option>กำลังโหลดบริการ...</option>`;
-
   try{
     const res = await fetch(SERVICE_API,{ method:"POST" });
     const data = await res.json();
 
-    if(!data.success || !data.services){
-      throw "invalid";
-    }
+    if(!data.success) throw "โหลดไม่สำเร็จ";
+    if(!Array.isArray(data.services)) throw "services ไม่ใช่ array";
 
-    // รองรับทั้ง object และ array
-    services = Array.isArray(data.services)
-      ? data.services
-      : [data.services];
+    services = data.services;
 
     serviceSelect.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
-
     services.forEach((s,i)=>{
       const opt = document.createElement("option");
       opt.value = i;
       opt.textContent = `${s.platform} | ${s.service_name}`;
       serviceSelect.appendChild(opt);
     });
-  }catch{
+  }catch(err){
+    console.error(err);
     serviceSelect.innerHTML = `<option>โหลดบริการไม่สำเร็จ</option>`;
   }
 }
@@ -239,7 +226,7 @@ function calc(){
     return;
   }
 
-  total.innerText = `💰 รวม ${(q*price).toFixed(2)} บาท`;
+  total.innerText = `💰 รวม ${(q * price).toFixed(2)} บาท`;
 }
 
 /* ================= ORDER ================= */
@@ -248,7 +235,7 @@ function order(){
     alert("กรุณาเลือกบริการ");
     return;
   }
-  alert("เชื่อมต่อสำเร็จ พร้อมต่อระบบสั่งซื้อจริงได้แล้ว ✅");
+  alert("ระบบพร้อมต่อออเดอร์จริงแล้ว ✅");
 }
 </script>
 
