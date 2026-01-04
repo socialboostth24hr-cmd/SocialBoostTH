@@ -95,14 +95,14 @@ button{
   <div class="sub">ตรวจสอบข้อมูลก่อนยืนยัน</div>
 
   <div class="card">
-    <b id="serviceName">ผู้ติดตามต่างชาติ (ไม่มีประกัน)</b><br>
-    <span class="sub">ราคา <span id="unitPrice">0.256</span> บาท / คน</span>
+    <b id="serviceName">-</b><br>
+    <span class="sub">ราคา <span id="unitPrice">0</span> บาท / <span id="unitText">-</span></span>
   </div>
 
   <div class="card">
     <label>จำนวนที่ต้องการ</label>
     <div class="input-wrap">
-      <input id="qty" type="number" value="1000" min="50" max="10000">
+      <input id="qty" type="number">
       <div class="badge-discount" id="discountBadge"></div>
     </div>
   </div>
@@ -142,13 +142,16 @@ button{
 </div>
 
 <script>
-/* ===== CONFIG ===== */
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
+const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
 const DISCOUNT_API = `https://opensheet.elk.sh/${SHEET_ID}/discounts`;
-const SERVICE_CODE = "TT_FOLLOW_INT_NO";
-const PRICE = 0.256;
 
-/* ===== ELEMENTS ===== */
+const params = new URLSearchParams(location.search);
+const SERVICE_CODE = params.get("service_code");
+
+let service = null;
+let rules = [];
+
 const qty = document.getElementById("qty");
 const normal = document.getElementById("normalPrice");
 const discountEl = document.getElementById("discountPrice");
@@ -159,26 +162,43 @@ const progressBox = document.getElementById("progressBox");
 const progressText = document.getElementById("progressText");
 const progressFill = document.getElementById("progressFill");
 
-let rules = [];
-
-/* ===== LOAD DISCOUNT FROM SHEET ===== */
-fetch(DISCOUNT_API)
+/* โหลดบริการ */
+fetch(SERVICES_API)
   .then(r=>r.json())
   .then(data=>{
-    rules = data
-      .filter(d=>d.service_code===SERVICE_CODE)
-      .map(d=>({
-        min:+d.min_qty,
-        percent:+d.discount_percent,
-        label:d.label||""
-      }))
-      .sort((a,b)=>b.min-a.min);
-    calc();
+    service = data.find(s=>s.service_code===SERVICE_CODE);
+    if(!service){ alert("ไม่พบบริการ"); return; }
+
+    serviceName.innerText = service.service_name;
+    unitPrice.innerText = service.price;
+    unitText.innerText = service.unit;
+    qty.min = service.min;
+    qty.max = service.max;
+    qty.value = service.min;
+
+    loadDiscounts();
   });
+
+function loadDiscounts(){
+  fetch(DISCOUNT_API)
+    .then(r=>r.json())
+    .then(data=>{
+      rules = data
+        .filter(d=>d.service_code===SERVICE_CODE)
+        .map(d=>({
+          min:+d.min_qty,
+          percent:+d.discount_percent,
+          label:d.label||""
+        }))
+        .sort((a,b)=>b.min-a.min);
+      calc();
+    });
+}
 
 function calc(){
   const q = +qty.value||0;
-  const base = q*PRICE;
+  const base = q * Number(service.price);
+
   let rule = rules.find(r=>q>=r.min);
   let discountAmount = rule ? base*(rule.percent/100) : 0;
 
@@ -199,7 +219,7 @@ function calc(){
   if(next){
     progressBox.style.display="block";
     progressText.innerText =
-      `📊 สั่งเพิ่มอีก ${next.min-q} คน รับส่วนลด ${next.percent}%`;
+      `📊 สั่งเพิ่มอีก ${next.min-q} ${service.unit} รับส่วนลด ${next.percent}%`;
     progressFill.style.width = Math.min(100,(q/next.min)*100) + "%";
   }else{
     progressBox.style.display="none";
@@ -208,12 +228,11 @@ function calc(){
 
 qty.oninput = calc;
 
-/* popup */
 function openPolicy(){ policy.style.display="flex"; }
 function closePolicy(){ policy.style.display="none"; }
 function confirmOrder(){
   if(!accept.checked){ alert("กรุณายอมรับเงื่อนไข"); return; }
-  alert("✅ สั่งซื้อสำเร็จ (demo)");
+  alert("✅ สั่งซื้อสำเร็จ (พร้อมต่อหักเครดิต)");
   location.href="dashboard.html";
 }
 </script>
