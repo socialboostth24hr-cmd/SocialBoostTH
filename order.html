@@ -2,42 +2,223 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>สั่งซื้อ</title>
+<title>สั่งซื้อบริการ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-body{margin:0;font-family:system-ui;background:#0b0216;color:#fff}
-.box{max-width:420px;margin:30px auto;padding:20px;background:#14062b;border-radius:20px}
-input,button{width:100%;margin-top:10px;padding:12px;border-radius:14px;border:none}
-button{background:linear-gradient(90deg,#8b5cf6,#ec4899);font-weight:800;color:#fff}
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.7);
+  --green:#22c55e;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+  min-height:100vh;
+}
+
+/* CONTAINER */
+.box{
+  max-width:420px;
+  margin:30px auto;
+  padding:24px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:24px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+
+/* HEADER */
+h1{
+  margin:0 0 8px;
+  text-align:center;
+  font-size:24px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  font-size:14px;
+  color:var(--soft);
+  margin-bottom:20px;
+}
+
+/* CARD */
+.card{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.label{
+  font-size:13px;
+  color:#c4b5fd;
+}
+
+.value{
+  margin-top:4px;
+  font-size:15px;
+  font-weight:800;
+  color:#e9d5ff;
+}
+
+/* INPUT */
+input{
+  width:100%;
+  padding:14px;
+  margin-top:8px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:#120725;
+  color:#fff;
+  font-size:15px;
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--purple);
+  box-shadow:0 0 0 2px rgba(139,92,246,.25);
+}
+
+/* PRICE */
+.row{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  color:var(--soft);
+  margin-bottom:6px;
+}
+
+.total{
+  margin-top:6px;
+  text-align:center;
+  font-size:22px;
+  font-weight:900;
+  color:#fbcfe8;
+}
+
+.save{
+  text-align:center;
+  font-size:14px;
+  font-weight:800;
+  color:var(--green);
+  margin-top:6px;
+}
+
+/* BUTTONS */
+button{
+  width:100%;
+  margin-top:14px;
+  padding:16px;
+  border-radius:18px;
+  border:none;
+  cursor:pointer;
+  font-size:15px;
+  font-weight:900;
+  color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  box-shadow:0 14px 30px rgba(139,92,246,.35);
+}
+
+button:hover{filter:brightness(1.06)}
+
+.back{
+  background:#1e293b;
+  box-shadow:none;
+}
 </style>
 </head>
+
 <body>
 
 <div class="box">
-  <h2 id="name"></h2>
-  <div id="price"></div>
-  <input id="qty" type="number">
-  <div>รวม: <b id="total"></b> บาท</div>
-  <button onclick="submit()">ยืนยัน</button>
+  <h1>สั่งซื้อบริการ</h1>
+  <div class="sub">ตรวจสอบข้อมูลก่อนยืนยันคำสั่งซื้อ</div>
+
+  <!-- SERVICE INFO -->
+  <div class="card">
+    <div class="label">บริการ</div>
+    <div class="value" id="name">-</div>
+    <div class="label" style="margin-top:10px">ราคา</div>
+    <div class="value" id="price">-</div>
+  </div>
+
+  <!-- QTY -->
+  <div class="card">
+    <div class="label">จำนวนที่ต้องการ</div>
+    <input id="qty" type="number">
+  </div>
+
+  <!-- TOTAL -->
+  <div class="card">
+    <div class="row">
+      <span>ราคาปกติ</span>
+      <span id="base">0.00</span>
+    </div>
+    <div class="row">
+      <span>รวมทั้งหมด</span>
+      <span id="total">0.00</span>
+    </div>
+    <div class="total">
+      <span id="totalBig">0.00</span> บาท
+    </div>
+    <div class="save" id="save"></div>
+  </div>
+
+  <button onclick="submitOrder()">ยืนยันสั่งซื้อ</button>
+  <button class="back" onclick="history.back()">⬅ กลับ</button>
 </div>
 
 <script>
-const API_URL="https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
-const user=JSON.parse(localStorage.getItem("user"));
-const service=JSON.parse(localStorage.getItem("selectedService"));
-if(!user||!service) location.href="services.html";
+/* ================= CONFIG ================= */
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
 
-name.innerText=service.service_name;
-price.innerText=`ราคา ${service.price}/${service.unit}`;
-qty.value=service.min;
-
-qty.oninput=calc;
-function calc(){
-  total.innerText=(qty.value*service.price).toFixed(2);
+/* ================= AUTH ================= */
+const user = JSON.parse(localStorage.getItem("user"));
+const service = JSON.parse(localStorage.getItem("selectedService"));
+if(!user || !service){
+  location.href="services.html";
 }
+
+/* ================= SHOW SERVICE ================= */
+name.innerText = service.service_name;
+price.innerText = `${service.price} บาท / ${service.unit}`;
+
+qty.min = service.min;
+qty.max = service.max;
+qty.value = service.min;
+
+qty.oninput = calc;
 calc();
 
-function submit(){
+function calc(){
+  const q = Number(qty.value)||0;
+  const base = q * service.price;
+  baseSpan = document.getElementById("base");
+  baseSpan.innerText = base.toFixed(2);
+  total.innerText = base.toFixed(2);
+  totalBig.innerText = base.toFixed(2);
+  save.innerText = q >= service.min ? "✔️ พร้อมสั่งซื้อ" : "";
+}
+
+/* ================= SUBMIT ================= */
+function submitOrder(){
   fetch(API_URL,{
     method:"POST",
     body:JSON.stringify({
@@ -51,11 +232,17 @@ function submit(){
   })
   .then(r=>r.json())
   .then(res=>{
-    if(!res.success){alert(res.message);return}
-    user.credit=res.new_credit;
+    if(!res.success){
+      alert(res.message);
+      return;
+    }
+    user.credit = res.new_credit;
     localStorage.setItem("user",JSON.stringify(user));
-    alert("สำเร็จ");
+    alert("✅ สั่งซื้อสำเร็จ");
     location.href="orders.html";
+  })
+  .catch(()=>{
+    alert("❌ เซิร์ฟเวอร์ผิดพลาด");
   });
 }
 </script>
