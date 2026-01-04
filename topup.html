@@ -22,7 +22,7 @@ body{
   margin:0;
   font-family:system-ui;
   background:
-    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    radial-gradient(1200px 600px at top,#2a0d52,transparent),
     linear-gradient(180deg,var(--bg-main),#14032a);
   color:#fff;
   min-height:100vh;
@@ -31,16 +31,17 @@ body{
 .container{
   max-width:420px;
   margin:30px auto;
-  padding:26px;
+  padding:28px;
   background:linear-gradient(180deg,#1a0936,var(--bg-card));
-  border-radius:22px;
-  box-shadow:0 25px 70px rgba(0,0,0,.55);
+  border-radius:24px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
 }
 
+/* header */
 h1{
   margin:0;
   text-align:center;
-  font-size:26px;
+  font-size:28px;
   font-weight:900;
   background:linear-gradient(90deg,var(--purple),var(--pink));
   -webkit-background-clip:text;
@@ -49,103 +50,131 @@ h1{
 
 .sub{
   text-align:center;
-  margin:12px 0 22px;
+  margin:14px 0 26px;
   color:var(--soft);
   font-size:14px;
-  line-height:1.6;
+  line-height:1.7;
 }
 
+/* cards */
 .card{
-  background:rgba(255,255,255,.04);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
   border:1px solid var(--border);
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:14px;
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:16px;
 }
 
-/* user info */
+/* user */
 .user{
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 
+.user-title{
+  font-size:13px;
+  color:#c4b5fd;
+}
+
 .user-name{
   font-size:15px;
-  color:#e9d5ff;
+  font-weight:800;
+  margin-top:2px;
 }
 
 .credit{
-  font-size:22px;
+  text-align:right;
+}
+
+.credit span{
+  font-size:12px;
+  color:#c4b5fd;
+}
+
+.credit b{
+  display:block;
+  margin-top:4px;
+  font-size:26px;
   font-weight:900;
   color:#fbcfe8;
 }
 
-/* bank */
+/* bank card */
 .bank{
   text-align:center;
 }
 
-.bank-name{
-  font-size:15px;
+.bank-badge{
+  display:inline-block;
+  font-size:12px;
   font-weight:800;
-  margin-bottom:6px;
-  color:#e9d5ff;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(139,92,246,.15);
+  color:#c4b5fd;
+  margin-bottom:14px;
+}
+
+.bank-no{
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:1px;
+  margin:8px 0;
 }
 
 .bank-owner{
   font-size:14px;
-  color:#c4b5fd;
-  margin-bottom:10px;
-}
-
-.bank-no{
-  font-size:22px;
-  font-weight:900;
-  letter-spacing:1px;
+  color:#e9d5ff;
 }
 
 .copy{
-  margin-top:8px;
-  font-size:13px;
-  color:var(--green);
+  margin-top:12px;
+  padding:10px;
+  border-radius:14px;
+  font-size:14px;
+  font-weight:800;
+  color:#022c22;
+  background:linear-gradient(90deg,#22c55e,#4ade80);
   cursor:pointer;
 }
 
-/* line */
+/* line button */
 .line-btn{
   display:block;
-  margin-top:14px;
-  padding:14px;
-  border-radius:16px;
+  margin-top:18px;
+  padding:16px;
+  border-radius:20px;
   text-align:center;
   font-weight:900;
-  font-size:15px;
+  font-size:16px;
   text-decoration:none;
   color:#022c22;
-  background:linear-gradient(90deg,#22c55e,#4ade80);
-  box-shadow:0 10px 28px rgba(34,197,94,.35);
+  background:
+    linear-gradient(90deg,#22c55e,#4ade80);
+  box-shadow:0 12px 30px rgba(34,197,94,.4);
 }
 
 .notice{
+  margin-top:14px;
   font-size:13px;
   color:#c4b5fd;
   text-align:center;
-  margin-top:10px;
-  line-height:1.6;
+  line-height:1.7;
 }
 
-/* buttons */
+/* back */
 button{
   width:100%;
   padding:14px;
+  margin-top:18px;
   border:none;
-  border-radius:16px;
+  border-radius:18px;
   font-weight:800;
   cursor:pointer;
   background:#1e293b;
   color:#fff;
-  margin-top:14px;
 }
 </style>
 </head>
@@ -156,26 +185,26 @@ button{
   <h1>เติมเงิน</h1>
   <div class="sub">
     เติมเครดิตเพื่อใช้งานบริการ<br>
-    การเติมเงินทำผ่านแอดมินเท่านั้น
+    โอนเงินผ่านบัญชีด้านล่าง และส่งสลิปให้แอดมิน
   </div>
 
   <!-- USER -->
   <div class="card user">
     <div>
-      <div class="user-name">ผู้ใช้งาน</div>
-      <b id="username">ลูกค้าทดลอง</b>
+      <div class="user-title">ผู้ใช้งาน</div>
+      <div class="user-name" id="username">ลูกค้าทดลอง</div>
     </div>
-    <div>
-      <div class="user-name">เครดิตปัจจุบัน</div>
-      <div class="credit" id="credit">1,250</div>
+    <div class="credit">
+      <span>เครดิตคงเหลือ</span>
+      <b id="credit">1,250</b>
     </div>
   </div>
 
   <!-- BANK -->
   <div class="card bank">
-    <div class="bank-name">🏦 ธนาคารกสิกรไทย</div>
-    <div class="bank-owner">ชื่อบัญชี: สรวงสุดา ศรีสุวรรณ์</div>
+    <div class="bank-badge">🏦 ธนาคารกสิกรไทย</div>
     <div class="bank-no" id="bankNo">066-1213-728</div>
+    <div class="bank-owner">สรวงสุดา ศรีสุวรรณ์</div>
     <div class="copy" onclick="copyBank()">📋 คัดลอกเลขบัญชี</div>
   </div>
 
@@ -188,17 +217,17 @@ button{
 
   <div class="notice">
     ⏱ หลังโอนเงิน กรุณาส่งสลิปให้แอดมิน<br>
-    ระบบจะเติมเครดิตให้ภายในไม่เกิน 24 ชม.
+    เครดิตจะได้รับการเพิ่มภายในไม่เกิน 24 ชั่วโมง
   </div>
 
   <button onclick="goBack()">⬅ กลับหน้า Dashboard</button>
 </div>
 
 <script>
-/* mock user (ภายหลังดึงจาก localStorage) */
+/* mock user – ภายหลังดึงจาก localStorage */
 const user = {
-  fullname: "ลูกค้าทดลอง",
-  credit: 1250
+  fullname:"ลูกค้าทดลอง",
+  credit:1250
 };
 
 username.innerText = user.fullname;
@@ -208,7 +237,6 @@ function copyBank(){
   navigator.clipboard.writeText(bankNo.innerText);
   alert("คัดลอกเลขบัญชีเรียบร้อย");
 }
-
 function goBack(){
   location.href="dashboard.html";
 }
