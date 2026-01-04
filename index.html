@@ -2,47 +2,135 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SocialBoostTH – Login</title>
+<title>SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+:root{
+  --bg-main: #0b0216;
+  --bg-card: #14062b;
+  --bg-input: #120725;
+  --border-main: #3b1775;
+  --purple: #8b5cf6;
+  --pink: #ec4899;
+  --text-soft: rgba(255,255,255,.75);
+}
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:system-ui;
-  background:linear-gradient(180deg,#0b0216,#1a0438);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background:
+    radial-gradient(1200px 600px at top, #2a0d52, transparent),
+    linear-gradient(180deg, var(--bg-main), #14032a);
   color:#fff;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
+
 .container{
-  max-width:420px;
-  margin:40px auto;
-  padding:26px;
-  background:#120726;
-  border-radius:18px;
-}
-h1{text-align:center;margin:0}
-.sub{text-align:center;opacity:.85;margin:14px 0;line-height:1.6}
-input,button{
   width:100%;
-  padding:14px;
-  margin-top:10px;
-  border-radius:12px;
-  border:1px solid #2e1065;
-  background:#0f0220;
+  max-width:420px;
+  padding:28px;
+  background:
+    linear-gradient(180deg, #1a0936, var(--bg-card));
+  border-radius:22px;
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.55),
+    inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+h1{
+  text-align:center;
+  margin:0;
+  font-size:30px;
+  font-weight:800;
+  background:linear-gradient(90deg, var(--purple), var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  margin:14px 0 24px;
+  font-size:14px;
+  color:var(--text-soft);
+  line-height:1.6;
+}
+
+label{
+  display:block;
+  margin-top:16px;
+  font-size:14px;
+  color:#e9d5ff;
+}
+
+.input-group{
+  position:relative;
+}
+
+input{
+  width:100%;
+  padding:14px 48px 14px 14px;
+  margin-top:8px;
+  border-radius:14px;
+  border:1px solid var(--border-main);
+  background:var(--bg-input);
+  color:#fff;
+  font-size:15px;
+  outline:none;
+}
+
+input:focus{
+  border-color:var(--purple);
+  box-shadow:0 0 0 2px rgba(139,92,246,.25);
+}
+
+.toggle-password{
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:12px;
+  color:#c4b5fd;
+  cursor:pointer;
+  user-select:none;
+}
+
+.toggle-password:hover{
   color:#fff;
 }
+
 button{
-  background:linear-gradient(90deg,#7c3aed,#5b21b6);
+  width:100%;
+  margin-top:26px;
+  padding:15px;
+  border-radius:16px;
   border:none;
-  font-weight:bold;
+  cursor:pointer;
+  font-size:16px;
+  font-weight:700;
+  color:#fff;
+  background:
+    linear-gradient(90deg, var(--purple), var(--pink));
+  box-shadow:
+    0 12px 30px rgba(139,92,246,.35);
 }
+
+button:hover{
+  filter:brightness(1.05);
+}
+
 .small{
+  margin-top:14px;
   font-size:13px;
-  opacity:.7;
+  color:#fda4af;
   text-align:center;
-  margin-top:12px;
+  min-height:18px;
 }
-.success{color:#22c55e}
-.error{color:#f87171}
 </style>
 </head>
 
@@ -52,58 +140,43 @@ button{
   <h1>SocialBoostTH</h1>
 
   <div class="sub">
-    เข้าสู่ระบบใช้งาน<br>
-    <span class="small">
-      หากยังไม่มีบัญชี กรุณาติดต่อร้านทาง LINE <b>@geg4960w</b><br>
-      เพื่อสมัครสมาชิกเท่านั้น
-    </span>
+    เข้าสู่ระบบเพื่อใช้งานระบบ<br>
+    หากยังไม่มีบัญชี กรุณาติดต่อ LINE ร้านเท่านั้น<br>
+    <b>@geg4960w</b>
   </div>
 
-  <input id="email" placeholder="อีเมล">
-  <input id="password" type="password" placeholder="รหัสผ่าน">
+  <label>อีเมล</label>
+  <input id="email" placeholder="example@email.com">
+
+  <label>รหัสผ่าน</label>
+  <div class="input-group">
+    <input id="password" type="password" placeholder="••••••••">
+    <div class="toggle-password" onclick="togglePassword()" id="toggleText">
+      แสดงรหัสผ่าน
+    </div>
+  </div>
 
   <button onclick="login()">เข้าสู่ระบบ</button>
-
-  <div id="msg" class="small"></div>
+  <div id="loginMsg" class="small"></div>
 </div>
 
 <script>
-const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
-const USERS_API = `https://opensheet.elk.sh/${SHEET_ID}/users`;
-
-async function login(){
-  msg.className="small";
-  msg.innerText="กำลังตรวจสอบข้อมูล...";
-
-  try{
-    const users = await fetch(USERS_API).then(r=>r.json());
-
-    const u = users.find(x =>
-      x.email?.toLowerCase() === email.value.toLowerCase() &&
-      String(x.password).trim() === password.value.trim()
-    );
-
-    if(!u){
-      msg.classList.add("error");
-      msg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง";
-      return;
-    }
-
-    // เก็บผู้ใช้ไว้ก่อน (ใช้ใน STEP 2)
-    localStorage.setItem("user", JSON.stringify({
-      user_id: u.user_id,
-      fullname: u.fullname,
-      credit: Number(u.credit)
-    }));
-
-    msg.classList.add("success");
-    msg.innerText="เข้าสู่ระบบสำเร็จ";
-
-  }catch(err){
-    msg.classList.add("error");
-    msg.innerText="ไม่สามารถเชื่อมต่อระบบได้";
-    console.error(err);
+function togglePassword(){
+  const p = document.getElementById("password");
+  const t = document.getElementById("toggleText");
+  if(p.type === "password"){
+    p.type = "text";
+    t.innerText = "ซ่อนรหัสผ่าน";
+  }else{
+    p.type = "password";
+    t.innerText = "แสดงรหัสผ่าน";
   }
+}
+
+/* ยังไม่ผูก backend – แค่ mock ไว้ก่อน */
+function login(){
+  document.getElementById("loginMsg").innerText =
+    "ตัวอย่างหน้า Login (ยังไม่เชื่อมระบบ)";
 }
 </script>
 
