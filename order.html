@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* ===== STYLE (เหมือนของเดิม) ===== */
 :root{
   --bg-main:#0b0216;
   --bg-card:#14062b;
@@ -28,18 +27,42 @@ body{
   max-width:420px;margin:30px auto;padding:26px;
   background:linear-gradient(180deg,#1a0936,var(--bg-card));
   border-radius:22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
+h1{
+  margin:0;text-align:center;font-size:26px;font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.sub{text-align:center;margin:12px 0 22px;color:var(--soft);font-size:14px}
 .card{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
   border-radius:18px;
   padding:16px;margin-bottom:14px;
 }
+.input-wrap{position:relative}
+.badge-discount{
+  position:absolute;right:12px;top:50%;
+  transform:translateY(-50%);
+  font-size:12px;font-weight:900;
+  padding:5px 10px;border-radius:999px;display:none;
+}
+.badge-green{background:linear-gradient(90deg,#22c55e,#4ade80);color:#022c22}
+.badge-purple{background:linear-gradient(90deg,#8b5cf6,#a78bfa);color:#1e1b4b}
+.badge-pink{background:linear-gradient(90deg,#f43f5e,#fb7185);color:#2c020a}
 input{
   width:100%;padding:14px;margin-top:8px;
   border-radius:14px;border:1px solid var(--border);
   background:#120725;color:#fff;
 }
+.row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;color:var(--soft)}
+.total{font-size:22px;font-weight:900;color:#fbcfe8;text-align:center}
+.save{text-align:center;margin-top:8px;font-size:14px;color:var(--green);font-weight:800}
+.progress-box{margin-top:12px;display:none}
+.progress-text{font-size:13px;color:#c4b5fd;text-align:center;margin-bottom:6px}
+.progress-bar{height:10px;background:#1e1b4b;border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));width:0%;transition:.35s}
 button{
   width:100%;padding:14px;border:none;border-radius:16px;
   font-weight:800;cursor:pointer;
@@ -56,26 +79,50 @@ button{
 /* ===== AUTH GUARD ===== */
 const user = JSON.parse(localStorage.getItem("user"));
 if(!user){
-  alert("กรุณาเข้าสู่ระบบ");
+  alert("กรุณาเข้าสู่ระบบก่อน");
   location.href="index.html";
+}
+
+/* ===== LOAD SERVICE ===== */
+const service = JSON.parse(localStorage.getItem("selectedService"));
+if(!service){
+  alert("กรุณาเลือกบริการก่อน");
+  location.href="services.html";
 }
 </script>
 
 <div class="container">
-  <h2>สั่งซื้อบริการ</h2>
+  <h1>สั่งซื้อบริการ</h1>
+  <div class="sub">ตรวจสอบข้อมูลก่อนยืนยัน</div>
 
   <div class="card">
-    <b id="serviceName">-</b><br>
-    ราคา <span id="unitPrice">0</span> บาท / หน่วย
+    <b id="serviceName"></b><br>
+    <span class="sub">
+      ราคา <span id="unitPrice"></span> บาท / <span id="unit"></span>
+    </span>
   </div>
 
   <div class="card">
-    <label>จำนวน</label>
-    <input id="qty" type="number" min="1" value="1">
+    <label>จำนวนที่ต้องการ</label>
+    <div class="input-wrap">
+      <input id="qty" type="number">
+      <div class="badge-discount" id="badge"></div>
+    </div>
   </div>
 
   <div class="card">
-    รวม <b><span id="total">0.00</span></b> บาท
+    <div class="row"><span>ราคาปกติ</span><span id="normal">0.00</span></div>
+    <div class="row"><span>ส่วนลด</span><span id="discount">-0.00</span></div>
+    <hr style="border-top:1px solid #2e1065;margin:10px 0">
+    <div class="total">รวม <span id="total">0.00</span> บาท</div>
+    <div class="save" id="saveText"></div>
+
+    <div class="progress-box" id="progressBox">
+      <div class="progress-text" id="progressText"></div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
   </div>
 
   <button onclick="submitOrder()">ยืนยันสั่งซื้อ</button>
@@ -84,55 +131,63 @@ if(!user){
 
 <script>
 /* ===== CONFIG ===== */
-const ORDER_API =
-"https://script.google.com/macros/s/AKfycbyJIauTAb7zYXuoMqPaCjHsOm2CVxT7jdLlKYvzt5-5sugBFeFFp8Qk3pbDYLvBHPoK/exec";
+const ORDER_API = "https://script.google.com/macros/s/AKfycbyJIauTAb7zYXuoMqPaCjHsOm2CVxT7jdLlKYvzt5-5sugBFeFFp8Qk3pbDYLvBHPoK/exec";
 
-/* ===== LOAD SERVICE FROM localStorage ===== */
-const service = JSON.parse(localStorage.getItem("selectedService"));
-if(!service){
-  alert("ไม่พบบริการ");
-  location.href="services.html";
-}
+/* ===== SERVICE INFO ===== */
+serviceName.innerText = service.name;
+unitPrice.innerText  = service.price;
+unit.innerText       = service.unit;
 
-const qtyInput = document.getElementById("qty");
-const totalEl = document.getElementById("total");
+qty.min = service.min;
+qty.max = service.max;
+qty.value = service.min;
 
-document.getElementById("serviceName").innerText = service.name;
-document.getElementById("unitPrice").innerText = service.price;
+const rules = [
+  {min:3000,percent:3},
+  {min:5000,percent:5},
+  {min:10000,percent:8},
+].sort((a,b)=>b.min-a.min);
 
+/* ===== CALCULATE ===== */
 function calc(){
-  const q = Number(qtyInput.value)||0;
-  totalEl.innerText = (q * service.price).toFixed(2);
+  const q = Number(qty.value)||0;
+  const base = q * service.price;
+  const rule = rules.find(r=>q>=r.min);
+  const disc = rule ? base * rule.percent/100 : 0;
+
+  normal.innerText = base.toFixed(2);
+  discount.innerText = "-"+disc.toFixed(2);
+  total.innerText = (base-disc).toFixed(2);
+
+  if(rule){
+    badge.style.display="block";
+    badge.className="badge-discount "+
+      (rule.percent>=8?"badge-pink":
+       rule.percent>=5?"badge-purple":"badge-green");
+    badge.innerText = "ลด "+rule.percent+"%";
+    saveText.innerText = `🔥 ประหยัด ${disc.toFixed(2)} บาท`;
+  }else{
+    badge.style.display="none";
+    saveText.innerText="💡 สั่งเพิ่มเพื่อรับส่วนลด";
+  }
 }
-qtyInput.oninput = calc;
+qty.oninput = calc;
 calc();
 
-/* ===== SUBMIT ORDER ===== */
+/* ===== SUBMIT ===== */
 function submitOrder(){
-  const qty = Number(qtyInput.value)||0;
-  const amount = Number(totalEl.innerText);
-
-  if(qty < service.min){
-    alert("จำนวนขั้นต่ำ " + service.min);
-    return;
-  }
-
-  if(user.credit < amount){
-    alert("เครดิตไม่พอ");
-    location.href="topup.html";
-    return;
-  }
+  const q = Number(qty.value);
+  const amt = Number(total.innerText);
 
   fetch(ORDER_API,{
     method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
+    body: JSON.stringify({
       action:"createOrder",
       user_id:user.user_id,
-      service:service.name,
-      qty:qty,
-      amount:amount,
-      platform:"TikTok"
+      service_code:service.code,
+      service_name:service.name,
+      qty:q,
+      amount:amt
     })
   })
   .then(r=>r.json())
@@ -141,16 +196,12 @@ function submitOrder(){
       alert(res.message||"สั่งซื้อไม่สำเร็จ");
       return;
     }
-
     user.credit = res.new_credit;
     localStorage.setItem("user",JSON.stringify(user));
-
     alert("✅ สั่งซื้อสำเร็จ");
     location.href="orders.html";
   })
-  .catch(()=>{
-    alert("❌ เชื่อมต่อเซิร์ฟเวอร์ไม่ได้");
-  });
+  .catch(()=>alert("❌ เกิดข้อผิดพลาด"));
 }
 </script>
 
