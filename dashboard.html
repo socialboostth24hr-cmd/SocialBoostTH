@@ -14,19 +14,16 @@
   --pink:#ec4899;
   --soft:rgba(255,255,255,.7);
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui;
   background:
-    radial-gradient(1000px 500px at top, #2a0d52, transparent),
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
     linear-gradient(180deg,var(--bg-main),#14032a);
   color:#fff;
   min-height:100vh;
 }
-
 .container{
   max-width:420px;
   margin:30px auto;
@@ -35,7 +32,6 @@ body{
   border-radius:22px;
   box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
-
 h1{
   margin:0;
   text-align:center;
@@ -45,14 +41,12 @@ h1{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .sub{
   text-align:center;
   margin:10px 0 22px;
   color:var(--soft);
   font-size:14px;
 }
-
 .card{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
@@ -60,31 +54,26 @@ h1{
   padding:16px;
   margin-top:14px;
 }
-
 .user{
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
-
 .user-name{
-  font-size:15px;
+  font-size:14px;
   color:#e9d5ff;
 }
-
 .credit{
   font-size:22px;
   font-weight:900;
   color:#fbcfe8;
 }
-
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:14px;
   margin-top:20px;
 }
-
 .btn{
   border:none;
   border-radius:18px;
@@ -96,20 +85,11 @@ h1{
   background:linear-gradient(135deg,var(--purple),var(--pink));
   box-shadow:0 14px 30px rgba(139,92,246,.35);
 }
-
 .btn.secondary{
   background:linear-gradient(135deg,#1e293b,#334155);
   box-shadow:none;
 }
-
-.btn.full{
-  grid-column:1 / -1;
-}
-
-.btn:hover{
-  filter:brightness(1.07);
-}
-
+.btn:hover{filter:brightness(1.07)}
 .footer{
   text-align:center;
   margin-top:24px;
@@ -123,17 +103,17 @@ h1{
 
 <div class="container">
   <h1>SocialBoostTH</h1>
-<div class="sub">ระบบจัดการบัญชี</div>
+  <div class="sub">ระบบจัดการบัญชี</div>
 
   <!-- USER INFO -->
   <div class="card user">
     <div>
       <div class="user-name">ผู้ใช้งาน</div>
-      <b id="username">ตัวอย่าง User</b>
+      <b id="username">-</b>
     </div>
     <div>
       <div class="user-name">เครดิตคงเหลือ</div>
-      <div class="credit" id="credit">1,250</div>
+      <div class="credit" id="credit">0</div>
     </div>
   </div>
 
@@ -145,32 +125,35 @@ h1{
     <button class="btn secondary" onclick="logout()">🚪 ออกจากระบบ</button>
   </div>
 
-  <div class="footer">
-    © SocialBoostTH
-  </div>
+  <div class="footer">© SocialBoostTH</div>
 </div>
 
 <script>
-/* ตัวอย่าง mock data */
-const user = {
-  fullname: "ลูกค้าทดลอง",
-  credit: 1250
-};
+/* ===== AUTH GUARD ===== */
+const user = JSON.parse(localStorage.getItem("user"));
 
+if(!user){
+  location.href = "login.html";
+}
+
+/* ===== SHOW USER DATA ===== */
 document.getElementById("username").innerText = user.fullname;
-document.getElementById("credit").innerText = user.credit.toLocaleString();
+document.getElementById("credit").innerText =
+  Number(user.credit || 0).toLocaleString();
 
+/* ===== NAVIGATION ===== */
 function goService(){
   location.href = "services.html";
 }
 function goOrders(){
-  alert("ไปหน้าออเดอร์ของฉัน (ยังไม่เชื่อม)");
+  location.href = "orders.html";
 }
 function goTopup(){
-  alert("ไปหน้าเติมเงิน");
+  location.href = "topup.html";
 }
 function logout(){
-  location.href = "index.html"; // หรือ login.html
+  localStorage.removeItem("user");
+  location.href = "login.html";
 }
 </script>
 
