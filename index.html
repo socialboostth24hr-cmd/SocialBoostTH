@@ -7,113 +7,97 @@
 
 <style>
 :root{
-  --purple:#7c3aed;
-  --purple-dark:#5b21b6;
+  --p:#7c3aed;
+  --p2:#5b21b6;
   --bg:#0b0216;
   --card:#120726;
   --border:#2e1065;
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui;
   background:linear-gradient(180deg,#0b0216,#1a0438);
   color:#fff;
 }
-
 .container{
   max-width:420px;
-  margin:40px auto;
-  padding:26px;
+  margin:60px auto;
+  padding:28px;
   background:var(--card);
   border-radius:20px;
   box-shadow:0 20px 60px rgba(0,0,0,.6);
 }
-
-h2{text-align:center;margin:10px 0}
-.desc{text-align:center;font-size:14px;opacity:.8}
-
-label{display:block;margin-top:14px;font-size:14px}
-
-input,select,button{
+h2{text-align:center;margin:8px 0}
+.desc{text-align:center;font-size:14px;opacity:.8;margin-bottom:20px}
+label{font-size:14px;display:block;margin-top:14px}
+input,select{
   width:100%;
   padding:14px;
-  margin-top:6px;
-  border-radius:14px;
-  border:1px solid var(--border);
+  border-radius:12px;
   background:#0f0220;
+  border:1px solid var(--border);
   color:#fff;
-  font-size:15px;
+  margin-top:6px;
 }
-
 button{
-  margin-top:22px;
+  width:100%;
+  padding:15px;
+  margin-top:20px;
   border:none;
+  border-radius:14px;
+  background:linear-gradient(90deg,var(--p),var(--p2));
+  color:#fff;
   font-weight:bold;
-  background:linear-gradient(90deg,var(--purple),var(--purple-dark));
+  font-size:16px;
 }
-
-button:disabled{
-  opacity:.5;
-}
-
+button:active{transform:scale(.98)}
 .box{
   background:#0f0220;
-  padding:16px;
+  padding:14px;
   border-radius:14px;
   border:1px solid var(--border);
-  margin-top:16px;
+  margin-bottom:14px;
 }
-
-.msg{
-  text-align:center;
-  margin-top:12px;
-  font-size:14px;
-  opacity:.9;
-}
-
+.msg{text-align:center;font-size:14px;margin-top:10px}
+.hidden{display:none}
 .total{
   text-align:center;
-  font-size:18px;
-  margin-top:12px;
+  font-size:20px;
+  margin-top:16px;
 }
-
-.hide{display:none}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <h2>SocialBoostTH</h2>
-<div class="desc">ระบบเติมเครดิต & สั่งบริการอัตโนมัติ</div>
+<div class="desc">เข้าสู่ระบบเพื่อสั่งบริการ</div>
 
 <!-- LOGIN -->
 <div id="loginBox">
   <label>อีเมล</label>
-  <input id="email" placeholder="example@email.com">
+  <input id="email">
 
   <label>รหัสผ่าน</label>
-  <input id="password" type="password" placeholder="รหัสผ่าน">
+  <input id="password" type="password">
 
   <button onclick="login()">เข้าสู่ระบบ</button>
   <div id="loginMsg" class="msg"></div>
 
   <div class="msg">
-    ยังไม่มีบัญชี? ติดต่อ LINE  
-    <a href="https://line.me/R/ti/p/@geg4960w" target="_blank" style="color:#c4b5fd">@geg4960w</a>
+    ยังไม่มีบัญชี? ติดต่อ LINE
+    <a href="https://line.me/R/ti/p/@geg4960w" target="_blank" style="color:#c4b5fd"> @geg4960w </a>
   </div>
 </div>
 
 <!-- PANEL -->
-<div id="panel" class="hide">
+<div id="panel" class="hidden">
 
   <div class="box">
-    👤 <b id="name"></b><br>
-    💰 เครดิตคงเหลือ: <b id="credit"></b>
+    👤 <b id="fullname"></b><br>
+    💰 เครดิต: <b id="credit"></b>
   </div>
 
   <label>เลือกบริการ</label>
@@ -122,106 +106,95 @@ button:disabled{
   </select>
 
   <label>จำนวน</label>
-  <input id="qty" type="number" value="0" oninput="calc()">
+  <input id="qty" type="number" value="50" oninput="calc()">
 
   <label>ลิงก์งาน</label>
   <input id="link" placeholder="https://tiktok.com/...">
 
-  <div id="total" class="total">รวม 0 บาท</div>
+  <div class="total">
+    รวม <b id="total">0</b> บาท
+  </div>
 
-  <button id="orderBtn" disabled>สั่งซื้อ</button>
+  <button onclick="order()">สั่งซื้อ</button>
 </div>
 
 </div>
 
 <script>
-/* ===== CONFIG ===== */
 const LOGIN_API   = "https://hook.us2.make.com/i91b675rawoy52l11v5msfwjerf7uv31";
 const SERVICE_API = "https://hook.us2.make.com/4gxvw3n89yq5nlkt8gc6n1xeqvuaupd2";
 
-let currentUser = null;
+let user = null;
 
-/* ===== LOGIN ===== */
 function login(){
-  loginMsg.innerText = "กำลังเข้าสู่ระบบ...";
-
+  loginMsg.innerText="กำลังเชื่อมต่อ...";
   fetch(LOGIN_API,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
       action:"login",
-      email: email.value.trim(),
-      password: password.value
+      email:email.value,
+      password:password.value
     })
   })
   .then(r=>r.json())
   .then(d=>{
     if(!d.success){
-      loginMsg.innerText = d.message || "เข้าสู่ระบบไม่สำเร็จ";
+      loginMsg.innerText=d.message||"เข้าสู่ระบบไม่สำเร็จ";
       return;
     }
+    user=d.user;
+    fullname.innerText=user.fullname;
+    credit.innerText=user.credit;
 
-    currentUser = d.user;
-    name.innerText   = d.user.fullname;
-    credit.innerText = d.user.credit;
-
-    loginBox.classList.add("hide");
-    panel.classList.remove("hide");
-
+    loginBox.classList.add("hidden");
+    panel.classList.remove("hidden");
     loadServices();
   })
-  .catch(()=>{
-    loginMsg.innerText="เชื่อมต่อระบบไม่ได้";
-  });
+  .catch(()=>loginMsg.innerText="เชื่อมต่อไม่ได้");
 }
 
-/* ===== LOAD SERVICES ===== */
 function loadServices(){
-  serviceSelect.innerHTML = "<option>กำลังโหลดบริการ...</option>";
-
-  fetch(SERVICE_API,{method:"POST"})
+  fetch(SERVICE_API,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ action:"list_services" })
+  })
   .then(r=>r.json())
   .then(d=>{
-    serviceSelect.innerHTML = "<option value=''>-- เลือกบริการ --</option>";
+    serviceSelect.innerHTML="<option value=''>-- เลือกบริการ --</option>";
+    if(!d.success) return;
 
     d.services.forEach(s=>{
-      if(s.status !== "active") return;
-
-      const o = document.createElement("option");
-      o.text = `${s.platform} | ${s.service_name} (${s.price_th}/หน่วย)`;
-      o.value = s.service_code;
-
-      o.dataset.price = Number(s.price_th);
-      o.dataset.min   = Number(s.min_qty);
-      o.dataset.max   = Number(s.max_qty);
-
+      if(s.status!=="active") return;
+      let o=document.createElement("option");
+      o.text=`${s.platform} | ${s.service_name} (${s.price_th}/หน่วย)`;
+      o.value=s.service_code;
+      o.dataset.price=s.price_th;
+      o.dataset.min=s.min_qty;
+      o.dataset.max=s.max_qty;
       serviceSelect.appendChild(o);
     });
   });
 }
 
-/* ===== CALCULATE ===== */
 function calc(){
-  const opt = serviceSelect.selectedOptions[0];
-  if(!opt || !opt.dataset.price) return;
+  let opt=serviceSelect.selectedOptions[0];
+  if(!opt) return;
 
-  const q = Number(qty.value);
-  const price = Number(opt.dataset.price);
-  const min = Number(opt.dataset.min);
-  const max = Number(opt.dataset.max);
+  let price=Number(opt.dataset.price||0);
+  let q=Number(qty.value||0);
 
-  if(q < min || q > max){
-    total.innerText = `ขั้นต่ำ ${min} | สูงสุด ${max}`;
-    orderBtn.disabled = true;
-    return;
-  }
+  if(q<opt.dataset.min) q=opt.dataset.min;
+  if(q>opt.dataset.max) q=opt.dataset.max;
 
-  const sum = q * price;
-  total.innerText = `รวม ${sum.toFixed(2)} บาท`;
+  qty.value=q;
+  total.innerText=(price*q).toFixed(2);
+}
 
-  orderBtn.disabled = sum > currentUser.credit;
+function order(){
+  alert("ระบบสั่งซื้อจะต่อในขั้นตอนถัดไป");
 }
 </script>
-
 </body>
 </html>
