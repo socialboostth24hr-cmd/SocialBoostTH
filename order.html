@@ -15,140 +15,82 @@
   --soft:rgba(255,255,255,.75);
   --green:#22c55e;
 }
-
 *{box-sizing:border-box}
-
 body{
-  margin:0;
-  font-family:system-ui;
+  margin:0;font-family:system-ui;
   background:
     radial-gradient(1000px 500px at top,#2a0d52,transparent),
     linear-gradient(180deg,var(--bg-main),#14032a);
   color:#fff;
 }
-
 .container{
-  max-width:420px;
-  margin:30px auto;
-  padding:26px;
+  max-width:420px;margin:30px auto;padding:26px;
   background:linear-gradient(180deg,#1a0936,var(--bg-card));
   border-radius:22px;
   box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
-
 h1{
-  margin:0;
-  text-align:center;
-  font-size:26px;
-  font-weight:900;
+  margin:0;text-align:center;font-size:26px;font-weight:900;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-
-.sub{
-  text-align:center;
-  margin:12px 0 22px;
-  color:var(--soft);
-  font-size:14px;
-}
-
+.sub{text-align:center;margin:12px 0 22px;color:var(--soft);font-size:14px}
 .card{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
   border-radius:18px;
-  padding:16px;
-  margin-bottom:14px;
+  padding:16px;margin-bottom:14px;
 }
-
-label{font-size:14px;color:#e9d5ff}
-
-.input-wrap{
-  position:relative;
-}
-
+.input-wrap{position:relative}
 .badge-discount{
-  position:absolute;
-  right:12px;
-  top:50%;
+  position:absolute;right:12px;top:50%;
   transform:translateY(-50%);
-  background:linear-gradient(90deg,#22c55e,#4ade80);
-  color:#022c22;
-  font-size:12px;
-  font-weight:900;
-  padding:4px 8px;
-  border-radius:999px;
+  font-size:12px;font-weight:900;
+  padding:5px 10px;border-radius:999px;
   display:none;
+  transition:.25s;
 }
 
+/* badge colors */
+.badge-green{background:linear-gradient(90deg,#22c55e,#4ade80);color:#022c22}
+.badge-purple{background:linear-gradient(90deg,#8b5cf6,#a78bfa);color:#1e1b4b}
+.badge-pink{background:linear-gradient(90deg,#f43f5e,#fb7185);color:#2c020a}
+
+/* shake animation */
+@keyframes shake{
+  0%{transform:translate(-50%, -50%) rotate(0)}
+  20%{transform:translate(-48%, -50%) rotate(-3deg)}
+  40%{transform:translate(-52%, -50%) rotate(3deg)}
+  60%{transform:translate(-48%, -50%) rotate(-2deg)}
+  80%{transform:translate(-52%, -50%) rotate(2deg)}
+  100%{transform:translate(-50%, -50%) rotate(0)}
+}
+.shake{animation:shake .45s}
+
+/* inputs */
 input{
-  width:100%;
-  padding:14px;
-  margin-top:8px;
-  border-radius:14px;
-  border:1px solid var(--border);
-  background:#120725;
-  color:#fff;
-  font-size:15px;
+  width:100%;padding:14px;margin-top:8px;
+  border-radius:14px;border:1px solid var(--border);
+  background:#120725;color:#fff;
 }
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:6px;
-  font-size:14px;
-  color:var(--soft);
-}
-
-.total{
-  font-size:22px;
-  font-weight:900;
-  color:#fbcfe8;
-  text-align:center;
-}
-
-.save{
-  margin-top:8px;
-  text-align:center;
-  font-size:14px;
-  color:var(--green);
-  font-weight:800;
-}
+.row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;color:var(--soft)}
+.total{font-size:22px;font-weight:900;color:#fbcfe8;text-align:center}
+.save{text-align:center;margin-top:8px;font-size:14px;color:var(--green);font-weight:800}
 
 /* progress */
-.progress-box{
-  margin-top:10px;
-}
-
-.progress-text{
-  font-size:13px;
-  color:#c4b5fd;
-  text-align:center;
-  margin-bottom:6px;
-}
-
-.progress-bar{
-  height:10px;
-  background:#1e1b4b;
-  border-radius:999px;
-  overflow:hidden;
-}
-
+.progress-box{margin-top:12px;display:none}
+.progress-text{font-size:13px;color:#c4b5fd;text-align:center;margin-bottom:6px}
+.progress-bar{height:10px;background:#1e1b4b;border-radius:999px;overflow:hidden}
 .progress-fill{
   height:100%;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  width:0%;
-  transition:.3s;
+  width:0%;transition:.35s;
 }
 
 /* buttons */
 button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:16px;
-  font-weight:800;
-  cursor:pointer;
+  width:100%;padding:14px;border:none;border-radius:16px;
+  font-weight:800;cursor:pointer;
   background:linear-gradient(90deg,var(--purple),var(--pink));
   color:#fff;
 }
@@ -156,13 +98,8 @@ button{
 
 /* popup */
 .popup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:99;
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;z-index:99;
 }
 </style>
 </head>
@@ -182,19 +119,18 @@ button{
     <label>จำนวนที่ต้องการ</label>
     <div class="input-wrap">
       <input id="qty" type="number" value="1000" min="50" max="10000">
-      <div class="badge-discount" id="discountBadge"></div>
+      <div class="badge-discount" id="badge"></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="row"><span>ราคาปกติ</span><span id="normalPrice">0.00</span></div>
-    <div class="row"><span>ส่วนลด</span><span id="discountPrice">-0.00</span></div>
+    <div class="row"><span>ราคาปกติ</span><span id="normal">0.00</span></div>
+    <div class="row"><span>ส่วนลด</span><span id="discount">-0.00</span></div>
     <hr style="border:0;border-top:1px solid #2e1065;margin:10px 0">
-    <div class="total">รวม <span id="totalPrice">0.00</span> บาท</div>
-    <div class="save" id="saveText"></div>
+    <div class="total">รวม <span id="total">0.00</span> บาท</div>
+    <div class="save" id="save"></div>
 
-    <!-- PROGRESS -->
-    <div class="progress-box" id="progressBox" style="display:none">
+    <div class="progress-box" id="progressBox">
       <div class="progress-text" id="progressText"></div>
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
@@ -206,67 +142,69 @@ button{
   <button class="back" onclick="history.back()">⬅ กลับ</button>
 </div>
 
-<!-- POLICY -->
-<div class="popup" id="policy">
-  <div class="card">
-    <b>เงื่อนไขการใช้บริการ</b><br><br>
-    <div class="sub" style="text-align:left">
-      • บริการไม่มีประกัน ไม่เติมยอดทุกกรณี<br>
-      • ไม่สามารถยกเลิกหรือคืนเงินได้<br>
-      • เกิน 24 ชม. สถานะไม่เปลี่ยน ติดต่อ LINE ร้าน
-    </div>
-    <label><input type="checkbox" id="accept"> ยอมรับเงื่อนไข</label>
-    <button onclick="confirmOrder()" style="margin-top:10px">ดำเนินการสั่งซื้อ</button>
-    <button class="back" onclick="closePolicy()">ยกเลิก</button>
-  </div>
-</div>
-
 <script>
 const PRICE = 0.256;
 
-/* ตัวอย่าง rule ส่วนลด (ปกติของจริงดึงจากชีต) */
-const discountRules = [
-  { min: 3000, percent: 3 },
-  { min: 5000, percent: 5 },
-  { min: 10000, percent: 8 },
+/* ตัวอย่าง rule (ของจริงดึงจากชีตเหมือนก่อนหน้า) */
+const rules = [
+  {min:3000,percent:3},
+  {min:5000,percent:5},
+  {min:10000,percent:8},
 ].sort((a,b)=>b.min-a.min);
 
 const qty = document.getElementById("qty");
-const normal = document.getElementById("normalPrice");
-const discount = document.getElementById("discountPrice");
-const total = document.getElementById("totalPrice");
-const save = document.getElementById("saveText");
-const badge = document.getElementById("discountBadge");
+const normal = document.getElementById("normal");
+const discount = document.getElementById("discount");
+const total = document.getElementById("total");
+const save = document.getElementById("save");
+const badge = document.getElementById("badge");
 const progressBox = document.getElementById("progressBox");
 const progressText = document.getElementById("progressText");
 const progressFill = document.getElementById("progressFill");
 
+let lastPercent = 0;
+
 function calc(){
-  const q = Math.max(0,Number(qty.value||0));
-  const base = q * PRICE;
+  const q = Number(qty.value)||0;
+  const base = q*PRICE;
 
-  let rule = discountRules.find(r=>q>=r.min);
-  let discountAmount = rule ? base*(rule.percent/100) : 0;
-
-  normal.innerText = base.toFixed(2);
-  discount.innerText = "-" + discountAmount.toFixed(2);
-  total.innerText = (base-discountAmount).toFixed(2);
+  let rule = rules.find(r=>q>=r.min);
+  let discountAmt = 0;
+  let percent = rule ? rule.percent : 0;
 
   if(rule){
-    badge.innerText = `ลด ${rule.percent}%`;
+    discountAmt = base*(percent/100);
+    badge.innerText = `ลด ${percent}%`;
     badge.style.display="block";
-    save.innerText = `🔥 คุ้ม! ประหยัด ${discountAmount.toFixed(2)} บาท`;
+
+    badge.className="badge-discount " +
+      (percent>=8?"badge-pink":
+      percent>=5?"badge-purple":"badge-green");
+
+    if(percent !== lastPercent){
+      badge.classList.add("shake");
+      setTimeout(()=>badge.classList.remove("shake"),500);
+      lastPercent = percent;
+    }
+
+    save.innerText = `🔥 คุ้มมาก! ประหยัด ${discountAmt.toFixed(2)} บาท`;
   }else{
     badge.style.display="none";
-    save.innerText="";
+    save.innerText="💡 สั่งเพิ่มอีกนิด รับส่วนลดทันที";
+    lastPercent = 0;
   }
 
-  const next = [...discountRules].reverse().find(r=>q<r.min);
+  normal.innerText = base.toFixed(2);
+  discount.innerText = "-" + discountAmt.toFixed(2);
+  total.innerText = (base-discountAmt).toFixed(2);
+
+  const next = [...rules].reverse().find(r=>q<r.min);
   if(next){
-    const percent = Math.min(100,(q/next.min)*100);
     progressBox.style.display="block";
-    progressText.innerText = `📊 สั่งเพิ่มอีก ${next.min-q} คน รับส่วนลด ${next.percent}%`;
-    progressFill.style.width = percent+"%";
+    progressText.innerText =
+      `📊 สั่งเพิ่มอีก ${next.min-q} คน รับส่วนลด ${next.percent}%`;
+    progressFill.style.width =
+      Math.min(100,(q/next.min)*100)+"%";
   }else{
     progressBox.style.display="none";
   }
@@ -274,15 +212,6 @@ function calc(){
 
 qty.oninput = calc;
 calc();
-
-/* popup */
-function openPolicy(){ policy.style.display="flex"; }
-function closePolicy(){ policy.style.display="none"; }
-function confirmOrder(){
-  if(!accept.checked){ alert("กรุณายอมรับเงื่อนไข"); return; }
-  alert("✅ สั่งซื้อสำเร็จ (demo)");
-  location.href="dashboard.html";
-}
 </script>
 
 </body>
