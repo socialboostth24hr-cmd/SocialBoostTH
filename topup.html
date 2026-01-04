@@ -13,7 +13,6 @@
   --purple:#8b5cf6;
   --pink:#ec4899;
   --soft:rgba(255,255,255,.75);
-  --green:#22c55e;
 }
 
 *{box-sizing:border-box}
@@ -129,18 +128,24 @@ h1{
   color:#e9d5ff;
 }
 
+/* COPY BUTTON – PINK */
 .copy{
   margin-top:12px;
-  padding:10px;
-  border-radius:14px;
+  padding:12px;
+  border-radius:16px;
   font-size:14px;
-  font-weight:800;
-  color:#022c22;
-  background:linear-gradient(90deg,#22c55e,#4ade80);
+  font-weight:900;
+  color:#fff;
+  background:linear-gradient(90deg,#ec4899,#f472b6);
+  box-shadow:0 8px 20px rgba(236,72,153,.45);
   cursor:pointer;
+  transition:.25s;
+}
+.copy:hover{
+  filter:brightness(1.08);
 }
 
-/* line button */
+/* line */
 .line-btn{
   display:block;
   margin-top:18px;
@@ -151,11 +156,11 @@ h1{
   font-size:16px;
   text-decoration:none;
   color:#022c22;
-  background:
-    linear-gradient(90deg,#22c55e,#4ade80);
+  background:linear-gradient(90deg,#22c55e,#4ade80);
   box-shadow:0 12px 30px rgba(34,197,94,.4);
 }
 
+/* notice */
 .notice{
   margin-top:14px;
   font-size:13px;
@@ -224,7 +229,6 @@ button{
 </div>
 
 <script>
-/* mock user – ภายหลังดึงจาก localStorage */
 const user = {
   fullname:"ลูกค้าทดลอง",
   credit:1250
@@ -244,4 +248,3 @@ function goBack(){
 
 </body>
 </html>
-
