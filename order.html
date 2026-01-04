@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>สั่งซื้อบริการ | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.75);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+}
+
+.container{
+  max-width:420px;
+  margin:30px auto;
+  padding:26px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+
+h1{
+  margin:0;
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  margin:12px 0 22px;
+  color:var(--soft);
+  font-size:14px;
+}
+
+.card{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+label{
+  font-size:14px;
+  color:#e9d5ff;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  margin-top:8px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:#120725;
+  color:#fff;
+}
+
+.total{
+  font-size:22px;
+  font-weight:900;
+  color:#fbcfe8;
+  text-align:center;
+}
+
+.notice{
+  font-size:13px;
+  color:#facc15;
+  text-align:center;
+  margin-top:10px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  font-weight:800;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  color:#fff;
+}
+
+.back{
+  background:#1e293b;
+  margin-top:10px;
+}
+
+/* popup */
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99;
+}
+
+.popup .card{
+  max-height:80vh;
+  overflow:auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>สั่งซื้อบริการ</h1>
+  <div class="sub">ตรวจสอบข้อมูลก่อนยืนยัน</div>
+
+  <div class="card">
+    <b id="serviceName">ผู้ติดตามต่างชาติ (ไม่มีประกัน)</b><br>
+    <span class="sub">ราคา 0.256 บาท / คน</span>
+  </div>
+
+  <div class="card">
+    <label>จำนวนที่ต้องการ</label>
+    <input id="qty" type="number" value="1000" min="50" max="10000">
+
+    <div class="notice">
+      💰 ซื้อจำนวนมาก อาจได้รับราคาพิเศษ
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="total">
+      รวม <span id="totalPrice">256.00</span> บาท
+    </div>
+  </div>
+
+  <button onclick="openPolicy()">ยืนยันสั่งซื้อ</button>
+  <button class="back" onclick="goBack()">⬅ กลับ</button>
+</div>
+
+<!-- POLICY POPUP -->
+<div class="popup" id="policy">
+  <div class="card">
+    <b>เงื่อนไขการใช้บริการ</b><br><br>
+    <div class="sub" style="text-align:left">
+      • บริการที่ไม่มีประกัน ไม่เติมยอดทดแทนทุกกรณี<br>
+      • ไม่สามารถยกเลิกหรือขอคืนเงินหลังสั่งซื้อ<br>
+      • ลูกค้าต้องเป็นเจ้าของลิงก์ที่สั่งงาน<br>
+      • หากเกิน 24 ชม. สถานะไม่เปลี่ยนแปลง<br>
+        สามารถติดต่อ LINE ร้านได้ทันที
+    </div>
+
+    <label style="margin-top:12px">
+      <input type="checkbox" id="accept"> ยอมรับเงื่อนไขทั้งหมด
+    </label>
+
+    <button onclick="confirmOrder()" style="margin-top:12px">
+      ดำเนินการสั่งซื้อ
+    </button>
+    <button class="back" onclick="closePolicy()">ยกเลิก</button>
+  </div>
+</div>
+
+<script>
+const pricePerUnit = 0.256;
+const qtyInput = document.getElementById("qty");
+const totalEl = document.getElementById("totalPrice");
+
+function calc(){
+  const q = Number(qtyInput.value || 0);
+  totalEl.innerText = (q * pricePerUnit).toFixed(2);
+}
+qtyInput.oninput = calc;
+calc();
+
+function openPolicy(){
+  document.getElementById("policy").style.display="flex";
+}
+function closePolicy(){
+  document.getElementById("policy").style.display="none";
+}
+function confirmOrder(){
+  if(!document.getElementById("accept").checked){
+    alert("กรุณายอมรับเงื่อนไขก่อน");
+    return;
+  }
+  alert("✅ สั่งซื้อเรียบร้อย\nระบบจะดำเนินการอัตโนมัติ");
+  location.href="dashboard.html";
+}
+function goBack(){
+  history.back();
+}
+</script>
+
+</body>
+</html>
