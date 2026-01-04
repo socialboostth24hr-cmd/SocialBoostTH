@@ -9,165 +9,150 @@
 body{
   margin:0;
   font-family:system-ui;
-  background:linear-gradient(180deg,#0b0216,#1a0438);
+  background:#0f172a;
   color:#fff;
 }
 .container{
   max-width:420px;
-  margin:40px auto;
+  margin:30px auto;
   padding:24px;
-  background:#120726;
-  border-radius:18px;
+  background:#020617;
+  border-radius:16px;
 }
-h1{text-align:center}
+h2{text-align:center;margin-bottom:10px}
 .box{
-  background:#0f0220;
-  border:1px solid #2e1065;
-  padding:14px;
-  border-radius:12px;
-  margin-bottom:14px;
+  background:#020617;
+  border:1px solid #1e293b;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
 }
-label{font-size:14px;display:block;margin-top:10px}
-input,select{
+input,select,button{
   width:100%;
   padding:14px;
-  margin-top:6px;
-  border-radius:12px;
-  border:1px solid #2e1065;
-  background:#0f0220;
-  color:#fff;
+  border-radius:10px;
+  border:1px solid #1e293b;
+  background:#020617;
+  color:white;
   font-size:15px;
-}
-.total{
-  font-size:18px;
-  text-align:center;
-  margin:16px 0;
+  margin-top:10px;
 }
 button{
-  width:100%;
-  padding:15px;
+  background:#7c3aed;
   border:none;
-  border-radius:14px;
-  background:linear-gradient(90deg,#7c3aed,#5b21b6);
-  color:#fff;
-  font-size:16px;
   font-weight:bold;
 }
-.logout{
-  margin-top:10px;
-  background:#111;
+.price{
+  margin-top:15px;
+  font-size:18px;
+  font-weight:bold;
+  text-align:center;
 }
+.small{font-size:13px;opacity:.7}
 </style>
 </head>
 
 <body>
-
 <div class="container">
-  <h1>SocialBoostTH</h1>
 
-  <div class="box">
-    👤 <b id="username">ผู้ใช้งาน</b><br>
-    💰 เครดิต: <b id="credit">50</b>
-  </div>
+<h2>SocialBoostTH</h2>
 
-  <label>เลือกบริการ</label>
-  <select id="service">
-    <option>กำลังโหลดบริการ...</option>
-  </select>
+<div class="box small">
+👤 ผู้ใช้<br>
+💰 เครดิต: <span id="credit">50</span>
+</div>
 
-  <label>จำนวน</label>
-  <input id="qty" type="number" value="50">
+<label class="small">เลือกบริการ</label>
+<select id="serviceSelect">
+  <option>-- กำลังโหลด --</option>
+</select>
 
-  <label>ลิงก์งาน</label>
-  <input id="link" placeholder="https://tiktok.com/...">
+<label class="small">จำนวน</label>
+<input id="qty" type="number" value="50">
 
-  <div class="total">
-    💰 รวม <span id="total">0.00</span> บาท
-  </div>
+<label class="small">ลิงก์งาน</label>
+<input placeholder="https://tiktok.com/...">
 
-  <button onclick="order()">สั่งซื้อ</button>
-  <button class="logout" onclick="logout()">ออกจากระบบ</button>
+<div class="price" id="total">รวม 0 บาท</div>
+
+<button onclick="order()">สั่งซื้อ</button>
+
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const SERVICE_API = "https://hook.us2.make.com/4gxvw3n89yq5nlkt8gc6n1xeqvuaupd2";
+const WEBHOOK_URL = "PUT_YOUR_MAKE_WEBHOOK_URL_HERE";
 
-/* ================= STATE ================= */
-let services = [];
+const serviceSelect = document.getElementById("serviceSelect");
+const qtyInput = document.getElementById("qty");
+const totalBox = document.getElementById("total");
 
-/* ================= LOAD SERVICES ================= */
 async function loadServices(){
-  const select = document.getElementById("service");
-  select.innerHTML = `<option>กำลังโหลดบริการ...</option>`;
+  serviceSelect.innerHTML = `<option>กำลังโหลด...</option>`;
 
   try{
-    const res = await fetch(SERVICE_API,{method:"POST"});
+    const res = await fetch(WEBHOOK_URL);
     const data = await res.json();
 
-    if(!data.success || !Array.isArray(data.services)){
-      throw "invalid";
+    if(!data.success || !data.services){
+      serviceSelect.innerHTML = `<option>โหลดไม่สำเร็จ</option>`;
+      return;
     }
 
-    services = data.services.filter(s => s.status === "active");
+    // 🔥 จุดสำคัญ: บังคับให้เป็น array เสมอ
+    const services = Array.isArray(data.services)
+      ? data.services
+      : [data.services];
 
-    select.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
+    serviceSelect.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
 
     services.forEach(s=>{
-      select.innerHTML += `
-        <option value="${s.service_code}">
-          ${s.platform} | ${s.service_name}
-        </option>`;
+      const opt = document.createElement("option");
+      opt.value = s.service_code;
+      opt.dataset.price = Number(s.price_th);
+      opt.dataset.min = Number(s.min_qty);
+      opt.dataset.max = Number(s.max_qty);
+      opt.textContent = `${s.platform} | ${s.service_name}`;
+      serviceSelect.appendChild(opt);
     });
 
-  }catch(e){
-    select.innerHTML = `<option>โหลดไม่สำเร็จ</option>`;
+  }catch(err){
+    console.error(err);
+    serviceSelect.innerHTML = `<option>โหลดไม่สำเร็จ</option>`;
   }
 }
 
-/* ================= CALCULATE ================= */
 function calc(){
-  const code = service.value;
+  const opt = serviceSelect.selectedOptions[0];
+  if(!opt || !opt.dataset.price){
+    totalBox.textContent = "รวม 0 บาท";
+    return;
+  }
+
   const qty = Number(qtyInput.value);
-  const box = services.find(s => s.service_code === code);
+  const min = Number(opt.dataset.min);
+  const max = Number(opt.dataset.max);
+  const price = Number(opt.dataset.price);
 
-  if(!box){
-    total.innerText = "0.00";
+  if(qty < min || qty > max){
+    totalBox.textContent = "❌ จำนวนไม่ถูกต้อง";
     return;
   }
 
-  if(qty < Number(box.min_qty) || qty > Number(box.max_qty)){
-    total.innerText = "จำนวนไม่ถูกต้อง";
-    return;
-  }
-
-  const price = qty * Number(box.price_th);
-  total.innerText = price.toFixed(2);
+  const total = qty * price;
+  totalBox.textContent = `💰 รวม ${total.toFixed(2)} บาท`;
 }
 
-/* ================= EVENTS ================= */
-const service = document.getElementById("service");
-const qtyInput = document.getElementById("qty");
-const total = document.getElementById("total");
-
-service.onchange = calc;
-qtyInput.oninput = calc;
-
-/* ================= ORDER ================= */
 function order(){
-  if(total.innerText === "0.00" || total.innerText === "จำนวนไม่ถูกต้อง"){
-    alert("กรุณาเลือกบริการและจำนวนที่ถูกต้อง");
+  if(serviceSelect.value===""){
+    alert("กรุณาเลือกบริการ");
     return;
   }
-  alert("ระบบสั่งซื้อเชื่อมต่อได้แล้ว 🎉");
+  alert("สั่งซื้อสำเร็จ (ตัวอย่าง)");
 }
 
-/* ================= LOGOUT ================= */
-function logout(){
-  alert("ออกจากระบบ");
-}
+serviceSelect.addEventListener("change", calc);
+qtyInput.addEventListener("input", calc);
 
-/* ================= START ================= */
 loadServices();
 </script>
 
