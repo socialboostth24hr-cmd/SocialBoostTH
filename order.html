@@ -4,9 +4,7 @@
 <meta charset="UTF-8">
 <title>สั่งซื้อบริการ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-/* ===== STYLE เดิมทั้งหมด ===== */
 :root{
   --bg-main:#0b0216;
   --bg-card:#14062b;
@@ -17,48 +15,63 @@
   --green:#22c55e;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui;background:
-radial-gradient(1000px 500px at top,#2a0d52,transparent),
-linear-gradient(180deg,var(--bg-main),#14032a);color:#fff;}
-.container{max-width:420px;margin:30px auto;padding:26px;
-background:linear-gradient(180deg,#1a0936,var(--bg-card));
-border-radius:22px;box-shadow:0 25px 70px rgba(0,0,0,.55);}
-h1{text-align:center;font-size:26px;font-weight:900;
-background:linear-gradient(90deg,var(--purple),var(--pink));
--webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+body{
+  margin:0;font-family:system-ui;
+  background:
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+}
+.container{
+  max-width:420px;margin:30px auto;padding:26px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+h1{
+  margin:0;text-align:center;font-size:26px;font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
 .sub{text-align:center;margin:12px 0 22px;color:var(--soft);font-size:14px}
-.card{background:rgba(255,255,255,.04);border:1px solid var(--border);
-border-radius:18px;padding:16px;margin-bottom:14px;}
+.card{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;margin-bottom:14px;
+}
 .input-wrap{position:relative}
-.badge-discount{position:absolute;right:12px;top:50%;
-transform:translateY(-50%);font-size:12px;font-weight:900;
-padding:5px 10px;border-radius:999px;display:none}
-.badge-green{background:#22c55e;color:#022c22}
-.badge-purple{background:#8b5cf6;color:#1e1b4b}
-.badge-pink{background:#fb7185;color:#2c020a}
-input{width:100%;padding:14px;margin-top:8px;
-border-radius:14px;border:1px solid var(--border);
-background:#120725;color:#fff;}
-.row{display:flex;justify-content:space-between;
-font-size:14px;color:var(--soft)}
+.badge-discount{
+  position:absolute;right:12px;top:50%;
+  transform:translateY(-50%);
+  font-size:12px;font-weight:900;
+  padding:5px 10px;border-radius:999px;display:none;
+  transition:.25s;
+}
+.badge-green{background:linear-gradient(90deg,#22c55e,#4ade80);color:#022c22}
+.badge-purple{background:linear-gradient(90deg,#8b5cf6,#a78bfa);color:#1e1b4b}
+.badge-pink{background:linear-gradient(90deg,#f43f5e,#fb7185);color:#2c020a}
+input{width:100%;padding:14px;margin-top:8px;border-radius:14px;border:1px solid var(--border);background:#120725;color:#fff}
+.row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;color:var(--soft)}
 .total{font-size:22px;font-weight:900;color:#fbcfe8;text-align:center}
-.save{text-align:center;margin-top:8px;color:var(--green);font-weight:800}
+.save{text-align:center;margin-top:8px;font-size:14px;color:var(--green);font-weight:800}
 .progress-box{margin-top:12px;display:none}
-.progress-text{text-align:center;font-size:13px;color:#c4b5fd}
-.progress-bar{height:10px;background:#1e1b4b;border-radius:999px}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));width:0%}
-button{width:100%;padding:14px;border:none;border-radius:16px;
-font-weight:800;background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff}
+.progress-text{font-size:13px;color:#c4b5fd;text-align:center;margin-bottom:6px}
+.progress-bar{height:10px;background:#1e1b4b;border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));width:0%;transition:.35s}
+button{width:100%;padding:14px;border:none;border-radius:16px;font-weight:800;cursor:pointer;background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff}
 .back{background:#1e293b;margin-top:10px}
 </style>
 </head>
 
 <body>
-
 <script>
-/* ===== LOGIN GUARD ===== */
+/* ===== Auth Guard ===== */
 const user = JSON.parse(localStorage.getItem("user"));
-if(!user){ location.href="index.html"; }
+if(!user){
+  alert("กรุณาเข้าสู่ระบบก่อนสั่งซื้อ");
+  location.href="index.html";
+}
 </script>
 
 <div class="container">
@@ -66,16 +79,14 @@ if(!user){ location.href="index.html"; }
   <div class="sub">ตรวจสอบข้อมูลก่อนยืนยัน</div>
 
   <div class="card">
-    <b id="serviceName">ผู้ติดตามต่างชาติ (ไม่มีประกัน)</b><br>
-    <span class="sub">
-      ราคา <span id="unitPrice">0.256</span> บาท / คน
-    </span>
+    <b id="serviceName">–</b><br>
+    <span class="sub">ราคา <span id="unitPrice">0.00</span> บาท / หน่วย</span>
   </div>
 
   <div class="card">
     <label>จำนวนที่ต้องการ</label>
     <div class="input-wrap">
-      <input id="qty" type="number" value="1000">
+      <input id="qty" type="number" value="0" min="1">
       <div class="badge-discount" id="badge"></div>
     </div>
   </div>
@@ -83,9 +94,9 @@ if(!user){ location.href="index.html"; }
   <div class="card">
     <div class="row"><span>ราคาปกติ</span><span id="normal">0.00</span></div>
     <div class="row"><span>ส่วนลด</span><span id="discount">-0.00</span></div>
-    <hr style="border-color:#2e1065">
+    <hr style="border-top:1px solid #2e1065;margin:10px 0">
     <div class="total">รวม <span id="total">0.00</span> บาท</div>
-    <div class="save" id="save"></div>
+    <div class="save" id="saveText"></div>
 
     <div class="progress-box" id="progressBox">
       <div class="progress-text" id="progressText"></div>
@@ -95,89 +106,130 @@ if(!user){ location.href="index.html"; }
     </div>
   </div>
 
-  <button onclick="confirmOrder()">ยืนยันสั่งซื้อ</button>
+  <button onclick="submitOrder()">ยืนยันสั่งซื้อ</button>
   <button class="back" onclick="history.back()">⬅ กลับ</button>
 </div>
 
 <script>
 /* ===== CONFIG ===== */
-let PRICE = 0.256;
+const ORDER_API = "https://script.google.com/macros/s/AKfycbzXFOo2yvuRDh4gyGuBuEl3mu1xx0jYjCCzZXEop3LtDKRhBPpBeCM-CROqLYaq5DFn/exec";
+
+/* รับค่าจาก services.html */
+const qs = new URLSearchParams(location.search);
+const SERVICE_NAME = qs.get("service")||"-";
+const UNIT_PRICE  = Number(qs.get("price"))||0;
+
+/* ===== SHOW SELECTED SERVICE ===== */
+document.getElementById("serviceName").innerText = SERVICE_NAME;
+document.getElementById("unitPrice").innerText  = UNIT_PRICE.toFixed(3);
+
+/* ===== DISCOUNT RULES ===== */
 const rules = [
   {min:3000,percent:3},
   {min:5000,percent:5},
   {min:10000,percent:8},
 ].sort((a,b)=>b.min-a.min);
 
-/* ===== SERVICE FROM STORAGE (ถ้ามี) ===== */
-const service = JSON.parse(localStorage.getItem("selectedService"));
-if(service){
-  serviceName.innerText = service.name;
-  unitPrice.innerText = service.price;
-  PRICE = service.price;
-}
-
 /* ===== ELEMENTS ===== */
 const qty = document.getElementById("qty");
 const normal = document.getElementById("normal");
-const discount = document.getElementById("discount");
+const discountEl = document.getElementById("discount");
 const total = document.getElementById("total");
-const save = document.getElementById("save");
-const badge = document.getElementById("badge");
+const saveTxt = document.getElementById("saveText");
+const badge  = document.getElementById("badge");
 const progressBox = document.getElementById("progressBox");
 const progressText = document.getElementById("progressText");
 const progressFill = document.getElementById("progressFill");
 
 function calc(){
   const q = Number(qty.value)||0;
-  const base = q*PRICE;
-  const rule = rules.find(r=>q>=r.min);
-  const disc = rule ? base*(rule.percent/100) : 0;
+  const base = q * UNIT_PRICE;
+
+  let rule = rules.find(r=>q>=r.min);
+  let discAmt = rule ? base * (r.percent/100) : 0;
 
   normal.innerText = base.toFixed(2);
-  discount.innerText = "-" + disc.toFixed(2);
-  total.innerText = (base-disc).toFixed(2);
+  discountEl.innerText = "-" + discAmt.toFixed(2);
+  total.innerText = (base - discAmt).toFixed(2);
 
   if(rule){
     badge.style.display="block";
-    badge.innerText = `ลด ${rule.percent}%`;
-    badge.className="badge-discount " +
-      (rule.percent>=8?"badge-pink":
-       rule.percent>=5?"badge-purple":"badge-green");
-    save.innerText = `🔥 ประหยัด ${disc.toFixed(2)} บาท`;
-  }else{
+    badge.className="badge-discount "+
+      (rule.percent>=8 ? "badge-pink":
+       rule.percent>=5 ? "badge-purple":"badge-green");
+    badge.innerText = "ลด "+rule.percent+"%";
+    saveTxt.innerText = `🔥 ประหยัด ${discAmt.toFixed(2)} บาท`;
+  } else {
     badge.style.display="none";
-    save.innerText="💡 สั่งเพิ่มอีกนิด รับส่วนลด";
+    saveTxt.innerText="💡 สั่งเพิ่มอีกเพื่อรับส่วนลด";
   }
 
-  const next = rules.slice().reverse().find(r=>q<r.min);
+  const next = [...rules].reverse().find(r=>q<r.min);
   if(next){
     progressBox.style.display="block";
-    progressText.innerText = `📊 เพิ่มอีก ${next.min-q} รับ ${next.percent}%`;
+    progressText.innerText =
+      `📊 เพิ่มอีก ${next.min-q} รับ ${next.percent}%`;
     progressFill.style.width = Math.min(100,(q/next.min)*100)+"%";
-  }else{
+  } else {
     progressBox.style.display="none";
   }
 }
 qty.oninput = calc;
 calc();
 
-/* ===== CONFIRM ORDER ===== */
-function confirmOrder(){
-  const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+/* ===== SUBMIT ORDER ===== */
+function submitOrder(){
+  const q = Number(qty.value)||0;
+  const amt = Number(total.innerText);
 
-  orders.push({
-    id:Date.now(),
-    user:user.fullname,
-    service:serviceName.innerText,
-    qty:qty.value,
-    amount:total.innerText,
-    status:"pending",
-    date:new Date().toLocaleString()
+  if(q<1){
+    alert("กรุณาใส่จำนวนที่ถูกต้อง");
+    return;
+  }
+
+  const userData = JSON.parse(localStorage.getItem("user")||"{}");
+  if(!userData.user_id){
+    alert("กรุณาเข้าสู่ระบบ");
+    location.href="index.html";
+    return;
+  }
+
+  if(userData.credit < amt){
+    alert("เครดิตไม่เพียงพอ");
+    location.href="topup.html";
+    return;
+  }
+
+  /* หักเครดิต */
+  userData.credit = Number(userData.credit) - amt;
+  localStorage.setItem("user",JSON.stringify(userData));
+
+  /* สร้างข้อมูล order */
+  const orderData = {
+    order_id: "SB-"+Date.now(),
+    user_id: userData.user_id,
+    service_code: SERVICE_NAME,
+    platform: "TikTok",
+    qty: q,
+    price: amt,
+    link: "",
+    comment_text: ""
+  };
+
+  /* ส่งไป Google Sheet */
+  fetch(ORDER_API,{
+    method:"POST",
+    body:JSON.stringify(orderData)
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    alert("✅ สั่งซื้อสำเร็จ");
+    location.href="orders.html";
+  })
+  .catch(err=>{
+    alert("❌ เกิดข้อผิดพลาด");
+    console.error(err);
   });
-
-  localStorage.setItem("orders",JSON.stringify(orders));
-  alert("✅ สั่งซื้อเรียบร้อย");
-  location.href="orders.html";
 }
 </script>
 
