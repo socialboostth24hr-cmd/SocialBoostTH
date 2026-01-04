@@ -61,6 +61,23 @@ h1{
   line-height:1.6;
 }
 
+.line-btn{
+  display:inline-block;
+  margin-top:10px;
+  padding:12px 20px;
+  border-radius:16px;
+  font-weight:800;
+  font-size:14px;
+  text-decoration:none;
+  color:#fff;
+  background:linear-gradient(90deg,#22c55e,#16a34a);
+  box-shadow:0 10px 28px rgba(34,197,94,.35);
+}
+
+.line-btn:hover{
+  filter:brightness(1.05);
+}
+
 label{
   display:block;
   margin-top:16px;
@@ -68,9 +85,7 @@ label{
   color:#e9d5ff;
 }
 
-.input-group{
-  position:relative;
-}
+.input-group{ position:relative }
 
 input{
   width:100%;
@@ -100,9 +115,7 @@ input:focus{
   user-select:none;
 }
 
-.toggle-password:hover{
-  color:#fff;
-}
+.toggle-password:hover{ color:#fff }
 
 button{
   width:100%;
@@ -114,15 +127,11 @@ button{
   font-size:16px;
   font-weight:700;
   color:#fff;
-  background:
-    linear-gradient(90deg, var(--purple), var(--pink));
-  box-shadow:
-    0 12px 30px rgba(139,92,246,.35);
+  background:linear-gradient(90deg, var(--purple), var(--pink));
+  box-shadow:0 12px 30px rgba(139,92,246,.35);
 }
 
-button:hover{
-  filter:brightness(1.05);
-}
+button:hover{ filter:brightness(1.05) }
 
 .small{
   margin-top:14px;
@@ -141,8 +150,13 @@ button:hover{
 
   <div class="sub">
     เข้าสู่ระบบเพื่อใช้งานระบบ<br>
-    หากยังไม่มีบัญชี กรุณาติดต่อ LINE ร้านเท่านั้น<br>
-    <b>@geg4960w</b>
+    หากยังไม่มีบัญชี กรุณาติดต่อ LINE ร้านเท่านั้น
+    <br>
+    <a class="line-btn"
+       href="https://line.me/R/ti/p/@geg4960w"
+       target="_blank">
+       💬 ทัก LINE @geg4960w
+    </a>
   </div>
 
   <label>อีเมล</label>
@@ -173,7 +187,7 @@ function togglePassword(){
   }
 }
 
-/* ยังไม่ผูก backend – แค่ mock ไว้ก่อน */
+/* mock */
 function login(){
   document.getElementById("loginMsg").innerText =
     "ตัวอย่างหน้า Login (ยังไม่เชื่อมระบบ)";
