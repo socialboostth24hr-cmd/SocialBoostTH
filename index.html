@@ -1,3 +1,102 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:linear-gradient(180deg,#0b0216,#1a0438);
+  color:#fff;
+}
+.container{
+  max-width:420px;
+  margin:30px auto;
+  padding:24px;
+  background:#120726;
+  border-radius:18px;
+}
+h1{text-align:center;margin:0}
+.sub{text-align:center;opacity:.8;margin-bottom:12px}
+.box{
+  background:#0f0220;
+  border:1px solid #2e1065;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
+}
+label{font-size:14px;display:block;margin-top:12px}
+input,select,button{
+  width:100%;
+  padding:14px;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid #2e1065;
+  background:#0f0220;
+  color:#fff;
+  font-size:15px;
+}
+button{
+  margin-top:16px;
+  background:linear-gradient(90deg,#7c3aed,#5b21b6);
+  border:none;
+  font-weight:bold;
+}
+.total{
+  margin-top:14px;
+  font-size:18px;
+  text-align:center;
+}
+.logout{background:#111}
+.msg{text-align:center;font-size:14px;opacity:.85}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">เข้าสู่ระบบ</div>
+
+  <label>อีเมล</label>
+  <input id="email">
+
+  <label>รหัสผ่าน</label>
+  <input id="password" type="password">
+
+  <button onclick="login()">เข้าสู่ระบบ</button>
+  <div id="loginMsg" class="msg"></div>
+</div>
+
+<!-- PANEL -->
+<div class="container" id="panel" style="display:none">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">สั่งบริการ</div>
+
+  <div class="box">
+    👤 <b id="username"></b><br>
+    💰 เครดิตคงเหลือ: <b id="credit"></b>
+  </div>
+
+  <label>เลือกบริการ</label>
+  <select id="serviceSelect"></select>
+
+  <label>จำนวน</label>
+  <input id="qty" type="number" value="50">
+
+  <label>ลิงก์งาน</label>
+  <input id="link" placeholder="https://tiktok.com/...">
+
+  <div id="total" class="total">รวม 0 บาท</div>
+
+  <button onclick="order()">สั่งซื้อ</button>
+  <button class="logout" onclick="logout()">ออกจากระบบ</button>
+</div>
+
 <script>
 // ================= CONFIG =================
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
@@ -7,8 +106,18 @@ const GAS_API =
 "https://script.google.com/macros/s/AKfycbwWOaLikdxgXIpH9x9Xm5TY-ZJ-nElt8WHwriNypWlUEZbTu8FFlqWycvZW1r8ljTRu/exec";
 
 // ================= STATE =================
-let currentUser = null;
+let user = null;
 let services = [];
+
+// ================= INIT =================
+document.addEventListener("DOMContentLoaded",()=>{
+  const saved = localStorage.getItem("user");
+  if(saved){
+    user = JSON.parse(saved);
+    showPanel();
+    loadServices();
+  }
+});
 
 // ================= LOGIN =================
 async function login(){
@@ -18,18 +127,11 @@ async function login(){
   const passVal  = password.value.trim();
 
   const res = await fetch(USERS_API);
-  const raw = await res.json();
+  const users = await res.json();
 
-  const users = raw.map(u => ({
-    user_id: String(u.user_id||"").trim(),
-    fullname: String(u.fullname||"").trim(),
-    email: String(u.email||"").trim().toLowerCase(),
-    password: String(u.password||"").trim(),
-    credit: Number(String(u.credit||"0").trim())
-  }));
-
-  const u = users.find(r =>
-    r.email === emailVal && r.password === passVal
+  const u = users.find(x =>
+    x.email?.toLowerCase() === emailVal &&
+    String(x.password).trim() === passVal
   );
 
   if(!u){
@@ -37,8 +139,13 @@ async function login(){
     return;
   }
 
-  currentUser = u;
-  localStorage.setItem("user", JSON.stringify(u));
+  user = {
+    user_id: u.user_id,
+    fullname: u.fullname,
+    credit: Number(u.credit)
+  };
+
+  localStorage.setItem("user",JSON.stringify(user));
   showPanel();
   loadServices();
 }
@@ -46,14 +153,22 @@ async function login(){
 function showPanel(){
   loginBox.style.display="none";
   panel.style.display="block";
-  username.innerText = currentUser.fullname;
-  credit.innerText   = currentUser.credit;
+  username.innerText = user.fullname;
+  credit.innerText   = user.credit;
+}
+
+function logout(){
+  localStorage.removeItem("user");
+  location.reload();
 }
 
 // ================= LOAD SERVICES =================
 async function loadServices(){
+  serviceSelect.innerHTML = `<option>กำลังโหลดบริการ...</option>`;
+
   const res = await fetch(SERVICES_API);
   const data = await res.json();
+
   services = data.filter(s => s.status === "active");
 
   serviceSelect.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
@@ -65,7 +180,29 @@ async function loadServices(){
   });
 }
 
-// ================= ORDER + หักเครดิต =================
+// ================= CALCULATE =================
+serviceSelect.onchange = calc;
+qty.oninput = calc;
+
+function calc(){
+  if(serviceSelect.value===""){
+    total.innerText = "รวม 0 บาท";
+    return;
+  }
+
+  const s = services[serviceSelect.value];
+  const q = Number(qty.value);
+  const price = Number(s.price_th);
+
+  if(q < Number(s.min_qty) || q > Number(s.max_qty)){
+    total.innerText = "❌ จำนวนไม่ถูกต้อง";
+    return;
+  }
+
+  total.innerText = `รวม ${(q * price).toFixed(2)} บาท`;
+}
+
+// ================= ORDER =================
 async function order(){
   if(serviceSelect.value===""){
     alert("กรุณาเลือกบริการ");
@@ -74,9 +211,9 @@ async function order(){
 
   const s = services[serviceSelect.value];
   const q = Number(qty.value);
-  const total = q * Number(s.price_th);
+  const amount = q * Number(s.price_th);
 
-  if(total > currentUser.credit){
+  if(amount > user.credit){
     alert("เครดิตไม่พอ");
     return;
   }
@@ -85,8 +222,8 @@ async function order(){
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
-      user_id: currentUser.user_id,
-      amount: total
+      user_id: user.user_id,
+      amount: amount
     })
   });
 
@@ -97,10 +234,13 @@ async function order(){
     return;
   }
 
-  currentUser.credit = d.credit;
-  localStorage.setItem("user", JSON.stringify(currentUser));
+  user.credit = d.credit;
+  localStorage.setItem("user",JSON.stringify(user));
   credit.innerText = d.credit;
 
-  alert("✅ หักเครดิตสำเร็จ");
+  alert("✅ สั่งซื้อสำเร็จ / หักเครดิตแล้ว");
 }
 </script>
+
+</body>
+</html>
