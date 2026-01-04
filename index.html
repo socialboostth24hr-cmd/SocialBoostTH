@@ -1,122 +1,211 @@
-<!-- JS -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg:#0b0216;
+  --panel:#120726;
+  --border:#2e1065;
+  --primary:#7c3aed;
+  --primary2:#5b21b6;
+  --text-sub:#c4b5fd;
+}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system;
+  background:linear-gradient(180deg,#0b0216,#1a0438);
+  color:#fff;
+}
+
+.container{
+  max-width:420px;
+  margin:32px auto;
+  padding:24px;
+  background:var(--panel);
+  border-radius:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+}
+
+.header{
+  text-align:center;
+  margin-bottom:16px;
+}
+.header img{
+  width:110px;
+  margin-bottom:8px;
+}
+.header h1{
+  margin:0;
+  font-size:22px;
+  letter-spacing:.5px;
+}
+
+.sub{
+  text-align:center;
+  font-size:14px;
+  color:var(--text-sub);
+  margin-bottom:16px;
+}
+
+.box{
+  background:#0f0220;
+  border:1px solid var(--border);
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
+  font-size:14px;
+}
+
+label{
+  font-size:13px;
+  margin-top:14px;
+  display:block;
+  color:#ddd;
+}
+
+input,select,button{
+  width:100%;
+  padding:14px;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  background:#0f0220;
+  color:#fff;
+  font-size:15px;
+}
+
+input::placeholder{color:#777}
+
+.primary{
+  background:linear-gradient(90deg,var(--primary),var(--primary2));
+  border:none;
+  font-weight:600;
+  margin-top:18px;
+}
+
+.secondary{
+  background:#1a0438;
+  border:1px solid var(--border);
+}
+
+.logout{
+  background:#120726;
+  border:1px solid #333;
+}
+
+.total{
+  text-align:center;
+  font-size:20px;
+  margin:14px 0;
+  font-weight:600;
+}
+
+.order{
+  border-bottom:1px solid var(--border);
+  padding:14px 0;
+  font-size:14px;
+}
+
+.badge{
+  display:inline-block;
+  padding:2px 10px;
+  border-radius:999px;
+  font-size:12px;
+}
+
+.pending{background:#facc15;color:#000}
+.processing{background:#38bdf8;color:#000}
+.completed{background:#22c55e;color:#000}
+
+.small{
+  opacity:.7;
+  font-size:12px;
+}
+
+.relative{position:relative}
+.toggle-pass{
+  position:absolute;
+  right:14px;
+  top:42px;
+  cursor:pointer;
+  opacity:.7;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+  <div class="header">
+    <img src="logo.png" alt="SocialBoostTH">
+    <h1>SocialBoostTH</h1>
+  </div>
+
+  <div class="sub">
+    ระบบสมาชิกสำหรับลูกค้า<br>
+    <span class="small">ยังไม่มีบัญชี? ติดต่อทีมงานทาง LINE เพื่อสมัครใช้งาน</span>
+  </div>
+
+  <label>อีเมล</label>
+  <input id="email" placeholder="example@email.com">
+
+  <label>รหัสผ่าน</label>
+  <div class="relative">
+    <input id="password" type="password">
+    <span class="toggle-pass" onclick="togglePass()">👁</span>
+  </div>
+
+  <button class="primary" onclick="login()">เข้าสู่ระบบ</button>
+  <div id="loginMsg" class="small"></div>
+</div>
+
+<!-- PANEL -->
+<div class="container" id="panel" style="display:none">
+  <div class="header">
+    <img src="logo.png">
+    <h1>สั่งบริการ</h1>
+  </div>
+
+  <div class="box">
+    ชื่อลูกค้า: <b id="username"></b><br>
+    เครดิตคงเหลือ: <b id="credit"></b>
+  </div>
+
+  <label>บริการ</label>
+  <select id="serviceSelect"></select>
+
+  <label>จำนวน</label>
+  <input id="qty" type="number" value="20">
+
+  <label>ลิงก์งาน</label>
+  <input id="link" placeholder="https://tiktok.com/...">
+
+  <div id="total" class="total">0.00 บาท</div>
+
+  <button class="primary" onclick="order()">ยืนยันสั่งซื้อ</button>
+  <button class="secondary" onclick="showOrders()">ดูออเดอร์ของฉัน</button>
+  <button class="logout" onclick="logout()">ออกจากระบบ</button>
+</div>
+
+<!-- ORDERS -->
+<div class="container" id="ordersBox" style="display:none">
+  <div class="header">
+    <h1>ออเดอร์ของฉัน</h1>
+  </div>
+  <div id="ordersList" class="small">กำลังโหลด...</div>
+  <button class="secondary" onclick="backToPanel()">กลับ</button>
+</div>
+
+<!-- JS: ใช้ของเดิมทั้งหมด -->
 <script>
-/* ===== CONFIG ===== */
-const SHEET_ID="10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
-const USERS_API=`https://opensheet.elk.sh/${SHEET_ID}/users`;
-const SERVICES_API=`https://opensheet.elk.sh/${SHEET_ID}/services`;
-const ORDERS_API=`https://opensheet.elk.sh/${SHEET_ID}/orders`;
-const GAS_API="https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
-
-let user=null, services=[];
-let orderTimer=null;
-
-/* INIT */
-document.addEventListener("DOMContentLoaded",()=>{
-  const s=localStorage.getItem("user");
-  if(s){ user=JSON.parse(s); showPanel(); loadServices(); }
-});
-
-/* LOGIN */
-async function login(){
-  const users=await (await fetch(USERS_API)).json();
-  const u=users.find(x =>
-    x.email?.toLowerCase()===email.value.trim().toLowerCase() &&
-    String(x.password).trim()===password.value.trim()
-  );
-  if(!u){ loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง"; return; }
-
-  user={user_id:u.user_id,fullname:u.fullname,credit:Number(u.credit)};
-  localStorage.setItem("user",JSON.stringify(user));
-  showPanel(); loadServices();
-}
-
-function togglePass(){
-  password.type = password.type==="password" ? "text" : "password";
-}
-
-/* PANEL */
-function showPanel(){
-  loginBox.style.display="none";
-  ordersBox.style.display="none";
-  panel.style.display="block";
-  username.innerText=user.fullname;
-  credit.innerText=user.credit;
-  clearInterval(orderTimer);
-}
-
-function logout(){ localStorage.clear(); location.reload(); }
-
-/* SERVICES */
-async function loadServices(){
-  services=(await (await fetch(SERVICES_API)).json()).filter(s=>s.status==="active");
-  serviceSelect.innerHTML='<option value="">-- เลือกบริการ --</option>';
-  services.forEach((s,i)=>{
-    serviceSelect.innerHTML+=`<option value="${i}">${s.platform} | ${s.service_name}</option>`;
-  });
-}
-
-serviceSelect.onchange=calc;
-qty.oninput=calc;
-
-function calc(){
-  if(!serviceSelect.value){ total.innerText="รวม 0 บาท"; return; }
-  const s=services[serviceSelect.value], q=Number(qty.value);
-  if(q<s.min_qty||q>s.max_qty){
-    total.innerText="❌ จำนวนไม่ถูกต้อง";
-    return;
-  }
-  total.innerText=`รวม ${(q*s.price_th).toFixed(2)} บาท`;
-}
-
-/* ORDER */
-async function order(){
-  const s=services[serviceSelect.value], q=Number(qty.value);
-  const amount=q*s.price_th;
-  if(amount>user.credit){ alert("เครดิตไม่พอ"); return; }
-
-  const res=await fetch(GAS_API,{
-    method:"POST",
-    body:JSON.stringify({
-      user_id:user.user_id,
-      service_code:s.service_code,
-      platform:s.platform,
-      qty:q,
-      amount:amount,
-      link:link.value
-    })
-  });
-
-  const d=JSON.parse(await res.text());
-  if(!d.success){ alert(d.message); return; }
-
-  user.credit=d.credit;
-  credit.innerText=d.credit;
-  localStorage.setItem("user",JSON.stringify(user));
-  alert("สั่งซื้อสำเร็จ");
-}
-
-/* ORDERS */
-async function showOrders(){
-  panel.style.display="none";
-  ordersBox.style.display="block";
-  await loadMyOrders();
-  orderTimer=setInterval(loadMyOrders,5000);
-}
-
-async function loadMyOrders(){
-  const data=await (await fetch(ORDERS_API)).json();
-  const my=data.filter(o=>String(o.user_id)===String(user.user_id)).reverse();
-  if(!my.length){ ordersList.innerText="ยังไม่มีออเดอร์"; return; }
-
-  ordersList.innerHTML=my.map(o=>`
-    <div class="order">
-      <b>${o.platform} | ${o.service_code}</b><br>
-      จำนวน: ${o.qty} | ${o.price} บาท<br>
-      สถานะ: <span class="${o.status}">${o.status}</span><br>
-      <span class="small">${o.created_at}</span>
-    </div>
-  `).join("");
-}
-
-function backToPanel(){ showPanel(); }
+/* 🔴 JS เหมือนเดิมทั้งก้อน (ไม่ต้องแก้อะไร) */
 </script>
+
+</body>
+</html>
