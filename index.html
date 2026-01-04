@@ -4,70 +4,38 @@
 <meta charset="UTF-8">
 <title>SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
 body{
-  margin:0;
-  font-family:system-ui;
+  margin:0;font-family:system-ui;
   background:linear-gradient(180deg,#0b0216,#1a0438);
   color:#fff;
 }
 .container{
-  max-width:420px;
-  margin:40px auto;
-  padding:24px;
-  background:#120726;
-  border-radius:18px;
-}
-h1{text-align:center;margin:0}
-.sub{text-align:center;opacity:.8;margin-bottom:15px}
-.box{
-  background:#0f0220;
-  border:1px solid #2e1065;
-  padding:12px;
-  border-radius:12px;
-  margin-top:10px;
+  max-width:420px;margin:40px auto;padding:24px;
+  background:#120726;border-radius:18px;
 }
 label{font-size:14px;display:block;margin-top:12px}
-input,select,button{
-  width:100%;
-  padding:14px;
-  margin-top:6px;
-  border-radius:12px;
-  border:1px solid #2e1065;
-  background:#0f0220;
-  color:#fff;
-  font-size:15px;
+input,button{
+  width:100%;padding:14px;margin-top:6px;
+  border-radius:12px;border:1px solid #2e1065;
+  background:#0f0220;color:#fff;font-size:15px;
 }
 button{
-  margin-top:18px;
+  margin-top:18px;border:none;font-weight:bold;
   background:linear-gradient(90deg,#7c3aed,#5b21b6);
-  border:none;
-  font-weight:bold;
 }
-.total{
-  margin-top:14px;
-  font-size:18px;
-  text-align:center;
+.box{
+  background:#0f0220;border:1px solid #2e1065;
+  padding:12px;border-radius:12px;margin-top:10px;
 }
-.logout{
-  background:#111;
-  margin-top:10px;
-}
-.msg{
-  text-align:center;
-  font-size:14px;
-  opacity:.9;
-}
+.msg{text-align:center;margin-top:10px}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
 <div class="container" id="loginBox">
-  <h1>SocialBoostTH</h1>
-  <div class="sub">เข้าสู่ระบบ</div>
+  <h1 style="text-align:center">SocialBoostTH</h1>
 
   <label>อีเมล</label>
   <input id="email">
@@ -79,140 +47,66 @@ button{
   <div id="loginMsg" class="msg"></div>
 </div>
 
-<!-- PANEL -->
 <div class="container" id="panel" style="display:none">
-  <h1>SocialBoostTH</h1>
-  <div class="sub">สั่งบริการ</div>
-
   <div class="box">
     👤 <b id="username"></b><br>
     💰 เครดิตคงเหลือ: <b id="credit"></b>
   </div>
-
-  <label>เลือกบริการ</label>
-  <select id="serviceSelect"></select>
-
-  <label>จำนวน</label>
-  <input id="qty" type="number" value="50">
-
-  <label>ลิงก์งาน</label>
-  <input id="link" placeholder="https://tiktok.com/...">
-
-  <div id="total" class="total">รวม 0 บาท</div>
-
-  <button onclick="order()">สั่งซื้อ</button>
-  <button class="logout" onclick="logout()">ออกจากระบบ</button>
+  <button onclick="logout()">ออกจากระบบ</button>
 </div>
 
 <script>
-// ================= CONFIG =================
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
-const USERS_API    = `https://opensheet.elk.sh/${SHEET_ID}/users`;
-const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
+const USERS_API = `https://opensheet.elk.sh/${SHEET_ID}/users`;
 
-// ================= STATE =================
-let currentUser = null;
-let services = [];
-
-// ================= AUTO LOGIN =================
-document.addEventListener("DOMContentLoaded",()=>{
-  const u = localStorage.getItem("user");
-  if(u){
-    currentUser = JSON.parse(u);
-    showPanel();
-    loadServices();
-  }
-});
-
-// ================= LOGIN =================
 async function login(){
-  loginMsg.innerText = "กำลังตรวจสอบ...";
+  loginMsg.innerText = "กำลังตรวจสอบข้อมูล...";
+
+  const inputEmail = email.value.trim().toLowerCase();
+  const inputPass  = password.value.trim();
 
   try{
     const res = await fetch(USERS_API);
-    const users = await res.json();
+    const raw = await res.json();
 
-    const u = users.find(r =>
-      r.email === email.value.trim() &&
-      r.password === password.value.trim()
+    // 🔎 normalize ข้อมูลจากชีท
+    const users = raw.map(u => ({
+      user_id: String(u.user_id || "").trim(),
+      fullname: String(u.fullname || "").trim(),
+      email: String(u.email || "").trim().toLowerCase(),
+      password: String(u.password || "").trim(),
+      credit: Number(String(u.credit || "0").trim())
+    }));
+
+    const user = users.find(u =>
+      u.email === inputEmail && u.password === inputPass
     );
 
-    if(!u){
+    if(!user){
       loginMsg.innerText = "❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+      console.log("DEBUG USERS:", users);
       return;
     }
 
-    currentUser = {
-      user_id: u.user_id,
-      fullname: u.fullname,
-      email: u.email,
-      credit: Number(u.credit)
-    };
+    localStorage.setItem("user", JSON.stringify(user));
+    showPanel(user);
 
-    localStorage.setItem("user",JSON.stringify(currentUser));
-    showPanel();
-    loadServices();
-
-  }catch{
-    loginMsg.innerText = "❌ โหลดข้อมูลไม่สำเร็จ";
+  }catch(e){
+    loginMsg.innerText = "❌ ไม่สามารถโหลดข้อมูลได้";
+    console.error(e);
   }
 }
 
-function showPanel(){
-  loginBox.style.display="none";
-  panel.style.display="block";
-  username.innerText = currentUser.fullname;
-  credit.innerText   = currentUser.credit;
+function showPanel(user){
+  loginBox.style.display = "none";
+  panel.style.display = "block";
+  username.innerText = user.fullname;
+  credit.innerText = user.credit;
 }
 
 function logout(){
   localStorage.removeItem("user");
   location.reload();
-}
-
-// ================= LOAD SERVICES =================
-async function loadServices(){
-  serviceSelect.innerHTML = `<option>กำลังโหลดบริการ...</option>`;
-
-  const res = await fetch(SERVICES_API);
-  const data = await res.json();
-
-  services = data.filter(s => s.status === "active");
-
-  serviceSelect.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
-  services.forEach((s,i)=>{
-    const opt = document.createElement("option");
-    opt.value = i;
-    opt.textContent = `${s.platform} | ${s.service_name}`;
-    serviceSelect.appendChild(opt);
-  });
-}
-
-// ================= CALCULATE =================
-serviceSelect.onchange = calc;
-qty.oninput = calc;
-
-function calc(){
-  if(serviceSelect.value===""){
-    total.innerText = "รวม 0 บาท";
-    return;
-  }
-
-  const s = services[serviceSelect.value];
-  const q = Number(qty.value);
-
-  if(q < Number(s.min_qty) || q > Number(s.max_qty)){
-    total.innerText = "❌ จำนวนไม่ถูกต้อง";
-    return;
-  }
-
-  const sum = q * Number(s.price_th);
-  total.innerText = `💰 รวม ${sum.toFixed(2)} บาท`;
-}
-
-// ================= ORDER (DEMO) =================
-function order(){
-  alert("✅ ระบบอ่านข้อมูลถูกต้อง พร้อมต่อหักเครดิต / order ต่อได้แล้ว");
 }
 </script>
 
