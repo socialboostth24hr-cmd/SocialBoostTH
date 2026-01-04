@@ -16,32 +16,48 @@
 }
 *{box-sizing:border-box}
 body{
-  margin:0;font-family:system-ui;
+  margin:0;
+  font-family:system-ui;
   background:
     radial-gradient(1000px 500px at top,#2a0d52,transparent),
     linear-gradient(180deg,var(--bg-main),#14032a);
   color:#fff;
 }
 .container{
-  max-width:420px;margin:30px auto;padding:26px;
+  max-width:420px;
+  margin:30px auto;
+  padding:26px;
   background:linear-gradient(180deg,#1a0936,var(--bg-card));
   border-radius:22px;
   box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
 h1{
-  text-align:center;font-size:26px;font-weight:900;margin:0;
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  margin:0;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
-.sub{text-align:center;margin:12px 0 22px;color:var(--soft);font-size:14px}
+.sub{
+  text-align:center;
+  margin:12px 0 22px;
+  color:var(--soft);
+  font-size:14px;
+}
 
 /* tabs */
 .tabs{display:flex;gap:10px;margin-bottom:18px}
 .tab{
-  flex:1;padding:12px;border-radius:14px;
+  flex:1;
+  padding:12px;
+  border-radius:14px;
   border:1px solid var(--border);
   background:rgba(255,255,255,.05);
-  color:#fff;font-weight:800;cursor:pointer;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
 }
 .tab.active{
   background:linear-gradient(90deg,var(--purple),var(--pink));
@@ -53,29 +69,60 @@ h1{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
   border-radius:18px;
-  padding:16px;margin-bottom:14px;
+  padding:16px;
+  margin-bottom:14px;
 }
-.badges{display:flex;gap:6px;margin-bottom:8px}
+.badges{
+  display:flex;
+  gap:6px;
+  margin-bottom:8px;
+}
 .badge-hot{
   background:linear-gradient(90deg,#f43f5e,#fb7185);
-  color:#fff;font-size:11px;padding:4px 8px;border-radius:999px;font-weight:800;
+  color:#fff;
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:999px;
+  font-weight:800;
 }
 .badge-pop{
   background:rgba(139,92,246,.15);
-  color:#c4b5fd;font-size:11px;padding:4px 8px;border-radius:999px;
+  color:#c4b5fd;
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:999px;
   border:1px solid rgba(139,92,246,.4);
 }
-.service h3{margin:0;font-size:15px;color:#e9d5ff}
-.info{font-size:13px;color:var(--soft);margin:8px 0 12px;line-height:1.5}
+.service h3{
+  margin:0;
+  font-size:15px;
+  color:#e9d5ff;
+}
+.info{
+  font-size:13px;
+  color:var(--soft);
+  margin:8px 0 12px;
+  line-height:1.5;
+}
 .service button{
-  width:100%;padding:12px;border-radius:14px;border:none;
-  font-weight:800;cursor:pointer;
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  font-weight:800;
+  cursor:pointer;
   background:linear-gradient(135deg,var(--purple),var(--pink));
   color:#fff;
 }
 .back{
-  margin-top:10px;width:100%;padding:12px;border-radius:14px;
-  border:none;background:#1e293b;color:#fff;font-weight:700;
+  margin-top:10px;
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  background:#1e293b;
+  color:#fff;
+  font-weight:700;
 }
 </style>
 </head>
@@ -99,61 +146,138 @@ if(!localStorage.getItem("user")){
   </div>
 
   <div id="serviceList"></div>
+
   <button class="back" onclick="goBack()">⬅ กลับหน้า Dashboard</button>
 </div>
 
 <script>
+/* ===== SERVICES ===== */
 const services = [
-  {cat:"thai",name:"ผู้ติดตามไทย (♻️ ประกัน 1 ปี)",min:20,max:10000,price:2.88,unit:"คน"},
-  {cat:"thai",name:"วิวไทย (♻️ ประกัน 1 ปี)",min:1000,max:10000,price:0.15,unit:"วิว"},
-  {cat:"thai",name:"คอมเมนท์ไทย (♻️ ประกัน 1 ปี)",min:10,max:100,price:8,unit:"คอมเมนต์"},
+  /* 🇹🇭 ไทย */
+  {
+    cat:"thai",
+    code:"TT_FOLLOW_TH",
+    name:"ผู้ติดตามไทย (♻️ ประกัน 1 ปี)",
+    min:20,
+    max:10000,
+    price:2.88,
+    unit:"คน"
+  },
+  {
+    cat:"thai",
+    code:"TT_VIEW_TH",
+    name:"วิวไทย (♻️ ประกัน 1 ปี)",
+    min:1000,
+    max:10000,
+    price:0.15,
+    unit:"วิว"
+  },
+  {
+    cat:"thai",
+    code:"TT_COMMENT_TH",
+    name:"คอมเมนท์ไทย (♻️ ประกัน 1 ปี)",
+    min:10,
+    max:100,
+    price:8,
+    unit:"คอมเมนต์"
+  },
 
-  {cat:"inter",name:"ผู้ติดตามต่างชาติ (ไม่มีประกัน)",min:50,max:10000,price:0.256,unit:"คน",hot:true},
-  {cat:"inter",name:"ไลก์ต่างชาติ (ไม่มีประกัน)",min:50,max:50000,price:0.10,unit:"ไลก์",hot:true},
-  {cat:"inter",name:"วิวต่างชาติ (ไม่มีประกัน)",min:1000,max:500000,price:0.03,unit:"วิว",hot:true},
-
-  {cat:"inter",name:"ผู้ติดตามต่างชาติ (♻️ ประกัน 1 ปี)",min:50,max:10000,price:0.421,unit:"คน"},
-  {cat:"inter",name:"ไลก์ต่างชาติ (♻️ ประกัน 1 ปี)",min:50,max:50000,price:0.70,unit:"ไลก์"},
-  {cat:"inter",name:"วิวต่างชาติ (♻️ ประกัน 1 ปี)",min:1000,max:500000,price:0.08,unit:"วิว"},
-  {cat:"inter",name:"บันทึกต่างชาติ",min:100,max:50000,price:0.18,unit:"บันทึก"},
-  {cat:"inter",name:"แชร์ต่างชาติ",min:100,max:50000,price:0.18,unit:"แชร์"},
+  /* 🌍 ต่างชาติ */
+  {
+    cat:"inter",
+    code:"TT_FOLLOWER",
+    name:"ผู้ติดตามต่างชาติ (ไม่มีประกัน)",
+    min:50,
+    max:10000,
+    price:0.256,
+    unit:"คน",
+    hot:true
+  },
+  {
+    cat:"inter",
+    code:"TT_LIKE",
+    name:"ไลก์ต่างชาติ (ไม่มีประกัน)",
+    min:50,
+    max:50000,
+    price:0.10,
+    unit:"ไลก์",
+    hot:true
+  },
+  {
+    cat:"inter",
+    code:"TT_VIEW",
+    name:"วิวต่างชาติ (ไม่มีประกัน)",
+    min:1000,
+    max:500000,
+    price:0.03,
+    unit:"วิว",
+    hot:true
+  },
+  {
+    cat:"inter",
+    code:"TT_SAVE",
+    name:"บันทึกต่างชาติ",
+    min:100,
+    max:50000,
+    price:0.18,
+    unit:"บันทึก"
+  },
+  {
+    cat:"inter",
+    code:"TT_SHARE",
+    name:"แชร์ต่างชาติ",
+    min:100,
+    max:50000,
+    price:0.18,
+    unit:"แชร์"
+  }
 ];
 
-const list=document.getElementById("serviceList");
+const list = document.getElementById("serviceList");
 
+/* ===== RENDER ===== */
 function renderServices(cat){
   list.innerHTML="";
-  services.filter(s=>s.cat===cat).forEach(s=>{
-    list.innerHTML+=`
-      <div class="service">
-        ${s.hot?`
-          <div class="badges">
-            <span class="badge-hot">🔥 ขายดี</span>
-            <span class="badge-pop">1,000+ ออเดอร์</span>
-          </div>`:""}
-        <h3>${s.name}</h3>
-        <div class="info">
-          ขั้นต่ำ ${s.min.toLocaleString()} – ${s.max.toLocaleString()} ${s.unit}<br>
-          ราคา ${s.price} บาท / ${s.unit}
+  services
+    .filter(s=>s.cat===cat)
+    .forEach(s=>{
+      list.innerHTML+=`
+        <div class="service">
+          ${s.hot?`
+            <div class="badges">
+              <span class="badge-hot">🔥 ขายดี</span>
+              <span class="badge-pop">1,000+ ออเดอร์</span>
+            </div>`:""}
+          <h3>${s.name}</h3>
+          <div class="info">
+            ขั้นต่ำ ${s.min.toLocaleString()} – ${s.max.toLocaleString()} ${s.unit}<br>
+            ราคา ${s.price} บาท / ${s.unit}
+          </div>
+          <button onclick='selectService(${JSON.stringify(s)})'>
+            เลือกบริการ
+          </button>
         </div>
-        <button onclick='selectService(${JSON.stringify(s)})'>
-          เลือกบริการ
-        </button>
-      </div>`;
-  });
+      `;
+    });
 }
 
+/* ===== SELECT ===== */
 function selectService(service){
-  localStorage.setItem("selectedService",JSON.stringify(service));
+  localStorage.setItem("selectedService", JSON.stringify(service));
   location.href="order.html";
 }
 
+/* ===== UI ===== */
 function switchTab(cat,btn){
   document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
   btn.classList.add("active");
   renderServices(cat);
 }
-function goBack(){ location.href="dashboard.html"; }
+function goBack(){
+  location.href="dashboard.html";
+}
+
+/* init */
 renderServices("thai");
 </script>
 
