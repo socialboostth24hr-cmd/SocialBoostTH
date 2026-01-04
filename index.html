@@ -57,7 +57,7 @@ button{
 
 <body>
 
-<!-- ================= LOGIN ================= -->
+<!-- LOGIN -->
 <div class="container" id="loginBox">
   <h1>SocialBoostTH</h1>
   <div class="sub">เข้าสู่ระบบ</div>
@@ -72,7 +72,7 @@ button{
   <div id="loginMsg" class="msg"></div>
 </div>
 
-<!-- ================= PANEL ================= -->
+<!-- PANEL -->
 <div class="container" id="panel" style="display:none">
   <h1>SocialBoostTH</h1>
   <div class="sub">สั่งบริการ</div>
@@ -105,8 +105,9 @@ const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
 const USERS_API    = `https://opensheet.elk.sh/${SHEET_ID}/users`;
 const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
 
-// ⚠️ ต้องเป็น URL หลัง deploy GAS ตัวล่าสุด
-const GAS_API = "https://script.google.com/macros/s/AKfycbyzCFZc3wgVLE90DDBNd6MRkoKrQSbDZFTXKbihBLtOeKiyhi-xdwemV4AekMEzbDip/exec";
+// 🔴 ใช้ URL GAS ตัวล่าสุดที่คุณส่งมา
+const GAS_API =
+"https://script.google.com/macros/s/AKfycbyzCFZc3wgVLE90DDBNd6MRkoKrQSbDZFTXKbihBLtOeKiyhi-xdwemV4AekMEzbDip/exec";
 
 // ================= STATE =================
 let user = null;
@@ -205,7 +206,7 @@ function calc(){
   total.innerText = `รวม ${amount.toFixed(2)} บาท`;
 }
 
-// ================= ORDER =================
+// ================= ORDER (แก้แล้ว) =================
 async function order(){
   if(serviceSelect.value===""){
     alert("กรุณาเลือกบริการ");
@@ -221,27 +222,35 @@ async function order(){
     return;
   }
 
-  const res = await fetch(GAS_API,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      user_id: user.user_id,
-      amount: amount
-    })
-  });
+  try{
+    const res = await fetch(GAS_API,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        user_id: user.user_id,
+        amount: amount
+      })
+    });
 
-  const d = await res.json();
+    const text = await res.text();
+    console.log("GAS RAW:", text);
 
-  if(!d.success){
-    alert("❌ " + d.message);
-    return;
+    const d = JSON.parse(text);
+
+    if(!d.success){
+      alert("❌ " + d.message);
+      return;
+    }
+
+    user.credit = d.credit;
+    localStorage.setItem("user",JSON.stringify(user));
+    credit.innerText = d.credit;
+
+    alert("✅ สั่งซื้อสำเร็จ / หักเครดิตแล้ว");
+
+  }catch(err){
+    alert("❌ ติดต่อระบบไม่ได้\n" + err);
   }
-
-  user.credit = d.credit;
-  localStorage.setItem("user",JSON.stringify(user));
-  credit.innerText = d.credit;
-
-  alert("✅ สั่งซื้อสำเร็จ / หักเครดิตแล้ว");
 }
 </script>
 
