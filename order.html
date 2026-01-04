@@ -15,9 +15,7 @@
   --soft:rgba(255,255,255,.75);
   --green:#22c55e;
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui;
@@ -26,7 +24,6 @@ body{
     linear-gradient(180deg,var(--bg-main),#14032a);
   color:#fff;
 }
-
 .container{
   max-width:420px;
   margin:30px auto;
@@ -35,120 +32,49 @@ body{
   border-radius:22px;
   box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
-
 h1{
-  margin:0;
-  text-align:center;
-  font-size:26px;
-  font-weight:900;
+  margin:0;text-align:center;font-size:26px;font-weight:900;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-
-.sub{
-  text-align:center;
-  margin:12px 0 22px;
-  color:var(--soft);
-  font-size:14px;
-}
-
+.sub{text-align:center;margin:12px 0 22px;color:var(--soft);font-size:14px}
 .card{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
   border-radius:18px;
-  padding:16px;
-  margin-bottom:14px;
+  padding:16px;margin-bottom:14px;
 }
-
-label{font-size:14px;color:#e9d5ff}
-
-.input-wrap{
-  position:relative;
-}
-
+.input-wrap{position:relative}
 .badge-discount{
-  position:absolute;
-  right:12px;
-  top:50%;
+  position:absolute;right:12px;top:50%;
   transform:translateY(-50%);
   background:linear-gradient(90deg,#22c55e,#4ade80);
-  color:#022c22;
-  font-size:12px;
-  font-weight:900;
-  padding:4px 8px;
-  border-radius:999px;
-  display:none;
+  color:#022c22;font-size:12px;font-weight:900;
+  padding:4px 8px;border-radius:999px;display:none;
 }
-
 input{
-  width:100%;
-  padding:14px;
-  margin-top:8px;
-  border-radius:14px;
-  border:1px solid var(--border);
-  background:#120725;
-  color:#fff;
-  font-size:15px;
+  width:100%;padding:14px;margin-top:8px;
+  border-radius:14px;border:1px solid var(--border);
+  background:#120725;color:#fff;
 }
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:6px;
-  font-size:14px;
-  color:var(--soft);
-}
-
-.total{
-  font-size:22px;
-  font-weight:900;
-  color:#fbcfe8;
-  text-align:center;
-}
-
-.save{
-  margin-top:8px;
-  text-align:center;
-  font-size:14px;
-  color:var(--green);
-  font-weight:800;
-}
+.row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:14px;color:var(--soft)}
+.total{font-size:22px;font-weight:900;color:#fbcfe8;text-align:center}
+.save{text-align:center;margin-top:8px;font-size:14px;color:var(--green);font-weight:800}
 
 /* progress */
-.progress-box{
-  margin-top:10px;
-}
-
-.progress-text{
-  font-size:13px;
-  color:#c4b5fd;
-  text-align:center;
-  margin-bottom:6px;
-}
-
-.progress-bar{
-  height:10px;
-  background:#1e1b4b;
-  border-radius:999px;
-  overflow:hidden;
-}
-
+.progress-box{margin-top:12px}
+.progress-text{font-size:13px;color:#c4b5fd;text-align:center;margin-bottom:6px}
+.progress-bar{height:10px;background:#1e1b4b;border-radius:999px;overflow:hidden}
 .progress-fill{
   height:100%;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  width:0%;
-  transition:.3s;
+  width:0%;transition:.3s;
 }
 
 /* buttons */
 button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:16px;
-  font-weight:800;
-  cursor:pointer;
+  width:100%;padding:14px;border:none;border-radius:16px;
+  font-weight:800;cursor:pointer;
   background:linear-gradient(90deg,var(--purple),var(--pink));
   color:#fff;
 }
@@ -156,13 +82,8 @@ button{
 
 /* popup */
 .popup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:99;
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;z-index:99;
 }
 </style>
 </head>
@@ -174,8 +95,8 @@ button{
   <div class="sub">ตรวจสอบข้อมูลก่อนยืนยัน</div>
 
   <div class="card">
-    <b>ผู้ติดตามต่างชาติ (ไม่มีประกัน)</b><br>
-    <span class="sub">ราคา 0.256 บาท / คน</span>
+    <b id="serviceName">ผู้ติดตามต่างชาติ (ไม่มีประกัน)</b><br>
+    <span class="sub">ราคา <span id="unitPrice">0.256</span> บาท / คน</span>
   </div>
 
   <div class="card">
@@ -193,7 +114,6 @@ button{
     <div class="total">รวม <span id="totalPrice">0.00</span> บาท</div>
     <div class="save" id="saveText"></div>
 
-    <!-- PROGRESS -->
     <div class="progress-box" id="progressBox" style="display:none">
       <div class="progress-text" id="progressText"></div>
       <div class="progress-bar">
@@ -222,18 +142,16 @@ button{
 </div>
 
 <script>
+/* ===== CONFIG ===== */
+const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
+const DISCOUNT_API = `https://opensheet.elk.sh/${SHEET_ID}/discounts`;
+const SERVICE_CODE = "TT_FOLLOW_INT_NO";
 const PRICE = 0.256;
 
-/* ตัวอย่าง rule ส่วนลด (ปกติของจริงดึงจากชีต) */
-const discountRules = [
-  { min: 3000, percent: 3 },
-  { min: 5000, percent: 5 },
-  { min: 10000, percent: 8 },
-].sort((a,b)=>b.min-a.min);
-
+/* ===== ELEMENTS ===== */
 const qty = document.getElementById("qty");
 const normal = document.getElementById("normalPrice");
-const discount = document.getElementById("discountPrice");
+const discountEl = document.getElementById("discountPrice");
 const total = document.getElementById("totalPrice");
 const save = document.getElementById("saveText");
 const badge = document.getElementById("discountBadge");
@@ -241,39 +159,54 @@ const progressBox = document.getElementById("progressBox");
 const progressText = document.getElementById("progressText");
 const progressFill = document.getElementById("progressFill");
 
-function calc(){
-  const q = Math.max(0,Number(qty.value||0));
-  const base = q * PRICE;
+let rules = [];
 
-  let rule = discountRules.find(r=>q>=r.min);
+/* ===== LOAD DISCOUNT FROM SHEET ===== */
+fetch(DISCOUNT_API)
+  .then(r=>r.json())
+  .then(data=>{
+    rules = data
+      .filter(d=>d.service_code===SERVICE_CODE)
+      .map(d=>({
+        min:+d.min_qty,
+        percent:+d.discount_percent,
+        label:d.label||""
+      }))
+      .sort((a,b)=>b.min-a.min);
+    calc();
+  });
+
+function calc(){
+  const q = +qty.value||0;
+  const base = q*PRICE;
+  let rule = rules.find(r=>q>=r.min);
   let discountAmount = rule ? base*(rule.percent/100) : 0;
 
   normal.innerText = base.toFixed(2);
-  discount.innerText = "-" + discountAmount.toFixed(2);
+  discountEl.innerText = "-" + discountAmount.toFixed(2);
   total.innerText = (base-discountAmount).toFixed(2);
 
   if(rule){
     badge.innerText = `ลด ${rule.percent}%`;
     badge.style.display="block";
-    save.innerText = `🔥 คุ้ม! ประหยัด ${discountAmount.toFixed(2)} บาท`;
+    save.innerText = `🔥 ประหยัด ${discountAmount.toFixed(2)} บาท`;
   }else{
     badge.style.display="none";
     save.innerText="";
   }
 
-  const next = [...discountRules].reverse().find(r=>q<r.min);
+  const next = [...rules].reverse().find(r=>q<r.min);
   if(next){
-    const percent = Math.min(100,(q/next.min)*100);
     progressBox.style.display="block";
-    progressText.innerText = `📊 สั่งเพิ่มอีก ${next.min-q} คน รับส่วนลด ${next.percent}%`;
-    progressFill.style.width = percent+"%";
+    progressText.innerText =
+      `📊 สั่งเพิ่มอีก ${next.min-q} คน รับส่วนลด ${next.percent}%`;
+    progressFill.style.width = Math.min(100,(q/next.min)*100) + "%";
   }else{
     progressBox.style.display="none";
   }
 }
 
 qty.oninput = calc;
-calc();
 
 /* popup */
 function openPolicy(){ policy.style.display="flex"; }
