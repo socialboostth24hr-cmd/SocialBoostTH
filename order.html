@@ -13,6 +13,7 @@
   --purple:#8b5cf6;
   --pink:#ec4899;
   --soft:rgba(255,255,255,.75);
+  --green:#22c55e;
 }
 
 *{box-sizing:border-box}
@@ -60,10 +61,7 @@ h1{
   margin-bottom:14px;
 }
 
-label{
-  font-size:14px;
-  color:#e9d5ff;
-}
+label{font-size:14px;color:#e9d5ff}
 
 input{
   width:100%;
@@ -75,6 +73,14 @@ input{
   color:#fff;
 }
 
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  font-size:14px;
+  color:var(--soft);
+}
+
 .total{
   font-size:22px;
   font-weight:900;
@@ -82,11 +88,12 @@ input{
   text-align:center;
 }
 
-.notice{
-  font-size:13px;
-  color:#facc15;
+.save{
+  margin-top:8px;
   text-align:center;
-  margin-top:10px;
+  font-size:14px;
+  color:var(--green);
+  font-weight:800;
 }
 
 button{
@@ -115,11 +122,6 @@ button{
   justify-content:center;
   z-index:99;
 }
-
-.popup .card{
-  max-height:80vh;
-  overflow:auto;
-}
 </style>
 </head>
 
@@ -137,39 +139,44 @@ button{
   <div class="card">
     <label>จำนวนที่ต้องการ</label>
     <input id="qty" type="number" value="1000" min="50" max="10000">
-
-    <div class="notice">
-      💰 ซื้อจำนวนมาก อาจได้รับราคาพิเศษ
-    </div>
   </div>
 
   <div class="card">
-    <div class="total">
-      รวม <span id="totalPrice">256.00</span> บาท
+    <div class="row">
+      <span>ราคาปกติ</span>
+      <span id="normalPrice">0.00</span>
     </div>
+    <div class="row">
+      <span>ส่วนลด</span>
+      <span id="discountPrice">-0.00</span>
+    </div>
+    <hr style="border:0;border-top:1px solid #2e1065;margin:10px 0">
+    <div class="total">
+      รวม <span id="totalPrice">0.00</span> บาท
+    </div>
+    <div class="save" id="saveText"></div>
   </div>
 
   <button onclick="openPolicy()">ยืนยันสั่งซื้อ</button>
-  <button class="back" onclick="goBack()">⬅ กลับ</button>
+  <button class="back" onclick="history.back()">⬅ กลับ</button>
 </div>
 
-<!-- POLICY POPUP -->
+<!-- POLICY -->
 <div class="popup" id="policy">
   <div class="card">
     <b>เงื่อนไขการใช้บริการ</b><br><br>
     <div class="sub" style="text-align:left">
       • บริการที่ไม่มีประกัน ไม่เติมยอดทดแทนทุกกรณี<br>
-      • ไม่สามารถยกเลิกหรือขอคืนเงินหลังสั่งซื้อ<br>
-      • ลูกค้าต้องเป็นเจ้าของลิงก์ที่สั่งงาน<br>
+      • ไม่สามารถยกเลิกหรือคืนเงินได้หลังสั่งซื้อ<br>
       • หากเกิน 24 ชม. สถานะไม่เปลี่ยนแปลง<br>
-        สามารถติดต่อ LINE ร้านได้ทันที
+        ติดต่อ LINE ร้านได้ทันที
     </div>
 
-    <label style="margin-top:12px">
+    <label>
       <input type="checkbox" id="accept"> ยอมรับเงื่อนไขทั้งหมด
     </label>
 
-    <button onclick="confirmOrder()" style="margin-top:12px">
+    <button onclick="confirmOrder()" style="margin-top:10px">
       ดำเนินการสั่งซื้อ
     </button>
     <button class="back" onclick="closePolicy()">ยกเลิก</button>
@@ -177,15 +184,35 @@ button{
 </div>
 
 <script>
-const pricePerUnit = 0.256;
-const qtyInput = document.getElementById("qty");
-const totalEl = document.getElementById("totalPrice");
+const price = 0.256;
+const qty = document.getElementById("qty");
+const normal = document.getElementById("normalPrice");
+const discount = document.getElementById("discountPrice");
+const total = document.getElementById("totalPrice");
+const save = document.getElementById("saveText");
 
 function calc(){
-  const q = Number(qtyInput.value || 0);
-  totalEl.innerText = (q * pricePerUnit).toFixed(2);
+  const q = Number(qty.value||0);
+  let discountRate = 0;
+
+  if(q >= 10000) discountRate = 0.08;
+  else if(q >= 5000) discountRate = 0.05;
+  else if(q >= 3000) discountRate = 0.03;
+
+  const normalPrice = q * price;
+  const discountAmount = normalPrice * discountRate;
+  const finalPrice = normalPrice - discountAmount;
+
+  normal.innerText = normalPrice.toFixed(2);
+  discount.innerText = "-" + discountAmount.toFixed(2);
+  total.innerText = finalPrice.toFixed(2);
+
+  save.innerText = discountAmount > 0
+    ? `🔥 คุ้มมาก! ประหยัดไป ${discountAmount.toFixed(2)} บาท`
+    : "";
 }
-qtyInput.oninput = calc;
+
+qty.oninput = calc;
 calc();
 
 function openPolicy(){
@@ -199,11 +226,8 @@ function confirmOrder(){
     alert("กรุณายอมรับเงื่อนไขก่อน");
     return;
   }
-  alert("✅ สั่งซื้อเรียบร้อย\nระบบจะดำเนินการอัตโนมัติ");
+  alert("✅ สั่งซื้อสำเร็จ");
   location.href="dashboard.html";
-}
-function goBack(){
-  history.back();
 }
 </script>
 
