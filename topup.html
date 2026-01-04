@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>เติมเงิน | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.75);
+  --green:#22c55e;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+  min-height:100vh;
+}
+
+.container{
+  max-width:420px;
+  margin:30px auto;
+  padding:26px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+
+h1{
+  margin:0;
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  margin:12px 0 22px;
+  color:var(--soft);
+  font-size:14px;
+  line-height:1.6;
+}
+
+.card{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+/* user info */
+.user{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.user-name{
+  font-size:15px;
+  color:#e9d5ff;
+}
+
+.credit{
+  font-size:22px;
+  font-weight:900;
+  color:#fbcfe8;
+}
+
+/* bank */
+.bank{
+  text-align:center;
+}
+
+.bank-name{
+  font-size:15px;
+  font-weight:800;
+  margin-bottom:8px;
+  color:#e9d5ff;
+}
+
+.bank-no{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.copy{
+  margin-top:8px;
+  font-size:13px;
+  color:var(--green);
+  cursor:pointer;
+}
+
+/* line */
+.line-btn{
+  display:block;
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  text-align:center;
+  font-weight:900;
+  font-size:15px;
+  text-decoration:none;
+  color:#022c22;
+  background:linear-gradient(90deg,#22c55e,#4ade80);
+  box-shadow:0 10px 28px rgba(34,197,94,.35);
+}
+
+.notice{
+  font-size:13px;
+  color:#c4b5fd;
+  text-align:center;
+  margin-top:10px;
+  line-height:1.6;
+}
+
+/* buttons */
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  font-weight:800;
+  cursor:pointer;
+  background:#1e293b;
+  color:#fff;
+  margin-top:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>เติมเงิน</h1>
+  <div class="sub">
+    เติมเครดิตเพื่อใช้งานบริการ<br>
+    การเติมเงินทำผ่านแอดมินเท่านั้น
+  </div>
+
+  <!-- USER -->
+  <div class="card user">
+    <div>
+      <div class="user-name">ผู้ใช้งาน</div>
+      <b id="username">ลูกค้าทดลอง</b>
+    </div>
+    <div>
+      <div class="user-name">เครดิตปัจจุบัน</div>
+      <div class="credit" id="credit">1,250</div>
+    </div>
+  </div>
+
+  <!-- BANK -->
+  <div class="card bank">
+    <div class="bank-name">💳 บัญชีธนาคารร้าน</div>
+    <div class="bank-no" id="bankNo">123-456-7890</div>
+    <div class="copy" onclick="copyBank()">📋 คัดลอกเลขบัญชี</div>
+  </div>
+
+  <!-- LINE -->
+  <a class="line-btn"
+     href="https://line.me/R/ti/p/@geg4960w"
+     target="_blank">
+     💬 ส่งสลิปให้แอดมินทาง LINE
+  </a>
+
+  <div class="notice">
+    ⏱ หลังโอนเงิน กรุณาส่งสลิป<br>
+    แอดมินจะเติมเครดิตให้ภายในไม่เกิน 24 ชม.
+  </div>
+
+  <button onclick="goBack()">⬅ กลับหน้า Dashboard</button>
+</div>
+
+<script>
+/* mock user (ภายหลังดึงจาก localStorage) */
+const user = {
+  fullname: "ลูกค้าทดลอง",
+  credit: 1250
+};
+
+username.innerText = user.fullname;
+credit.innerText = user.credit.toLocaleString();
+
+function copyBank(){
+  navigator.clipboard.writeText(bankNo.innerText);
+  alert("คัดลอกเลขบัญชีเรียบร้อย");
+}
+
+function goBack(){
+  location.href="dashboard.html";
+}
+</script>
+
+</body>
+</html>
