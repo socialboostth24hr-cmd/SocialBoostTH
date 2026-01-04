@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Dashboard | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
 :root{
   --bg-main:#0b0216;
@@ -16,112 +15,70 @@
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:system-ui;
+  margin:0;font-family:system-ui;
   background:
     radial-gradient(1000px 500px at top,#2a0d52,transparent),
     linear-gradient(180deg,var(--bg-main),#14032a);
-  color:#fff;
-  min-height:100vh;
+  color:#fff;min-height:100vh;
 }
 .container{
-  max-width:420px;
-  margin:30px auto;
-  padding:26px;
+  max-width:420px;margin:30px auto;padding:26px;
   background:linear-gradient(180deg,#1a0936,var(--bg-card));
   border-radius:22px;
   box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
 h1{
-  margin:0;
-  text-align:center;
-  font-size:26px;
-  font-weight:900;
+  margin:0;text-align:center;font-size:26px;font-weight:900;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-.sub{
-  text-align:center;
-  margin:10px 0 22px;
-  color:var(--soft);
-  font-size:14px;
-}
+.sub{text-align:center;margin:10px 0 22px;color:var(--soft);font-size:14px}
 .card{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
   border-radius:18px;
-  padding:16px;
-  margin-top:14px;
+  padding:16px;margin-top:14px;
 }
-.user{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.user-name{
-  font-size:14px;
-  color:#e9d5ff;
-}
-.credit{
-  font-size:22px;
-  font-weight:900;
-  color:#fbcfe8;
-}
-.grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-  margin-top:20px;
-}
+.user{display:flex;justify-content:space-between;align-items:center}
+.user-name{font-size:14px;color:#e9d5ff}
+.credit{font-size:22px;font-weight:900;color:#fbcfe8}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
 .btn{
-  border:none;
-  border-radius:18px;
-  padding:18px 12px;
-  font-size:14px;
-  font-weight:800;
-  cursor:pointer;
-  color:#fff;
+  border:none;border-radius:18px;padding:18px 12px;
+  font-size:14px;font-weight:800;cursor:pointer;color:#fff;
   background:linear-gradient(135deg,var(--purple),var(--pink));
-  box-shadow:0 14px 30px rgba(139,92,246,.35);
 }
-.btn.secondary{
-  background:linear-gradient(135deg,#1e293b,#334155);
-  box-shadow:none;
-}
-.btn:hover{filter:brightness(1.07)}
-.footer{
-  text-align:center;
-  margin-top:24px;
-  font-size:12px;
-  color:var(--soft);
-}
+.btn.secondary{background:#1e293b}
+.footer{text-align:center;margin-top:24px;font-size:12px;color:var(--soft)}
 </style>
 </head>
 
 <body>
 
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user){ location.href="index.html"; }
+</script>
+
 <div class="container">
   <h1>SocialBoostTH</h1>
   <div class="sub">ระบบจัดการบัญชี</div>
 
-  <!-- USER INFO -->
   <div class="card user">
     <div>
       <div class="user-name">ผู้ใช้งาน</div>
-      <b id="username">-</b>
+      <b id="username"></b>
     </div>
     <div>
       <div class="user-name">เครดิตคงเหลือ</div>
-      <div class="credit" id="credit">0</div>
+      <div class="credit" id="credit"></div>
     </div>
   </div>
 
-  <!-- ACTIONS -->
   <div class="grid">
-    <button class="btn" onclick="goService()">🛍️ เลือกบริการ</button>
-    <button class="btn" onclick="goOrders()">📦 ออเดอร์ของฉัน</button>
-    <button class="btn secondary" onclick="goTopup()">➕ เติมเงิน</button>
+    <button class="btn" onclick="go('services.html')">🛍️ เลือกบริการ</button>
+    <button class="btn" onclick="go('orders.html')">📦 ออเดอร์ของฉัน</button>
+    <button class="btn secondary" onclick="go('topup.html')">➕ เติมเงิน</button>
     <button class="btn secondary" onclick="logout()">🚪 ออกจากระบบ</button>
   </div>
 
@@ -129,31 +86,13 @@ h1{
 </div>
 
 <script>
-/* ===== AUTH GUARD ===== */
-const user = JSON.parse(localStorage.getItem("user"));
+username.innerText = user.fullname;
+credit.innerText = Number(user.credit||0).toLocaleString();
 
-if(!user){
-  location.href = "login.html";
-}
-
-/* ===== SHOW USER DATA ===== */
-document.getElementById("username").innerText = user.fullname;
-document.getElementById("credit").innerText =
-  Number(user.credit || 0).toLocaleString();
-
-/* ===== NAVIGATION ===== */
-function goService(){
-  location.href = "services.html";
-}
-function goOrders(){
-  location.href = "orders.html";
-}
-function goTopup(){
-  location.href = "topup.html";
-}
+function go(p){ location.href=p }
 function logout(){
   localStorage.removeItem("user");
-  location.href = "login.html";
+  location.href="index.html";
 }
 </script>
 
