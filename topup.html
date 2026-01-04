@@ -55,7 +55,7 @@ h1{
   line-height:1.7;
 }
 
-/* cards */
+/* card */
 .card{
   background:
     linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
@@ -80,7 +80,6 @@ h1{
 .user-name{
   font-size:15px;
   font-weight:800;
-  margin-top:2px;
 }
 
 .credit{
@@ -100,7 +99,7 @@ h1{
   color:#fbcfe8;
 }
 
-/* bank card */
+/* bank */
 .bank{
   text-align:center;
 }
@@ -109,7 +108,7 @@ h1{
   display:inline-block;
   font-size:12px;
   font-weight:800;
-  padding:6px 12px;
+  padding:6px 14px;
   border-radius:999px;
   background:rgba(139,92,246,.15);
   color:#c4b5fd;
@@ -119,8 +118,8 @@ h1{
 .bank-no{
   font-size:26px;
   font-weight:900;
-  letter-spacing:1px;
-  margin:8px 0;
+  letter-spacing:1.5px;
+  margin:6px 0;
 }
 
 .bank-owner{
@@ -128,22 +127,20 @@ h1{
   color:#e9d5ff;
 }
 
-/* COPY BUTTON – PINK */
+/* copy pink */
 .copy{
-  margin-top:12px;
+  margin-top:14px;
   padding:12px;
-  border-radius:16px;
+  border-radius:18px;
   font-size:14px;
   font-weight:900;
   color:#fff;
-  background:linear-gradient(90deg,#ec4899,#f472b6);
-  box-shadow:0 8px 20px rgba(236,72,153,.45);
   cursor:pointer;
+  background:linear-gradient(90deg,#ec4899,#f472b6);
+  box-shadow:0 10px 26px rgba(236,72,153,.45);
   transition:.25s;
 }
-.copy:hover{
-  filter:brightness(1.08);
-}
+.copy:hover{ filter:brightness(1.08); }
 
 /* line */
 .line-btn{
@@ -186,6 +183,13 @@ button{
 
 <body>
 
+<script>
+/* ===== LOGIN GUARD ===== */
+if(!localStorage.getItem("user")){
+  location.href="index.html";
+}
+</script>
+
 <div class="container">
   <h1>เติมเงิน</h1>
   <div class="sub">
@@ -197,11 +201,11 @@ button{
   <div class="card user">
     <div>
       <div class="user-title">ผู้ใช้งาน</div>
-      <div class="user-name" id="username">ลูกค้าทดลอง</div>
+      <div class="user-name" id="username">-</div>
     </div>
     <div class="credit">
       <span>เครดิตคงเหลือ</span>
-      <b id="credit">1,250</b>
+      <b id="credit">0</b>
     </div>
   </div>
 
@@ -210,7 +214,7 @@ button{
     <div class="bank-badge">🏦 ธนาคารกสิกรไทย</div>
     <div class="bank-no" id="bankNo">066-1213-728</div>
     <div class="bank-owner">สรวงสุดา ศรีสุวรรณ์</div>
-    <div class="copy" onclick="copyBank()">📋 คัดลอกเลขบัญชี</div>
+    <div class="copy" id="copyBtn" onclick="copyBank()">📋 คัดลอกเลขบัญชี</div>
   </div>
 
   <!-- LINE -->
@@ -229,18 +233,22 @@ button{
 </div>
 
 <script>
-const user = {
-  fullname:"ลูกค้าทดลอง",
-  credit:1250
-};
+/* ===== LOAD USER ===== */
+const user = JSON.parse(localStorage.getItem("user"));
 
-username.innerText = user.fullname;
-credit.innerText = user.credit.toLocaleString();
+if(user){
+  username.innerText = user.fullname;
+  credit.innerText = Number(user.credit || 0).toLocaleString();
+}
 
+/* ===== COPY BANK ===== */
 function copyBank(){
   navigator.clipboard.writeText(bankNo.innerText);
-  alert("คัดลอกเลขบัญชีเรียบร้อย");
+  const btn = document.getElementById("copyBtn");
+  btn.innerText = "✅ คัดลอกแล้ว";
+  setTimeout(()=>btn.innerText="📋 คัดลอกเลขบัญชี",1500);
 }
+
 function goBack(){
   location.href="dashboard.html";
 }
