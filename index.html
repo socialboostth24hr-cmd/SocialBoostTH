@@ -7,181 +7,218 @@
 
 <style>
 body{
-  margin:0;font-family:system-ui;
+  margin:0;
+  font-family:system-ui;
   background:linear-gradient(180deg,#0b0216,#1a0438);
   color:#fff;
 }
 .container{
-  max-width:420px;margin:30px auto;padding:24px;
-  background:#120726;border-radius:18px;
+  max-width:420px;
+  margin:30px auto;
+  padding:24px;
+  background:#120726;
+  border-radius:18px;
 }
 h1{text-align:center;margin:0}
-.sub{text-align:center;opacity:.85;margin-bottom:16px}
+.sub{text-align:center;opacity:.85;margin-bottom:14px}
 .box{
-  background:#0f0220;border:1px solid #2e1065;
-  padding:14px;border-radius:12px;margin-top:12px;
+  background:#0f0220;
+  border:1px solid #2e1065;
+  padding:14px;
+  border-radius:12px;
+  margin-top:12px;
 }
-label{font-size:14px;display:block;margin-top:12px}
-input,textarea,button{
-  width:100%;padding:14px;margin-top:8px;
-  border-radius:12px;border:1px solid #2e1065;
-  background:#0f0220;color:#fff;
+button, input, select{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border-radius:12px;
+  border:1px solid #2e1065;
+  background:#0f0220;
+  color:#fff;
 }
-textarea{min-height:120px;resize:vertical}
 button{
   background:linear-gradient(90deg,#7c3aed,#5b21b6);
-  border:none;font-weight:bold;
+  font-weight:bold;
+  border:none;
 }
-.small{opacity:.7;font-size:13px}
+.small{font-size:13px;opacity:.7}
 .logout{background:#111}
-.popup{
-  position:fixed;inset:0;background:rgba(0,0,0,.7);
-  display:none;align-items:center;justify-content:center;
-}
-.popup .box{max-width:360px}
 </style>
 </head>
 
 <body>
 
-<!-- PANEL -->
-<div class="container" id="panel">
+<!-- LOGIN -->
+<div class="container" id="loginBox">
   <h1>SocialBoostTH</h1>
-  <div class="sub">เลือกบริการ</div>
+  <div class="sub">
+    เข้าสู่ระบบ<br>
+    <span class="small">หากยังไม่มีบัญชี ติดต่อ LINE <b>@geg4960w</b></span>
+  </div>
+
+  <input id="email" placeholder="อีเมล">
+  <input id="password" type="password" placeholder="รหัสผ่าน">
+  <button onclick="login()">เข้าสู่ระบบ</button>
+  <div id="loginMsg" class="small"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="container" id="panel" style="display:none">
+  <h1>SocialBoostTH</h1>
+  <div class="box">
+    ผู้ใช้งาน: <b id="username"></b><br>
+    เครดิตคงเหลือ: <b id="credit"></b>
+  </div>
+
+  <button onclick="openServices()">📋 เลือกบริการ</button>
+  <button class="logout" onclick="logout()">ออกจากระบบ</button>
+</div>
+
+<!-- SERVICES -->
+<div class="container" id="serviceBox" style="display:none">
+  <h1>เลือกบริการ</h1>
 
   <div class="box">
-    🇹🇭 <b>ผู้ติดตามไทย</b>
-    <div id="serviceThai"></div>
+    🇹🇭 <b>บริการไทย</b>
+    <div id="thaiList"></div>
   </div>
 
   <div class="box">
-    🌍 <b>ผู้ติดตามต่างชาติ</b>
-    <div id="serviceInter"></div>
+    🌍 <b>บริการต่างชาติ</b>
+    <div id="interList"></div>
   </div>
 
-  <div class="box">
-    ❤️ <b>ไลก์ / วิว / คอมเมนต์</b>
-    <div id="serviceEngage"></div>
-  </div>
+  <button onclick="back()">⬅ กลับ</button>
 </div>
 
 <!-- ORDER -->
 <div class="container" id="orderBox" style="display:none">
-  <h1 id="orderTitle">สั่งซื้อ</h1>
+  <h1>สั่งซื้อบริการ</h1>
 
   <div class="box">
-    ราคา / หน่วย: <b id="price"></b><br>
-    ขั้นต่ำ: <b id="minq"></b> | สูงสุด: <b id="maxq"></b>
+    <b id="serviceName"></b><br>
+    <span class="small" id="serviceNote"></span>
   </div>
 
-  <label>ลิงก์งาน</label>
-  <input id="link">
+  <input id="qty" type="number">
+  <input id="link" placeholder="ลิงก์งาน">
 
-  <label>คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
-  <textarea id="comments" placeholder="พิมพ์ทีละบรรทัด"></textarea>
-
-  <div class="box small">
-    จำนวนทั้งหมด: <b id="qty">0</b><br>
-    ราคารวม: <b id="total">0</b> บาท
-  </div>
-
-  <button onclick="openTerms()">สั่งซื้อ</button>
-  <button class="logout" onclick="back()">กลับ</button>
-</div>
-
-<!-- TERMS POPUP -->
-<div class="popup" id="termsPopup">
   <div class="box">
-    <b>เงื่อนไขการใช้บริการ</b><br><br>
-    <div class="small">
-      • การสั่งซื้อถือว่าผู้ใช้ยืนยันความเป็นเจ้าของลิงก์งาน<br>
-      • บริการเป็นระบบอัตโนมัติ ไม่สามารถยกเลิกหรือคืนเงิน<br>
-      • ระยะเวลาดำเนินการอาจแตกต่างตามระบบแพลตฟอร์ม<br>
-      • ห้ามใช้กับเนื้อหาที่ผิดกฎหมายหรือขัดต่อนโยบายแพลตฟอร์ม
-    </div>
-
-    <label style="margin-top:12px">
-      <input type="checkbox" id="accept"> ยอมรับเงื่อนไขทั้งหมด
-    </label>
-
-    <button onclick="confirmOrder()">ยืนยันสั่งซื้อ</button>
-    <button class="logout" onclick="closeTerms()">ยกเลิก</button>
+    ราคารวม: <b id="totalPrice">0</b> บาท
   </div>
+
+  <button onclick="confirmOrder()">ยืนยันสั่งซื้อ</button>
+  <button onclick="back()">⬅ กลับ</button>
 </div>
 
 <script>
-const SERVICES_API="https://opensheet.elk.sh/10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4/services";
-let services=[], selected=null;
+const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
+const USERS_API = `https://opensheet.elk.sh/${SHEET_ID}/users`;
+const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
+const GAS_API = "https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
+
+let user=null;
+let services=[];
+let selected=null;
 
 /* INIT */
-(async()=>{
-  services=await (await fetch(SERVICES_API)).json();
-  renderServices();
-})();
+document.addEventListener("DOMContentLoaded",async()=>{
+  services = (await fetch(SERVICES_API).then(r=>r.json())).filter(s=>s.status==="active");
+  const s=localStorage.getItem("user");
+  if(s){ user=JSON.parse(s); showPanel(); }
+});
 
-function renderServices(){
-  const thai=serviceThai, inter=serviceInter, eng=serviceEngage;
-  thai.innerHTML=inter.innerHTML=eng.innerHTML="";
+/* LOGIN */
+async function login(){
+  const users=await fetch(USERS_API).then(r=>r.json());
+  const u=users.find(x=>x.email?.toLowerCase()===email.value.toLowerCase()
+    && String(x.password).trim()===password.value.trim());
+  if(!u){ loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง"; return; }
 
-  services.filter(s=>s.status==="active").forEach(s=>{
-    const btn=`<button onclick='selectService(${JSON.stringify(s)})'>
-      ${s.platform} | ${s.service_name}
+  user={user_id:u.user_id,fullname:u.fullname,credit:Number(u.credit)};
+  localStorage.setItem("user",JSON.stringify(user));
+  showPanel();
+}
+
+function showPanel(){
+  loginBox.style.display="none";
+  serviceBox.style.display="none";
+  orderBox.style.display="none";
+  panel.style.display="block";
+  username.innerText=user.fullname;
+  credit.innerText=user.credit;
+}
+
+/* SERVICES */
+function openServices(){
+  panel.style.display="none";
+  serviceBox.style.display="block";
+
+  thaiList.innerHTML="";
+  interList.innerHTML="";
+
+  services.forEach(s=>{
+    const btn=`<button onclick='selectService("${s.service_code}")'>
+      ${s.platform} | ${s.service_name} <br>
+      <span class="small">${s.price_th} บาท / หน่วย</span>
     </button>`;
-    if(s.service_name.includes("ไทย")) thai.innerHTML+=btn;
-    else if(s.service_name.includes("ต่าง")) inter.innerHTML+=btn;
-    else eng.innerHTML+=btn;
+
+    if(s.category==="thai") thaiList.innerHTML+=btn;
+    else interList.innerHTML+=btn;
   });
 }
 
-/* SELECT SERVICE */
-function selectService(s){
-  selected=s;
-  panel.style.display="none";
+function selectService(code){
+  selected=services.find(s=>s.service_code===code);
+  serviceBox.style.display="none";
   orderBox.style.display="block";
-  orderTitle.innerText=s.service_name;
-  price.innerText=s.price_th;
-  minq.innerText=s.min_qty;
-  maxq.innerText=s.max_qty;
-  comments.value="";
-  calc();
+
+  serviceName.innerText = selected.service_name;
+  serviceNote.innerText = selected.note || "";
+  qty.value = selected.min_qty;
+  updateTotal();
 }
 
-comments.oninput=calc;
+qty.oninput=updateTotal;
 
-function calc(){
-  const lines=comments.value.trim()
-    ? comments.value.split(/\n+/).length : 0;
-  qty.innerText=lines;
-  total.innerText=(lines * selected.price_th).toFixed(2);
-}
-
-function back(){
-  orderBox.style.display="none";
-  panel.style.display="block";
-}
-
-/* TERMS */
-function openTerms(){
-  if(!comments.value.trim()){
-    alert("กรุณากรอกคอมเมนต์");
+function updateTotal(){
+  const q=Number(qty.value);
+  if(q<selected.min_qty||q>selected.max_qty){
+    totalPrice.innerText="จำนวนไม่ถูกต้อง";
     return;
   }
-  termsPopup.style.display="flex";
+  totalPrice.innerText=(q*selected.price_th).toFixed(2);
 }
 
-function closeTerms(){
-  termsPopup.style.display="none";
-  accept.checked=false;
+/* ORDER */
+async function confirmOrder(){
+  const q=Number(qty.value);
+  const amount=q*selected.price_th;
+  if(amount>user.credit){ alert("เครดิตไม่เพียงพอ"); return; }
+
+  const res=await fetch(GAS_API,{
+    method:"POST",
+    body:JSON.stringify({
+      user_id:user.user_id,
+      service_code:selected.service_code,
+      platform:selected.platform,
+      qty:q,
+      amount:amount,
+      link:link.value
+    })
+  });
+  const d=JSON.parse(await res.text());
+  if(!d.success){ alert(d.message); return; }
+
+  user.credit=d.credit;
+  localStorage.setItem("user",JSON.stringify(user));
+  alert("สั่งซื้อสำเร็จ");
+  showPanel();
 }
 
-function confirmOrder(){
-  if(!accept.checked){
-    alert("กรุณายอมรับเงื่อนไข");
-    return;
-  }
-  alert("✅ ส่งออเดอร์เรียบร้อย (เชื่อม GAS ต่อได้เลย)");
-  closeTerms();
-}
+function back(){ showPanel(); }
+function logout(){ localStorage.clear(); location.reload(); }
 </script>
 
 </body>
