@@ -62,6 +62,14 @@ h1{
   border-radius:18px;
   padding:16px;
   margin-bottom:14px;
+  cursor:pointer;
+}
+
+/* ไฮไลต์ออเดอร์ล่าสุด */
+.order.latest{
+  border-color:var(--purple);
+  box-shadow:0 0 0 1px rgba(139,92,246,.6),
+             0 0 18px rgba(139,92,246,.35);
 }
 
 .order-title{
@@ -104,6 +112,44 @@ button{
   background:#1e293b;
   color:#fff;
 }
+
+/* ===== POPUP ===== */
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99;
+}
+
+.popup .box{
+  max-width:380px;
+  width:90%;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:20px;
+  border:1px solid var(--border);
+  padding:20px;
+}
+
+.popup h2{
+  margin:0 0 10px;
+  font-size:18px;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.popup .info{
+  font-size:14px;
+  color:var(--soft);
+  line-height:1.7;
+}
+
+.popup button{
+  margin-top:14px;
+}
 </style>
 </head>
 
@@ -111,11 +157,23 @@ button{
 
 <div class="container">
   <h1>Order ของฉัน</h1>
-  <div class="sub">ประวัติการสั่งซื้อและสถานะงาน</div>
+  <div class="sub">
+    ประวัติการสั่งซื้อและสถานะงาน<br>
+    <span style="font-size:12px;opacity:.6">อัปเดตอัตโนมัติทุก 10 วินาที</span>
+  </div>
 
   <div id="ordersList">กำลังโหลด...</div>
 
   <button onclick="goBack()">⬅ กลับหน้า Dashboard</button>
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="box">
+    <h2 id="popupTitle"></h2>
+    <div class="info" id="popupInfo"></div>
+    <button onclick="closePopup()">ปิด</button>
+  </div>
 </div>
 
 <script>
@@ -123,19 +181,27 @@ button{
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
 const ORDERS_API = `https://opensheet.elk.sh/${SHEET_ID}/orders`;
 
-/* mock user (ภายหลังเปลี่ยนเป็น localStorage ได้) */
+/* mock user */
 const USER_ID = "1001";
 
 /* ===== LOAD ORDERS ===== */
-fetch(ORDERS_API)
-  .then(r=>r.json())
-  .then(data=>{
-    const my = data.filter(o => String(o.user_id) === USER_ID).reverse();
-    renderOrders(my);
-  })
-  .catch(()=>{
-    ordersList.innerHTML = "<div class='empty'>โหลดข้อมูลไม่สำเร็จ</div>";
-  });
+function loadOrders(){
+  fetch(ORDERS_API)
+    .then(r=>r.json())
+    .then(data=>{
+      const my = data
+        .filter(o => String(o.user_id) === USER_ID)
+        .reverse();
+      renderOrders(my);
+    })
+    .catch(()=>{
+      ordersList.innerHTML = "<div class='empty'>โหลดข้อมูลไม่สำเร็จ</div>";
+    });
+}
+
+/* AUTO REFRESH */
+loadOrders();
+setInterval(loadOrders,10000);
 
 function renderOrders(list){
   if(!list.length){
@@ -143,19 +209,21 @@ function renderOrders(list){
     return;
   }
 
-  ordersList.innerHTML = list.map(o=>{
+  ordersList.innerHTML = list.map((o,idx)=>{
     const statusText =
       o.status==="pending" ? "⏳ รอดำเนินการ" :
       o.status==="processing" ? "⚙️ กำลังดำเนินการ" :
       "✅ ดำเนินการสำเร็จ";
 
     return `
-      <div class="order">
-        <div class="order-title">${o.service_name || o.service_code}</div>
+      <div class="order ${idx===0?'latest':''}"
+        onclick='openPopup(${JSON.stringify(o)})'>
+        <div class="order-title">
+          ${o.service_name || o.service_code}
+        </div>
         <div class="order-info">
           จำนวน: ${o.qty}<br>
-          ยอดชำระ: ${Number(o.amount).toFixed(2)} บาท<br>
-          วันที่: ${o.created_at || "-"}
+          ยอดชำระ: ${Number(o.amount).toFixed(2)} บาท
         </div>
         <div class="status ${o.status}">
           ${statusText}
@@ -163,6 +231,22 @@ function renderOrders(list){
       </div>
     `;
   }).join("");
+}
+
+/* ===== POPUP ===== */
+function openPopup(o){
+  popupTitle.innerText = o.service_name || o.service_code;
+  popupInfo.innerHTML = `
+    📦 จำนวน: ${o.qty}<br>
+    💰 ยอดชำระ: ${Number(o.amount).toFixed(2)} บาท<br>
+    📌 สถานะ: ${o.status}<br>
+    🕒 วันที่: ${o.created_at || "-"}<br>
+    🔗 ลิงก์งาน: ${o.link || "-"}
+  `;
+  popup.style.display="flex";
+}
+function closePopup(){
+  popup.style.display="none";
 }
 
 function goBack(){
