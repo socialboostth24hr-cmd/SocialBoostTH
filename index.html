@@ -57,7 +57,7 @@ button{
 
 <body>
 
-<!-- LOGIN -->
+<!-- ================= LOGIN ================= -->
 <div class="container" id="loginBox">
   <h1>SocialBoostTH</h1>
   <div class="sub">เข้าสู่ระบบ</div>
@@ -72,7 +72,7 @@ button{
   <div id="loginMsg" class="msg"></div>
 </div>
 
-<!-- PANEL -->
+<!-- ================= PANEL ================= -->
 <div class="container" id="panel" style="display:none">
   <h1>SocialBoostTH</h1>
   <div class="sub">สั่งบริการ</div>
@@ -83,7 +83,9 @@ button{
   </div>
 
   <label>เลือกบริการ</label>
-  <select id="serviceSelect"></select>
+  <select id="serviceSelect">
+    <option>กำลังโหลดบริการ...</option>
+  </select>
 
   <label>จำนวน</label>
   <input id="qty" type="number" value="50">
@@ -102,8 +104,9 @@ button{
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
 const USERS_API    = `https://opensheet.elk.sh/${SHEET_ID}/users`;
 const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
-const GAS_API =
-"https://script.google.com/macros/s/AKfycbwWOaLikdxgXIpH9x9Xm5TY-ZJ-nElt8WHwriNypWlUEZbTu8FFlqWycvZW1r8ljTRu/exec";
+
+// ⚠️ ต้องเป็น URL หลัง deploy GAS ตัวล่าสุด
+const GAS_API = "https://script.google.com/macros/s/AKfycbwWOaLikdxgXIpH9x9Xm5TY-ZJ-nElt8WHwriNypWlUEZbTu8FFlqWycvZW1r8ljTRu/exec";
 
 // ================= STATE =================
 let user = null;
@@ -192,14 +195,14 @@ function calc(){
 
   const s = services[serviceSelect.value];
   const q = Number(qty.value);
-  const price = Number(s.price_th);
 
   if(q < Number(s.min_qty) || q > Number(s.max_qty)){
     total.innerText = "❌ จำนวนไม่ถูกต้อง";
     return;
   }
 
-  total.innerText = `รวม ${(q * price).toFixed(2)} บาท`;
+  const amount = q * Number(s.price_th);
+  total.innerText = `รวม ${amount.toFixed(2)} บาท`;
 }
 
 // ================= ORDER =================
@@ -214,7 +217,7 @@ async function order(){
   const amount = q * Number(s.price_th);
 
   if(amount > user.credit){
-    alert("เครดิตไม่พอ");
+    alert("❌ เครดิตไม่พอ");
     return;
   }
 
@@ -230,7 +233,7 @@ async function order(){
   const d = await res.json();
 
   if(!d.success){
-    alert(d.message);
+    alert("❌ " + d.message);
     return;
   }
 
