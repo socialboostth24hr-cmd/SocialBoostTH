@@ -7,163 +7,180 @@
 
 <style>
 body{
-  margin:0;
-  font-family:system-ui;
+  margin:0;font-family:system-ui;
   background:linear-gradient(180deg,#0b0216,#1a0438);
   color:#fff;
 }
 .container{
-  max-width:420px;
-  margin:30px auto;
-  padding:24px;
-  background:#120726;
-  border-radius:18px;
+  max-width:420px;margin:30px auto;padding:24px;
+  background:#120726;border-radius:18px;
 }
 h1{text-align:center;margin:0}
-.sub{text-align:center;opacity:.85;margin-bottom:16px;line-height:1.6}
+.sub{text-align:center;opacity:.85;margin-bottom:16px}
 .box{
-  background:#0f0220;
-  border:1px solid #2e1065;
-  padding:14px;
-  border-radius:12px;
-  margin-top:12px;
+  background:#0f0220;border:1px solid #2e1065;
+  padding:14px;border-radius:12px;margin-top:12px;
 }
 label{font-size:14px;display:block;margin-top:12px}
-input,select,button{
-  width:100%;
-  padding:14px;
-  margin-top:6px;
-  border-radius:12px;
-  border:1px solid #2e1065;
-  background:#0f0220;
-  color:#fff;
+input,textarea,button{
+  width:100%;padding:14px;margin-top:8px;
+  border-radius:12px;border:1px solid #2e1065;
+  background:#0f0220;color:#fff;
 }
+textarea{min-height:120px;resize:vertical}
 button{
-  margin-top:14px;
   background:linear-gradient(90deg,#7c3aed,#5b21b6);
-  border:none;
-  font-weight:bold;
+  border:none;font-weight:bold;
 }
-.logout{background:#111}
 .small{opacity:.7;font-size:13px}
-hr{border:0;border-top:1px solid #2e1065;margin:16px 0}
+.logout{background:#111}
+.popup{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;
+}
+.popup .box{max-width:360px}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div class="container" id="loginBox">
-  <h1>SocialBoostTH</h1>
-  <div class="sub">
-    เข้าสู่ระบบใช้งาน<br>
-    <span class="small">หากยังไม่มีบัญชี ติดต่อ LINE <b>@geg4960w</b></span>
-  </div>
-
-  <label>อีเมล</label>
-  <input id="email">
-
-  <label>รหัสผ่าน</label>
-  <input id="password" type="password">
-
-  <button onclick="login()">เข้าสู่ระบบ</button>
-  <div id="loginMsg" class="small"></div>
-</div>
-
 <!-- PANEL -->
-<div class="container" id="panel" style="display:none">
+<div class="container" id="panel">
   <h1>SocialBoostTH</h1>
-  <div class="sub">แผงควบคุมผู้ใช้</div>
+  <div class="sub">เลือกบริการ</div>
 
   <div class="box">
-    ผู้ใช้งาน: <b id="username"></b><br>
-    เครดิตคงเหลือ: <b id="credit"></b>
+    🇹🇭 <b>ผู้ติดตามไทย</b>
+    <div id="serviceThai"></div>
   </div>
 
-  <button onclick="openTopup()">➕ เติมเงิน</button>
-  <button onclick="showOrders()">📦 ดูออเดอร์ของฉัน</button>
-  <button class="logout" onclick="logout()">ออกจากระบบ</button>
+  <div class="box">
+    🌍 <b>ผู้ติดตามต่างชาติ</b>
+    <div id="serviceInter"></div>
+  </div>
+
+  <div class="box">
+    ❤️ <b>ไลก์ / วิว / คอมเมนต์</b>
+    <div id="serviceEngage"></div>
+  </div>
 </div>
 
-<!-- TOPUP -->
-<div class="container" id="topupBox" style="display:none">
-  <h1>เติมเครดิต</h1>
-  <div class="sub">
-    โปรดโอนเงินเข้าบัญชีทางการของร้านเท่านั้น
-  </div>
+<!-- ORDER -->
+<div class="container" id="orderBox" style="display:none">
+  <h1 id="orderTitle">สั่งซื้อ</h1>
 
   <div class="box">
-    💳 <b>ธนาคารกสิกรไทย</b><br>
-    เลขบัญชี: <b>066-1213-728</b><br>
-    ชื่อบัญชี: <b>สรวงสุดา ศรีสุวรรณ์</b>
+    ราคา / หน่วย: <b id="price"></b><br>
+    ขั้นต่ำ: <b id="minq"></b> | สูงสุด: <b id="maxq"></b>
   </div>
 
-  <div class="box">
-    💚 <b>TrueMoney Wallet</b><br>
-    เบอร์: <b>099-130-1221</b><br>
-    ชื่อบัญชี: <b>รินทร์ลภัส ศรีสุวรรณ์</b>
-  </div>
+  <label>ลิงก์งาน</label>
+  <input id="link">
+
+  <label>คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
+  <textarea id="comments" placeholder="พิมพ์ทีละบรรทัด"></textarea>
 
   <div class="box small">
-    <b>เงื่อนไขการเติมเงิน</b><br>
-    • กรุณาโอนเงินตามยอดที่ต้องการเติมเท่านั้น<br>
-    • หลังโอนเงินแล้ว กรุณาส่งสลิปให้แอดมินทาง LINE<br>
-    • เครดิตจะถูกเติมหลังตรวจสอบยอดเงินเรียบร้อย<br>
-    • ไม่สามารถขอคืนเงินได้ทุกกรณี
+    จำนวนทั้งหมด: <b id="qty">0</b><br>
+    ราคารวม: <b id="total">0</b> บาท
   </div>
 
-  <button onclick="backToPanel()">⬅ กลับ</button>
+  <button onclick="openTerms()">สั่งซื้อ</button>
+  <button class="logout" onclick="back()">กลับ</button>
+</div>
+
+<!-- TERMS POPUP -->
+<div class="popup" id="termsPopup">
+  <div class="box">
+    <b>เงื่อนไขการใช้บริการ</b><br><br>
+    <div class="small">
+      • การสั่งซื้อถือว่าผู้ใช้ยืนยันความเป็นเจ้าของลิงก์งาน<br>
+      • บริการเป็นระบบอัตโนมัติ ไม่สามารถยกเลิกหรือคืนเงิน<br>
+      • ระยะเวลาดำเนินการอาจแตกต่างตามระบบแพลตฟอร์ม<br>
+      • ห้ามใช้กับเนื้อหาที่ผิดกฎหมายหรือขัดต่อนโยบายแพลตฟอร์ม
+    </div>
+
+    <label style="margin-top:12px">
+      <input type="checkbox" id="accept"> ยอมรับเงื่อนไขทั้งหมด
+    </label>
+
+    <button onclick="confirmOrder()">ยืนยันสั่งซื้อ</button>
+    <button class="logout" onclick="closeTerms()">ยกเลิก</button>
+  </div>
 </div>
 
 <script>
-const SHEET_ID="10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
-const USERS_API=`https://opensheet.elk.sh/${SHEET_ID}/users`;
-
-let user=null;
+const SERVICES_API="https://opensheet.elk.sh/10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4/services";
+let services=[], selected=null;
 
 /* INIT */
-document.addEventListener("DOMContentLoaded",()=>{
-  const s=localStorage.getItem("user");
-  if(s){ user=JSON.parse(s); showPanel(); }
-});
+(async()=>{
+  services=await (await fetch(SERVICES_API)).json();
+  renderServices();
+})();
 
-/* LOGIN */
-async function login(){
-  const users=await (await fetch(USERS_API)).json();
-  const u=users.find(x =>
-    x.email?.toLowerCase()===email.value.toLowerCase() &&
-    String(x.password).trim()===password.value.trim()
-  );
-  if(!u){
-    loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+function renderServices(){
+  const thai=serviceThai, inter=serviceInter, eng=serviceEngage;
+  thai.innerHTML=inter.innerHTML=eng.innerHTML="";
+
+  services.filter(s=>s.status==="active").forEach(s=>{
+    const btn=`<button onclick='selectService(${JSON.stringify(s)})'>
+      ${s.platform} | ${s.service_name}
+    </button>`;
+    if(s.service_name.includes("ไทย")) thai.innerHTML+=btn;
+    else if(s.service_name.includes("ต่าง")) inter.innerHTML+=btn;
+    else eng.innerHTML+=btn;
+  });
+}
+
+/* SELECT SERVICE */
+function selectService(s){
+  selected=s;
+  panel.style.display="none";
+  orderBox.style.display="block";
+  orderTitle.innerText=s.service_name;
+  price.innerText=s.price_th;
+  minq.innerText=s.min_qty;
+  maxq.innerText=s.max_qty;
+  comments.value="";
+  calc();
+}
+
+comments.oninput=calc;
+
+function calc(){
+  const lines=comments.value.trim()
+    ? comments.value.split(/\n+/).length : 0;
+  qty.innerText=lines;
+  total.innerText=(lines * selected.price_th).toFixed(2);
+}
+
+function back(){
+  orderBox.style.display="none";
+  panel.style.display="block";
+}
+
+/* TERMS */
+function openTerms(){
+  if(!comments.value.trim()){
+    alert("กรุณากรอกคอมเมนต์");
     return;
   }
-  user={user_id:u.user_id,fullname:u.fullname,credit:Number(u.credit)};
-  localStorage.setItem("user",JSON.stringify(user));
-  showPanel();
+  termsPopup.style.display="flex";
 }
 
-function showPanel(){
-  loginBox.style.display="none";
-  topupBox.style.display="none";
-  panel.style.display="block";
-  username.innerText=user.fullname;
-  credit.innerText=user.credit;
+function closeTerms(){
+  termsPopup.style.display="none";
+  accept.checked=false;
 }
 
-function openTopup(){
-  panel.style.display="none";
-  topupBox.style.display="block";
-}
-
-function backToPanel(){
-  topupBox.style.display="none";
-  panel.style.display="block";
-}
-
-function logout(){
-  localStorage.clear();
-  location.reload();
+function confirmOrder(){
+  if(!accept.checked){
+    alert("กรุณายอมรับเงื่อนไข");
+    return;
+  }
+  alert("✅ ส่งออเดอร์เรียบร้อย (เชื่อม GAS ต่อได้เลย)");
+  closeTerms();
 }
 </script>
 
