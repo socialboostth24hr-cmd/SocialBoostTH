@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>SocialBoostTH – Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border-main:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:
+    radial-gradient(1200px 600px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+}
+
+.container{
+  width:100%;
+  max-width:420px;
+  padding:26px;
+  border-radius:22px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
+}
+
+h1{
+  margin:0;
+  text-align:center;
+  font-size:26px;
+  font-weight:800;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  margin:14px 0 22px;
+  font-size:14px;
+  opacity:.85;
+}
+
+.card{
+  background:#0f0220;
+  border:1px solid var(--border-main);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:14px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:8px;
+  font-size:14px;
+}
+
+.credit{
+  font-size:20px;
+  font-weight:800;
+  color:#22c55e;
+}
+
+button{
+  width:100%;
+  margin-top:10px;
+  padding:14px;
+  border-radius:16px;
+  border:none;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+}
+
+button.secondary{
+  background:#1f123f;
+}
+
+button.logout{
+  background:#3a0f3d;
+}
+
+.small{
+  margin-top:14px;
+  font-size:13px;
+  opacity:.7;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">แผงควบคุมผู้ใช้งาน</div>
+
+  <!-- USER INFO -->
+  <div class="card">
+    <div class="row">
+      <span>ผู้ใช้งาน</span>
+      <b id="username">-</b>
+    </div>
+    <div class="row">
+      <span>เครดิตคงเหลือ</span>
+      <span class="credit" id="credit">0</span>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <button onclick="goService()">📋 เลือกบริการ</button>
+  <button onclick="goOrders()">📦 เช็คออเดอร์ของฉัน</button>
+  <button onclick="goTopup()">➕ เติมเงิน</button>
+  <button class="logout" onclick="logout()">🚪 ออกจากระบบ</button>
+
+  <div class="small">
+    ❗ การเติมเงินต้องติดต่อแอดมินเท่านั้น<br>
+    หากมีปัญหาเกิน 24 ชม. ติดต่อ LINE ร้านได้ทันที
+  </div>
+</div>
+
+<script>
+/* MOCK USER (ตอนนี้ยังไม่ผูก backend) */
+const mockUser = {
+  fullname: "ลูกค้าทดสอบ",
+  credit: 2500
+};
+
+/* INIT */
+document.addEventListener("DOMContentLoaded",()=>{
+  // ถ้ามี user จาก login จริง ให้ใช้ localStorage
+  const u = localStorage.getItem("user");
+  const user = u ? JSON.parse(u) : mockUser;
+
+  document.getElementById("username").innerText = user.fullname;
+  document.getElementById("credit").innerText = user.credit + " บาท";
+});
+
+/* NAV (ตอนนี้ยังแค่แจ้งเตือน) */
+function goService(){
+  alert("ไปหน้าเลือกบริการ (ทำเป็นหน้าถัดไป)");
+}
+function goOrders(){
+  alert("ไปหน้าออเดอร์ของฉัน");
+}
+function goTopup(){
+  alert("ไปหน้าเติมเงิน");
+}
+function logout(){
+  localStorage.clear();
+  alert("ออกจากระบบแล้ว");
+}
+</script>
+
+</body>
+</html>
