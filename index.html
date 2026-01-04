@@ -7,42 +7,72 @@
 
 <style>
 body{
-  margin:0;font-family:system-ui;
+  margin:0;
+  font-family:system-ui;
   background:linear-gradient(180deg,#0b0216,#1a0438);
   color:#fff;
 }
 .container{
-  max-width:420px;margin:30px auto;padding:24px;
-  background:#120726;border-radius:18px;
+  max-width:420px;
+  margin:28px auto;
+  padding:22px;
+  background:#120726;
+  border-radius:18px;
 }
 h1{text-align:center;margin:0}
-.sub{text-align:center;opacity:.85;margin:14px 0}
+.sub{text-align:center;opacity:.85;margin:12px 0}
 .box{
-  background:#0f0220;border:1px solid #2e1065;
-  padding:14px;border-radius:12px;margin-top:12px;
+  background:#0f0220;
+  border:1px solid #2e1065;
+  padding:14px;
+  border-radius:12px;
+  margin-top:12px;
 }
 button,input,textarea{
-  width:100%;padding:14px;margin-top:10px;
-  border-radius:12px;border:1px solid #2e1065;
-  background:#0f0220;color:#fff;
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border-radius:12px;
+  border:1px solid #2e1065;
+  background:#0f0220;
+  color:#fff;
 }
 button{
   background:linear-gradient(90deg,#7c3aed,#5b21b6);
-  border:none;font-weight:bold;
+  border:none;
+  font-weight:bold;
 }
 .small{font-size:13px;opacity:.7}
-.tab button{margin-top:6px}
 .hidden{display:none}
-.status-pending{color:#facc15}
-.status-processing{color:#38bdf8}
-.status-completed{color:#22c55e}
 
-.popup{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.7);
-  display:flex;align-items:center;justify-content:center;
+/* STATUS COLORS */
+.status-pending{
+  color:#facc15;
+  font-weight:bold;
 }
-.popup .box{max-height:80vh;overflow:auto}
+.status-processing{
+  color:#38bdf8;
+  font-weight:bold;
+}
+.status-completed{
+  color:#22c55e;
+  font-weight:bold;
+}
+
+/* POPUP */
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99;
+}
+.popup .box{
+  max-height:80vh;
+  overflow:auto;
+}
 </style>
 </head>
 
@@ -66,7 +96,7 @@ button{
   <h1>SocialBoostTH</h1>
   <div class="box">
     ผู้ใช้งาน: <b id="username"></b><br>
-    เครดิต: <b id="credit"></b>
+    เครดิตคงเหลือ: <b id="credit"></b>
   </div>
   <button onclick="openServices()">📋 เลือกบริการ</button>
   <button onclick="openOrders()">📦 ออเดอร์ของฉัน</button>
@@ -76,11 +106,10 @@ button{
 <!-- SERVICES -->
 <div class="container hidden" id="serviceBox">
   <h1>เลือกบริการ</h1>
-  <div class="tab">
-    <button onclick="showTab('thai')">🇹🇭 ไทย</button>
-    <button onclick="showTab('inter')">🌍 ต่างชาติ</button>
-    <button onclick="showTab('guarantee')">♻️ มีประกัน</button>
-  </div>
+
+  <button onclick="showCategory('thai')">🇹🇭 บริการไทย</button>
+  <button onclick="showCategory('inter')">🌍 บริการต่างชาติ</button>
+  <button onclick="showCategory('guarantee')">♻️ บริการมีประกัน</button>
 
   <div id="serviceList"></div>
   <button onclick="back()">⬅ กลับ</button>
@@ -88,7 +117,7 @@ button{
 
 <!-- ORDER -->
 <div class="container hidden" id="orderBox">
-  <h1>สั่งซื้อ</h1>
+  <h1>สั่งซื้อบริการ</h1>
   <div class="box">
     <b id="serviceName"></b><br>
     <span class="small" id="serviceNote"></span>
@@ -98,23 +127,26 @@ button{
   <textarea id="comments" class="hidden" placeholder="1 บรรทัด = 1 คอมเมนต์"></textarea>
   <input id="link" placeholder="ลิงก์งาน">
 
-  <div class="box">ราคารวม: <b id="totalPrice">0</b> บาท</div>
+  <div class="box">
+    ราคารวม: <b id="totalPrice">0</b> บาท
+  </div>
+
   <button onclick="openPolicy()">ยืนยันสั่งซื้อ</button>
   <button onclick="back()">⬅ กลับ</button>
 </div>
 
-<!-- POLICY POPUP -->
+<!-- POLICY -->
 <div class="popup hidden" id="policyPopup">
   <div class="box">
     <b>เงื่อนไขการใช้บริการ</b><br><br>
     <div class="small">
-      • บริการเป็นการโปรโมททางการตลาด ไม่รับประกันผลลัพธ์เชิงพาณิชย์<br>
-      • ไม่สามารถยกเลิกหรือคืนเงินหลังสั่งซื้อได้<br>
-      • ลูกค้าต้องเป็นเจ้าของบัญชี/ลิงก์ที่สั่งงาน<br>
-      • ระยะเวลาขึ้นงานขึ้นอยู่กับระบบของแพลตฟอร์ม<br>
+      • บริการนี้เป็นการโปรโมททางการตลาด ไม่รับประกันผลลัพธ์เชิงพาณิชย์<br>
+      • ไม่สามารถยกเลิกหรือคืนเงินได้หลังการสั่งซื้อ<br>
+      • ลูกค้าต้องเป็นเจ้าของลิงก์ที่ส่งสั่งงาน<br>
+      • ระยะเวลาดำเนินการขึ้นอยู่กับระบบของแพลตฟอร์ม<br>
     </div>
     <label>
-      <input type="checkbox" id="acceptPolicy"> ยอมรับเงื่อนไข
+      <input type="checkbox" id="acceptPolicy"> ยอมรับเงื่อนไขทั้งหมด
     </label>
     <button onclick="confirmOrder()">ดำเนินการสั่งซื้อ</button>
     <button onclick="closePolicy()">ยกเลิก</button>
@@ -124,7 +156,9 @@ button{
 <!-- ORDERS -->
 <div class="container hidden" id="ordersBox">
   <h1>ออเดอร์ของฉัน</h1>
+
   <div id="ordersList" class="small">กำลังโหลด...</div>
+
   <button onclick="back()">⬅ กลับ</button>
 </div>
 
@@ -135,7 +169,7 @@ const SERVICES_API=`https://opensheet.elk.sh/${SHEET_ID}/services`;
 const ORDERS_API=`https://opensheet.elk.sh/${SHEET_ID}/orders`;
 const GAS_API="https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
 
-let user=null,services=[],selected=null,orderTimer=null;
+let user=null, services=[], selected=null, timer=null;
 
 /* INIT */
 document.addEventListener("DOMContentLoaded",async()=>{
@@ -164,26 +198,30 @@ function showPanel(){
 
 /* SERVICES */
 function openServices(){
-  hideAll();serviceBox.classList.remove("hidden");
-  showTab("thai");
+  hideAll();
+  serviceBox.classList.remove("hidden");
+  showCategory("thai");
 }
-function showTab(type){
+
+function showCategory(type){
   serviceList.innerHTML="";
-  services.filter(s=>
-    type==="thai"?s.category==="thai":
-    type==="inter"?s.category==="inter":
-    s.guarantee!=="none"
-  ).forEach(s=>{
+  services.filter(s=>{
+    if(type==="thai") return s.category==="thai";
+    if(type==="inter") return s.category==="inter";
+    return s.guarantee!=="none";
+  }).forEach(s=>{
     serviceList.innerHTML+=`
       <button onclick="selectService('${s.service_code}')">
         ${s.service_name}<br>
-        <span class="small">${s.price_th} บาท/หน่วย</span>
+        <span class="small">${s.price_th} บาท / หน่วย</span>
       </button>`;
   });
 }
+
 function selectService(code){
   selected=services.find(s=>s.service_code===code);
-  hideAll();orderBox.classList.remove("hidden");
+  hideAll();
+  orderBox.classList.remove("hidden");
   serviceName.innerText=selected.service_name;
   serviceNote.innerText=selected.note||"";
   qty.value=selected.min_qty;
@@ -194,31 +232,34 @@ function selectService(code){
 /* CALC */
 qty.oninput=updateTotal;
 comments.oninput=()=>{
-  qty.value=comments.value.trim().split("\n").filter(x=>x).length;
+  qty.value=comments.value.split("\n").filter(x=>x.trim()).length;
   updateTotal();
 };
 function updateTotal(){
-  const q=Number(qty.value);
-  totalPrice.innerText=(q*selected.price_th).toFixed(2);
+  totalPrice.innerText=(Number(qty.value)*selected.price_th).toFixed(2);
 }
 
 /* ORDER */
 function openPolicy(){policyPopup.classList.remove("hidden");}
 function closePolicy(){policyPopup.classList.add("hidden");}
+
 async function confirmOrder(){
   if(!acceptPolicy.checked){alert("กรุณายอมรับเงื่อนไข");return;}
   const q=Number(qty.value),amount=q*selected.price_th;
-  if(amount>user.credit){alert("เครดิตไม่พอ");return;}
+  if(amount>user.credit){alert("เครดิตไม่เพียงพอ");return;}
 
-  const res=await fetch(GAS_API,{method:"POST",body:JSON.stringify({
-    user_id:user.user_id,
-    service_code:selected.service_code,
-    platform:selected.platform,
-    qty:q,
-    amount:amount,
-    link:link.value,
-    comments:comments.value
-  })});
+  const res=await fetch(GAS_API,{
+    method:"POST",
+    body:JSON.stringify({
+      user_id:user.user_id,
+      service_code:selected.service_code,
+      platform:selected.platform,
+      qty:q,
+      amount:amount,
+      link:link.value,
+      comments:comments.value
+    })
+  });
   const d=JSON.parse(await res.text());
   if(!d.success){alert(d.message);return;}
 
@@ -230,25 +271,33 @@ async function confirmOrder(){
 
 /* ORDERS */
 async function openOrders(){
-  hideAll();ordersBox.classList.remove("hidden");
+  hideAll();
+  ordersBox.classList.remove("hidden");
   loadOrders();
-  orderTimer=setInterval(loadOrders,5000);
+  timer=setInterval(loadOrders,5000);
 }
+
 async function loadOrders(){
   const data=await fetch(ORDERS_API).then(r=>r.json());
   const my=data.filter(o=>String(o.user_id)===String(user.user_id)).reverse();
+  if(!my.length){ordersList.innerText="ยังไม่มีออเดอร์";return;}
+
   ordersList.innerHTML=my.map(o=>`
     <div class="box">
-      ${o.service_code}<br>
+      <b>${o.service_code}</b><br>
       ${o.qty} หน่วย | ${o.amount} บาท<br>
-      <span class="status-${o.status}">${o.status}</span>
-    </div>`).join("");
+      <span class="status-${o.status}">
+        ${o.status==="pending"?"รอดำเนินการ":
+          o.status==="processing"?"กำลังดำเนินการ":"ดำเนินการสำเร็จ"}
+      </span>
+    </div>
+  `).join("");
 }
 
 /* UTIL */
 function hideAll(){
   [loginBox,panel,serviceBox,orderBox,ordersBox].forEach(x=>x.classList.add("hidden"));
-  clearInterval(orderTimer);
+  clearInterval(timer);
 }
 function back(){showPanel();}
 function logout(){localStorage.clear();location.reload();}
