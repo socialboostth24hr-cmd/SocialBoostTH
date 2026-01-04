@@ -2,43 +2,192 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>ออเดอร์ของฉัน</title>
+<title>ออเดอร์ของฉัน | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-body{margin:0;font-family:system-ui;background:#0b0216;color:#fff}
-.box{max-width:420px;margin:30px auto;padding:20px}
-.order{background:#14062b;border-radius:16px;padding:14px;margin-bottom:10px}
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.7);
+  --yellow:#facc15;
+  --blue:#38bdf8;
+  --green:#22c55e;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+  min-height:100vh;
+}
+
+/* CONTAINER */
+.box{
+  max-width:420px;
+  margin:30px auto;
+  padding:24px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:24px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+
+/* HEADER */
+h1{
+  margin:0;
+  text-align:center;
+  font-size:24px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  margin-top:8px;
+  text-align:center;
+  font-size:14px;
+  color:var(--soft);
+}
+
+/* ORDER CARD */
+.order{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-top:14px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.order:hover{
+  box-shadow:0 0 0 1px rgba(139,92,246,.4),
+             0 0 18px rgba(139,92,246,.25);
+}
+
+.order-title{
+  font-size:15px;
+  font-weight:900;
+  color:#e9d5ff;
+}
+
+.order-info{
+  margin-top:6px;
+  font-size:13px;
+  color:var(--soft);
+  line-height:1.6;
+}
+
+/* STATUS */
+.status{
+  margin-top:10px;
+  font-size:13px;
+  font-weight:900;
+}
+
+.pending{color:var(--yellow)}
+.processing{color:var(--blue)}
+.completed{color:var(--green)}
+
+/* EMPTY */
+.empty{
+  text-align:center;
+  margin-top:30px;
+  color:var(--soft);
+  font-size:14px;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  border-radius:18px;
+  border:none;
+  font-size:15px;
+  font-weight:900;
+  cursor:pointer;
+  background:#1e293b;
+  color:#fff;
+}
 </style>
 </head>
+
 <body>
 
 <div class="box">
-  <h2>ออเดอร์ของฉัน</h2>
-  <div id="list">โหลด...</div>
+  <h1>ออเดอร์ของฉัน</h1>
+  <div class="sub">ประวัติการสั่งซื้อและสถานะงาน</div>
+
+  <div id="list">กำลังโหลด...</div>
+
+  <button onclick="goBack()">⬅ กลับหน้า Dashboard</button>
 </div>
 
 <script>
-const API_URL="https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
-const user=JSON.parse(localStorage.getItem("user"));
+/* ================= CONFIG ================= */
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
+
+/* ================= AUTH ================= */
+const user = JSON.parse(localStorage.getItem("user"));
 if(!user) location.href="index.html";
 
+/* ================= LOAD ORDERS ================= */
 fetch(API_URL,{
   method:"POST",
-  body:JSON.stringify({action:"getOrders",user_id:user.user_id})
+  body:JSON.stringify({
+    action:"getOrders",
+    user_id:user.user_id
+  })
 })
 .then(r=>r.json())
 .then(res=>{
-  list.innerHTML="";
+  if(!res.orders || !res.orders.length){
+    list.innerHTML =
+      `<div class="empty">ยังไม่มีออเดอร์</div>`;
+    return;
+  }
+
+  list.innerHTML = "";
   res.orders.forEach(o=>{
-    list.innerHTML+=`
+    const statusText =
+      o.status==="pending" ? "⏳ รอดำเนินการ" :
+      o.status==="processing" ? "⚙️ กำลังดำเนินการ" :
+      "✅ ดำเนินการสำเร็จ";
+
+    list.innerHTML += `
       <div class="order">
-        <b>${o.service_name}</b><br>
-        จำนวน ${o.qty}<br>
-        ${o.amount} บาท<br>
-        สถานะ: ${o.status}
-      </div>`;
-  })
+        <div class="order-title">${o.service_name}</div>
+        <div class="order-info">
+          จำนวน: ${o.qty}<br>
+          ยอดชำระ: ${Number(o.amount).toFixed(2)} บาท
+        </div>
+        <div class="status ${o.status}">
+          ${statusText}
+        </div>
+      </div>
+    `;
+  });
+})
+.catch(()=>{
+  list.innerHTML =
+    `<div class="empty">ไม่สามารถโหลดข้อมูลได้</div>`;
 });
+
+/* ================= UI ================= */
+function goBack(){
+  location.href="dashboard.html";
+}
 </script>
 
 </body>
