@@ -1,26 +1,193 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>เลือกบริการ | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.7);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:
+    radial-gradient(1000px 500px at top, #2a0d52, transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+}
+
+.container{
+  max-width:420px;
+  margin:30px auto;
+  padding:26px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:22px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+
+h1{
+  margin:0;
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  margin:12px 0 22px;
+  color:var(--soft);
+  font-size:14px;
+}
+
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.tab{
+  flex:1;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.tab.active{
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  border:none;
+}
+
+.service{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.service h3{
+  margin:0;
+  font-size:15px;
+  color:#e9d5ff;
+}
+
+.info{
+  font-size:13px;
+  color:var(--soft);
+  margin:8px 0 12px;
+  line-height:1.5;
+}
+
+.service button{
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  font-weight:800;
+  cursor:pointer;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
+  color:#fff;
+}
+
+.back{
+  margin-top:10px;
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  background:#1e293b;
+  color:#fff;
+  font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>เลือกบริการ</h1>
+  <div class="sub">หมวดหมู่ TikTok</div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('thai',this)">🇹🇭 บริการไทย</button>
+    <button class="tab" onclick="switchTab('inter',this)">🌍 บริการต่างชาติ</button>
+  </div>
+
+  <div id="serviceList"></div>
+
+  <button class="back" onclick="goBack()">⬅ กลับหน้า Dashboard</button>
+</div>
+
 <script>
 const services = [
-  /* ===== FOLLOWER ===== */
-  {cat:"inter",type:"follower",name:"ผู้ติดตามต่างชาติ",min:50,max:10000,price:0.256,unit:"คน",guar:false},
-  {cat:"inter",type:"follower",name:"ผู้ติดตามต่างชาติ",min:50,max:10000,price:0.421,unit:"คน",guar:true},
-  {cat:"thai", type:"follower",name:"ผู้ติดตามไทย",min:20,max:10000,price:2.88, unit:"คน",guar:true},
+  {cat:"inter",name:"ผู้ติดตามต่างชาติ (ไม่มีประกัน)",min:50,max:10000,price:0.256,unit:"คน"},
+  {cat:"inter",name:"ผู้ติดตามต่างชาติ (♻️ ประกัน 1 ปี)",min:50,max:10000,price:0.421,unit:"คน"},
+  {cat:"thai",name:"ผู้ติดตามไทย (♻️ ประกัน 1 ปี)",min:20,max:10000,price:2.88,unit:"คน"},
 
-  /* ===== LIKE ===== */
-  {cat:"inter",type:"like",name:"ไลก์ต่างชาติ",min:50,max:50000,price:0.10,unit:"ไลก์",guar:false},
-  {cat:"inter",type:"like",name:"ไลก์ต่างชาติ",min:50,max:50000,price:0.70,unit:"ไลก์",guar:true},
+  {cat:"inter",name:"ไลก์ต่างชาติ (ไม่มีประกัน)",min:50,max:50000,price:0.10,unit:"ไลก์"},
+  {cat:"inter",name:"ไลก์ต่างชาติ (♻️ ประกัน 1 ปี)",min:50,max:50000,price:0.70,unit:"ไลก์"},
 
-  /* ===== VIEW ===== */
-  {cat:"inter",type:"view",name:"วิวต่างชาติ",min:1000,max:500000,price:0.03,unit:"วิว",guar:false},
-  {cat:"inter",type:"view",name:"วิวต่างชาติ",min:1000,max:500000,price:0.08,unit:"วิว",guar:true},
-  {cat:"thai", type:"view",name:"วิวไทย",min:1000,max:10000,price:0.15,unit:"วิว",guar:true},
+  {cat:"inter",name:"วิวต่างชาติ (ไม่มีประกัน)",min:1000,max:500000,price:0.03,unit:"วิว"},
+  {cat:"inter",name:"วิวต่างชาติ (♻️ ประกัน 1 ปี)",min:1000,max:500000,price:0.08,unit:"วิว"},
+  {cat:"thai",name:"วิวไทย (♻️ ประกัน 1 ปี)",min:1000,max:10000,price:0.15,unit:"วิว"},
 
-  /* ===== COMMENT ===== */
-  {cat:"thai", type:"comment",name:"คอมเมนท์ไทย",min:10,max:100,price:8,unit:"คอมเมนต์",guar:true},
+  {cat:"thai",name:"คอมเมนท์ไทย (♻️ ประกัน 1 ปี)",min:10,max:100,price:8,unit:"คอมเมนต์"},
 
-  /* ===== SAVE ===== */
-  {cat:"inter",type:"save",name:"บันทึกต่างชาติ",min:100,max:50000,price:0.18,unit:"บันทึก",guar:false},
-
-  /* ===== SHARE ===== */
-  {cat:"inter",type:"share",name:"แชร์ต่างชาติ",min:100,max:50000,price:0.18,unit:"แชร์",guar:false},
+  {cat:"inter",name:"บันทึกต่างชาติ",min:100,max:50000,price:0.18,unit:"บันทึก"},
+  {cat:"inter",name:"แชร์ต่างชาติ",min:100,max:50000,price:0.18,unit:"แชร์"},
 ];
+
+const list = document.getElementById("serviceList");
+
+function renderServices(cat){
+  list.innerHTML = "";
+  services.filter(s=>s.cat===cat).forEach(s=>{
+    list.innerHTML += `
+      <div class="service">
+        <h3>${s.name}</h3>
+        <div class="info">
+          ขั้นต่ำ ${s.min} – ${s.max} ${s.unit}<br>
+          ราคา ${s.price} บาท / ${s.unit}
+        </div>
+        <button onclick="selectService('${s.name}')">เลือกบริการ</button>
+      </div>`;
+  });
+}
+
+function switchTab(cat,btn){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  btn.classList.add("active");
+  renderServices(cat);
+}
+
+function selectService(name){
+  alert("เลือกบริการ: " + name + "\n(ขั้นต่อไป: หน้าสั่งซื้อ)");
+}
+
+function goBack(){
+  location.href = "dashboard.html";
+}
+
+/* 🔴 สำคัญมาก: ต้องเรียกตอนโหลด */
+renderServices("thai");
 </script>
+
+</body>
+</html>
