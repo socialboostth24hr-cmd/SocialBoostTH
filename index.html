@@ -14,7 +14,7 @@ body{
 }
 .container{
   max-width:420px;
-  margin:28px auto;
+  margin:26px auto;
   padding:22px;
   background:#120726;
   border-radius:18px;
@@ -41,40 +41,28 @@ button{
   background:linear-gradient(90deg,#7c3aed,#5b21b6);
   border:none;
   font-weight:bold;
+  cursor:pointer;
 }
 .small{font-size:13px;opacity:.7}
 .hidden{display:none}
 
-/* ===== STATUS COLORS ===== */
+/* STATUS */
 .status-pending{color:#facc15;font-weight:bold}
 .status-processing{color:#38bdf8;font-weight:bold}
 .status-completed{color:#22c55e;font-weight:bold}
 
-/* ===== POPUP (Safari Safe) ===== */
-#policyPopup{
+/* POPUP */
+.popup{
   position:fixed;
-  top:0;left:0;right:0;bottom:0;
-  background:rgba(0,0,0,.8);
-  display:none;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:flex;
   align-items:center;
   justify-content:center;
-  z-index:99999;
-  touch-action:auto;
+  z-index:999;
 }
-#policyPopup.active{display:flex}
-
-.policy-box{
-  background:#120726;
-  border:1px solid #2e1065;
-  border-radius:16px;
-  padding:20px;
-  width:90%;
-  max-width:380px;
-  max-height:80vh;
-  overflow:auto;
-}
-
-body.lock{overflow:hidden}
+.popup .box{max-height:80vh;overflow:auto}
+.popup input[type=checkbox]{cursor:pointer}
 </style>
 </head>
 
@@ -108,9 +96,10 @@ body.lock{overflow:hidden}
 <!-- SERVICES -->
 <div class="container hidden" id="serviceBox">
   <h1>เลือกบริการ</h1>
+
   <button onclick="showCategory('thai')">🇹🇭 ไทย</button>
   <button onclick="showCategory('inter')">🌍 ต่างชาติ</button>
-  <button onclick="showCategory('guarantee')">♻️ มีประกัน</button>
+
   <div id="serviceList"></div>
   <button onclick="back()">⬅ กลับ</button>
 </div>
@@ -118,34 +107,41 @@ body.lock{overflow:hidden}
 <!-- ORDER -->
 <div class="container hidden" id="orderBox">
   <h1>สั่งซื้อบริการ</h1>
+
   <div class="box">
     <b id="serviceName"></b><br>
     <span class="small" id="serviceNote"></span>
   </div>
+
   <input id="qty" type="number">
   <textarea id="comments" class="hidden" placeholder="1 บรรทัด = 1 คอมเมนต์"></textarea>
   <input id="link" placeholder="ลิงก์งาน">
-  <div class="box">ราคารวม: <b id="totalPrice">0</b> บาท</div>
+
+  <div class="box">
+    ราคารวม: <b id="totalPrice">0</b> บาท
+  </div>
+
   <button onclick="openPolicy()">ยืนยันสั่งซื้อ</button>
   <button onclick="back()">⬅ กลับ</button>
 </div>
 
-<!-- POLICY POPUP -->
-<div id="policyPopup">
-  <div class="policy-box">
+<!-- POLICY -->
+<div class="popup hidden" id="policyPopup">
+  <div class="box">
     <b>เงื่อนไขการใช้บริการ</b><br><br>
     <div class="small">
-      • บริการเป็นการโปรโมททางการตลาด<br>
-      • ไม่สามารถยกเลิกหรือคืนเงินหลังการสั่งซื้อได้<br>
-      • ลูกค้าต้องเป็นเจ้าของลิงก์ที่สั่งงาน<br>
-      • ระยะเวลาดำเนินการขึ้นอยู่กับแพลตฟอร์ม
+      • เป็นการโปรโมททางการตลาด<br>
+      • ไม่สามารถยกเลิกหรือคืนเงินได้หลังสั่งซื้อ<br>
+      • ลูกค้าต้องเป็นเจ้าของลิงก์ที่ส่งงาน<br>
+      • ระยะเวลาดำเนินการขึ้นกับแพลตฟอร์ม
     </div>
 
-    <label style="display:block;margin-top:12px">
-      <input type="checkbox" id="acceptPolicy"> ยอมรับเงื่อนไขทั้งหมด
-    </label>
+    <div style="margin-top:12px">
+      <input type="checkbox" id="acceptPolicy">
+      <label for="acceptPolicy"> ยอมรับเงื่อนไขทั้งหมด</label>
+    </div>
 
-    <button onclick="confirmOrderFinal()">ดำเนินการสั่งซื้อ</button>
+    <button onclick="confirmOrder()">ดำเนินการสั่งซื้อ</button>
     <button onclick="closePolicy()">ยกเลิก</button>
   </div>
 </div>
@@ -153,7 +149,7 @@ body.lock{overflow:hidden}
 <!-- ORDERS -->
 <div class="container hidden" id="ordersBox">
   <h1>ออเดอร์ของฉัน</h1>
-  <div id="ordersList" class="small">กำลังโหลด...</div>
+  <div id="ordersList"></div>
   <button onclick="back()">⬅ กลับ</button>
 </div>
 
@@ -184,12 +180,19 @@ async function login(){
   showPanel();
 }
 
+/* UI */
+function hideAll(){
+  [loginBox,panel,serviceBox,orderBox,ordersBox].forEach(x=>x.classList.add("hidden"));
+  clearInterval(timer);
+}
 function showPanel(){
   hideAll();
   panel.classList.remove("hidden");
   username.innerText=user.fullname;
   credit.innerText=user.credit;
 }
+function back(){showPanel();}
+function logout(){localStorage.clear();location.reload();}
 
 /* SERVICES */
 function openServices(){
@@ -199,11 +202,7 @@ function openServices(){
 }
 function showCategory(type){
   serviceList.innerHTML="";
-  services.filter(s=>{
-    if(type==="thai") return s.category==="thai";
-    if(type==="inter") return s.category==="inter";
-    return s.guarantee!=="none";
-  }).forEach(s=>{
+  services.filter(s=>s.category===type).forEach(s=>{
     serviceList.innerHTML+=`
       <button onclick="selectService('${s.service_code}')">
         ${s.service_name}<br>
@@ -233,35 +232,23 @@ function updateTotal(){
 }
 
 /* POLICY */
-function openPolicy(){
-  document.body.classList.add("lock");
-  document.getElementById("policyPopup").classList.add("active");
-}
-function closePolicy(){
-  document.body.classList.remove("lock");
-  document.getElementById("policyPopup").classList.remove("active");
-}
+function openPolicy(){policyPopup.classList.remove("hidden");}
+function closePolicy(){policyPopup.classList.add("hidden");}
 
 /* ORDER */
-async function confirmOrderFinal(){
+async function confirmOrder(){
   if(!acceptPolicy.checked){alert("กรุณายอมรับเงื่อนไข");return;}
-  closePolicy();
-
   const q=Number(qty.value),amount=q*selected.price_th;
   if(amount>user.credit){alert("เครดิตไม่เพียงพอ");return;}
 
-  const res=await fetch(GAS_API,{
-    method:"POST",
-    body:JSON.stringify({
-      user_id:user.user_id,
-      service_code:selected.service_code,
-      platform:selected.platform,
-      qty:q,
-      amount:amount,
-      link:link.value,
-      comments:comments.value
-    })
-  });
+  const res=await fetch(GAS_API,{method:"POST",body:JSON.stringify({
+    user_id:user.user_id,
+    service_code:selected.service_code,
+    qty:q,
+    amount:amount,
+    link:link.value,
+    comments:comments.value
+  })});
   const d=JSON.parse(await res.text());
   if(!d.success){alert(d.message);return;}
 
@@ -283,22 +270,14 @@ async function loadOrders(){
   const my=data.filter(o=>String(o.user_id)===String(user.user_id)).reverse();
   ordersList.innerHTML=my.map(o=>`
     <div class="box">
-      <b>${o.service_code}</b><br>
+      <b>${o.service_name||o.service_code}</b><br>
       ${o.qty} หน่วย | ${o.amount} บาท<br>
       <span class="status-${o.status}">
-        ${o.status==="pending"?"รอดำเนินการ":
-          o.status==="processing"?"กำลังดำเนินการ":"ดำเนินการสำเร็จ"}
+        ${o.status}
       </span>
-    </div>`).join("")||"ยังไม่มีออเดอร์";
+    </div>
+  `).join("");
 }
-
-/* UTIL */
-function hideAll(){
-  [loginBox,panel,serviceBox,orderBox,ordersBox].forEach(x=>x.classList.add("hidden"));
-  clearInterval(timer);
-}
-function back(){showPanel();}
-function logout(){localStorage.clear();location.reload();}
 </script>
 
 </body>
