@@ -18,10 +18,9 @@ body{
   padding:24px;
   background:#120726;
   border-radius:18px;
-  box-shadow:0 20px 40px rgba(0,0,0,.4);
 }
 h1{text-align:center;margin:0}
-.sub{text-align:center;opacity:.85;margin-bottom:14px;line-height:1.6}
+.sub{text-align:center;opacity:.85;margin-bottom:16px;line-height:1.6}
 .box{
   background:#0f0220;
   border:1px solid #2e1065;
@@ -43,39 +42,11 @@ button{
   margin-top:14px;
   background:linear-gradient(90deg,#7c3aed,#5b21b6);
   border:none;
-  font-weight:600;
+  font-weight:bold;
 }
-button.secondary{
-  background:#1f1b3a;
-}
-.small{font-size:13px;opacity:.75}
-.total{text-align:center;font-size:18px;margin-top:10px}
-
-.popup{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.65);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:10;
-}
-.popup .card{
-  width:90%;
-  max-width:420px;
-  background:#120726;
-  border-radius:16px;
-  padding:20px;
-}
-.popup h3{margin-top:0}
-.popup button{margin-top:10px}
-
-.bank{
-  border:1px solid #2e1065;
-  border-radius:12px;
-  padding:12px;
-  margin-top:10px;
-}
-.bank b{display:block;margin-bottom:4px}
+.logout{background:#111}
+.small{opacity:.7;font-size:13px}
+hr{border:0;border-top:1px solid #2e1065;margin:16px 0}
 </style>
 </head>
 
@@ -86,9 +57,7 @@ button.secondary{
   <h1>SocialBoostTH</h1>
   <div class="sub">
     เข้าสู่ระบบใช้งาน<br>
-    <span class="small">
-      หากยังไม่มีบัญชี กรุณาติดต่อร้านทาง LINE <b>@geg4960w</b>
-    </span>
+    <span class="small">หากยังไม่มีบัญชี ติดต่อ LINE <b>@geg4960w</b></span>
   </div>
 
   <label>อีเมล</label>
@@ -104,139 +73,98 @@ button.secondary{
 <!-- PANEL -->
 <div class="container" id="panel" style="display:none">
   <h1>SocialBoostTH</h1>
-  <div class="sub">สั่งบริการ</div>
+  <div class="sub">แผงควบคุมผู้ใช้</div>
 
   <div class="box">
     ผู้ใช้งาน: <b id="username"></b><br>
     เครดิตคงเหลือ: <b id="credit"></b>
   </div>
 
-  <label>เลือกบริการ</label>
-  <select id="serviceSelect"></select>
-
-  <label>จำนวน</label>
-  <input id="qty" type="number" value="20">
-
-  <label>ลิงก์งาน</label>
-  <input id="link" placeholder="https://tiktok.com/...">
-
-  <div id="total" class="total">รวม 0 บาท</div>
-
-  <button onclick="openConfirm()">สั่งซื้อ</button>
-  <button class="secondary" onclick="openTopup()">💳 เติมเงิน</button>
-  <button class="secondary" onclick="showOrders()">ดูออเดอร์ของฉัน</button>
-  <button class="secondary" onclick="logout()">ออกจากระบบ</button>
+  <button onclick="openTopup()">➕ เติมเงิน</button>
+  <button onclick="showOrders()">📦 ดูออเดอร์ของฉัน</button>
+  <button class="logout" onclick="logout()">ออกจากระบบ</button>
 </div>
 
-<!-- TOPUP POPUP -->
-<div class="popup" id="topupPopup">
-  <div class="card">
-    <h3>💳 ช่องทางเติมเงิน</h3>
-
-    <div class="bank">
-      <b>🏦 ธนาคารกสิกรไทย</b>
-      เลขบัญชี: <b>066-1213-728</b>
-      ชื่อบัญชี: สรวงสุดา ศรีสุวรรณ์
-    </div>
-
-    <div class="bank">
-      <b>💰 TrueMoney Wallet</b>
-      เบอร์: <b>099-130-1221</b>
-      ชื่อบัญชี: รินทร์ลภัส ศรีสุวรรณ์
-    </div>
-
-    <p class="small">
-      หลังโอนกรุณาแจ้งสลิปกับแอดมินเพื่ออัปเดตเครดิต
-    </p>
-
-    <button onclick="closeTopup()">ปิด</button>
+<!-- TOPUP -->
+<div class="container" id="topupBox" style="display:none">
+  <h1>เติมเครดิต</h1>
+  <div class="sub">
+    โปรดโอนเงินเข้าบัญชีทางการของร้านเท่านั้น
   </div>
-</div>
 
-<!-- TERMS POPUP -->
-<div class="popup" id="termPopup">
-  <div class="card">
-    <h3>เงื่อนไขการใช้บริการ</h3>
-    <p class="small">
-      • บริการนี้เป็นบริการดิจิทัล ไม่สามารถยกเลิกหรือขอคืนเครดิตได้<br>
-      • ผลลัพธ์ขึ้นอยู่กับแพลตฟอร์มต้นทาง ซึ่งอยู่นอกเหนือการควบคุมของบริษัท<br>
-      • ลูกค้ารับทราบความเสี่ยงและยอมรับเงื่อนไขทั้งหมดก่อนทำรายการ
-    </p>
-    <button onclick="confirmOrder()">ยอมรับและดำเนินการต่อ</button>
-    <button class="secondary" onclick="closeConfirm()">ยกเลิก</button>
+  <div class="box">
+    💳 <b>ธนาคารกสิกรไทย</b><br>
+    เลขบัญชี: <b>066-1213-728</b><br>
+    ชื่อบัญชี: <b>สรวงสุดา ศรีสุวรรณ์</b>
   </div>
+
+  <div class="box">
+    💚 <b>TrueMoney Wallet</b><br>
+    เบอร์: <b>099-130-1221</b><br>
+    ชื่อบัญชี: <b>รินทร์ลภัส ศรีสุวรรณ์</b>
+  </div>
+
+  <div class="box small">
+    <b>เงื่อนไขการเติมเงิน</b><br>
+    • กรุณาโอนเงินตามยอดที่ต้องการเติมเท่านั้น<br>
+    • หลังโอนเงินแล้ว กรุณาส่งสลิปให้แอดมินทาง LINE<br>
+    • เครดิตจะถูกเติมหลังตรวจสอบยอดเงินเรียบร้อย<br>
+    • ไม่สามารถขอคืนเงินได้ทุกกรณี
+  </div>
+
+  <button onclick="backToPanel()">⬅ กลับ</button>
 </div>
 
 <script>
 const SHEET_ID="10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
 const USERS_API=`https://opensheet.elk.sh/${SHEET_ID}/users`;
-const SERVICES_API=`https://opensheet.elk.sh/${SHEET_ID}/services`;
-const ORDERS_API=`https://opensheet.elk.sh/${SHEET_ID}/orders`;
-const GAS_API="https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
 
-let user=null, services=[];
+let user=null;
+
+/* INIT */
+document.addEventListener("DOMContentLoaded",()=>{
+  const s=localStorage.getItem("user");
+  if(s){ user=JSON.parse(s); showPanel(); }
+});
 
 /* LOGIN */
 async function login(){
   const users=await (await fetch(USERS_API)).json();
-  const u=users.find(x=>x.email?.toLowerCase()===email.value.toLowerCase()
-    && String(x.password).trim()===password.value.trim());
-  if(!u){loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง";return;}
+  const u=users.find(x =>
+    x.email?.toLowerCase()===email.value.toLowerCase() &&
+    String(x.password).trim()===password.value.trim()
+  );
+  if(!u){
+    loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+    return;
+  }
   user={user_id:u.user_id,fullname:u.fullname,credit:Number(u.credit)};
   localStorage.setItem("user",JSON.stringify(user));
-  showPanel(); loadServices();
+  showPanel();
 }
+
 function showPanel(){
   loginBox.style.display="none";
+  topupBox.style.display="none";
   panel.style.display="block";
   username.innerText=user.fullname;
   credit.innerText=user.credit;
 }
-function logout(){localStorage.clear();location.reload();}
 
-/* SERVICES */
-async function loadServices(){
-  services=(await (await fetch(SERVICES_API)).json()).filter(s=>s.status==="active");
-  serviceSelect.innerHTML='<option value="">-- เลือกบริการ --</option>';
-  services.forEach((s,i)=>{
-    const flag = s.service_code.includes("INT") ? "🌎" : "🇹🇭";
-    serviceSelect.innerHTML+=
-      `<option value="${i}">${flag} ${s.platform} | ${s.service_name}</option>`;
-  });
-}
-serviceSelect.onchange=calc; qty.oninput=calc;
-function calc(){
-  if(!serviceSelect.value){total.innerText="รวม 0 บาท";return;}
-  const s=services[serviceSelect.value],q=Number(qty.value);
-  total.innerText=`รวม ${(q*s.price_th).toFixed(2)} บาท`;
+function openTopup(){
+  panel.style.display="none";
+  topupBox.style.display="block";
 }
 
-/* ORDER FLOW */
-function openConfirm(){ document.getElementById("termPopup").style.display="flex"; }
-function closeConfirm(){ document.getElementById("termPopup").style.display="none"; }
-
-async function confirmOrder(){
-  closeConfirm();
-  const s=services[serviceSelect.value],q=Number(qty.value);
-  const amount=q*s.price_th;
-  if(amount>user.credit){alert("เครดิตไม่เพียงพอ");return;}
-  const res=await fetch(GAS_API,{method:"POST",body:JSON.stringify({
-    user_id:user.user_id,service_code:s.service_code,
-    platform:s.platform,qty:q,amount,link:link.value
-  })});
-  const d=JSON.parse(await res.text());
-  if(!d.success){alert(d.message);return;}
-  user.credit=d.credit;
-  credit.innerText=d.credit;
-  localStorage.setItem("user",JSON.stringify(user));
-  alert("สั่งซื้อสำเร็จ");
+function backToPanel(){
+  topupBox.style.display="none";
+  panel.style.display="block";
 }
 
-/* TOPUP */
-function openTopup(){ document.getElementById("topupPopup").style.display="flex"; }
-function closeTopup(){ document.getElementById("topupPopup").style.display="none"; }
-
-function showOrders(){ alert("หน้าออเดอร์ใช้โค้ดเดิมของคุณได้เลย"); }
+function logout(){
+  localStorage.clear();
+  location.reload();
+}
 </script>
 
 </body>
