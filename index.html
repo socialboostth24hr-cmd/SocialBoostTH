@@ -7,60 +7,51 @@
 
 <style>
 :root{
-  --bg-main: #0b0216;
-  --bg-card: #14062b;
-  --bg-input: #120725;
-  --border-main: #3b1775;
-  --purple: #8b5cf6;
-  --pink: #ec4899;
-  --text-soft: rgba(255,255,255,.75);
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --bg-input:#120725;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.75);
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  font-family:system-ui;
   background:
-    radial-gradient(1200px 600px at top, #2a0d52, transparent),
-    linear-gradient(180deg, var(--bg-main), #14032a);
+    radial-gradient(1200px 600px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
   color:#fff;
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
 }
-
 .container{
   width:100%;
   max-width:420px;
   padding:28px;
-  background:
-    linear-gradient(180deg, #1a0936, var(--bg-card));
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
   border-radius:22px;
-  box-shadow:
-    0 30px 80px rgba(0,0,0,.55),
-    inset 0 0 0 1px rgba(255,255,255,.03);
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
 }
-
 h1{
   text-align:center;
   margin:0;
   font-size:30px;
-  font-weight:800;
-  background:linear-gradient(90deg, var(--purple), var(--pink));
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .sub{
   text-align:center;
   margin:14px 0 24px;
   font-size:14px;
-  color:var(--text-soft);
+  color:var(--soft);
   line-height:1.6;
 }
-
 .line-btn{
   display:inline-block;
   margin-top:10px;
@@ -69,70 +60,45 @@ h1{
   font-weight:800;
   font-size:14px;
   text-decoration:none;
-  color:#fff;
-  background:linear-gradient(90deg,#22c55e,#16a34a);
-  box-shadow:0 10px 28px rgba(34,197,94,.35);
+  color:#022c22;
+  background:linear-gradient(90deg,#22c55e,#4ade80);
 }
-
-.line-btn:hover{
-  filter:brightness(1.05);
-}
-
 label{
   display:block;
   margin-top:16px;
   font-size:14px;
   color:#e9d5ff;
 }
-
-.input-group{ position:relative }
-
+.input-group{position:relative}
 input{
   width:100%;
   padding:14px 48px 14px 14px;
   margin-top:8px;
   border-radius:14px;
-  border:1px solid var(--border-main);
+  border:1px solid var(--border);
   background:var(--bg-input);
   color:#fff;
-  font-size:15px;
-  outline:none;
 }
-
-input:focus{
-  border-color:var(--purple);
-  box-shadow:0 0 0 2px rgba(139,92,246,.25);
-}
-
 .toggle-password{
   position:absolute;
-  right:14px;
-  top:50%;
+  right:14px;top:50%;
   transform:translateY(-50%);
   font-size:12px;
   color:#c4b5fd;
   cursor:pointer;
-  user-select:none;
 }
-
-.toggle-password:hover{ color:#fff }
-
 button{
   width:100%;
   margin-top:26px;
   padding:15px;
   border-radius:16px;
   border:none;
-  cursor:pointer;
+  font-weight:800;
   font-size:16px;
-  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
   color:#fff;
-  background:linear-gradient(90deg, var(--purple), var(--pink));
-  box-shadow:0 12px 30px rgba(139,92,246,.35);
 }
-
-button:hover{ filter:brightness(1.05) }
-
 .small{
   margin-top:14px;
   font-size:13px;
@@ -150,7 +116,7 @@ button:hover{ filter:brightness(1.05) }
 
   <div class="sub">
     เข้าสู่ระบบเพื่อใช้งานระบบ<br>
-    หากยังไม่มีบัญชี กรุณาติดต่อ LINE ร้านเท่านั้น
+    หากยังไม่มีบัญชี กรุณาติดต่อ LINE ร้าน
     <br>
     <a class="line-btn"
        href="https://line.me/R/ti/p/@geg4960w"
@@ -165,9 +131,8 @@ button:hover{ filter:brightness(1.05) }
   <label>รหัสผ่าน</label>
   <div class="input-group">
     <input id="password" type="password" placeholder="••••••••">
-    <div class="toggle-password" onclick="togglePassword()" id="toggleText">
-      แสดงรหัสผ่าน
-    </div>
+    <div class="toggle-password" id="toggleText"
+         onclick="togglePassword()">แสดงรหัสผ่าน</div>
   </div>
 
   <button onclick="login()">เข้าสู่ระบบ</button>
@@ -175,22 +140,37 @@ button:hover{ filter:brightness(1.05) }
 </div>
 
 <script>
-function togglePassword(){
-  const p = document.getElementById("password");
-  const t = document.getElementById("toggleText");
-  if(p.type === "password"){
-    p.type = "text";
-    t.innerText = "ซ่อนรหัสผ่าน";
-  }else{
-    p.type = "password";
-    t.innerText = "แสดงรหัสผ่าน";
-  }
+/* ===== AUTO REDIRECT IF LOGIN ===== */
+const alreadyLogin = localStorage.getItem("user");
+if(alreadyLogin){
+  location.href="dashboard.html";
 }
 
-/* mock */
+/* ===== TOGGLE PASSWORD ===== */
+function togglePassword(){
+  const p = password;
+  toggleText.innerText =
+    p.type === "password" ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน";
+  p.type = p.type === "password" ? "text" : "password";
+}
+
+/* ===== MOCK LOGIN (พร้อมต่อชีตทีหลัง) ===== */
 function login(){
-  document.getElementById("loginMsg").innerText =
-    "ตัวอย่างหน้า Login (ยังไม่เชื่อมระบบ)";
+  if(!email.value || !password.value){
+    loginMsg.innerText = "กรุณากรอกอีเมลและรหัสผ่าน";
+    return;
+  }
+
+  /* demo user */
+  const user = {
+    user_id: "1001",
+    email: email.value,
+    fullname: "ลูกค้าทดลอง",
+    credit: 1250
+  };
+
+  localStorage.setItem("user", JSON.stringify(user));
+  location.href = "dashboard.html";
 }
 </script>
 
