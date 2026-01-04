@@ -48,58 +48,71 @@ h1{
 
 .sub{
   text-align:center;
-  margin:10px 0 22px;
+  margin:12px 0 22px;
   color:var(--soft);
   font-size:14px;
 }
 
-.section{
-  margin-top:20px;
+/* tabs */
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:16px;
 }
 
-.section-title{
+.tab{
+  flex:1;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+  color:#fff;
   font-weight:800;
-  margin-bottom:10px;
+  cursor:pointer;
+}
+
+.tab.active{
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  border:none;
+}
+
+/* service card */
+.service{
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.service h3{
+  margin:0;
+  font-size:15px;
   color:#e9d5ff;
 }
 
-.card{
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:14px;
-  margin-bottom:12px;
-  cursor:pointer;
-}
-
-.card:hover{
-  border-color:var(--purple);
-  background:rgba(255,255,255,.06);
-}
-
-.service-name{
-  font-weight:800;
-}
-
-.service-desc{
+.service .info{
   font-size:13px;
   color:var(--soft);
-  margin-top:4px;
+  margin:8px 0 12px;
+  line-height:1.5;
+}
+
+.service button{
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  font-weight:800;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
 }
 
 .back{
-  width:100%;
-  margin-top:24px;
-  padding:14px;
-  border:none;
-  border-radius:16px;
-  font-weight:700;
-  color:#fff;
+  margin-top:10px;
   background:linear-gradient(135deg,#1e293b,#334155);
-  cursor:pointer;
 }
-
-.back:hover{filter:brightness(1.05)}
 </style>
 </head>
 
@@ -109,47 +122,88 @@ h1{
   <h1>เลือกบริการ</h1>
   <div class="sub">หมวดหมู่ TikTok</div>
 
-  <!-- THAI -->
-  <div class="section">
-    <div class="section-title">🇹🇭 บริการไทย</div>
-
-    <div class="card" onclick="selectService('ผู้ติดตามไทย')">
-      <div class="service-name">ผู้ติดตามไทย</div>
-      <div class="service-desc">ผู้ติดตามจริง มี/ไม่มีประกัน</div>
-    </div>
-
-    <div class="card" onclick="selectService('ไลก์ไทย')">
-      <div class="service-name">ไลก์ไทย</div>
-      <div class="service-desc">เพิ่มความน่าเชื่อถือคลิป</div>
-    </div>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="showThai()">🇹🇭 บริการไทย</button>
+    <button class="tab" onclick="showInter()">🌍 บริการต่างชาติ</button>
   </div>
 
-  <!-- INTER -->
-  <div class="section">
-    <div class="section-title">🌍 บริการต่างชาติ</div>
-
-    <div class="card" onclick="selectService('ผู้ติดตามต่างชาติ')">
-      <div class="service-name">ผู้ติดตามต่างชาติ</div>
-      <div class="service-desc">ราคาประหยัด งานไว</div>
-    </div>
-
-    <div class="card" onclick="selectService('วิวต่างชาติ')">
-      <div class="service-name">วิวต่างชาติ</div>
-      <div class="service-desc">ดันยอดเข้าถึง</div>
-    </div>
-  </div>
+  <!-- Service List -->
+  <div id="serviceList"></div>
 
   <button class="back" onclick="goBack()">⬅ กลับหน้า Dashboard</button>
 </div>
 
 <script>
+const thaiServices = [
+  {
+    name:"ผู้ติดตามไทย (♻️ ประกัน 1 ปี)",
+    detail:"ขั้นต่ำ 20 – 10,000 คน<br>ราคา 2.88 บาท / คน"
+  },
+  {
+    name:"คอมเมนท์ไทย (♻️ ประกัน 1 ปี)",
+    detail:"ขั้นต่ำ 10 – 100 คอมเมนต์<br>ราคา 8 บาท / คอมเมนต์"
+  }
+];
+
+const interServices = [
+  {
+    name:"ผู้ติดตามต่างชาติ (ไม่มีประกัน)",
+    detail:"ขั้นต่ำ 50 – 10,000 คน<br>ราคา 0.256 บาท / คน"
+  },
+  {
+    name:"ผู้ติดตามต่างชาติ (♻️ ประกัน 1 ปี)",
+    detail:"ขั้นต่ำ 50 – 10,000 คน<br>ราคา 0.421 บาท / คน"
+  },
+  {
+    name:"ไลก์ต่างชาติ (ไม่มีประกัน)",
+    detail:"ขั้นต่ำ 50 – 50,000 ไลก์<br>ราคา 0.10 บาท / ไลก์"
+  },
+  {
+    name:"วิวต่างชาติ (♻️ ประกัน 1 ปี)",
+    detail:"ขั้นต่ำ 1,000 – 500,000 วิว<br>ราคา 0.08 บาท / วิว"
+  }
+];
+
+function render(list){
+  serviceList.innerHTML = "";
+  list.forEach(s=>{
+    serviceList.innerHTML += `
+      <div class="service">
+        <h3>${s.name}</h3>
+        <div class="info">${s.detail}</div>
+        <button onclick="selectService('${s.name}')">เลือกบริการ</button>
+      </div>
+    `;
+  });
+}
+
+function showThai(){
+  setActive(0);
+  render(thaiServices);
+}
+
+function showInter(){
+  setActive(1);
+  render(interServices);
+}
+
+function setActive(i){
+  document.querySelectorAll(".tab").forEach((t,idx)=>{
+    t.classList.toggle("active", idx===i);
+  });
+}
+
 function selectService(name){
-  alert("เลือกบริการ: " + name + "\n(ขั้นถัดไปจะไปหน้าสั่งซื้อ)");
+  alert("เลือกบริการ: " + name + "\n(ขั้นต่อไปคือหน้า ‘สั่งซื้อ’)");
 }
 
 function goBack(){
-  location.href = "dashboard.html";
+  location.href = "dashboard.html"; // หรือย้อนกลับตามที่ใช้
 }
+
+/* default */
+showThai();
 </script>
 
 </body>
