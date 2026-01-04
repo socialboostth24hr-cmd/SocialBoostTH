@@ -9,151 +9,247 @@
 body{
   margin:0;
   font-family:system-ui;
-  background:#0f172a;
+  background:linear-gradient(180deg,#0b0216,#1a0438);
   color:#fff;
 }
 .container{
   max-width:420px;
-  margin:30px auto;
+  margin:40px auto;
   padding:24px;
-  background:#020617;
-  border-radius:16px;
+  background:#120726;
+  border-radius:18px;
 }
-h2{text-align:center;margin-bottom:10px}
+h1{text-align:center;margin:0}
+.sub{text-align:center;opacity:.8;margin-bottom:15px}
 .box{
-  background:#020617;
-  border:1px solid #1e293b;
+  background:#0f0220;
+  border:1px solid #2e1065;
   padding:12px;
-  border-radius:10px;
+  border-radius:12px;
   margin-top:10px;
 }
+label{font-size:14px;display:block;margin-top:12px}
 input,select,button{
   width:100%;
   padding:14px;
-  border-radius:10px;
-  border:1px solid #1e293b;
-  background:#020617;
-  color:white;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid #2e1065;
+  background:#0f0220;
+  color:#fff;
   font-size:15px;
-  margin-top:10px;
 }
 button{
-  background:#7c3aed;
+  margin-top:18px;
+  background:linear-gradient(90deg,#7c3aed,#5b21b6);
   border:none;
   font-weight:bold;
 }
-.price{
-  margin-top:15px;
+.total{
+  margin-top:14px;
   font-size:18px;
-  font-weight:bold;
   text-align:center;
 }
-.small{font-size:13px;opacity:.7}
+.logout{
+  background:#111;
+  margin-top:10px;
+}
+.msg{
+  text-align:center;
+  font-size:14px;
+  opacity:.9;
+}
+.group{position:relative}
+.eye{
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  opacity:.7;
+}
 </style>
 </head>
 
 <body>
-<div class="container">
 
-<h2>SocialBoostTH</h2>
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">เข้าสู่ระบบ</div>
 
-<div class="box small">
-👤 ผู้ใช้<br>
-💰 เครดิต: <span id="credit">50</span>
+  <label>อีเมล</label>
+  <input id="email">
+
+  <label>รหัสผ่าน</label>
+  <div class="group">
+    <input id="password" type="password">
+    <span class="eye" onclick="togglePW()">👁</span>
+  </div>
+
+  <button onclick="login()">เข้าสู่ระบบ</button>
+  <div id="loginMsg" class="msg"></div>
+
+  <div class="msg" style="margin-top:10px">
+    หากไม่มีบัญชี ติดต่อ LINE  
+    <a style="color:#c4b5fd" href="https://line.me/R/ti/p/@geg4960w" target="_blank">
+      @geg4960w
+    </a>
+  </div>
 </div>
 
-<label class="small">เลือกบริการ</label>
-<select id="serviceSelect">
-  <option>-- กำลังโหลด --</option>
-</select>
+<!-- PANEL -->
+<div class="container" id="panel" style="display:none">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">สั่งบริการ</div>
 
-<label class="small">จำนวน</label>
-<input id="qty" type="number" value="50">
+  <div class="box">
+    👤 <b id="username"></b><br>
+    💰 เครดิตคงเหลือ: <b id="credit"></b>
+  </div>
 
-<label class="small">ลิงก์งาน</label>
-<input placeholder="https://tiktok.com/...">
+  <label>เลือกบริการ</label>
+  <select id="serviceSelect">
+    <option>กำลังโหลดบริการ...</option>
+  </select>
 
-<div class="price" id="total">รวม 0 บาท</div>
+  <label>จำนวน</label>
+  <input id="qty" type="number" value="50">
 
-<button onclick="order()">สั่งซื้อ</button>
+  <label>ลิงก์งาน</label>
+  <input id="link" placeholder="https://tiktok.com/...">
 
+  <div id="total" class="total">รวม 0 บาท</div>
+
+  <button onclick="order()">สั่งซื้อ</button>
+  <button class="logout" onclick="logout()">ออกจากระบบ</button>
 </div>
 
 <script>
-const WEBHOOK_URL = "PUT_YOUR_MAKE_WEBHOOK_URL_HERE";
+/* ================= CONFIG ================= */
+const LOGIN_API   = "https://hook.us2.make.com/i91b675rawoy52l11v5msfwjerf7uv31";
+const SERVICE_API = "https://hook.us2.make.com/4gxvw3n89yq5nlkt8gc6n1xeqvuaupd2";
 
-const serviceSelect = document.getElementById("serviceSelect");
-const qtyInput = document.getElementById("qty");
-const totalBox = document.getElementById("total");
+/* ================= STATE ================= */
+let user = null;
+let services = [];
 
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded",()=>{
+  const saved = localStorage.getItem("user");
+  if(saved){
+    user = JSON.parse(saved);
+    showPanel();
+    loadServices();
+  }
+});
+
+/* ================= LOGIN ================= */
+function togglePW(){
+  password.type = password.type==="password" ? "text" : "password";
+}
+
+function login(){
+  loginMsg.innerText = "กำลังเข้าสู่ระบบ...";
+
+  fetch(LOGIN_API,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({
+      action:"login",
+      email: email.value.trim(),
+      password: password.value
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d.success) throw d.message;
+    user = d.user;
+    localStorage.setItem("user",JSON.stringify(user));
+    showPanel();
+    loadServices();
+  })
+  .catch(e=>{
+    loginMsg.innerText = e || "เข้าสู่ระบบไม่สำเร็จ";
+  });
+}
+
+function showPanel(){
+  loginBox.style.display="none";
+  panel.style.display="block";
+  username.innerText = user.fullname;
+  credit.innerText   = user.credit;
+}
+
+function logout(){
+  localStorage.removeItem("user");
+  location.reload();
+}
+
+/* ================= LOAD SERVICES ================= */
 async function loadServices(){
-  serviceSelect.innerHTML = `<option>กำลังโหลด...</option>`;
+  serviceSelect.innerHTML = `<option>กำลังโหลดบริการ...</option>`;
 
   try{
-    const res = await fetch(WEBHOOK_URL);
+    const res = await fetch(SERVICE_API,{ method:"POST" });
     const data = await res.json();
 
     if(!data.success || !data.services){
-      serviceSelect.innerHTML = `<option>โหลดไม่สำเร็จ</option>`;
-      return;
+      throw "invalid";
     }
 
-    // 🔥 จุดสำคัญ: บังคับให้เป็น array เสมอ
-    const services = Array.isArray(data.services)
+    // รองรับทั้ง object และ array
+    services = Array.isArray(data.services)
       ? data.services
       : [data.services];
 
     serviceSelect.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
 
-    services.forEach(s=>{
+    services.forEach((s,i)=>{
       const opt = document.createElement("option");
-      opt.value = s.service_code;
-      opt.dataset.price = Number(s.price_th);
-      opt.dataset.min = Number(s.min_qty);
-      opt.dataset.max = Number(s.max_qty);
+      opt.value = i;
       opt.textContent = `${s.platform} | ${s.service_name}`;
       serviceSelect.appendChild(opt);
     });
-
-  }catch(err){
-    console.error(err);
-    serviceSelect.innerHTML = `<option>โหลดไม่สำเร็จ</option>`;
+  }catch{
+    serviceSelect.innerHTML = `<option>โหลดบริการไม่สำเร็จ</option>`;
   }
 }
+
+/* ================= CALCULATE ================= */
+serviceSelect.onchange = calc;
+qty.oninput = calc;
 
 function calc(){
-  const opt = serviceSelect.selectedOptions[0];
-  if(!opt || !opt.dataset.price){
-    totalBox.textContent = "รวม 0 บาท";
+  const idx = serviceSelect.value;
+  const q = Number(qty.value);
+
+  if(idx===""){
+    total.innerText = "รวม 0 บาท";
     return;
   }
 
-  const qty = Number(qtyInput.value);
-  const min = Number(opt.dataset.min);
-  const max = Number(opt.dataset.max);
-  const price = Number(opt.dataset.price);
+  const s = services[idx];
+  const min = Number(s.min_qty);
+  const max = Number(s.max_qty);
+  const price = Number(s.price_th);
 
-  if(qty < min || qty > max){
-    totalBox.textContent = "❌ จำนวนไม่ถูกต้อง";
+  if(q < min || q > max){
+    total.innerText = "❌ จำนวนไม่ถูกต้อง";
     return;
   }
 
-  const total = qty * price;
-  totalBox.textContent = `💰 รวม ${total.toFixed(2)} บาท`;
+  total.innerText = `💰 รวม ${(q*price).toFixed(2)} บาท`;
 }
 
+/* ================= ORDER ================= */
 function order(){
   if(serviceSelect.value===""){
     alert("กรุณาเลือกบริการ");
     return;
   }
-  alert("สั่งซื้อสำเร็จ (ตัวอย่าง)");
+  alert("เชื่อมต่อสำเร็จ พร้อมต่อระบบสั่งซื้อจริงได้แล้ว ✅");
 }
-
-serviceSelect.addEventListener("change", calc);
-qtyInput.addEventListener("input", calc);
-
-loadServices();
 </script>
 
 </body>
