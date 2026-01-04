@@ -1,114 +1,106 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<title>SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{
-  margin:0;font-family:system-ui;
-  background:linear-gradient(180deg,#0b0216,#1a0438);
-  color:#fff;
-}
-.container{
-  max-width:420px;margin:40px auto;padding:24px;
-  background:#120726;border-radius:18px;
-}
-label{font-size:14px;display:block;margin-top:12px}
-input,button{
-  width:100%;padding:14px;margin-top:6px;
-  border-radius:12px;border:1px solid #2e1065;
-  background:#0f0220;color:#fff;font-size:15px;
-}
-button{
-  margin-top:18px;border:none;font-weight:bold;
-  background:linear-gradient(90deg,#7c3aed,#5b21b6);
-}
-.box{
-  background:#0f0220;border:1px solid #2e1065;
-  padding:12px;border-radius:12px;margin-top:10px;
-}
-.msg{text-align:center;margin-top:10px}
-</style>
-</head>
-
-<body>
-
-<div class="container" id="loginBox">
-  <h1 style="text-align:center">SocialBoostTH</h1>
-
-  <label>อีเมล</label>
-  <input id="email">
-
-  <label>รหัสผ่าน</label>
-  <input id="password" type="password">
-
-  <button onclick="login()">เข้าสู่ระบบ</button>
-  <div id="loginMsg" class="msg"></div>
-</div>
-
-<div class="container" id="panel" style="display:none">
-  <div class="box">
-    👤 <b id="username"></b><br>
-    💰 เครดิตคงเหลือ: <b id="credit"></b>
-  </div>
-  <button onclick="logout()">ออกจากระบบ</button>
-</div>
-
 <script>
+// ================= CONFIG =================
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
-const USERS_API = `https://opensheet.elk.sh/${SHEET_ID}/users`;
+const USERS_API    = `https://opensheet.elk.sh/${SHEET_ID}/users`;
+const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
+const GAS_API =
+"https://script.google.com/macros/s/AKfycbwWOaLikdxgXIpH9x9Xm5TY-ZJ-nElt8WHwriNypWlUEZbTu8FFlqWycvZW1r8ljTRu/exec";
 
+// ================= STATE =================
+let currentUser = null;
+let services = [];
+
+// ================= LOGIN =================
 async function login(){
-  loginMsg.innerText = "กำลังตรวจสอบข้อมูล...";
+  loginMsg.innerText = "กำลังตรวจสอบ...";
 
-  const inputEmail = email.value.trim().toLowerCase();
-  const inputPass  = password.value.trim();
+  const emailVal = email.value.trim().toLowerCase();
+  const passVal  = password.value.trim();
 
-  try{
-    const res = await fetch(USERS_API);
-    const raw = await res.json();
+  const res = await fetch(USERS_API);
+  const raw = await res.json();
 
-    // 🔎 normalize ข้อมูลจากชีท
-    const users = raw.map(u => ({
-      user_id: String(u.user_id || "").trim(),
-      fullname: String(u.fullname || "").trim(),
-      email: String(u.email || "").trim().toLowerCase(),
-      password: String(u.password || "").trim(),
-      credit: Number(String(u.credit || "0").trim())
-    }));
+  const users = raw.map(u => ({
+    user_id: String(u.user_id||"").trim(),
+    fullname: String(u.fullname||"").trim(),
+    email: String(u.email||"").trim().toLowerCase(),
+    password: String(u.password||"").trim(),
+    credit: Number(String(u.credit||"0").trim())
+  }));
 
-    const user = users.find(u =>
-      u.email === inputEmail && u.password === inputPass
-    );
+  const u = users.find(r =>
+    r.email === emailVal && r.password === passVal
+  );
 
-    if(!user){
-      loginMsg.innerText = "❌ อีเมลหรือรหัสผ่านไม่ถูกต้อง";
-      console.log("DEBUG USERS:", users);
-      return;
-    }
-
-    localStorage.setItem("user", JSON.stringify(user));
-    showPanel(user);
-
-  }catch(e){
-    loginMsg.innerText = "❌ ไม่สามารถโหลดข้อมูลได้";
-    console.error(e);
+  if(!u){
+    loginMsg.innerText = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+    return;
   }
+
+  currentUser = u;
+  localStorage.setItem("user", JSON.stringify(u));
+  showPanel();
+  loadServices();
 }
 
-function showPanel(user){
-  loginBox.style.display = "none";
-  panel.style.display = "block";
-  username.innerText = user.fullname;
-  credit.innerText = user.credit;
+function showPanel(){
+  loginBox.style.display="none";
+  panel.style.display="block";
+  username.innerText = currentUser.fullname;
+  credit.innerText   = currentUser.credit;
 }
 
-function logout(){
-  localStorage.removeItem("user");
-  location.reload();
+// ================= LOAD SERVICES =================
+async function loadServices(){
+  const res = await fetch(SERVICES_API);
+  const data = await res.json();
+  services = data.filter(s => s.status === "active");
+
+  serviceSelect.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
+  services.forEach((s,i)=>{
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `${s.platform} | ${s.service_name}`;
+    serviceSelect.appendChild(opt);
+  });
+}
+
+// ================= ORDER + หักเครดิต =================
+async function order(){
+  if(serviceSelect.value===""){
+    alert("กรุณาเลือกบริการ");
+    return;
+  }
+
+  const s = services[serviceSelect.value];
+  const q = Number(qty.value);
+  const total = q * Number(s.price_th);
+
+  if(total > currentUser.credit){
+    alert("เครดิตไม่พอ");
+    return;
+  }
+
+  const res = await fetch(GAS_API,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      user_id: currentUser.user_id,
+      amount: total
+    })
+  });
+
+  const d = await res.json();
+
+  if(!d.success){
+    alert(d.message);
+    return;
+  }
+
+  currentUser.credit = d.credit;
+  localStorage.setItem("user", JSON.stringify(currentUser));
+  credit.innerText = d.credit;
+
+  alert("✅ หักเครดิตสำเร็จ");
 }
 </script>
-
-</body>
-</html>
