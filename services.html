@@ -57,9 +57,8 @@ h1{
 .tabs{
   display:flex;
   gap:10px;
-  margin-bottom:16px;
+  margin-bottom:18px;
 }
-
 .tab{
   flex:1;
   padding:12px;
@@ -70,7 +69,6 @@ h1{
   font-weight:800;
   cursor:pointer;
 }
-
 .tab.active{
   background:linear-gradient(90deg,var(--purple),var(--pink));
   border:none;
@@ -91,7 +89,13 @@ h1{
   color:#e9d5ff;
 }
 
-.service .info{
+.badge{
+  display:inline-block;
+  margin-left:6px;
+  font-size:12px;
+}
+
+.info{
   font-size:13px;
   color:var(--soft);
   margin:8px 0 12px;
@@ -122,56 +126,49 @@ h1{
   <h1>เลือกบริการ</h1>
   <div class="sub">หมวดหมู่ TikTok</div>
 
-  <!-- Tabs -->
   <div class="tabs">
     <button class="tab active" onclick="showThai()">🇹🇭 บริการไทย</button>
     <button class="tab" onclick="showInter()">🌍 บริการต่างชาติ</button>
   </div>
 
-  <!-- Service List -->
   <div id="serviceList"></div>
 
   <button class="back" onclick="goBack()">⬅ กลับหน้า Dashboard</button>
 </div>
 
 <script>
-const thaiServices = [
-  {
-    name:"ผู้ติดตามไทย (♻️ ประกัน 1 ปี)",
-    detail:"ขั้นต่ำ 20 – 10,000 คน<br>ราคา 2.88 บาท / คน"
-  },
-  {
-    name:"คอมเมนท์ไทย (♻️ ประกัน 1 ปี)",
-    detail:"ขั้นต่ำ 10 – 100 คอมเมนต์<br>ราคา 8 บาท / คอมเมนต์"
-  }
+/* === DATA (ตามชีทจริง) === */
+const services = [
+  // THAI
+  {cat:"thai",name:"ผู้ติดตามไทย",min:20,max:10000,price:2.88,unit:"คน",guar:true},
+  {cat:"thai",name:"คอมเมนท์ไทย",min:10,max:100,price:8,unit:"คอมเมนต์",guar:true},
+
+  // INTER
+  {cat:"inter",name:"ผู้ติดตามต่างชาติ",min:50,max:10000,price:0.256,unit:"คน",guar:false},
+  {cat:"inter",name:"ผู้ติดตามต่างชาติ",min:50,max:10000,price:0.421,unit:"คน",guar:true},
+  {cat:"inter",name:"ไลก์ต่างชาติ",min:50,max:50000,price:0.10,unit:"ไลก์",guar:false},
+  {cat:"inter",name:"วิวต่างชาติ",min:1000,max:500000,price:0.08,unit:"วิว",guar:true},
+
+  /* 🔥 ที่ขาด – เพิ่มให้แล้ว */
+  {cat:"inter",name:"บันทึกต่างชาติ",min:100,max:50000,price:0.18,unit:"บันทึก",guar:false},
+  {cat:"inter",name:"แชร์ต่างชาติ",min:100,max:50000,price:0.18,unit:"แชร์",guar:false},
 ];
 
-const interServices = [
-  {
-    name:"ผู้ติดตามต่างชาติ (ไม่มีประกัน)",
-    detail:"ขั้นต่ำ 50 – 10,000 คน<br>ราคา 0.256 บาท / คน"
-  },
-  {
-    name:"ผู้ติดตามต่างชาติ (♻️ ประกัน 1 ปี)",
-    detail:"ขั้นต่ำ 50 – 10,000 คน<br>ราคา 0.421 บาท / คน"
-  },
-  {
-    name:"ไลก์ต่างชาติ (ไม่มีประกัน)",
-    detail:"ขั้นต่ำ 50 – 50,000 ไลก์<br>ราคา 0.10 บาท / ไลก์"
-  },
-  {
-    name:"วิวต่างชาติ (♻️ ประกัน 1 ปี)",
-    detail:"ขั้นต่ำ 1,000 – 500,000 วิว<br>ราคา 0.08 บาท / วิว"
-  }
-];
-
-function render(list){
+function render(category){
   serviceList.innerHTML = "";
-  list.forEach(s=>{
+  services.filter(s=>s.cat===category).forEach(s=>{
     serviceList.innerHTML += `
       <div class="service">
-        <h3>${s.name}</h3>
-        <div class="info">${s.detail}</div>
+        <h3>
+          ${s.name}
+          <span class="badge">
+            ${s.guar ? "♻️ ประกัน 1 ปี" : "❌ ไม่มีประกัน"}
+          </span>
+        </h3>
+        <div class="info">
+          ขั้นต่ำ ${s.min.toLocaleString()} – ${s.max.toLocaleString()} ${s.unit}<br>
+          ราคา ${s.price} บาท / ${s.unit}
+        </div>
         <button onclick="selectService('${s.name}')">เลือกบริการ</button>
       </div>
     `;
@@ -180,30 +177,26 @@ function render(list){
 
 function showThai(){
   setActive(0);
-  render(thaiServices);
+  render("thai");
 }
-
 function showInter(){
   setActive(1);
-  render(interServices);
+  render("inter");
 }
-
 function setActive(i){
   document.querySelectorAll(".tab").forEach((t,idx)=>{
     t.classList.toggle("active", idx===i);
   });
 }
-
 function selectService(name){
-  alert("เลือกบริการ: " + name + "\n(ขั้นต่อไปคือหน้า ‘สั่งซื้อ’)");
+  alert("เลือกบริการ: " + name + "\nขั้นต่อไป → หน้า Order");
 }
-
 function goBack(){
-  location.href = "dashboard.html"; // หรือย้อนกลับตามที่ใช้
+  location.href = "dashboard.html";
 }
 
 /* default */
-showThai();
+showInter();
 </script>
 
 </body>
