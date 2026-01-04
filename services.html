@@ -2,47 +2,185 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>เลือกบริการ</title>
+<title>เลือกบริการ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
-body{margin:0;font-family:system-ui;background:#0b0216;color:#fff}
-.box{max-width:420px;margin:30px auto;padding:20px}
-.service{background:#14062b;border-radius:18px;padding:16px;margin-bottom:12px}
-button{width:100%;padding:12px;border-radius:14px;border:none;
-background:linear-gradient(90deg,#8b5cf6,#ec4899);color:#fff;font-weight:800}
+:root{
+  --bg-main:#0b0216;
+  --bg-card:#14062b;
+  --border:#3b1775;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --soft:rgba(255,255,255,.7);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    linear-gradient(180deg,var(--bg-main),#14032a);
+  color:#fff;
+  min-height:100vh;
+}
+
+/* CONTAINER */
+.box{
+  max-width:420px;
+  margin:30px auto;
+  padding:24px;
+  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:24px;
+  box-shadow:0 25px 70px rgba(0,0,0,.55);
+}
+
+/* HEADER */
+h1{
+  margin:0;
+  text-align:center;
+  font-size:24px;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  margin-top:8px;
+  text-align:center;
+  font-size:14px;
+  color:var(--soft);
+}
+
+/* SERVICE CARD */
+.service{
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  margin-top:14px;
+  transition:.25s;
+}
+
+.service:hover{
+  box-shadow:0 0 0 1px rgba(139,92,246,.4),
+             0 0 20px rgba(139,92,246,.25);
+}
+
+.service-title{
+  font-size:15px;
+  font-weight:900;
+  color:#e9d5ff;
+}
+
+.service-info{
+  margin-top:6px;
+  font-size:13px;
+  color:var(--soft);
+  line-height:1.6;
+}
+
+/* BADGE */
+.badge{
+  display:inline-block;
+  margin-top:8px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  background:rgba(139,92,246,.15);
+  color:#c4b5fd;
+  border:1px solid rgba(139,92,246,.4);
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  margin-top:12px;
+  padding:13px;
+  border-radius:16px;
+  border:none;
+  font-size:14px;
+  font-weight:900;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  color:#fff;
+}
+
+.back{
+  margin-top:20px;
+  background:#1e293b;
+}
 </style>
 </head>
+
 <body>
 
 <div class="box">
-  <h2>เลือกบริการ</h2>
-  <div id="list">โหลด...</div>
+  <h1>เลือกบริการ</h1>
+  <div class="sub">กรุณาเลือกบริการที่ต้องการ</div>
+
+  <div id="list">กำลังโหลด...</div>
+
+  <button class="back" onclick="goBack()">⬅ กลับหน้า Dashboard</button>
 </div>
 
 <script>
-const API_URL="https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
-if(!localStorage.getItem("user")) location.href="index.html";
+/* ================= CONFIG ================= */
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
 
+/* ================= AUTH ================= */
+if(!localStorage.getItem("user")){
+  location.href="index.html";
+}
+
+/* ================= LOAD SERVICES ================= */
 fetch(API_URL,{
   method:"POST",
-  body:JSON.stringify({action:"getServices"})
+  body:JSON.stringify({ action:"getServices" })
 })
 .then(r=>r.json())
 .then(res=>{
+  if(!res.services || !res.services.length){
+    list.innerHTML =
+      "<div class='sub'>ไม่พบบริการ</div>";
+    return;
+  }
+
   list.innerHTML="";
   res.services.forEach(s=>{
     list.innerHTML+=`
       <div class="service">
-        <b>${s.service_name}</b><br>
-        ราคา ${s.price} บาท / ${s.unit}<br>
-        <button onclick='select(${JSON.stringify(s)})'>เลือก</button>
-      </div>`;
-  })
+        <div class="service-title">${s.service_name}</div>
+        <div class="service-info">
+          ราคา <b>${Number(s.price).toFixed(2)}</b> บาท / ${s.unit}<br>
+          ขั้นต่ำ ${s.min} – สูงสุด ${s.max}
+        </div>
+        <div class="badge">${s.platform || "TikTok"}</div>
+        <button onclick='selectService(${JSON.stringify(s)})'>
+          เลือกบริการ
+        </button>
+      </div>
+    `;
+  });
+})
+.catch(()=>{
+  list.innerHTML =
+    "<div class='sub'>โหลดข้อมูลไม่สำเร็จ</div>";
 });
 
-function select(s){
+/* ================= ACTION ================= */
+function selectService(s){
   localStorage.setItem("selectedService",JSON.stringify(s));
   location.href="order.html";
+}
+
+function goBack(){
+  location.href="dashboard.html";
 }
 </script>
 
