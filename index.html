@@ -40,18 +40,22 @@ input,select,button{
   font-size:15px;
 }
 button{
-  margin-top:16px;
+  margin-top:14px;
   background:linear-gradient(90deg,#7c3aed,#5b21b6);
   border:none;
   font-weight:bold;
 }
-.total{
-  margin-top:14px;
-  font-size:18px;
-  text-align:center;
-}
 .logout{background:#111}
-.msg{text-align:center;font-size:14px;opacity:.85}
+.total{text-align:center;font-size:18px;margin-top:10px}
+.order{
+  border-bottom:1px solid #2e1065;
+  padding:10px 0;
+  font-size:14px;
+}
+.pending{color:#facc15}
+.processing{color:#38bdf8}
+.completed{color:#22c55e}
+.small{opacity:.7;font-size:13px}
 </style>
 </head>
 
@@ -61,15 +65,12 @@ button{
 <div class="container" id="loginBox">
   <h1>SocialBoostTH</h1>
   <div class="sub">เข้าสู่ระบบ</div>
-
   <label>อีเมล</label>
   <input id="email">
-
   <label>รหัสผ่าน</label>
   <input id="password" type="password">
-
   <button onclick="login()">เข้าสู่ระบบ</button>
-  <div id="loginMsg" class="msg"></div>
+  <div id="loginMsg" class="small"></div>
 </div>
 
 <!-- PANEL -->
@@ -89,25 +90,33 @@ button{
   <input id="qty" type="number" value="20">
 
   <label>ลิงก์งาน</label>
-  <input id="link" placeholder="https://tiktok.com/...">
+  <input id="link">
 
   <div id="total" class="total">รวม 0 บาท</div>
 
   <button onclick="order()">สั่งซื้อ</button>
+  <button onclick="showOrders()">📦 ดูออเดอร์ของฉัน</button>
   <button class="logout" onclick="logout()">ออกจากระบบ</button>
 </div>
 
+<!-- ORDERS -->
+<div class="container" id="ordersBox" style="display:none">
+  <h1>ออเดอร์ของฉัน</h1>
+  <div id="ordersList" class="small">กำลังโหลด...</div>
+  <button onclick="backToPanel()">⬅ กลับ</button>
+</div>
+
 <script>
-/* ================= CONFIG ================= */
+/* ===== CONFIG ===== */
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
 const USERS_API    = `https://opensheet.elk.sh/${SHEET_ID}/users`;
 const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
-const GAS_API =
-"https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
+const ORDERS_API   = `https://opensheet.elk.sh/${SHEET_ID}/orders`;
+const GAS_API      = "https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
 
 let user=null, services=[];
 
-/* ================= INIT ================= */
+/* ===== INIT ===== */
 document.addEventListener("DOMContentLoaded",()=>{
   const saved=localStorage.getItem("user");
   if(saved){
@@ -117,100 +126,85 @@ document.addEventListener("DOMContentLoaded",()=>{
   }
 });
 
-/* ================= LOGIN ================= */
+/* ===== LOGIN ===== */
 async function login(){
-  loginMsg.innerText="กำลังตรวจสอบ...";
   const users=await (await fetch(USERS_API)).json();
-
   const u=users.find(x =>
-    x.email?.toLowerCase()===email.value.trim().toLowerCase() &&
+    x.email?.toLowerCase()===email.value.toLowerCase() &&
     String(x.password).trim()===password.value.trim()
   );
+  if(!u){ loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง"; return; }
 
-  if(!u){
-    loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง";
-    return;
-  }
-
-  user={ user_id:u.user_id, fullname:u.fullname, credit:Number(u.credit) };
+  user={user_id:u.user_id, fullname:u.fullname, credit:Number(u.credit)};
   localStorage.setItem("user",JSON.stringify(user));
   showPanel(); loadServices();
 }
 
 function showPanel(){
   loginBox.style.display="none";
+  ordersBox.style.display="none";
   panel.style.display="block";
   username.innerText=user.fullname;
   credit.innerText=user.credit;
 }
 
-function logout(){
-  localStorage.removeItem("user");
-  location.reload();
-}
+function logout(){ localStorage.clear(); location.reload(); }
 
-/* ================= SERVICES ================= */
+/* ===== SERVICES ===== */
 async function loadServices(){
   services=(await (await fetch(SERVICES_API)).json()).filter(s=>s.status==="active");
-  serviceSelect.innerHTML=`<option value="">-- เลือกบริการ --</option>`;
+  serviceSelect.innerHTML='<option value="">-- เลือกบริการ --</option>';
   services.forEach((s,i)=>{
     serviceSelect.innerHTML+=`<option value="${i}">${s.platform} | ${s.service_name}</option>`;
   });
 }
-
-serviceSelect.onchange=calc;
-qty.oninput=calc;
-
+serviceSelect.onchange=calc; qty.oninput=calc;
 function calc(){
   if(!serviceSelect.value){ total.innerText="รวม 0 บาท"; return; }
-  const s=services[serviceSelect.value];
-  const q=Number(qty.value);
+  const s=services[serviceSelect.value], q=Number(qty.value);
   if(q<s.min_qty||q>s.max_qty){ total.innerText="❌ จำนวนไม่ถูกต้อง"; return; }
-  total.innerText=`รวม ${(q*Number(s.price_th)).toFixed(2)} บาท`;
+  total.innerText=`รวม ${(q*s.price_th).toFixed(2)} บาท`;
 }
 
-/* ================= ORDER ================= */
+/* ===== ORDER ===== */
 async function order(){
-  if(!serviceSelect.value){ alert("กรุณาเลือกบริการ"); return; }
+  const s=services[serviceSelect.value], q=Number(qty.value);
+  const amount=q*s.price_th;
+  if(amount>user.credit){ alert("เครดิตไม่พอ"); return; }
 
-  const s=services[serviceSelect.value];
-  const q=Number(qty.value);
-  const amount=q*Number(s.price_th);
-  if(amount>user.credit){ alert("❌ เครดิตไม่พอ"); return; }
+  const res=await fetch(GAS_API,{method:"POST",body:JSON.stringify({
+    user_id:user.user_id,service_code:s.service_code,platform:s.platform,
+    qty:q,amount:amount,link:link.value
+  })});
+  const d=JSON.parse(await res.text());
+  if(!d.success){ alert(d.message); return; }
 
-  try{
-    const payload={
-      user_id:user.user_id,
-      service_code:s.service_code,
-      platform:s.platform,
-      qty:q,
-      amount:amount,
-      link:link.value
-    };
-
-    const res=await fetch(GAS_API,{
-      method:"POST",
-      body: JSON.stringify(payload)   // ⭐ text/plain by default
-    });
-
-    const data=JSON.parse(await res.text());
-
-    if(!data.success){
-      alert("❌ "+data.message);
-      return;
-    }
-
-    user.credit=data.credit;
-    localStorage.setItem("user",JSON.stringify(user));
-    credit.innerText=data.credit;
-
-    alert("✅ สั่งซื้อสำเร็จ\nOrder: "+data.order_id);
-
-  }catch(e){
-    alert("❌ ติดต่อระบบไม่ได้");
-    console.error(e);
-  }
+  user.credit=d.credit;
+  localStorage.setItem("user",JSON.stringify(user));
+  credit.innerText=d.credit;
+  alert("สั่งซื้อสำเร็จ");
 }
+
+/* ===== MY ORDERS ===== */
+async function showOrders(){
+  panel.style.display="none";
+  ordersBox.style.display="block";
+  ordersList.innerText="กำลังโหลด...";
+  const data=await (await fetch(ORDERS_API)).json();
+  const my=data.filter(o=>String(o.user_id).trim()===String(user.user_id));
+  if(!my.length){ ordersList.innerText="ยังไม่มีออเดอร์"; return; }
+
+  ordersList.innerHTML=my.map(o=>`
+    <div class="order">
+      <b>${o.service_name}</b><br>
+      จำนวน: ${o.qty} | ${o.price} บาท<br>
+      สถานะ: <span class="${o.status}">${o.status}</span><br>
+      <span class="small">${o.created_at}</span>
+    </div>
+  `).join("");
+}
+
+function backToPanel(){ showPanel(); }
 </script>
 
 </body>
