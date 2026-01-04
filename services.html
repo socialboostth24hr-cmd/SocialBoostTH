@@ -52,6 +52,7 @@ h1{
   font-size:14px;
 }
 
+/* tabs */
 .tabs{
   display:flex;
   gap:10px;
@@ -74,12 +75,38 @@ h1{
   border:none;
 }
 
+/* service card */
 .service{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
   border-radius:18px;
   padding:16px;
   margin-bottom:14px;
+}
+
+.badges{
+  display:flex;
+  gap:6px;
+  margin-bottom:8px;
+}
+
+.badge-hot{
+  background:linear-gradient(90deg,#f43f5e,#fb7185);
+  color:#fff;
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:999px;
+  font-weight:800;
+}
+
+.badge-pop{
+  background:rgba(139,92,246,.15);
+  color:#c4b5fd;
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(139,92,246,.4);
+  font-weight:700;
 }
 
 .service h3{
@@ -137,19 +164,20 @@ h1{
 
 <script>
 const services = [
-  {cat:"inter",name:"ผู้ติดตามต่างชาติ (ไม่มีประกัน)",min:50,max:10000,price:0.256,unit:"คน"},
-  {cat:"inter",name:"ผู้ติดตามต่างชาติ (♻️ ประกัน 1 ปี)",min:50,max:10000,price:0.421,unit:"คน"},
+  /* 🇹🇭 ไทย */
   {cat:"thai",name:"ผู้ติดตามไทย (♻️ ประกัน 1 ปี)",min:20,max:10000,price:2.88,unit:"คน"},
-
-  {cat:"inter",name:"ไลก์ต่างชาติ (ไม่มีประกัน)",min:50,max:50000,price:0.10,unit:"ไลก์"},
-  {cat:"inter",name:"ไลก์ต่างชาติ (♻️ ประกัน 1 ปี)",min:50,max:50000,price:0.70,unit:"ไลก์"},
-
-  {cat:"inter",name:"วิวต่างชาติ (ไม่มีประกัน)",min:1000,max:500000,price:0.03,unit:"วิว"},
-  {cat:"inter",name:"วิวต่างชาติ (♻️ ประกัน 1 ปี)",min:1000,max:500000,price:0.08,unit:"วิว"},
   {cat:"thai",name:"วิวไทย (♻️ ประกัน 1 ปี)",min:1000,max:10000,price:0.15,unit:"วิว"},
-
   {cat:"thai",name:"คอมเมนท์ไทย (♻️ ประกัน 1 ปี)",min:10,max:100,price:8,unit:"คอมเมนต์"},
 
+  /* 🌍 ต่างชาติ – ขายดี */
+  {cat:"inter",name:"ผู้ติดตามต่างชาติ (ไม่มีประกัน)",min:50,max:10000,price:0.256,unit:"คน",hot:true},
+  {cat:"inter",name:"ไลก์ต่างชาติ (ไม่มีประกัน)",min:50,max:50000,price:0.10,unit:"ไลก์",hot:true},
+  {cat:"inter",name:"วิวต่างชาติ (ไม่มีประกัน)",min:1000,max:500000,price:0.03,unit:"วิว",hot:true},
+
+  /* 🌍 ต่างชาติ – อื่น ๆ */
+  {cat:"inter",name:"ผู้ติดตามต่างชาติ (♻️ ประกัน 1 ปี)",min:50,max:10000,price:0.421,unit:"คน"},
+  {cat:"inter",name:"ไลก์ต่างชาติ (♻️ ประกัน 1 ปี)",min:50,max:50000,price:0.70,unit:"ไลก์"},
+  {cat:"inter",name:"วิวต่างชาติ (♻️ ประกัน 1 ปี)",min:1000,max:500000,price:0.08,unit:"วิว"},
   {cat:"inter",name:"บันทึกต่างชาติ",min:100,max:50000,price:0.18,unit:"บันทึก"},
   {cat:"inter",name:"แชร์ต่างชาติ",min:100,max:50000,price:0.18,unit:"แชร์"},
 ];
@@ -157,13 +185,19 @@ const services = [
 const list = document.getElementById("serviceList");
 
 function renderServices(cat){
-  list.innerHTML = "";
+  list.innerHTML="";
   services.filter(s=>s.cat===cat).forEach(s=>{
-    list.innerHTML += `
+    list.innerHTML+=`
       <div class="service">
+        ${s.hot ? `
+          <div class="badges">
+            <span class="badge-hot">🔥 ขายดี</span>
+            <span class="badge-pop">1,000+ ออเดอร์</span>
+          </div>` : ``}
+
         <h3>${s.name}</h3>
         <div class="info">
-          ขั้นต่ำ ${s.min} – ${s.max} ${s.unit}<br>
+          ขั้นต่ำ ${s.min.toLocaleString()} – ${s.max.toLocaleString()} ${s.unit}<br>
           ราคา ${s.price} บาท / ${s.unit}
         </div>
         <button onclick="selectService('${s.name}')">เลือกบริการ</button>
@@ -178,14 +212,14 @@ function switchTab(cat,btn){
 }
 
 function selectService(name){
-  alert("เลือกบริการ: " + name + "\n(ขั้นต่อไป: หน้าสั่งซื้อ)");
+  alert("เลือกบริการ: "+name+"\nขั้นต่อไป → หน้าสั่งซื้อ");
 }
 
 function goBack(){
-  location.href = "dashboard.html";
+  location.href="dashboard.html";
 }
 
-/* 🔴 สำคัญมาก: ต้องเรียกตอนโหลด */
+/* โหลดครั้งแรก */
 renderServices("thai");
 </script>
 
