@@ -13,7 +13,7 @@
   --border:#3b1775;
   --purple:#8b5cf6;
   --pink:#ec4899;
-  --soft:rgba(255,255,255,.75);
+  --soft:rgba(255,255,255,.78);
 }
 
 *{box-sizing:border-box}
@@ -24,24 +24,34 @@ body{
   background:
     radial-gradient(1200px 600px at top,#2a0d52,transparent),
     linear-gradient(180deg,var(--bg-main),#14032a);
-  color:#fff;
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
+  color:#fff;
 }
 
+/* ===== CONTAINER ===== */
 .container{
   width:100%;
   max-width:420px;
-  padding:30px 28px 34px;
-  background:linear-gradient(180deg,#1a0936,var(--bg-card));
-  border-radius:24px;
+  padding:32px 28px 36px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),
+    linear-gradient(180deg,#1a0936,var(--bg-card));
+  border-radius:26px;
   box-shadow:
-    0 30px 80px rgba(0,0,0,.6),
-    inset 0 0 0 1px rgba(255,255,255,.04);
+    0 40px 90px rgba(0,0,0,.7),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+  animation:enter .8s cubic-bezier(.22,1,.36,1);
 }
 
+@keyframes enter{
+  from{opacity:0;transform:translateY(30px) scale(.96)}
+  to{opacity:1;transform:none}
+}
+
+/* ===== HEADER ===== */
 h1{
   margin:0;
   text-align:center;
@@ -54,16 +64,29 @@ h1{
 
 .sub{
   text-align:center;
-  margin:14px 0 26px;
+  margin:12px 0 22px;
   font-size:14px;
-  color:var(--soft);
   line-height:1.6;
+  color:var(--soft);
 }
 
-/* inputs */
+/* badge */
+.badge{
+  display:inline-block;
+  margin:10px auto 0;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  background:rgba(34,197,94,.15);
+  color:#86efac;
+  border:1px solid rgba(34,197,94,.35);
+}
+
+/* ===== FORM ===== */
 label{
   display:block;
-  margin-top:16px;
+  margin-top:18px;
   font-size:14px;
   color:#e9d5ff;
 }
@@ -74,19 +97,20 @@ label{
 
 input{
   width:100%;
-  padding:14px 52px 14px 14px;
+  padding:15px 52px 15px 14px;
   margin-top:8px;
-  border-radius:14px;
+  border-radius:16px;
   border:1px solid var(--border);
   background:var(--bg-input);
   color:#fff;
   font-size:15px;
-  outline:none;
+  transition:.25s;
 }
 
 input:focus{
+  outline:none;
   border-color:var(--purple);
-  box-shadow:0 0 0 2px rgba(139,92,246,.25);
+  box-shadow:0 0 0 2px rgba(139,92,246,.3);
 }
 
 /* toggle password */
@@ -96,51 +120,57 @@ input:focus{
   top:50%;
   transform:translateY(-50%);
   font-size:12px;
-  font-weight:700;
+  font-weight:800;
   color:#c4b5fd;
   cursor:pointer;
   user-select:none;
 }
-
 .toggle-password:hover{color:#fff}
 
-/* button */
+/* ===== BUTTON ===== */
 button{
   width:100%;
-  margin-top:26px;
-  padding:15px;
+  margin-top:28px;
+  padding:16px;
   border-radius:18px;
   border:none;
   cursor:pointer;
   font-size:16px;
-  font-weight:800;
+  font-weight:900;
   color:#fff;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  box-shadow:0 14px 30px rgba(139,92,246,.4);
+  box-shadow:0 16px 36px rgba(139,92,246,.45);
+  transition:.3s;
 }
 
-button:hover{filter:brightness(1.06)}
+button:hover{filter:brightness(1.08)}
+button:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+}
 
+/* ===== MESSAGE ===== */
 .msg{
   margin-top:14px;
-  font-size:13px;
-  color:#fda4af;
-  text-align:center;
   min-height:18px;
+  font-size:13px;
+  text-align:center;
+  color:#fda4af;
 }
 
-/* line */
+/* ===== LINE ===== */
 .line-btn{
-  display:inline-block;
-  margin-top:18px;
-  padding:12px 20px;
-  border-radius:16px;
-  font-weight:800;
+  display:block;
+  margin:22px auto 0;
+  padding:14px 22px;
+  border-radius:18px;
+  text-align:center;
+  font-weight:900;
   font-size:14px;
-  text-decoration:none;
   color:#022c22;
   background:linear-gradient(90deg,#22c55e,#4ade80);
-  box-shadow:0 10px 26px rgba(34,197,94,.4);
+  box-shadow:0 12px 32px rgba(34,197,94,.45);
+  text-decoration:none;
 }
 </style>
 </head>
@@ -151,8 +181,8 @@ button:hover{filter:brightness(1.06)}
   <h1>SocialBoostTH</h1>
 
   <div class="sub">
-    เข้าสู่ระบบเพื่อใช้งานระบบ<br>
-    หากยังไม่มีบัญชี กรุณาติดต่อ LINE ร้าน
+    ระบบจัดการบริการโซเชียลแบบมืออาชีพ
+    <div class="badge">🔒 Secure Login</div>
   </div>
 
   <label>อีเมล</label>
@@ -166,17 +196,14 @@ button:hover{filter:brightness(1.06)}
     </div>
   </div>
 
-  <button onclick="login()">เข้าสู่ระบบ</button>
+  <button id="loginBtn" onclick="login()">เข้าสู่ระบบ</button>
+  <div class="msg" id="msg"></div>
 
-  <div id="msg" class="msg"></div>
-
-  <div style="text-align:center">
-    <a class="line-btn"
-       href="https://line.me/R/ti/p/@geg4960w"
-       target="_blank">
-      💬 ทัก LINE ร้าน
-    </a>
-  </div>
+  <a class="line-btn"
+     href="https://line.me/R/ti/p/@geg4960w"
+     target="_blank">
+     💬 สมัคร / ติดต่อร้านทาง LINE
+  </a>
 </div>
 
 <script>
@@ -189,23 +216,22 @@ if(localStorage.getItem("user")){
 
 /* toggle password */
 function togglePassword(){
-  const p = document.getElementById("password");
-  const t = document.getElementById("toggleText");
-  if(p.type === "password"){
-    p.type = "text";
-    t.innerText = "ซ่อน";
-  }else{
-    p.type = "password";
-    t.innerText = "แสดง";
-  }
+  const p = password;
+  toggleText.innerText =
+    p.type === "password" ? "ซ่อน" : "แสดง";
+  p.type = p.type === "password" ? "text" : "password";
 }
 
 /* login */
 function login(){
+  msg.innerText="";
   if(!email.value || !password.value){
-    msg.innerText = "กรุณากรอกอีเมลและรหัสผ่าน";
+    msg.innerText="กรุณากรอกอีเมลและรหัสผ่าน";
     return;
   }
+
+  loginBtn.disabled=true;
+  loginBtn.innerText="กำลังเข้าสู่ระบบ...";
 
   fetch(API_URL,{
     method:"POST",
@@ -218,14 +244,18 @@ function login(){
   .then(r=>r.json())
   .then(res=>{
     if(!res.success){
-      msg.innerText = res.message;
+      msg.innerText=res.message;
+      loginBtn.disabled=false;
+      loginBtn.innerText="เข้าสู่ระบบ";
       return;
     }
     localStorage.setItem("user",JSON.stringify(res.user));
     location.href="dashboard.html";
   })
   .catch(()=>{
-    msg.innerText = "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์";
+    msg.innerText="ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์";
+    loginBtn.disabled=false;
+    loginBtn.innerText="เข้าสู่ระบบ";
   });
 }
 </script>
