@@ -2,46 +2,257 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SocialBoostTH – TEST</title>
+<title>SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body{
   margin:0;
   font-family:system-ui;
-  background:#0f172a;
+  background:linear-gradient(180deg,#0b0216,#1a0438);
   color:#fff;
 }
 .container{
   max-width:420px;
-  margin:40px auto;
+  margin:30px auto;
   padding:24px;
-  background:#020617;
-  border-radius:16px;
+  background:#120726;
+  border-radius:18px;
+}
+h1{text-align:center;margin:0}
+.sub{text-align:center;opacity:.8;margin-bottom:12px}
+.box{
+  background:#0f0220;
+  border:1px solid #2e1065;
+  padding:12px;
+  border-radius:12px;
+  margin-top:10px;
+}
+label{font-size:14px;display:block;margin-top:12px}
+input,select,button{
+  width:100%;
+  padding:14px;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid #2e1065;
+  background:#0f0220;
+  color:#fff;
+  font-size:15px;
 }
 button{
-  width:100%;
-  padding:16px;
-  margin-top:14px;
+  margin-top:16px;
+  background:linear-gradient(90deg,#7c3aed,#5b21b6);
   border:none;
-  border-radius:12px;
-  background:#22c55e;
-  color:#000;
-  font-size:18px;
   font-weight:bold;
 }
+.total{
+  margin-top:14px;
+  font-size:18px;
+  text-align:center;
+}
+.logout{background:#111}
+.msg{text-align:center;font-size:14px;opacity:.85}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h2>🧪 TEST ปุ่มสั่งซื้อ</h2>
-  <p>ถ้ากดแล้วมี popup แปลว่า JS ทำงานปกติ</p>
+<!-- LOGIN -->
+<div class="container" id="loginBox">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">เข้าสู่ระบบ</div>
 
-  <!-- 🔴 ปุ่มทดสอบ -->
-  <button onclick="alert('ORDER CLICKED')">สั่งซื้อ</button>
+  <label>อีเมล</label>
+  <input id="email">
+
+  <label>รหัสผ่าน</label>
+  <input id="password" type="password">
+
+  <button onclick="login()">เข้าสู่ระบบ</button>
+  <div id="loginMsg" class="msg"></div>
 </div>
+
+<!-- PANEL -->
+<div class="container" id="panel" style="display:none">
+  <h1>SocialBoostTH</h1>
+  <div class="sub">สั่งบริการ</div>
+
+  <div class="box">
+    👤 <b id="username"></b><br>
+    💰 เครดิตคงเหลือ: <b id="credit"></b>
+  </div>
+
+  <label>เลือกบริการ</label>
+  <select id="serviceSelect">
+    <option>กำลังโหลดบริการ...</option>
+  </select>
+
+  <label>จำนวน</label>
+  <input id="qty" type="number" value="50">
+
+  <label>ลิงก์งาน</label>
+  <input id="link" placeholder="https://tiktok.com/...">
+
+  <div id="total" class="total">รวม 0 บาท</div>
+
+  <button onclick="order()">สั่งซื้อ</button>
+  <button class="logout" onclick="logout()">ออกจากระบบ</button>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
+const USERS_API    = `https://opensheet.elk.sh/${SHEET_ID}/users`;
+const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
+
+/* 🔴 GAS URL ตัวล่าสุดที่คุณ deploy แล้ว */
+const GAS_API =
+"https://script.google.com/macros/s/AKfycbyVhWYgmP-IDztVoc62JDLwIuCFdbVdqEyV0q63koBgR0ZkN-xLLbpl3KHQK1qBedbZ/exec";
+
+/* ================= STATE ================= */
+let user = null;
+let services = [];
+
+/* ================= INIT ================= */
+document.addEventListener("DOMContentLoaded",()=>{
+  const saved = localStorage.getItem("user");
+  if(saved){
+    user = JSON.parse(saved);
+    showPanel();
+    loadServices();
+  }
+});
+
+/* ================= LOGIN ================= */
+async function login(){
+  loginMsg.innerText = "กำลังตรวจสอบ...";
+
+  const emailVal = email.value.trim().toLowerCase();
+  const passVal  = password.value.trim();
+
+  const res = await fetch(USERS_API);
+  const users = await res.json();
+
+  const u = users.find(x =>
+    x.email?.toLowerCase() === emailVal &&
+    String(x.password).trim() === passVal
+  );
+
+  if(!u){
+    loginMsg.innerText = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+    return;
+  }
+
+  user = {
+    user_id: u.user_id,
+    fullname: u.fullname,
+    credit: Number(u.credit)
+  };
+
+  localStorage.setItem("user",JSON.stringify(user));
+  showPanel();
+  loadServices();
+}
+
+function showPanel(){
+  loginBox.style.display="none";
+  panel.style.display="block";
+  username.innerText = user.fullname;
+  credit.innerText   = user.credit;
+}
+
+function logout(){
+  localStorage.removeItem("user");
+  location.reload();
+}
+
+/* ================= LOAD SERVICES ================= */
+async function loadServices(){
+  serviceSelect.innerHTML = `<option>กำลังโหลดบริการ...</option>`;
+
+  const res = await fetch(SERVICES_API);
+  const data = await res.json();
+
+  services = data.filter(s => s.status === "active");
+
+  serviceSelect.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
+  services.forEach((s,i)=>{
+    const opt = document.createElement("option");
+    opt.value = i;
+    opt.textContent = `${s.platform} | ${s.service_name}`;
+    serviceSelect.appendChild(opt);
+  });
+}
+
+/* ================= CALCULATE ================= */
+serviceSelect.onchange = calc;
+qty.oninput = calc;
+
+function calc(){
+  if(serviceSelect.value===""){
+    total.innerText = "รวม 0 บาท";
+    return;
+  }
+
+  const s = services[serviceSelect.value];
+  const q = Number(qty.value);
+
+  if(q < Number(s.min_qty) || q > Number(s.max_qty)){
+    total.innerText = "❌ จำนวนไม่ถูกต้อง";
+    return;
+  }
+
+  const amount = q * Number(s.price_th);
+  total.innerText = `รวม ${amount.toFixed(2)} บาท`;
+}
+
+/* ================= ORDER ================= */
+async function order(){
+  if(serviceSelect.value===""){
+    alert("กรุณาเลือกบริการ");
+    return;
+  }
+
+  const s = services[serviceSelect.value];
+  const q = Number(qty.value);
+  const amount = q * Number(s.price_th);
+
+  if(amount > user.credit){
+    alert("❌ เครดิตไม่พอ");
+    return;
+  }
+
+  try{
+    const res = await fetch(GAS_API,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        user_id: user.user_id,
+        amount: amount
+      })
+    });
+
+    const text = await res.text();
+    console.log("GAS RAW:", text);
+
+    const d = JSON.parse(text);
+
+    if(!d.success){
+      alert("❌ " + d.message);
+      return;
+    }
+
+    user.credit = d.credit;
+    localStorage.setItem("user",JSON.stringify(user));
+    credit.innerText = d.credit;
+
+    alert("✅ สั่งซื้อสำเร็จ / หักเครดิตแล้ว");
+
+  }catch(err){
+    alert("❌ ติดต่อระบบไม่ได้\n" + err);
+  }
+}
+</script>
 
 </body>
 </html>
