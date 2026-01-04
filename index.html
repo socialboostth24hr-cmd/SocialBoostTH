@@ -57,7 +57,7 @@ button{
 
 <body>
 
-<!-- ================= LOGIN ================= -->
+<!-- LOGIN -->
 <div class="container" id="loginBox">
   <h1>SocialBoostTH</h1>
   <div class="sub">เข้าสู่ระบบ</div>
@@ -72,7 +72,7 @@ button{
   <div id="loginMsg" class="msg"></div>
 </div>
 
-<!-- ================= PANEL ================= -->
+<!-- PANEL -->
 <div class="container" id="panel" style="display:none">
   <h1>SocialBoostTH</h1>
   <div class="sub">สั่งบริการ</div>
@@ -86,7 +86,7 @@ button{
   <select id="serviceSelect"></select>
 
   <label>จำนวน</label>
-  <input id="qty" type="number" value="50">
+  <input id="qty" type="number" value="20">
 
   <label>ลิงก์งาน</label>
   <input id="link" placeholder="https://tiktok.com/...">
@@ -102,20 +102,16 @@ button{
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
 const USERS_API    = `https://opensheet.elk.sh/${SHEET_ID}/users`;
 const SERVICES_API = `https://opensheet.elk.sh/${SHEET_ID}/services`;
-
-/* ✅ GAS URL ที่คุณยืนยันว่า doGet ใช้ได้แล้ว */
 const GAS_API =
 "https://script.google.com/macros/s/AKfycby2utfzT3R0XymWtkmH41aVHVILkm5-irLcfTe2B3ETEs0Sq6KbHc8EqrFKWDS3ja3k/exec";
 
-/* ================= STATE ================= */
-let user = null;
-let services = [];
+let user=null, services=[];
 
 /* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded",()=>{
-  const saved = localStorage.getItem("user");
+  const saved=localStorage.getItem("user");
   if(saved){
-    user = JSON.parse(saved);
+    user=JSON.parse(saved);
     showPanel();
     loadServices();
   }
@@ -123,37 +119,29 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 /* ================= LOGIN ================= */
 async function login(){
-  loginMsg.innerText = "กำลังตรวจสอบ...";
+  loginMsg.innerText="กำลังตรวจสอบ...";
+  const users=await (await fetch(USERS_API)).json();
 
-  const res = await fetch(USERS_API);
-  const users = await res.json();
-
-  const u = users.find(x =>
-    x.email?.toLowerCase() === email.value.trim().toLowerCase() &&
-    String(x.password).trim() === password.value.trim()
+  const u=users.find(x =>
+    x.email?.toLowerCase()===email.value.trim().toLowerCase() &&
+    String(x.password).trim()===password.value.trim()
   );
 
   if(!u){
-    loginMsg.innerText = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+    loginMsg.innerText="อีเมลหรือรหัสผ่านไม่ถูกต้อง";
     return;
   }
 
-  user = {
-    user_id: u.user_id,
-    fullname: u.fullname,
-    credit: Number(u.credit)
-  };
-
-  localStorage.setItem("user", JSON.stringify(user));
-  showPanel();
-  loadServices();
+  user={ user_id:u.user_id, fullname:u.fullname, credit:Number(u.credit) };
+  localStorage.setItem("user",JSON.stringify(user));
+  showPanel(); loadServices();
 }
 
 function showPanel(){
-  loginBox.style.display = "none";
-  panel.style.display = "block";
-  username.innerText = user.fullname;
-  credit.innerText   = user.credit;
+  loginBox.style.display="none";
+  panel.style.display="block";
+  username.innerText=user.fullname;
+  credit.innerText=user.credit;
 }
 
 function logout(){
@@ -161,94 +149,66 @@ function logout(){
   location.reload();
 }
 
-/* ================= LOAD SERVICES ================= */
+/* ================= SERVICES ================= */
 async function loadServices(){
-  serviceSelect.innerHTML = "<option>กำลังโหลด...</option>";
-
-  const res = await fetch(SERVICES_API);
-  services = (await res.json()).filter(s => s.status === "active");
-
-  serviceSelect.innerHTML = `<option value="">-- เลือกบริการ --</option>`;
+  services=(await (await fetch(SERVICES_API)).json()).filter(s=>s.status==="active");
+  serviceSelect.innerHTML=`<option value="">-- เลือกบริการ --</option>`;
   services.forEach((s,i)=>{
-    const o = document.createElement("option");
-    o.value = i;
-    o.textContent = `${s.platform} | ${s.service_name}`;
-    serviceSelect.appendChild(o);
+    serviceSelect.innerHTML+=`<option value="${i}">${s.platform} | ${s.service_name}</option>`;
   });
 }
 
-/* ================= CALCULATE ================= */
-serviceSelect.onchange = calc;
-qty.oninput = calc;
+serviceSelect.onchange=calc;
+qty.oninput=calc;
 
 function calc(){
-  if(serviceSelect.value===""){
-    total.innerText = "รวม 0 บาท";
-    return;
-  }
-
-  const s = services[serviceSelect.value];
-  const q = Number(qty.value);
-
-  if(q < Number(s.min_qty) || q > Number(s.max_qty)){
-    total.innerText = "❌ จำนวนไม่ถูกต้อง";
-    return;
-  }
-
-  total.innerText = `รวม ${(q * Number(s.price_th)).toFixed(2)} บาท`;
+  if(!serviceSelect.value){ total.innerText="รวม 0 บาท"; return; }
+  const s=services[serviceSelect.value];
+  const q=Number(qty.value);
+  if(q<s.min_qty||q>s.max_qty){ total.innerText="❌ จำนวนไม่ถูกต้อง"; return; }
+  total.innerText=`รวม ${(q*Number(s.price_th)).toFixed(2)} บาท`;
 }
 
 /* ================= ORDER ================= */
 async function order(){
-  alert("ORDER CLICKED"); // 🔥 ยืนยันว่าปุ่มทำงานแน่
+  if(!serviceSelect.value){ alert("กรุณาเลือกบริการ"); return; }
 
-  if(serviceSelect.value===""){
-    alert("กรุณาเลือกบริการ");
-    return;
-  }
-
-  const s = services[serviceSelect.value];
-  const q = Number(qty.value);
-  const amount = q * Number(s.price_th);
-
-  if(amount > user.credit){
-    alert("❌ เครดิตไม่พอ");
-    return;
-  }
+  const s=services[serviceSelect.value];
+  const q=Number(qty.value);
+  const amount=q*Number(s.price_th);
+  if(amount>user.credit){ alert("❌ เครดิตไม่พอ"); return; }
 
   try{
-    const res = await fetch(GAS_API,{
-      method: "POST",
-      headers: { "Content-Type":"application/json" },
-      body: JSON.stringify({
-        user_id: user.user_id,
-        amount: amount,
-        service_code: s.service_code,
-        platform: s.platform,
-        qty: q,
-        link: link.value
-      })
+    const payload={
+      user_id:user.user_id,
+      service_code:s.service_code,
+      platform:s.platform,
+      qty:q,
+      amount:amount,
+      link:link.value
+    };
+
+    const res=await fetch(GAS_API,{
+      method:"POST",
+      body: JSON.stringify(payload)   // ⭐ text/plain by default
     });
 
-    const text = await res.text();
-    console.log("GAS RESPONSE:", text);
-
-    const data = JSON.parse(text);
+    const data=JSON.parse(await res.text());
 
     if(!data.success){
-      alert("❌ " + data.message);
+      alert("❌ "+data.message);
       return;
     }
 
-    user.credit = data.credit;
-    localStorage.setItem("user", JSON.stringify(user));
-    credit.innerText = data.credit;
+    user.credit=data.credit;
+    localStorage.setItem("user",JSON.stringify(user));
+    credit.innerText=data.credit;
 
-    alert("✅ สั่งซื้อสำเร็จ\nOrder ID: " + data.order_id);
+    alert("✅ สั่งซื้อสำเร็จ\nOrder: "+data.order_id);
 
-  }catch(err){
+  }catch(e){
     alert("❌ ติดต่อระบบไม่ได้");
-    console.error(err);
+    console.error(e);
   }
 }
 </script>
