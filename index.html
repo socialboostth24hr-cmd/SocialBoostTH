@@ -2,8 +2,9 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>Login – SocialBoostTH</title>
+<title>SocialBoostTH – Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 body{
   font-family:system-ui;
@@ -11,68 +12,95 @@ body{
   color:#fff;
   padding:20px;
 }
-.box{
-  background:#020617;
-  border:2px solid #22c55e;
-  border-radius:12px;
-  padding:16px;
+.container{
   max-width:420px;
   margin:auto;
+  background:#020617;
+  border-radius:14px;
+  padding:20px;
+  border:1px solid #22c55e;
 }
+h1{text-align:center;margin-bottom:10px}
 input,button{
   width:100%;
   padding:14px;
-  margin-top:10px;
+  margin-top:12px;
   border-radius:10px;
   border:none;
   font-size:16px;
 }
-input{background:#020617;color:#fff;border:1px solid #334155}
+input{
+  background:#020617;
+  color:#fff;
+  border:1px solid #334155;
+}
 button{
   background:#22c55e;
-  color:#000;
   font-weight:bold;
+  color:#000;
 }
-.msg{margin-top:12px}
+.msg{
+  margin-top:14px;
+  text-align:center;
+}
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>เข้าสู่ระบบ</h2>
+<div class="container">
+  <h1>SocialBoostTH</h1>
 
-  <input id="email" placeholder="Email">
-  <input id="password" placeholder="Password">
+  <input id="email" placeholder="อีเมล">
+  <input id="password" type="password" placeholder="รหัสผ่าน">
 
-  <button onclick="login()">Login</button>
+  <button onclick="login()">เข้าสู่ระบบ</button>
 
   <div id="msg" class="msg"></div>
 </div>
 
 <script>
+/* 🔗 Google Sheet (users) */
 const USERS_API =
   "https://opensheet.elk.sh/10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4/users";
 
 async function login(){
-  msg.innerText = "กำลังตรวจสอบ...";
-  const email = document.getElementById("email").value.trim();
-  const pass  = document.getElementById("password").value;
+  msg.innerText = "กำลังตรวจสอบข้อมูล...";
 
-  const res = await fetch(USERS_API);
-  const users = await res.json();
+  const email = emailInput().trim();
+  const password = passInput();
 
-  const user = users.find(u =>
-    u.email === email && u.password === pass
-  );
-
-  if(!user){
-    msg.innerText = "❌ Email หรือ Password ไม่ถูกต้อง";
+  if(!email || !password){
+    msg.innerText = "กรุณากรอกข้อมูลให้ครบ";
     return;
   }
 
-  localStorage.setItem("user", JSON.stringify(user));
-  msg.innerText = "✅ เข้าสู่ระบบสำเร็จ";
+  try{
+    const res = await fetch(USERS_API);
+    const users = await res.json();
+
+    const user = users.find(u =>
+      u.email === email && u.password === password
+    );
+
+    if(!user){
+      msg.innerText = "อีเมลหรือรหัสผ่านไม่ถูกต้อง";
+      return;
+    }
+
+    localStorage.setItem("user", JSON.stringify(user));
+    msg.innerHTML = `✅ เข้าสู่ระบบสำเร็จ<br>เครดิตคงเหลือ: <b>${user.credit}</b>`;
+  }
+  catch(e){
+    msg.innerText = "เกิดข้อผิดพลาดในการเชื่อมต่อ";
+  }
+}
+
+function emailInput(){
+  return document.getElementById("email").value;
+}
+function passInput(){
+  return document.getElementById("password").value;
 }
 </script>
 
