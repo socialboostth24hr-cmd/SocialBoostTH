@@ -2,257 +2,41 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>เติมเงิน | SocialBoostTH</title>
+<title>เติมเงิน</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-:root{
-  --bg-main:#0b0216;
-  --bg-card:#14062b;
-  --border:#3b1775;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
-  --soft:rgba(255,255,255,.75);
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:system-ui;
-  background:
-    radial-gradient(1200px 600px at top,#2a0d52,transparent),
-    linear-gradient(180deg,var(--bg-main),#14032a);
-  color:#fff;
-  min-height:100vh;
-}
-
-.container{
-  max-width:420px;
-  margin:30px auto;
-  padding:28px;
-  background:linear-gradient(180deg,#1a0936,var(--bg-card));
-  border-radius:24px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
-}
-
-/* header */
-h1{
-  margin:0;
-  text-align:center;
-  font-size:28px;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.sub{
-  text-align:center;
-  margin:14px 0 26px;
-  color:var(--soft);
-  font-size:14px;
-  line-height:1.7;
-}
-
-/* card */
-.card{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:18px;
-  margin-bottom:16px;
-}
-
-/* user */
-.user{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.user-title{
-  font-size:13px;
-  color:#c4b5fd;
-}
-
-.user-name{
-  font-size:15px;
-  font-weight:800;
-}
-
-.credit{
-  text-align:right;
-}
-
-.credit span{
-  font-size:12px;
-  color:#c4b5fd;
-}
-
-.credit b{
-  display:block;
-  margin-top:4px;
-  font-size:26px;
-  font-weight:900;
-  color:#fbcfe8;
-}
-
-/* bank */
-.bank{
-  text-align:center;
-}
-
-.bank-badge{
-  display:inline-block;
-  font-size:12px;
-  font-weight:800;
-  padding:6px 14px;
-  border-radius:999px;
-  background:rgba(139,92,246,.15);
-  color:#c4b5fd;
-  margin-bottom:14px;
-}
-
-.bank-no{
-  font-size:26px;
-  font-weight:900;
-  letter-spacing:1.5px;
-  margin:6px 0;
-}
-
-.bank-owner{
-  font-size:14px;
-  color:#e9d5ff;
-}
-
-/* copy pink */
-.copy{
-  margin-top:14px;
-  padding:12px;
-  border-radius:18px;
-  font-size:14px;
-  font-weight:900;
-  color:#fff;
-  cursor:pointer;
-  background:linear-gradient(90deg,#ec4899,#f472b6);
-  box-shadow:0 10px 26px rgba(236,72,153,.45);
-  transition:.25s;
-}
-.copy:hover{ filter:brightness(1.08); }
-
-/* line */
-.line-btn{
-  display:block;
-  margin-top:18px;
-  padding:16px;
-  border-radius:20px;
-  text-align:center;
-  font-weight:900;
-  font-size:16px;
-  text-decoration:none;
-  color:#022c22;
-  background:linear-gradient(90deg,#22c55e,#4ade80);
-  box-shadow:0 12px 30px rgba(34,197,94,.4);
-}
-
-/* notice */
-.notice{
-  margin-top:14px;
-  font-size:13px;
-  color:#c4b5fd;
-  text-align:center;
-  line-height:1.7;
-}
-
-/* back */
-button{
-  width:100%;
-  padding:14px;
-  margin-top:18px;
-  border:none;
-  border-radius:18px;
-  font-weight:800;
-  cursor:pointer;
-  background:#1e293b;
-  color:#fff;
-}
+body{margin:0;font-family:system-ui;background:#0b0216;color:#fff}
+.container{max-width:420px;margin:30px auto;padding:24px;background:#14062b;border-radius:20px}
+.card{background:#1a0936;padding:16px;border-radius:16px;margin-bottom:12px}
+button{width:100%;padding:14px;border:none;border-radius:16px}
 </style>
 </head>
 
 <body>
-
 <script>
-/* ===== LOGIN GUARD ===== */
-if(!localStorage.getItem("user")){
-  location.href="index.html";
-}
+const user=JSON.parse(localStorage.getItem("user"));
+if(!user) location.href="index.html";
 </script>
 
 <div class="container">
-  <h1>เติมเงิน</h1>
-  <div class="sub">
-    เติมเครดิตเพื่อใช้งานบริการ<br>
-    โอนเงินผ่านบัญชีด้านล่าง และส่งสลิปให้แอดมิน
+  <h2>เติมเงิน</h2>
+  <div class="card">
+    ผู้ใช้: <b id="name"></b><br>
+    เครดิต: <b id="credit"></b>
   </div>
 
-  <!-- USER -->
-  <div class="card user">
-    <div>
-      <div class="user-title">ผู้ใช้งาน</div>
-      <div class="user-name" id="username">-</div>
-    </div>
-    <div class="credit">
-      <span>เครดิตคงเหลือ</span>
-      <b id="credit">0</b>
-    </div>
+  <div class="card">
+    ธนาคารกสิกรไทย<br>
+    066-1213-728<br>
+    สรวงสุดา ศรีสุวรรณ์
   </div>
 
-  <!-- BANK -->
-  <div class="card bank">
-    <div class="bank-badge">🏦 ธนาคารกสิกรไทย</div>
-    <div class="bank-no" id="bankNo">066-1213-728</div>
-    <div class="bank-owner">สรวงสุดา ศรีสุวรรณ์</div>
-    <div class="copy" id="copyBtn" onclick="copyBank()">📋 คัดลอกเลขบัญชี</div>
-  </div>
-
-  <!-- LINE -->
-  <a class="line-btn"
-     href="https://line.me/R/ti/p/@geg4960w"
-     target="_blank">
-     💬 ส่งสลิปให้แอดมินทาง LINE
-  </a>
-
-  <div class="notice">
-    ⏱ หลังโอนเงิน กรุณาส่งสลิปให้แอดมิน<br>
-    เครดิตจะได้รับการเพิ่มภายในไม่เกิน 24 ชั่วโมง
-  </div>
-
-  <button onclick="goBack()">⬅ กลับหน้า Dashboard</button>
+  <button onclick="location.href='dashboard.html'">⬅ กลับ</button>
 </div>
 
 <script>
-/* ===== LOAD USER ===== */
-const user = JSON.parse(localStorage.getItem("user"));
-
-if(user){
-  username.innerText = user.fullname;
-  credit.innerText = Number(user.credit || 0).toLocaleString();
-}
-
-/* ===== COPY BANK ===== */
-function copyBank(){
-  navigator.clipboard.writeText(bankNo.innerText);
-  const btn = document.getElementById("copyBtn");
-  btn.innerText = "✅ คัดลอกแล้ว";
-  setTimeout(()=>btn.innerText="📋 คัดลอกเลขบัญชี",1500);
-}
-
-function goBack(){
-  location.href="dashboard.html";
-}
+name.innerText=user.fullname;
+credit.innerText=user.credit;
 </script>
-
 </body>
 </html>
