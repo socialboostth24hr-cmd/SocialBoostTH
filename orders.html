@@ -17,143 +17,85 @@
   --blue:#38bdf8;
   --green:#22c55e;
 }
-
 *{box-sizing:border-box}
-
 body{
-  margin:0;
-  font-family:system-ui;
+  margin:0;font-family:system-ui;
   background:
     radial-gradient(1000px 500px at top,#2a0d52,transparent),
     linear-gradient(180deg,var(--bg-main),#14032a);
-  color:#fff;
-  min-height:100vh;
+  color:#fff;min-height:100vh;
 }
-
 .container{
-  max-width:420px;
-  margin:30px auto;
-  padding:26px;
+  max-width:420px;margin:30px auto;padding:26px;
   background:linear-gradient(180deg,#1a0936,var(--bg-card));
   border-radius:22px;
   box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
-
 h1{
-  margin:0;
-  text-align:center;
-  font-size:26px;
-  font-weight:900;
+  text-align:center;font-size:26px;font-weight:900;margin:0;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-
-.sub{
-  text-align:center;
-  margin:12px 0 22px;
-  color:var(--soft);
-  font-size:14px;
-}
+.sub{text-align:center;margin:12px 0 22px;color:var(--soft);font-size:14px}
 
 .order{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
   border-radius:18px;
-  padding:16px;
-  margin-bottom:14px;
+  padding:16px;margin-bottom:14px;
   cursor:pointer;
 }
-
-/* ไฮไลต์ออเดอร์ล่าสุด */
 .order.latest{
   border-color:var(--purple);
   box-shadow:0 0 0 1px rgba(139,92,246,.6),
              0 0 18px rgba(139,92,246,.35);
 }
-
 .order-title{
-  font-size:15px;
-  font-weight:800;
-  color:#e9d5ff;
-  margin-bottom:6px;
+  font-size:15px;font-weight:800;color:#e9d5ff;margin-bottom:6px;
 }
-
-.order-info{
-  font-size:13px;
-  color:var(--soft);
-  line-height:1.6;
-}
-
-.status{
-  margin-top:8px;
-  font-size:13px;
-  font-weight:800;
-}
-
+.order-info{font-size:13px;color:var(--soft);line-height:1.6}
+.status{margin-top:8px;font-size:13px;font-weight:800}
 .status.pending{color:var(--yellow)}
 .status.processing{color:var(--blue)}
 .status.completed{color:var(--green)}
 
-.empty{
-  text-align:center;
-  color:var(--soft);
-  font-size:14px;
-  margin:30px 0;
-}
+.empty{text-align:center;color:var(--soft);margin:30px 0}
 
 button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:16px;
-  font-weight:800;
-  cursor:pointer;
-  background:#1e293b;
-  color:#fff;
+  width:100%;padding:14px;border:none;border-radius:16px;
+  font-weight:800;background:#1e293b;color:#fff;cursor:pointer;
 }
 
-/* ===== POPUP ===== */
+/* popup */
 .popup{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:99;
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;z-index:99;
 }
-
 .popup .box{
-  max-width:380px;
-  width:90%;
+  width:90%;max-width:380px;
   background:linear-gradient(180deg,#1a0936,var(--bg-card));
-  border-radius:20px;
-  border:1px solid var(--border);
+  border-radius:20px;border:1px solid var(--border);
   padding:20px;
 }
-
 .popup h2{
-  margin:0 0 10px;
-  font-size:18px;
+  margin:0 0 10px;font-size:18px;
   background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-
-.popup .info{
-  font-size:14px;
-  color:var(--soft);
-  line-height:1.7;
-}
-
-.popup button{
-  margin-top:14px;
-}
+.popup .info{font-size:14px;color:var(--soft);line-height:1.7}
+.popup button{margin-top:14px}
 </style>
 </head>
 
 <body>
+
+<script>
+/* ===== LOGIN GUARD ===== */
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user){
+  location.href="index.html";
+}
+</script>
 
 <div class="container">
   <h1>Order ของฉัน</h1>
@@ -180,57 +122,57 @@ button{
 /* ===== CONFIG ===== */
 const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
 const ORDERS_API = `https://opensheet.elk.sh/${SHEET_ID}/orders`;
+const USER_ID = String(user.user_id);
 
-/* mock user */
-const USER_ID = "1001";
+let cachedOrders = [];
 
 /* ===== LOAD ORDERS ===== */
 function loadOrders(){
   fetch(ORDERS_API)
     .then(r=>r.json())
     .then(data=>{
-      const my = data
+      cachedOrders = data
         .filter(o => String(o.user_id) === USER_ID)
         .reverse();
-      renderOrders(my);
+      renderOrders(cachedOrders);
     })
     .catch(()=>{
-      ordersList.innerHTML = "<div class='empty'>โหลดข้อมูลไม่สำเร็จ</div>";
+      ordersList.innerHTML =
+        "<div class='empty'>โหลดข้อมูลไม่สำเร็จ</div>";
     });
 }
 
-/* AUTO REFRESH */
 loadOrders();
 setInterval(loadOrders,10000);
 
 function renderOrders(list){
   if(!list.length){
-    ordersList.innerHTML = "<div class='empty'>ยังไม่มีออเดอร์</div>";
+    ordersList.innerHTML =
+      "<div class='empty'>ยังไม่มีออเดอร์</div>";
     return;
   }
 
-  ordersList.innerHTML = list.map((o,idx)=>{
-    const statusText =
-      o.status==="pending" ? "⏳ รอดำเนินการ" :
-      o.status==="processing" ? "⚙️ กำลังดำเนินการ" :
-      "✅ ดำเนินการสำเร็จ";
-
-    return `
-      <div class="order ${idx===0?'latest':''}"
-        onclick='openPopup(${JSON.stringify(o)})'>
-        <div class="order-title">
-          ${o.service_name || o.service_code}
-        </div>
-        <div class="order-info">
-          จำนวน: ${o.qty}<br>
-          ยอดชำระ: ${Number(o.amount).toFixed(2)} บาท
-        </div>
-        <div class="status ${o.status}">
-          ${statusText}
-        </div>
+  ordersList.innerHTML = list.map((o,idx)=>`
+    <div class="order ${idx===0?'latest':''}"
+         data-index="${idx}">
+      <div class="order-title">
+        ${o.service_name || o.service_code}
       </div>
-    `;
-  }).join("");
+      <div class="order-info">
+        จำนวน: ${o.qty}<br>
+        ยอดชำระ: ${Number(o.amount).toFixed(2)} บาท
+      </div>
+      <div class="status ${o.status}">
+        ${o.status==="pending"?"⏳ รอดำเนินการ":
+          o.status==="processing"?"⚙️ กำลังดำเนินการ":
+          "✅ ดำเนินการสำเร็จ"}
+      </div>
+    </div>
+  `).join("");
+
+  document.querySelectorAll(".order").forEach(el=>{
+    el.onclick = ()=>openPopup(cachedOrders[el.dataset.index]);
+  });
 }
 
 /* ===== POPUP ===== */
@@ -245,9 +187,7 @@ function openPopup(o){
   `;
   popup.style.display="flex";
 }
-function closePopup(){
-  popup.style.display="none";
-}
+function closePopup(){ popup.style.display="none"; }
 
 function goBack(){
   location.href="dashboard.html";
