@@ -15,9 +15,7 @@
   --soft:rgba(255,255,255,.75);
   --green:#22c55e;
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui;
@@ -26,7 +24,6 @@ body{
     linear-gradient(180deg,var(--bg-main),#14032a);
   color:#fff;
 }
-
 .container{
   max-width:420px;
   margin:30px auto;
@@ -35,7 +32,6 @@ body{
   border-radius:22px;
   box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
-
 h1{
   margin:0;
   text-align:center;
@@ -45,14 +41,12 @@ h1{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .sub{
   text-align:center;
   margin:12px 0 22px;
   color:var(--soft);
   font-size:14px;
 }
-
 .card{
   background:rgba(255,255,255,.04);
   border:1px solid var(--border);
@@ -60,9 +54,7 @@ h1{
   padding:16px;
   margin-bottom:14px;
 }
-
 label{font-size:14px;color:#e9d5ff}
-
 input{
   width:100%;
   padding:14px;
@@ -72,7 +64,6 @@ input{
   background:#120725;
   color:#fff;
 }
-
 .row{
   display:flex;
   justify-content:space-between;
@@ -80,14 +71,12 @@ input{
   font-size:14px;
   color:var(--soft);
 }
-
 .total{
   font-size:22px;
   font-weight:900;
   color:#fbcfe8;
   text-align:center;
 }
-
 .save{
   margin-top:8px;
   text-align:center;
@@ -95,7 +84,6 @@ input{
   color:var(--green);
   font-weight:800;
 }
-
 button{
   width:100%;
   padding:14px;
@@ -106,13 +94,7 @@ button{
   background:linear-gradient(90deg,var(--purple),var(--pink));
   color:#fff;
 }
-
-.back{
-  background:#1e293b;
-  margin-top:10px;
-}
-
-/* popup */
+.back{background:#1e293b;margin-top:10px}
 .popup{
   position:fixed;
   inset:0;
@@ -133,7 +115,7 @@ button{
 
   <div class="card">
     <b id="serviceName">ผู้ติดตามต่างชาติ (ไม่มีประกัน)</b><br>
-    <span class="sub">ราคา 0.256 บาท / คน</span>
+    <span class="sub">ราคา <span id="unitPrice">0.256</span> บาท / คน</span>
   </div>
 
   <div class="card">
@@ -142,18 +124,10 @@ button{
   </div>
 
   <div class="card">
-    <div class="row">
-      <span>ราคาปกติ</span>
-      <span id="normalPrice">0.00</span>
-    </div>
-    <div class="row">
-      <span>ส่วนลด</span>
-      <span id="discountPrice">-0.00</span>
-    </div>
+    <div class="row"><span>ราคาปกติ</span><span id="normalPrice">0.00</span></div>
+    <div class="row"><span>ส่วนลด</span><span id="discountPrice">-0.00</span></div>
     <hr style="border:0;border-top:1px solid #2e1065;margin:10px 0">
-    <div class="total">
-      รวม <span id="totalPrice">0.00</span> บาท
-    </div>
+    <div class="total">รวม <span id="totalPrice">0.00</span> บาท</div>
     <div class="save" id="saveText"></div>
   </div>
 
@@ -168,65 +142,69 @@ button{
     <div class="sub" style="text-align:left">
       • บริการที่ไม่มีประกัน ไม่เติมยอดทดแทนทุกกรณี<br>
       • ไม่สามารถยกเลิกหรือคืนเงินได้หลังสั่งซื้อ<br>
-      • หากเกิน 24 ชม. สถานะไม่เปลี่ยนแปลง<br>
-        ติดต่อ LINE ร้านได้ทันที
+      • หากเกิน 24 ชม. สถานะไม่เปลี่ยนแปลง ติดต่อ LINE ร้านได้ทันที
     </div>
-
-    <label>
-      <input type="checkbox" id="accept"> ยอมรับเงื่อนไขทั้งหมด
-    </label>
-
-    <button onclick="confirmOrder()" style="margin-top:10px">
-      ดำเนินการสั่งซื้อ
-    </button>
+    <label><input type="checkbox" id="accept"> ยอมรับเงื่อนไขทั้งหมด</label>
+    <button onclick="confirmOrder()" style="margin-top:10px">ดำเนินการสั่งซื้อ</button>
     <button class="back" onclick="closePolicy()">ยกเลิก</button>
   </div>
 </div>
 
 <script>
-const price = 0.256;
+/* ===== CONFIG ===== */
+const SHEET_ID = "10hFozE-vcdtPhX7KiGs3JTndpvxbUNDHDzhpvPxIz-4";
+const DISCOUNT_API = `https://opensheet.elk.sh/${SHEET_ID}/discounts`;
+
+const SERVICE_CODE = "TT_FOLLOW_INT_NO"; // 👈 เปลี่ยนตามบริการจริง
+const PRICE_PER_UNIT = 0.256;
+
+/* ===== ELEMENTS ===== */
 const qty = document.getElementById("qty");
 const normal = document.getElementById("normalPrice");
 const discount = document.getElementById("discountPrice");
 const total = document.getElementById("totalPrice");
 const save = document.getElementById("saveText");
 
+/* ===== STATE ===== */
+let discounts = [];
+
+/* ===== LOAD DISCOUNT RULES ===== */
+fetch(DISCOUNT_API)
+  .then(r=>r.json())
+  .then(data=>{
+    discounts = data.filter(d=>d.service_code === SERVICE_CODE)
+      .sort((a,b)=>b.min_qty - a.min_qty); // สำคัญมาก
+    calc();
+  });
+
+/* ===== CALCULATION ===== */
 function calc(){
   const q = Number(qty.value||0);
-  let discountRate = 0;
+  const normalPrice = q * PRICE_PER_UNIT;
 
-  if(q >= 10000) discountRate = 0.08;
-  else if(q >= 5000) discountRate = 0.05;
-  else if(q >= 3000) discountRate = 0.03;
+  let rule = discounts.find(d => q >= Number(d.min_qty));
+  let discountAmount = 0;
 
-  const normalPrice = q * price;
-  const discountAmount = normalPrice * discountRate;
-  const finalPrice = normalPrice - discountAmount;
+  if(rule){
+    discountAmount = normalPrice * (Number(rule.discount_percent)/100);
+    save.innerText = `🔥 ประหยัด ${discountAmount.toFixed(2)} บาท (${rule.label})`;
+  }else{
+    save.innerText = "";
+  }
 
   normal.innerText = normalPrice.toFixed(2);
   discount.innerText = "-" + discountAmount.toFixed(2);
-  total.innerText = finalPrice.toFixed(2);
-
-  save.innerText = discountAmount > 0
-    ? `🔥 คุ้มมาก! ประหยัดไป ${discountAmount.toFixed(2)} บาท`
-    : "";
+  total.innerText = (normalPrice - discountAmount).toFixed(2);
 }
 
 qty.oninput = calc;
-calc();
 
-function openPolicy(){
-  document.getElementById("policy").style.display="flex";
-}
-function closePolicy(){
-  document.getElementById("policy").style.display="none";
-}
+/* ===== UI ===== */
+function openPolicy(){ policy.style.display="flex"; }
+function closePolicy(){ policy.style.display="none"; }
 function confirmOrder(){
-  if(!document.getElementById("accept").checked){
-    alert("กรุณายอมรับเงื่อนไขก่อน");
-    return;
-  }
-  alert("✅ สั่งซื้อสำเร็จ");
+  if(!accept.checked){ alert("กรุณายอมรับเงื่อนไข"); return; }
+  alert("✅ สั่งซื้อสำเร็จ (demo)");
   location.href="dashboard.html";
 }
 </script>
