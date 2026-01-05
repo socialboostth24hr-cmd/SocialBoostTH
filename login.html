@@ -6,57 +6,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+:root{
+  --pink:#ec4899;
+  --purple:#8b5cf6;
+  --blue:#38bdf8;
+  --bg:#faf5ff;
+}
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:system-ui;
-  background:#f8f3ec;
+  background:
+    radial-gradient(900px 400px at top,#fce7f3,transparent),
+    linear-gradient(180deg,var(--bg),#f0f9ff);
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
 }
+
 .card{
-  background:#fff;
-  padding:26px;
-  border-radius:20px;
+  background:#ffffff;
+  padding:28px;
+  border-radius:24px;
   width:100%;
   max-width:360px;
-  box-shadow:0 20px 40px rgba(0,0,0,.1);
+  box-shadow:0 30px 70px rgba(139,92,246,.25);
   text-align:center;
 }
+
 .logo{
   width:120px;
-  margin-bottom:10px;
+  margin-bottom:6px;
 }
-h2{
-  margin:10px 0;
-  color:#8b5e3c;
+
+.brand{
+  font-size:22px;
+  font-weight:800;
+  margin:6px 0 2px;
+  background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
+
+.subtitle{
+  font-size:13px;
+  color:#666;
+  margin-bottom:16px;
+}
+
 input{
   width:100%;
-  padding:12px;
+  padding:12px 14px;
   margin:10px 0;
-  border-radius:12px;
+  border-radius:14px;
   border:1px solid #ddd;
   font-size:14px;
+  outline:none;
 }
+
+input:focus{
+  border-color:var(--purple);
+}
+
 button{
   width:100%;
   padding:12px;
+  margin-top:8px;
   border:none;
-  border-radius:12px;
-  background:#8b5e3c;
+  border-radius:14px;
+  background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue));
   color:#fff;
   font-size:15px;
+  font-weight:600;
   cursor:pointer;
 }
+
 button:disabled{
   opacity:.6;
+  cursor:not-allowed;
 }
+
 .error{
-  color:#d00000;
+  color:#e11d48;
   font-size:13px;
-  margin-top:8px;
+  margin-top:10px;
 }
 </style>
 </head>
@@ -65,9 +101,11 @@ button:disabled{
 
 <div class="card">
   <!-- 🔰 โลโก้ร้าน -->
-  <img src="logo.png" class="logo" alt="SocialBoostTH">
+  <img src="logo.png" class="logo" alt="SocialBoostTH"
+       onerror="this.style.display='none'">
 
-  <h2>เข้าสู่ระบบ</h2>
+  <div class="brand">SocialBoostTH</div>
+  <div class="subtitle">ระบบปั้มยอดอัตโนมัติ ปลอดภัย ใช้งานง่าย</div>
 
   <input type="text" id="username" placeholder="ชื่อผู้ใช้">
   <input type="password" id="password" placeholder="รหัสผ่าน">
