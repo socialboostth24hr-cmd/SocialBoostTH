@@ -4,7 +4,177 @@
 <meta charset="UTF-8">
 <title>เข้าสู่ระบบ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- CSS เหมือนเดิมทั้งหมด -->
+
+<style>
+:root{
+  --pink:#ec4899;
+  --purple:#8b5cf6;
+  --blue:#38bdf8;
+  --line:#22c55e;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system;
+  background:
+    radial-gradient(800px 320px at top,#fde7f3,transparent),
+    linear-gradient(180deg,#eef6ff,#ffffff);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.wrapper{
+  width:100%;
+  max-width:420px;
+  padding:26px;
+}
+
+.card{
+  background:#fff;
+  border-radius:28px;
+  padding:34px 30px 28px;
+  box-shadow:
+    0 25px 60px rgba(139,92,246,.25),
+    0 8px 20px rgba(56,189,248,.15);
+}
+
+/* โลโก้ */
+.logo{
+  width:90px;
+  display:block;
+  margin:0 auto 14px;
+}
+
+/* หัวข้อ */
+.brand{
+  font-size:28px;
+  font-weight:800;
+  text-align:center;
+  margin-bottom:6px;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+  text-align:center;
+  font-size:14px;
+  color:#94a3b8;
+  margin-bottom:26px;
+}
+
+label{
+  display:block;
+  font-size:14px;
+  margin-bottom:6px;
+  color:#475569;
+}
+
+.field{
+  margin-bottom:18px;
+}
+
+.input{
+  width:100%;
+  display:flex;
+  align-items:center;
+  border:1px solid #e5e7eb;
+  border-radius:20px;
+  padding:14px 16px;
+  background:#fafafa;
+}
+
+.input:focus-within{
+  background:#fff;
+  border-color:var(--purple);
+  box-shadow:0 0 0 4px rgba(139,92,246,.15);
+}
+
+.input input{
+  border:none;
+  outline:none;
+  width:100%;
+  font-size:15px;
+}
+
+input::placeholder{
+  color:#c7d2fe;
+}
+
+/* ปุ่มแสดงรหัส */
+.toggle{
+  border:none;
+  background:#f1f5f9;
+  color:#64748b;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+.toggle:hover{background:#e2e8f0}
+
+/* ปุ่ม Login */
+.login-btn{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:22px;
+  background:
+    linear-gradient(135deg,#38bdf8,#8b5cf6,#ec4899);
+  color:#fff;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+  margin-top:10px;
+  box-shadow:0 18px 45px rgba(139,92,246,.45);
+}
+.login-btn:hover{
+  transform:translateY(-1px);
+}
+
+.or{
+  text-align:center;
+  color:#cbd5e1;
+  margin:20px 0 12px;
+  font-size:13px;
+}
+
+/* ปุ่ม LINE */
+.line-btn{
+  width:100%;
+  padding:15px;
+  border-radius:22px;
+  background:linear-gradient(180deg,#22c55e,#16a34a);
+  color:#fff;
+  font-weight:800;
+  text-align:center;
+  text-decoration:none;
+  display:block;
+  box-shadow:0 16px 36px rgba(34,197,94,.35);
+}
+.line-btn:hover{
+  transform:translateY(-1px);
+}
+
+.error{
+  margin-top:12px;
+  font-size:13px;
+  color:#e11d48;
+  text-align:center;
+}
+
+.footer{
+  margin-top:20px;
+  text-align:center;
+  font-size:12px;
+  color:#a3a3a3;
+}
+</style>
 </head>
 
 <body>
@@ -12,11 +182,11 @@
 <div class="wrapper">
   <div class="card">
 
-    <!-- ✅ โลโก้จาก Google Drive (ใช้ได้กับ Apps Script) -->
+    <!-- ✅ โลโก้จาก GitHub -->
     <img
-      src="https://drive.google.com/uc?export=view&id=1M0D0DDNKBpGBIeGdNXu55-qotIz63_4W"
+      src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png"
       class="logo"
-      alt="SocialBoostTH Logo">
+      alt="SocialBoostTH">
 
     <div class="brand">เข้าสู่ระบบ</div>
     <div class="subtitle">
@@ -26,64 +196,48 @@
       </span>
     </div>
 
-    <!-- ฟอร์มเหมือนเดิม -->
+    <div class="field">
+      <label>ชื่อผู้ใช้งาน</label>
+      <div class="input">
+        <input id="username" placeholder="กรอกชื่อผู้ใช้งานของคุณ">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>รหัสผ่าน</label>
+      <div class="input">
+        <input type="password" id="password" placeholder="กรอกรหัสผ่านของคุณ">
+        <button type="button" class="toggle" onclick="togglePassword()">แสดง</button>
+      </div>
+    </div>
+
+    <button class="login-btn" onclick="login()">เข้าสู่ระบบ</button>
+
+    <div class="or">หรือ</div>
+
+    <a class="line-btn"
+       href="https://line.me/R/ti/p/@geg4960w"
+       target="_blank">
+      สมัครสมาชิก / ติดต่อร้านทาง LINE
+    </a>
+
+    <div id="error" class="error"></div>
+
+    <div class="footer">
+      © 2026 SocialBoostTH All rights reserved.
+    </div>
 
   </div>
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbnVToVL1I8zCCoEW9PMK_KqbL1Zf8VUsQSAQ_6-A-AnQ/exec";
-
 function togglePassword(){
-  const input = document.getElementById('password');
-  const btn = document.querySelector('.toggle');
-  input.type = input.type === 'password' ? 'text' : 'password';
-  btn.textContent = input.type === 'password' ? 'แสดง' : 'ซ่อน';
+  const i=document.getElementById('password');
+  i.type=i.type==='password'?'text':'password';
 }
-
 function login(){
-  const btn = document.querySelector('.login-btn');
-  const error = document.getElementById('error');
-  btn.disabled = true;
-  error.textContent = '';
-
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if(!username || !password){
-    error.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
-    btn.disabled = false;
-    return;
-  }
-
-  fetch(API,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      action:'login',
-      username,
-      password
-    })
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(!res.success){
-      error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
-      btn.disabled = false;
-      return;
-    }
-
-    localStorage.setItem('user_id', res.user.user_id);
-    localStorage.setItem('username', res.user.username);
-    localStorage.setItem('credit', res.user.credit);
-
-    // ✅ เปลี่ยนหน้าแบบ Apps Script
-    location.href = '?page=services';
-  })
-  .catch(()=>{
-    error.textContent = 'เชื่อมต่อระบบไม่ได้';
-    btn.disabled = false;
-  });
+  // ต่อ API ได้ตามที่ทำไว้ เดี๋ยวไปเช็คหน้าถัดไป
+  location.href='services.html';
 }
 </script>
 
