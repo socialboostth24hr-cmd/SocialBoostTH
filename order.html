@@ -10,11 +10,10 @@
   --pink:#ec4899;
   --purple:#8b5cf6;
   --blue:#38bdf8;
-  --red:#ef4444;
   --green:#22c55e;
+  --red:#ef4444;
 }
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui;
@@ -22,7 +21,6 @@ body{
     radial-gradient(900px 360px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
-
 .header{
   padding:14px 18px;
   display:flex;
@@ -41,13 +39,11 @@ body{
   cursor:pointer;
   box-shadow:0 6px 18px rgba(0,0,0,.1);
 }
-
 .container{
   max-width:720px;
   margin:0 auto;
   padding:14px 18px 140px;
 }
-
 .card{
   background:#fff;
   border-radius:22px;
@@ -55,10 +51,8 @@ body{
   margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
 }
-
 .title{font-size:22px;font-weight:900}
 .desc{font-size:14px;color:#64748b}
-
 .badge-pop{
   display:inline-block;
   background:linear-gradient(90deg,#fde68a,#f59e0b);
@@ -69,7 +63,6 @@ body{
   border-radius:999px;
   margin-top:6px;
 }
-
 .field{margin-top:14px}
 label{font-weight:700}
 input,textarea{
@@ -80,8 +73,6 @@ input,textarea{
   margin-top:6px;
   font-size:15px;
 }
-
-/* price */
 .price-box{
   display:flex;
   justify-content:space-between;
@@ -90,36 +81,21 @@ input,textarea{
 .discount{color:#ef4444}
 .total{font-size:20px;font-weight:900;margin-top:14px}
 .error{color:#ef4444;margin-top:10px}
-
-/* discount extra */
-.save-text{
-  margin-top:8px;
-  font-weight:900;
-  color:var(--green);
-}
-.next-dis{
-  margin-top:4px;
-  color:#4f46e5;
-  font-weight:700;
-}
-
-/* progress */
-.progress-wrap{
-  margin-top:12px;
-}
+.save-text{margin-top:8px;font-weight:900;color:var(--green)}
+.next-dis{margin-top:4px;color:#4f46e5;font-weight:700}
+.progress-wrap{margin-top:12px}
 .progress{
   height:10px;
   background:#e5e7eb;
   border-radius:999px;
   overflow:hidden;
 }
-.progress > div{
+.progress>div{
   height:100%;
   width:0%;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
   transition:.3s;
 }
-
 .buy-btn{
   position:fixed;
   bottom:16px;
@@ -149,55 +125,48 @@ input,textarea{
 
 <div class="container">
 
-  <!-- SERVICE -->
-  <div class="card">
-    <div class="title" id="serviceName">กำลังโหลด...</div>
-    <div class="desc" id="serviceDesc"></div>
-    <div class="badge-pop" id="popularBadge" style="display:none">
-      ⭐ คนส่วนใหญ่สั่งระดับนี้
-    </div>
+<div class="card">
+  <div class="title" id="serviceName">กำลังโหลด...</div>
+  <div class="desc" id="serviceDesc"></div>
+  <div class="badge-pop" id="popularBadge" style="display:none">⭐ คนส่วนใหญ่สั่งระดับนี้</div>
+</div>
+
+<div class="card">
+  <div class="field">
+    <label>จำนวน</label>
+    <input type="number" id="qty">
+    <div class="error" id="minText"></div>
   </div>
 
-  <!-- ORDER -->
-  <div class="card">
-    <div class="field">
-      <label>จำนวน</label>
-      <input type="number" id="qty">
-      <div class="error" id="minText"></div>
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress">
-        <div id="progressBar"></div>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>ลิงก์ TikTok</label>
-      <textarea id="link" placeholder="เช่น https://www.tiktok.com/@username"></textarea>
-    </div>
-
-    <div class="price-box">
-      <div>ราคาปกติ</div>
-      <div><b id="basePrice">0</b> บาท</div>
-    </div>
-
-    <div class="price-box discount">
-      <div>ส่วนลด</div>
-      <div><b id="discount">0%</b></div>
-    </div>
-
-    <div class="save-text" id="saveText" style="display:none"></div>
-    <div class="next-dis" id="nextDiscount"></div>
-
-    <div class="total">
-      รวมทั้งหมด: <span id="total">0</span> บาท
-    </div>
-
-    <div class="error" id="error"></div>
+  <div class="progress-wrap">
+    <div class="progress"><div id="progressBar"></div></div>
   </div>
 
-  <div class="card" id="details"></div>
+  <div class="field">
+    <label>ลิงก์ TikTok</label>
+    <textarea id="link"></textarea>
+  </div>
+
+  <div class="price-box">
+    <div>ราคาปกติ</div>
+    <div><b id="basePrice">0</b> บาท</div>
+  </div>
+
+  <div class="price-box discount">
+    <div>ส่วนลด</div>
+    <div><b id="discount">0%</b></div>
+  </div>
+
+  <div class="save-text" id="saveText"></div>
+  <div class="next-dis" id="nextDiscount"></div>
+
+  <div class="total">
+    รวมทั้งหมด: <span id="total">0</span> บาท
+  </div>
+
+  <div class="error" id="error"></div>
+</div>
+
 </div>
 
 <button class="buy-btn" id="buyBtn">ยืนยันสั่งซื้อ</button>
@@ -205,10 +174,9 @@ input,textarea{
 <script>
 const API="https://script.google.com/macros/s/AKfycbyZjZarJL7nB_zATaPk95OQNI_DqvCPj47mr7Hqnavv3BqGb5bUAMKyzAEOi-03vUsRUw/exec";
 
-const serviceId = localStorage.getItem('service_id');
-const userId    = localStorage.getItem('user_id');
-const credit    = Number(localStorage.getItem('credit')||0);
-
+const serviceId=localStorage.getItem('service_id');
+const userId=localStorage.getItem('user_id');
+const credit=Number(localStorage.getItem('credit')||0);
 if(!serviceId||!userId) location.href='services.html';
 
 const qtyEl=document.getElementById('qty');
@@ -216,37 +184,26 @@ const linkEl=document.getElementById('link');
 const basePriceEl=document.getElementById('basePrice');
 const discountEl=document.getElementById('discount');
 const totalEl=document.getElementById('total');
-const minTextEl=document.getElementById('minText');
-const errorEl=document.getElementById('error');
 const saveText=document.getElementById('saveText');
 const nextDiscount=document.getElementById('nextDiscount');
 const progressBar=document.getElementById('progressBar');
+const minText=document.getElementById('minText');
+const errorEl=document.getElementById('error');
 const popularBadge=document.getElementById('popularBadge');
 const buyBtn=document.getElementById('buyBtn');
 
-let service=null, discounts=[], finalTotal=0;
+let service=null,discounts=[],finalTotal=0;
 
 Promise.all([
   fetch(API+'?action=services').then(r=>r.json()),
-  fetch(API+'?action=service_details&service_id='+serviceId).then(r=>r.json()),
   fetch(API+'?action=discounts&service_id='+serviceId).then(r=>r.json())
-]).then(([services,details,disc])=>{
+]).then(([services,disc])=>{
   service=services.find(s=>s.service_id===serviceId);
   discounts=disc||[];
-
-  serviceName.innerText=service.display_name;
-  serviceDesc.innerText=service.short_desc||'';
+  document.getElementById('serviceName').innerText=service.display_name;
+  document.getElementById('serviceDesc').innerText=service.short_desc||'';
   qtyEl.value=service.min_qty;
-  minTextEl.innerText=`ขั้นต่ำ ${service.min_qty} ${service.unit}`;
-
-  discounts.sort((a,b)=>b.discount_percent-a.discount_percent);
-  if(discounts[0]?.discount_percent>=50) popularBadge.style.display='inline-block';
-
-  details.forEach(d=>{
-    document.getElementById('details').innerHTML+=
-      `<h4>${d.title}</h4><p>${d.content.replace(/\n/g,'<br>')}</p>`;
-  });
-
+  minText.innerText=`ขั้นต่ำ ${service.min_qty} ${service.unit}`;
   calc();
 });
 
@@ -254,38 +211,35 @@ qtyEl.addEventListener('input',calc);
 
 function calc(){
   const qty=Number(qtyEl.value);
-  if(qty<service.min_qty) return;
+  if(qty<service.min_qty){
+    errorEl.innerText='ต่ำกว่าขั้นต่ำ';
+    return;
+  }else errorEl.innerText='';
 
   const base=(qty*service.price_per_100)/100;
   const current=discounts.find(d=>qty>=d.min_qty&&qty<=d.max_qty);
-  const next=discounts.filter(d=>d.min_qty>qty).sort((a,b)=>a.min_qty-b.min_qty)[0];
+  const next=discounts.find(d=>d.min_qty>qty);
 
   finalTotal=current?qty*current.price:base;
-  const saved=base-finalTotal;
-
   basePriceEl.innerText=base.toFixed(2);
   discountEl.innerText=(current?current.discount_percent:0)+'%';
   totalEl.innerText=finalTotal.toFixed(2);
 
-  if(saved>0){
-    saveText.style.display='block';
-    saveText.innerText=`🔥 ลดไป ${saved.toFixed(2)} บาท`;
-  }else saveText.style.display='none';
+  saveText.innerText=base>finalTotal?`🔥 ลดไป ${(base-finalTotal).toFixed(2)} บาท`:'';
+  nextDiscount.innerText=next?`เพิ่มอีก ${next.min_qty-qty} จะได้ ${next.discount_percent}%`:'คุณได้ส่วนลดสูงสุดแล้ว';
 
-  nextDiscount.innerText=next
-    ? `💡 เพิ่มอีก ${next.min_qty-qty} ${service.unit} จะได้ ${next.discount_percent}%`
-    : '🏆 คุณได้ส่วนลดสูงสุดแล้ว';
-
-  const max=discounts[discounts.length-1]?.max_qty||qty;
+  const max=next?next.min_qty:qty;
   progressBar.style.width=Math.min(100,(qty/max)*100)+'%';
+
+  if(current && current.is_popular==='on') popularBadge.style.display='inline-block';
 }
 
 buyBtn.onclick=()=>{
+  const qty=Number(qtyEl.value);
   if(finalTotal>credit) return errorEl.innerText='เครดิตไม่พอ';
   if(!linkEl.value.trim()) return errorEl.innerText='กรุณาใส่ลิงก์';
 
   buyBtn.disabled=true;
-
   fetch(API,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -293,10 +247,18 @@ buyBtn.onclick=()=>{
       action:'create_order',
       user_id:userId,
       service_id:serviceId,
-      qty,
+      qty:qty,
       link:linkEl.value.trim()
     })
-  }).then(()=>location.href='orders.html');
+  }).then(r=>r.json())
+    .then(res=>{
+      if(!res.success) throw res;
+      location.href='orders.html';
+    })
+    .catch(()=>{
+      errorEl.innerText='สั่งซื้อไม่สำเร็จ';
+      buyBtn.disabled=false;
+    });
 };
 </script>
 
