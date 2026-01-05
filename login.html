@@ -10,6 +10,7 @@
   --pink:#ec4899;
   --purple:#8b5cf6;
   --blue:#38bdf8;
+  --line:#22c55e;
 }
 
 *{box-sizing:border-box}
@@ -35,7 +36,7 @@ body{
 .card{
   background:#fff;
   border-radius:28px;
-  padding:30px 28px 26px;
+  padding:32px 30px 26px;
   box-shadow:
     0 25px 60px rgba(139,92,246,.25),
     0 8px 20px rgba(56,189,248,.15);
@@ -45,7 +46,7 @@ body{
 .logo{
   width:90px;
   display:block;
-  margin:0 auto 10px;
+  margin:0 auto 12px;
 }
 
 .brand{
@@ -99,18 +100,26 @@ label{
   font-size:15px;
 }
 
+/* ปุ่มแสดงรหัส (ทางการ) */
 .toggle{
+  border:none;
+  background:#f1f5f9;
+  color:#475569;
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:13px;
   cursor:pointer;
-  font-size:16px;
-  padding-left:8px;
-  opacity:.6;
+  transition:.2s;
 }
-.toggle:hover{opacity:1}
+.toggle:hover{
+  background:#e2e8f0;
+}
 
 input::placeholder{
   color:#c7d2fe;
 }
 
+/* ปุ่ม Login */
 .login-btn{
   width:100%;
   padding:15px;
@@ -139,27 +148,28 @@ input::placeholder{
 .or{
   text-align:center;
   color:#cbd5e1;
-  margin:18px 0 8px;
+  margin:20px 0 10px;
   font-size:13px;
 }
 
+/* ปุ่มสมัครสมาชิก (เด่น + ทางการ) */
 .line-btn{
   width:100%;
-  padding:13px;
-  border-radius:18px;
-  border:1.5px solid #22c55e;
-  background:linear-gradient(180deg,#ecfdf5,#f0fdf4);
-  color:#166534;
+  padding:14px;
+  border-radius:20px;
+  background:linear-gradient(180deg,#22c55e,#16a34a);
+  color:#ffffff;
   font-weight:700;
   text-align:center;
   text-decoration:none;
   display:block;
+  box-shadow:0 14px 30px rgba(34,197,94,.35);
   transition:.2s;
 }
 
 .line-btn:hover{
   transform:translateY(-1px);
-  box-shadow:0 10px 25px rgba(34,197,94,.25);
+  box-shadow:0 18px 40px rgba(34,197,94,.45);
 }
 
 .error{
@@ -183,7 +193,6 @@ input::placeholder{
 <div class="wrapper">
   <div class="card">
 
-    <!-- โลโก้ร้าน -->
     <img src="logo.png" class="logo" alt="SocialBoostTH">
 
     <div class="brand">เข้าสู่ระบบ</div>
@@ -200,7 +209,9 @@ input::placeholder{
       <label>รหัสผ่าน</label>
       <div class="input">
         <input type="password" id="password" placeholder="กรอกรหัสผ่านของคุณ">
-        <span class="toggle" onclick="togglePassword()">👁️</span>
+        <button class="toggle" onclick="togglePassword()" type="button">
+          แสดง
+        </button>
       </div>
     </div>
 
@@ -211,7 +222,7 @@ input::placeholder{
     <a class="line-btn"
        href="https://line.me/R/ti/p/@geg4960w"
        target="_blank">
-      💬 สมัครสมาชิก / ทักร้าน LINE @geg4960w
+      สมัครสมาชิก / ติดต่อร้านทาง LINE
     </a>
 
     <div id="error" class="error"></div>
@@ -228,7 +239,14 @@ const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbn
 
 function togglePassword(){
   const input = document.getElementById('password');
-  input.type = input.type === 'password' ? 'text' : 'password';
+  const btn = document.querySelector('.toggle');
+  if(input.type === 'password'){
+    input.type = 'text';
+    btn.textContent = 'ซ่อน';
+  }else{
+    input.type = 'password';
+    btn.textContent = 'แสดง';
+  }
 }
 
 function login(){
