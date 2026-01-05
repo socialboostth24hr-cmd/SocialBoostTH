@@ -7,150 +7,152 @@
 
 <style>
 :root{
-  --bg-main:#0b0216;
-  --bg-card:#14062b;
+  --bg:#0b0216;
+  --card:#14062b;
   --border:#3b1775;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
+  --p:#8b5cf6;
+  --pk:#ec4899;
   --soft:rgba(255,255,255,.75);
   --yellow:#facc15;
-  --blue:#38bdf8;
   --green:#22c55e;
+  --red:#ef4444;
 }
 
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui;
   background:
-    radial-gradient(1000px 500px at top,#2a0d52,transparent),
-    linear-gradient(180deg,var(--bg-main),#14032a);
+    radial-gradient(900px 400px at top,#2a0d52,transparent),
+    linear-gradient(180deg,#0b0216,#14032a);
   color:#fff;
 }
 
-/* CONTAINER */
 .box{
   max-width:420px;
-  margin:30px auto;
+  margin:24px auto;
   padding:22px;
-  background:linear-gradient(180deg,#1a0936,var(--bg-card));
-  border-radius:24px;
 }
 
-/* HEADER */
 h1{
-  margin:0;
   text-align:center;
-  font-size:24px;
+  font-size:26px;
   font-weight:900;
-  background:linear-gradient(90deg,var(--purple),var(--pink));
+  margin-bottom:6px;
+  background:linear-gradient(90deg,var(--p),var(--pk));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
+
 .sub{
-  margin-top:8px;
   text-align:center;
   font-size:14px;
   color:var(--soft);
+  margin-bottom:18px;
 }
 
 /* ORDER CARD */
 .order{
-  position:relative;
-  background:rgba(255,255,255,.05);
+  background:linear-gradient(180deg,#1a0936,var(--card));
   border:1px solid var(--border);
-  border-radius:18px;
+  border-radius:20px;
   padding:16px;
-  margin-top:16px;
+  margin-bottom:14px;
 }
 
-/* BADGE */
-.badge{
-  position:absolute;
-  top:12px;
-  right:12px;
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.order-id{
+  font-size:13px;
+  color:#c4b5fd;
+  font-weight:700;
+}
+
+.status{
   font-size:12px;
   font-weight:900;
-  padding:4px 10px;
+  padding:5px 12px;
   border-radius:999px;
-  background:linear-gradient(90deg,#facc15,#fb7185);
-  color:#1e293b;
 }
 
-/* TITLE */
-.order-title{
-  text-align:center;
-  font-size:16px;
-  font-weight:900;
-  color:#e9d5ff;
+.pending{
+  background:rgba(250,204,21,.15);
+  color:var(--yellow);
+  border:1px solid rgba(250,204,21,.4);
 }
 
-/* INFO */
-.order-info{
-  margin-top:10px;
+.success{
+  background:rgba(34,197,94,.15);
+  color:var(--green);
+  border:1px solid rgba(34,197,94,.4);
+}
+
+.failed{
+  background:rgba(239,68,68,.15);
+  color:var(--red);
+  border:1px solid rgba(239,68,68,.4);
+}
+
+.service{
+  margin-top:8px;
+  font-size:15px;
+  font-weight:800;
+}
+
+.meta{
+  margin-top:6px;
   font-size:13px;
   color:var(--soft);
-  line-height:1.7;
-  text-align:center;
+  line-height:1.6;
 }
-
-/* STATUS */
-.status{
-  margin-top:12px;
-  font-size:13px;
-  font-weight:900;
-  text-align:center;
-}
-.pending{color:var(--yellow)}
-.processing{color:var(--blue)}
-.completed{color:var(--green)}
 
 /* EMPTY */
 .empty{
   text-align:center;
-  margin-top:30px;
-  color:var(--soft);
   font-size:14px;
+  color:var(--soft);
+  margin-top:40px;
 }
 
-/* BUTTON */
-button{
+/* BACK */
+.back{
   width:100%;
-  margin-top:22px;
+  margin-top:18px;
   padding:14px;
-  border-radius:18px;
   border:none;
+  border-radius:18px;
   font-size:15px;
   font-weight:900;
-  cursor:pointer;
-  background:#1e293b;
+  background:linear-gradient(135deg,#1e293b,#334155);
   color:#fff;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
-
 <div class="box">
   <h1>ออเดอร์ของฉัน</h1>
-  <div class="sub">ประวัติการสั่งซื้อและสถานะงาน</div>
+  <div class="sub">ตรวจสอบสถานะการสั่งซื้อ</div>
 
   <div id="list">กำลังโหลด...</div>
 
-  <button onclick="goBack()">⬅ กลับหน้า Dashboard</button>
+  <button class="back" onclick="location.href='dashboard.html'">
+    ⬅ กลับหน้า Dashboard
+  </button>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
 const API_URL =
-"https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
+"https://script.google.com/macros/s/AKfycbzqcCkHBrhWaz4N69ZdXPeEV9H7YV5u8IgAwTvg-BaQYsH3JP5lj0GA9ps5vrPKWIKc/exec";
 
-/* ================= AUTH ================= */
 const user = JSON.parse(localStorage.getItem("user"));
 if(!user) location.href="index.html";
 
-/* ================= LOAD ORDERS ================= */
 fetch(API_URL,{
   method:"POST",
   body:JSON.stringify({
@@ -162,31 +164,34 @@ fetch(API_URL,{
 .then(res=>{
   if(!res.orders || !res.orders.length){
     list.innerHTML =
-      `<div class="empty">ยังไม่มีออเดอร์</div>`;
+      <div class="empty">ยังไม่มีออเดอร์</div>;
     return;
   }
 
-  list.innerHTML = "";
+  list.innerHTML="";
+  res.orders.forEach(o=>{
+    let statusClass = "pending";
+    let statusText = "⏳ รอดำเนินการ";
 
-  res.orders.forEach((o,i)=>{
-    const statusText =
-      o.status==="pending" ? "⏳ รอดำเนินการ" :
-      o.status==="processing" ? "⚙️ กำลังดำเนินการ" :
-      "✅ ดำเนินการสำเร็จ";
-
-    const badge =
-      i===0 ? `<div class="badge">🔥 ขายดี</div>` : "";
+    if(o.status==="success"){
+      statusClass="success";
+      statusText="✅ สำเร็จแล้ว";
+    }
+    if(o.status==="failed"){
+      statusClass="failed";
+      statusText="❌ ยกเลิก";
+    }
 
     list.innerHTML += `
       <div class="order">
-        ${badge}
-        <div class="order-title">${o.service_name}</div>
-        <div class="order-info">
-          จำนวน ${o.qty.toLocaleString()}<br>
-          ยอดชำระ ${Number(o.amount).toFixed(2)} บาท
+        <div class="row">
+          <div class="order-id">#${o.order_id}</div>
+          <div class="status ${statusClass}">${statusText}</div>
         </div>
-        <div class="status ${o.status}">
-          ${statusText}
+        <div class="service">${o.service_code}</div>
+        <div class="meta">
+          จำนวน: ${o.qty}<br>
+          ยอดชำระ: ${Number(o.price).toFixed(2)} บาท
         </div>
       </div>
     `;
@@ -194,14 +199,8 @@ fetch(API_URL,{
 })
 .catch(()=>{
   list.innerHTML =
-    `<div class="empty">ไม่สามารถโหลดข้อมูลได้</div>`;
+    <div class="empty">ไม่สามารถโหลดข้อมูลได้</div>;
 });
-
-/* ================= UI ================= */
-function goBack(){
-  location.href="dashboard.html";
-}
 </script>
-
 </body>
 </html>
