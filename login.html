@@ -10,7 +10,7 @@
   --pink:#ec4899;
   --purple:#8b5cf6;
   --blue:#38bdf8;
-  --bg:#faf5ff;
+  --gray:#64748b;
 }
 
 *{box-sizing:border-box}
@@ -18,152 +18,108 @@
 body{
   margin:0;
   font-family:system-ui;
-  background:
-    radial-gradient(900px 400px at top,#fce7f3,transparent),
-    linear-gradient(180deg,var(--bg),#f0f9ff);
+  background:#ffffff;
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
 }
 
-.card{
-  background:#ffffff;
-  padding:28px;
-  border-radius:24px;
+.wrapper{
   width:100%;
-  max-width:360px;
-  box-shadow:0 30px 70px rgba(139,92,246,.25);
-  text-align:center;
+  max-width:400px;
+  padding:24px;
 }
 
-.logo{
-  width:120px;
-  margin-bottom:6px;
-}
-
-.brand{
-  font-size:22px;
-  font-weight:800;
-  margin:6px 0 2px;
-  background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+h1{
+  font-size:28px;
+  margin:0;
+  color:#8b5e3c;
 }
 
 .subtitle{
-  font-size:13px;
-  color:#666;
-  margin-bottom:16px;
-}
-
-input{
-  width:100%;
-  padding:12px 14px;
-  margin:10px 0;
-  border-radius:14px;
-  border:1px solid #ddd;
+  color:#94a3b8;
   font-size:14px;
+  margin:6px 0 28px;
+}
+
+label{
+  display:block;
+  font-size:14px;
+  margin-bottom:6px;
+  color:#475569;
+}
+
+.field{
+  margin-bottom:18px;
+}
+
+.input{
+  width:100%;
+  display:flex;
+  align-items:center;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:10px 12px;
+}
+
+.input input{
+  border:none;
   outline:none;
+  width:100%;
+  font-size:14px;
 }
 
-input:focus{
-  border-color:var(--purple);
+input::placeholder{
+  color:#cbd5f5;
 }
 
-button{
+.login-btn{
   width:100%;
   padding:12px;
-  margin-top:8px;
   border:none;
   border-radius:14px;
-  background:linear-gradient(90deg,var(--pink),var(--purple),var(--blue));
-  color:#fff;
-  font-size:15px;
+  background:#fde68a;
   font-weight:600;
+  font-size:15px;
+  margin-top:10px;
   cursor:pointer;
 }
 
-button:disabled{
+.login-btn:disabled{
   opacity:.6;
-  cursor:not-allowed;
+}
+
+.line-btn{
+  width:100%;
+  margin-top:18px;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid #22c55e;
+  background:#ecfdf5;
+  color:#166534;
+  font-weight:600;
+  text-align:center;
+  text-decoration:none;
+  display:block;
 }
 
 .error{
-  color:#e11d48;
-  font-size:13px;
   margin-top:10px;
+  font-size:13px;
+  color:#e11d48;
+  text-align:center;
+}
+
+.footer{
+  margin-top:30px;
+  text-align:center;
+  font-size:13px;
+  color:#94a3b8;
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-  <!-- 🔰 โลโก้ร้าน -->
-  <img src="logo.png" class="logo" alt="SocialBoostTH"
-       onerror="this.style.display='none'">
-
-  <div class="brand">SocialBoostTH</div>
-  <div class="subtitle">ระบบปั้มยอดอัตโนมัติ ปลอดภัย ใช้งานง่าย</div>
-
-  <input type="text" id="username" placeholder="ชื่อผู้ใช้">
-  <input type="password" id="password" placeholder="รหัสผ่าน">
-
-  <button onclick="login()">เข้าสู่ระบบ</button>
-
-  <div id="error" class="error"></div>
-</div>
-
-<script>
-const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbnVToVL1I8zCCoEW9PMK_KqbL1Zf8VUsQSAQ_6-A-AnQ/exec";
-
-function login(){
-  const btn = document.querySelector('button');
-  const error = document.getElementById('error');
-  btn.disabled = true;
-  error.textContent = '';
-
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if(!username || !password){
-    error.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
-    btn.disabled = false;
-    return;
-  }
-
-  fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'login',
-      username,
-      password
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if(!data.success){
-      error.textContent = data.message || 'เข้าสู่ระบบไม่สำเร็จ';
-      btn.disabled = false;
-      return;
-    }
-
-    // ✅ Login สำเร็จ → เก็บข้อมูล
-    localStorage.setItem('user_id', data.user.user_id);
-    localStorage.setItem('username', data.user.username);
-    localStorage.setItem('credit', data.user.credit);
-
-    // ➜ ไปหน้าเลือกบริการ
-    window.location.href = "services.html";
-  })
-  .catch(() => {
-    error.textContent = 'ไม่สามารถเชื่อมต่อระบบได้';
-    btn.disabled = false;
-  });
-}
-</script>
-
-</body>
-</html>
+<div class="wrapper">
