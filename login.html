@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>เข้าสู่ระบบ | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#f8f3ec;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.card{
+  background:#fff;
+  padding:26px;
+  border-radius:20px;
+  width:100%;
+  max-width:360px;
+  box-shadow:0 20px 40px rgba(0,0,0,.1);
+  text-align:center;
+}
+.logo{
+  width:120px;
+  margin-bottom:10px;
+}
+h2{
+  margin:10px 0;
+  color:#8b5e3c;
+}
+input{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  background:#8b5e3c;
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
+}
+button:disabled{
+  opacity:.6;
+}
+.error{
+  color:#d00000;
+  font-size:13px;
+  margin-top:8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <!-- 🔰 โลโก้ร้าน -->
+  <img src="logo.png" class="logo" alt="SocialBoostTH">
+
+  <h2>เข้าสู่ระบบ</h2>
+
+  <input type="text" id="username" placeholder="ชื่อผู้ใช้">
+  <input type="password" id="password" placeholder="รหัสผ่าน">
+
+  <button onclick="login()">เข้าสู่ระบบ</button>
+
+  <div id="error" class="error"></div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbnVToVL1I8zCCoEW9PMK_KqbL1Zf8VUsQSAQ_6-A-AnQ/exec";
+
+function login(){
+  const btn = document.querySelector('button');
+  const error = document.getElementById('error');
+  btn.disabled = true;
+  error.textContent = '';
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if(!username || !password){
+    error.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
+    btn.disabled = false;
+    return;
+  }
+
+  fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'login',
+      username,
+      password
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(!data.success){
+      error.textContent = data.message || 'เข้าสู่ระบบไม่สำเร็จ';
+      btn.disabled = false;
+      return;
+    }
+
+    // ✅ Login สำเร็จ → เก็บข้อมูล
+    localStorage.setItem('user_id', data.user.user_id);
+    localStorage.setItem('username', data.user.username);
+    localStorage.setItem('credit', data.user.credit);
+
+    // ➜ ไปหน้าเลือกบริการ
+    window.location.href = "services.html";
+  })
+  .catch(() => {
+    error.textContent = 'ไม่สามารถเชื่อมต่อระบบได้';
+    btn.disabled = false;
+  });
+}
+</script>
+
+</body>
+</html>
