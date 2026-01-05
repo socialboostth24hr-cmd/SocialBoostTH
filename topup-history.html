@@ -13,11 +13,11 @@
   --p:#8b5cf6;
   --pk:#ec4899;
   --soft:rgba(255,255,255,.75);
-  --green:#22c55e;
   --yellow:#facc15;
-  --red:#ef4444;
+  --green:#22c55e;
 }
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:system-ui;
@@ -26,10 +26,11 @@ body{
     linear-gradient(180deg,#0b0216,#14032a);
   color:#fff;
 }
+
 .box{
   max-width:420px;
-  margin:26px auto;
-  padding:22px
+  margin:24px auto;
+  padding:22px;
 }
 
 h1{
@@ -44,19 +45,18 @@ h1{
 
 .sub{
   text-align:center;
-  font-size:13px;
+  font-size:14px;
   color:var(--soft);
   margin-bottom:18px;
 }
 
-/* ITEM */
+/* CARD */
 .item{
   background:linear-gradient(180deg,#1a0936,var(--card));
   border:1px solid var(--border);
   border-radius:20px;
   padding:16px;
   margin-bottom:14px;
-  box-shadow:0 12px 30px rgba(0,0,0,.4);
 }
 
 .row{
@@ -66,7 +66,7 @@ h1{
 }
 
 .amount{
-  font-size:20px;
+  font-size:18px;
   font-weight:900;
   color:#fbcfe8;
 }
@@ -79,46 +79,43 @@ h1{
 
 /* STATUS */
 .status{
-  font-size:12px;
+  font-size:13px;
   font-weight:900;
-  padding:4px 10px;
+  padding:6px 12px;
   border-radius:999px;
 }
 
 .pending{
   background:rgba(250,204,21,.15);
   color:var(--yellow);
+  border:1px solid rgba(250,204,21,.4);
 }
 
 .success{
   background:rgba(34,197,94,.15);
   color:var(--green);
-}
-
-.reject{
-  background:rgba(239,68,68,.15);
-  color:var(--red);
+  border:1px solid rgba(34,197,94,.4);
 }
 
 /* EMPTY */
 .empty{
   text-align:center;
-  color:var(--soft);
   font-size:14px;
+  color:var(--soft);
   margin-top:40px;
 }
 
-/* BUTTON */
+/* BACK */
 .back{
-  margin-top:20px;
   width:100%;
+  margin-top:18px;
   padding:14px;
-  border-radius:18px;
   border:none;
+  border-radius:18px;
   font-size:15px;
   font-weight:900;
   cursor:pointer;
-  background:#1e293b;
+  background:linear-gradient(135deg,#1e293b,#334155);
   color:#fff;
 }
 </style>
@@ -128,9 +125,9 @@ h1{
 
 <div class="box">
   <h1>ประวัติการเติมเงิน</h1>
-  <div class="sub">ตรวจสอบสถานะการเติมเงินของคุณ</div>
+  <div class="sub">ตรวจสอบสถานะการเติมเครดิตของคุณ</div>
 
-  <div id="list">กำลังโหลดข้อมูล...</div>
+  <div id="list">กำลังโหลด...</div>
 
   <button class="back" onclick="location.href='dashboard.html'">
     ⬅ กลับหน้า Dashboard
@@ -142,7 +139,9 @@ const API_URL =
 "https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
 
 const user = JSON.parse(localStorage.getItem("user"));
-if(!user) location.href="index.html";
+if(!user){
+  location.href="index.html";
+}
 
 fetch(API_URL,{
   method:"POST",
@@ -153,35 +152,26 @@ fetch(API_URL,{
 })
 .then(r=>r.json())
 .then(res=>{
-  if(!res.topups || !res.topups.length){
+  if(!res.logs || !res.logs.length){
     list.innerHTML =
       `<div class="empty">ยังไม่มีประวัติการเติมเงิน</div>`;
     return;
   }
 
   list.innerHTML="";
-  res.topups.forEach(t=>{
-    let statusText="", statusClass="";
+  res.logs.forEach(l=>{
+    const statusClass = l.status==="success" ? "success" : "pending";
+    const statusText =
+      l.status==="success" ? "✅ เติมเครดิตแล้ว" : "⏳ รอตรวจสอบ";
 
-    if(t.status==="pending"){
-      statusText="⏳ รอตรวจสอบ";
-      statusClass="pending";
-    }else if(t.status==="success"){
-      statusText="✅ เติมเงินสำเร็จ";
-      statusClass="success";
-    }else{
-      statusText="❌ ไม่ผ่านการตรวจสอบ";
-      statusClass="reject";
-    }
-
-    list.innerHTML+=`
+    list.innerHTML += `
       <div class="item">
         <div class="row">
-          <div class="amount">${Number(t.amount).toFixed(2)} บาท</div>
+          <div class="amount">${Number(l.amount).toFixed(2)} บาท</div>
           <div class="status ${statusClass}">${statusText}</div>
         </div>
         <div class="date">
-          วันที่ ${t.created_at || "-"}
+          ${new Date(l.created_at).toLocaleString("th-TH")}
         </div>
       </div>
     `;
