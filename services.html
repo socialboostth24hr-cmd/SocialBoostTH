@@ -10,7 +10,6 @@
   --pink:#ec4899;
   --purple:#8b5cf6;
   --blue:#38bdf8;
-  --gray:#64748b;
 }
 
 *{box-sizing:border-box}
@@ -32,14 +31,12 @@ body{
   align-items:center;
 }
 
-.logo{
-  height:36px;
-}
+.logo{ height:36px }
 
 .wallet{
   font-size:14px;
   color:#334155;
-  background:#ffffff;
+  background:#fff;
   padding:8px 14px;
   border-radius:999px;
   box-shadow:0 6px 18px rgba(0,0,0,.06);
@@ -69,9 +66,9 @@ body{
 
 /* ===== Service Card ===== */
 .service{
-  background:#ffffff;
+  background:#fff;
   border-radius:22px;
-  padding:20px;
+  padding:22px;
   margin-bottom:16px;
   box-shadow:
     0 20px 45px rgba(139,92,246,.18),
@@ -100,6 +97,9 @@ body{
   font-size:12px;
   font-weight:700;
   color:#fff;
+  display:flex;
+  gap:4px;
+  align-items:center;
 }
 
 .badge.bestseller{
@@ -145,7 +145,6 @@ body{
   cursor:pointer;
   transition:.2s;
 }
-
 .btn:hover{
   transform:translateY(-1px);
   box-shadow:0 10px 25px rgba(139,92,246,.45);
@@ -174,11 +173,17 @@ body{
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbnVToVL1I8zCCoEW9PMK_KqbL1Zf8VUsQSAQ_6-A-AnQ/exec";
 
-// ===== Load User =====
+/* ===== Guard Login ===== */
+const userId = localStorage.getItem('user_id');
+if(!userId){
+  location.href = 'login.html';
+}
+
+/* ===== Wallet ===== */
 document.getElementById('credit').textContent =
   localStorage.getItem('credit') || 0;
 
-// ===== Load Services =====
+/* ===== Load Services ===== */
 fetch(API + '?action=services')
   .then(r=>r.json())
   .then(list=>{
@@ -190,12 +195,12 @@ fetch(API + '?action=services')
       div.className = 'service';
 
       div.innerHTML = `
-        ${s.badge_status === 'on' ? `
+        ${s.badge_status === 'on' && s.badge_type ? `
           <div class="badge ${s.badge_type}">
             ${s.icon || ''} ${s.badge_text || ''}
           </div>` : ''}
 
-        <div class="service-name">${s.service_name}</div>
+        <div class="service-name">${s.display_name || s.service_name}</div>
         <div class="service-desc">
           ${s.short_desc || 'บริการคุณภาพ มาตรฐานร้าน'}
         </div>
@@ -218,7 +223,7 @@ fetch(API + '?action=services')
 
 function selectService(id){
   localStorage.setItem('service_id', id);
-  location.href = 'order.html'; // หน้าถัดไป
+  location.href = 'order.html';
 }
 </script>
 
