@@ -1,28 +1,16 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<title>เข้าสู่ระบบ | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-
-<body>
-
-<h2>เข้าสู่ระบบ</h2>
-
-<input id="username" placeholder="username"><br><br>
-<input id="password" type="password" placeholder="password"><br><br>
-<button onclick="login()">เข้าสู่ระบบ</button>
-
-<div id="error" style="color:red;margin-top:10px"></div>
-
 <script>
 const API = "https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
+
+function togglePassword(){
+  const i = document.getElementById('password');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
 
 function login(){
   const user = document.getElementById('username').value.trim();
   const pass = document.getElementById('password').value.trim();
   const error = document.getElementById('error');
+
   error.textContent = '';
 
   if(!user || !pass){
@@ -41,20 +29,17 @@ function login(){
   })
   .then(r=>r.json())
   .then(res=>{
-    console.log(res);
     if(!res.success){
       error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
       return;
     }
     localStorage.setItem('user_id', res.user.user_id);
+    localStorage.setItem('username', res.user.username);
     localStorage.setItem('credit', res.user.credit);
     location.href='services.html';
   })
   .catch(()=>{
-    error.textContent='เชื่อมต่อระบบไม่ได้';
+    error.textContent = 'ระบบขัดข้อง กรุณาลองใหม่';
   });
 }
 </script>
-
-</body>
-</html>
