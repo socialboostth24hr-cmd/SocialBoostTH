@@ -10,15 +10,17 @@
   --pink:#ec4899;
   --purple:#8b5cf6;
   --blue:#38bdf8;
-  --gray:#64748b;
+  --soft:#f7f3ff;
 }
 
 *{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family:system-ui;
-  background:#ffffff;
+  font-family:system-ui,-apple-system;
+  background:
+    radial-gradient(700px 300px at top,#fde7f3,transparent),
+    linear-gradient(180deg,#eef6ff,#ffffff);
   display:flex;
   justify-content:center;
   align-items:center;
@@ -27,20 +29,32 @@ body{
 
 .wrapper{
   width:100%;
-  max-width:400px;
-  padding:24px;
+  max-width:420px;
+  padding:26px;
 }
 
-h1{
-  font-size:28px;
-  margin:0;
-  color:#8b5e3c;
+.card{
+  background:#fff;
+  border-radius:26px;
+  padding:28px;
+  box-shadow:0 30px 80px rgba(139,92,246,.25);
+}
+
+.brand{
+  font-size:30px;
+  font-weight:800;
+  text-align:center;
+  margin-bottom:6px;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
 .subtitle{
-  color:#94a3b8;
+  text-align:center;
   font-size:14px;
-  margin:6px 0 28px;
+  color:#94a3b8;
+  margin-bottom:26px;
 }
 
 label{
@@ -59,63 +73,91 @@ label{
   display:flex;
   align-items:center;
   border:1px solid #e5e7eb;
-  border-radius:12px;
-  padding:10px 12px;
+  border-radius:16px;
+  padding:12px 14px;
+  transition:.2s;
+  background:#fff;
+}
+
+.input:focus-within{
+  border-color:var(--purple);
+  box-shadow:0 0 0 4px rgba(139,92,246,.15);
 }
 
 .input input{
   border:none;
   outline:none;
   width:100%;
-  font-size:14px;
+  font-size:15px;
 }
 
 input::placeholder{
-  color:#cbd5f5;
+  color:#c7d2fe;
 }
 
 .login-btn{
   width:100%;
-  padding:12px;
+  padding:14px;
   border:none;
-  border-radius:14px;
-  background:#fde68a;
-  font-weight:600;
-  font-size:15px;
-  margin-top:10px;
+  border-radius:18px;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
   cursor:pointer;
+  margin-top:8px;
+  box-shadow:0 18px 40px rgba(236,72,153,.35);
+  transition:.2s;
+}
+
+.login-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 22px 50px rgba(139,92,246,.45);
 }
 
 .login-btn:disabled{
   opacity:.6;
+  cursor:not-allowed;
+}
+
+.or{
+  text-align:center;
+  color:#cbd5e1;
+  margin:18px 0 8px;
+  font-size:13px;
 }
 
 .line-btn{
   width:100%;
-  margin-top:18px;
-  padding:12px;
-  border-radius:14px;
-  border:1px solid #22c55e;
-  background:#ecfdf5;
+  padding:13px;
+  border-radius:18px;
+  border:1.5px solid #22c55e;
+  background:linear-gradient(180deg,#ecfdf5,#f0fdf4);
   color:#166534;
-  font-weight:600;
+  font-weight:700;
   text-align:center;
   text-decoration:none;
   display:block;
+  transition:.2s;
+}
+
+.line-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 25px rgba(34,197,94,.25);
 }
 
 .error{
-  margin-top:10px;
+  margin-top:12px;
   font-size:13px;
   color:#e11d48;
   text-align:center;
 }
 
 .footer{
-  margin-top:30px;
+  margin-top:18px;
   text-align:center;
-  font-size:13px;
-  color:#94a3b8;
+  font-size:12px;
+  color:#a3a3a3;
 }
 </style>
 </head>
@@ -123,40 +165,42 @@ input::placeholder{
 <body>
 
 <div class="wrapper">
+  <div class="card">
 
-  <h1>เข้าสู่ระบบ</h1>
-  <div class="subtitle">
-    กรอกอีเมลและรหัสผ่านของคุณเพื่อเข้าสู่ระบบ
-  </div>
+    <div class="brand">เข้าสู่ระบบ</div>
+    <div class="subtitle">กรอกข้อมูลเพื่อเข้าใช้งานระบบ SocialBoostTH</div>
 
-  <div class="field">
-    <label>ชื่อผู้ใช้งาน</label>
-    <div class="input">
-      <input id="username" placeholder="กรอกชื่อผู้ใช้งานของคุณ">
+    <div class="field">
+      <label>ชื่อผู้ใช้งาน</label>
+      <div class="input">
+        <input id="username" placeholder="กรอกชื่อผู้ใช้งานของคุณ">
+      </div>
     </div>
-  </div>
 
-  <div class="field">
-    <label>รหัสผ่าน</label>
-    <div class="input">
-      <input type="password" id="password" placeholder="กรอกรหัสผ่านของคุณ">
+    <div class="field">
+      <label>รหัสผ่าน</label>
+      <div class="input">
+        <input type="password" id="password" placeholder="กรอกรหัสผ่านของคุณ">
+      </div>
     </div>
+
+    <button class="login-btn" onclick="login()">เข้าสู่ระบบ</button>
+
+    <div class="or">หรือ</div>
+
+    <a class="line-btn"
+       href="https://line.me/R/ti/p/@geg4960w"
+       target="_blank">
+      💬 สมัครสมาชิก / ทักร้าน LINE @geg4960w
+    </a>
+
+    <div id="error" class="error"></div>
+
+    <div class="footer">
+      © 2026 SocialBoostTH All rights reserved.
+    </div>
+
   </div>
-
-  <button class="login-btn" onclick="login()">เข้าสู่ระบบ</button>
-
-  <a class="line-btn"
-     href="https://line.me/R/ti/p/@geg4960w"
-     target="_blank">
-    สมัครสมาชิก / ทักร้าน LINE @geg4960w
-  </a>
-
-  <div id="error" class="error"></div>
-
-  <div class="footer">
-    © 2026 SocialBoostTH All rights reserved.
-  </div>
-
 </div>
 
 <script>
@@ -193,11 +237,9 @@ function login(){
       btn.disabled = false;
       return;
     }
-
     localStorage.setItem('user_id', res.user.user_id);
     localStorage.setItem('username', res.user.username);
     localStorage.setItem('credit', res.user.credit);
-
     location.href = 'services.html';
   })
   .catch(()=>{
