@@ -10,7 +10,6 @@
   --pink:#ec4899;
   --purple:#8b5cf6;
   --blue:#38bdf8;
-  --soft:#f7f3ff;
 }
 
 *{box-sizing:border-box}
@@ -19,7 +18,7 @@ body{
   margin:0;
   font-family:system-ui,-apple-system;
   background:
-    radial-gradient(700px 300px at top,#fde7f3,transparent),
+    radial-gradient(800px 320px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
   display:flex;
   justify-content:center;
@@ -35,13 +34,22 @@ body{
 
 .card{
   background:#fff;
-  border-radius:26px;
-  padding:28px;
-  box-shadow:0 30px 80px rgba(139,92,246,.25);
+  border-radius:28px;
+  padding:30px 28px 26px;
+  box-shadow:
+    0 25px 60px rgba(139,92,246,.25),
+    0 8px 20px rgba(56,189,248,.15);
+}
+
+/* โลโก้ */
+.logo{
+  width:90px;
+  display:block;
+  margin:0 auto 10px;
 }
 
 .brand{
-  font-size:30px;
+  font-size:28px;
   font-weight:800;
   text-align:center;
   margin-bottom:6px;
@@ -73,7 +81,7 @@ label{
   display:flex;
   align-items:center;
   border:1px solid #e5e7eb;
-  border-radius:16px;
+  border-radius:18px;
   padding:12px 14px;
   transition:.2s;
   background:#fff;
@@ -81,7 +89,7 @@ label{
 
 .input:focus-within{
   border-color:var(--purple);
-  box-shadow:0 0 0 4px rgba(139,92,246,.15);
+  box-shadow:0 0 0 4px rgba(139,92,246,.18);
 }
 
 .input input{
@@ -91,22 +99,30 @@ label{
   font-size:15px;
 }
 
+.toggle{
+  cursor:pointer;
+  font-size:16px;
+  padding-left:8px;
+  opacity:.6;
+}
+.toggle:hover{opacity:1}
+
 input::placeholder{
   color:#c7d2fe;
 }
 
 .login-btn{
   width:100%;
-  padding:14px;
+  padding:15px;
   border:none;
-  border-radius:18px;
+  border-radius:20px;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
   color:#fff;
   font-size:16px;
   font-weight:700;
   cursor:pointer;
   margin-top:8px;
-  box-shadow:0 18px 40px rgba(236,72,153,.35);
+  box-shadow:0 16px 36px rgba(236,72,153,.35);
   transition:.2s;
 }
 
@@ -167,6 +183,9 @@ input::placeholder{
 <div class="wrapper">
   <div class="card">
 
+    <!-- โลโก้ร้าน -->
+    <img src="logo.png" class="logo" alt="SocialBoostTH">
+
     <div class="brand">เข้าสู่ระบบ</div>
     <div class="subtitle">กรอกข้อมูลเพื่อเข้าใช้งานระบบ SocialBoostTH</div>
 
@@ -181,6 +200,7 @@ input::placeholder{
       <label>รหัสผ่าน</label>
       <div class="input">
         <input type="password" id="password" placeholder="กรอกรหัสผ่านของคุณ">
+        <span class="toggle" onclick="togglePassword()">👁️</span>
       </div>
     </div>
 
@@ -205,6 +225,11 @@ input::placeholder{
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbnVToVL1I8zCCoEW9PMK_KqbL1Zf8VUsQSAQ_6-A-AnQ/exec";
+
+function togglePassword(){
+  const input = document.getElementById('password');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
 
 function login(){
   const btn = document.querySelector('.login-btn');
@@ -237,9 +262,11 @@ function login(){
       btn.disabled = false;
       return;
     }
+
     localStorage.setItem('user_id', res.user.user_id);
     localStorage.setItem('username', res.user.username);
     localStorage.setItem('credit', res.user.credit);
+
     location.href = 'services.html';
   })
   .catch(()=>{
