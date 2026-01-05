@@ -22,7 +22,6 @@ body{
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
 
-/* header */
 .header{
   padding:14px 18px;
   display:flex;
@@ -42,12 +41,12 @@ body{
   box-shadow:0 6px 18px rgba(0,0,0,.1);
 }
 
-/* layout */
 .container{
   max-width:720px;
   margin:0 auto;
   padding:14px 18px 130px;
 }
+
 .card{
   background:#fff;
   border-radius:22px;
@@ -55,10 +54,10 @@ body{
   margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
 }
+
 .title{font-size:22px;font-weight:900}
 .desc{font-size:14px;color:#64748b}
 
-/* form */
 .field{margin-top:14px}
 label{font-weight:700}
 input,textarea{
@@ -70,7 +69,6 @@ input,textarea{
   font-size:15px;
 }
 
-/* price */
 .price-box{
   display:flex;
   justify-content:space-between;
@@ -80,7 +78,6 @@ input,textarea{
 .total{font-size:18px;font-weight:900;margin-top:12px}
 .error{color:#ef4444;margin-top:10px}
 
-/* button */
 .buy-btn{
   position:fixed;
   bottom:16px;
@@ -157,9 +154,9 @@ const serviceId=localStorage.getItem('service_id');
 const userId=localStorage.getItem('user_id');
 const credit=Number(localStorage.getItem('credit')||0);
 
-if(!serviceId||!userId)location.href='services.html';
+if(!serviceId||!userId) location.href='services.html';
 
-/* ===== DOM ===== */
+/* DOM */
 const qtyEl=document.getElementById('qty');
 const linkEl=document.getElementById('link');
 const basePriceEl=document.getElementById('basePrice');
@@ -169,7 +166,6 @@ const errorEl=document.getElementById('error');
 const minText=document.getElementById('minText');
 const buyBtn=document.getElementById('buyBtn');
 
-/* ===== DATA ===== */
 let service=null;
 let discounts=[];
 let finalTotal=0;
@@ -199,16 +195,16 @@ Promise.all([
 
 /* CALC */
 qtyEl.addEventListener('input',calc);
-
 function calc(){
-  if(!service)return;
+  if(!service) return;
   const qty=Number(qtyEl.value);
-  if(qty<service.min_qty)return;
+  if(qty<service.min_qty) return;
 
   const base=(qty/100)*service.price_per_100;
   const dis=discounts.find(d=>qty>=d.min_qty&&qty<=d.max_qty);
 
-  finalTotal=dis?qty*dis.price:base;
+  finalTotal = dis ? qty*dis.price : base;
+
   basePriceEl.innerText=base.toFixed(2);
   discountEl.innerText=(dis?dis.discount_percent:0)+'%';
   totalEl.innerText=finalTotal.toFixed(2);
@@ -219,9 +215,9 @@ buyBtn.onclick=()=>{
   const qty=Number(qtyEl.value);
   const link=linkEl.value.trim();
 
-  if(qty<service.min_qty)return errorEl.innerText='ต่ำกว่าขั้นต่ำ';
-  if(!link)return errorEl.innerText='กรุณาใส่ลิงก์';
-  if(finalTotal>credit)return errorEl.innerText='เครดิตไม่พอ';
+  if(qty<service.min_qty) return errorEl.innerText='ต่ำกว่าขั้นต่ำ';
+  if(!link) return errorEl.innerText='กรุณาใส่ลิงก์';
+  if(finalTotal>credit) return errorEl.innerText='เครดิตไม่พอ';
 
   buyBtn.disabled=true;
 
@@ -238,7 +234,7 @@ buyBtn.onclick=()=>{
     })
   }).then(r=>r.json())
   .then(res=>{
-    if(!res.success)throw res;
+    if(!res.success) throw res;
     alert('สั่งซื้อสำเร็จ');
     location.href='orders.html';
   })
