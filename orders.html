@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>คำสั่งซื้อของฉัน | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --pink:#ec4899;
+  --purple:#8b5cf6;
+  --blue:#38bdf8;
+  --green:#22c55e;
+  --red:#ef4444;
+  --yellow:#f59e0b;
+}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui;
+  background:
+    radial-gradient(900px 360px at top,#fde7f3,transparent),
+    linear-gradient(180deg,#eef6ff,#ffffff);
+}
+
+/* header */
+.header{
+  padding:14px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+.logo{height:34px}
+.back-btn{
+  border:none;
+  padding:6px 14px;
+  border-radius:999px;
+  background:#fff;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(0,0,0,.1);
+}
+
+/* layout */
+.container{
+  max-width:720px;
+  margin:0 auto;
+  padding:14px 18px 40px;
+}
+
+.title{
+  font-size:24px;
+  font-weight:900;
+  margin-bottom:14px;
+}
+
+/* card */
+.order{
+  background:#fff;
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 20px 45px rgba(139,92,246,.18);
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+  font-size:14px;
+}
+
+.order-id{
+  font-weight:900;
+}
+
+.amount{
+  font-weight:900;
+}
+
+/* status badge */
+.status{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+  margin-top:8px;
+}
+
+.pending{ background:#fef3c7; color:#92400e;}
+.processing{ background:#dbeafe; color:#1e40af;}
+.success{ background:#dcfce7; color:#166534;}
+.cancel{ background:#fee2e2; color:#991b1b;}
+
+.empty{
+  text-align:center;
+  color:#64748b;
+  margin-top:40px;
+  font-size:15px;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <button class="back-btn" onclick="location.href='services.html'">← กลับ</button>
+  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+</header>
+
+<div class="container">
+  <div class="title">คำสั่งซื้อของฉัน</div>
+  <div id="orders"></div>
+</div>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbyZjZarJL7nB_zATaPk95OQNI_DqvCPj47mr7Hqnavv3BqGb5bUAMKyzAEOi-03vUsRUw/exec";
+const userId=localStorage.getItem('user_id');
+
+if(!userId) location.href='login.html';
+
+const box=document.getElementById('orders');
+
+/* load orders */
+function loadOrders(){
+  fetch(API+'?action=orders&user_id='+userId)
+    .then(r=>r.json())
+    .then(list=>{
+      box.innerHTML='';
+      if(!list.length){
+        box.innerHTML='<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
+        return;
+      }
+
+      list.reverse().forEach(o=>{
+        box.innerHTML+=`
+          <div class="order">
+            <div class="row">
+              <div class="order-id">${o.order_id}</div>
+              <div class="amount">${Number(o.final_total).toFixed(2)} บาท</div>
+            </div>
+
+            <div class="row">
+              <div>บริการ</div>
+              <div>${o.service_id}</div>
+            </div>
+
+            <div class="row">
+              <div>จำนวน</div>
+              <div>${o.qty}</div>
+            </div>
+
+            <div class="row">
+              <div>วันที่</div>
+              <div>${new Date(o.datetime).toLocaleString()}</div>
+            </div>
+
+            <div class="status ${o.status}">
+              ${statusText(o.status)}
+            </div>
+          </div>
+        `;
+      });
+    });
+}
+
+function statusText(s){
+  if(s==='pending') return '⏳ รอดำเนินการ';
+  if(s==='processing') return '🚀 กำลังดำเนินการ';
+  if(s==='success') return '✅ สำเร็จ';
+  if(s==='cancel') return '❌ ยกเลิก';
+  return s;
+}
+
+/* initial */
+loadOrders();
+
+/* realtime refresh */
+setInterval(loadOrders,10000);
+</script>
+
+</body>
+</html>
