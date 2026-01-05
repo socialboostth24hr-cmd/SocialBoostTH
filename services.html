@@ -7,12 +7,12 @@
 
 <style>
 :root{
-  --bg-main:#0b0216;
-  --bg-card:#14062b;
+  --bg:#0b0216;
+  --card:#14062b;
   --border:#3b1775;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
-  --soft:rgba(255,255,255,.78);
+  --p:#8b5cf6;
+  --pk:#ec4899;
+  --soft:rgba(255,255,255,.75);
 }
 *{box-sizing:border-box}
 body{
@@ -20,7 +20,7 @@ body{
   font-family:system-ui;
   background:
     radial-gradient(1000px 500px at top,#2a0d52,transparent),
-    linear-gradient(180deg,var(--bg-main),#14032a);
+    linear-gradient(180deg,#0b0216,#14032a);
   color:#fff;
 }
 .box{
@@ -28,25 +28,55 @@ body{
   margin:24px auto;
   padding:22px;
 }
-h1{
-  margin:0 0 6px;
+
+/* HEADER */
+.header{
   text-align:center;
+  margin-bottom:16px;
+}
+.logo{
+  font-size:34px;
+}
+.header h1{
+  margin:6px 0 4px;
   font-size:24px;
   font-weight:900;
-  background:linear-gradient(90deg,var(--purple),var(--pink));
+  background:linear-gradient(90deg,var(--p),var(--pk));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 .sub{
-  text-align:center;
   font-size:14px;
   color:var(--soft);
-  margin-bottom:18px;
 }
-.card{
-  background:linear-gradient(180deg,#1a0936,var(--bg-card));
+
+/* CATEGORY */
+.cats{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  margin:18px 0;
+}
+.cat{
+  flex:0 0 auto;
+  padding:10px 14px;
+  border-radius:999px;
   border:1px solid var(--border);
-  border-radius:18px;
+  background:#120725;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.cat.active{
+  background:linear-gradient(135deg,var(--p),var(--pk));
+}
+
+/* SERVICE CARD */
+.card{
+  background:linear-gradient(180deg,#1a0936,var(--card));
+  border:1px solid var(--border);
+  border-radius:20px;
   padding:16px;
   margin-bottom:14px;
   cursor:pointer;
@@ -62,7 +92,7 @@ h1{
   color:#e9d5ff;
 }
 .meta{
-  margin-top:4px;
+  margin-top:6px;
   font-size:13px;
   color:var(--soft);
 }
@@ -82,9 +112,17 @@ h1{
   background:linear-gradient(90deg,#facc15,#fb7185);
   color:#1e293b;
 }
-.loading{
-  text-align:center;
-  color:var(--soft);
+
+/* BACK */
+.back{
+  width:100%;
+  margin-top:16px;
+  padding:14px;
+  border-radius:18px;
+  border:none;
+  background:#1e293b;
+  color:#fff;
+  font-weight:900;
 }
 </style>
 </head>
@@ -92,78 +130,95 @@ h1{
 <body>
 
 <div class="box">
-  <h1>เลือกบริการ</h1>
-  <div class="sub">บริการทั้งหมด ราคาคิดตามจริงจากระบบ</div>
-  <div id="list" class="loading">กำลังโหลดบริการ...</div>
+
+  <div class="header">
+    <div class="logo">🎵</div>
+    <h1>บริการ TikTok</h1>
+    <div class="sub">เลือกหมวด แล้วเลือกบริการที่ต้องการ</div>
+  </div>
+
+  <!-- CATEGORY -->
+  <div class="cats" id="cats"></div>
+
+  <!-- SERVICES -->
+  <div id="list">กำลังโหลดบริการ...</div>
+
+  <button class="back" onclick="location.href='dashboard.html'">
+    ⬅ กลับหน้า Dashboard
+  </button>
 </div>
 
 <script>
-// ================= CONFIG =================
 const API_URL =
-"https://script.google.com/macros/s/AKfycbwUx7R2m0Jsubhrk35fOpN43sVVKXWr3iEBd0psuJejMEVZ_yKqEb6efxfsTj3bgPlo/exec";
+"https://script.google.com/macros/s/AKfycbwXQodvWfnX0rJedWKXFVdu_wY5jwGj-yUfKHXLS5aASGqBL24Q-Q7DUed5f48BMj7_/exec";
 
-// ================= PAGE CONTEXT =================
-// ตัวอย่าง URL:
-// services.html?platform=tiktok&category=th
-// services.html?platform=tiktok&category=inter
-// services.html?platform=instagram
+let allServices = [];
+let currentCat = "all";
 
-const params = new URLSearchParams(location.search);
-const PLATFORM = params.get("platform");   // tiktok / instagram / facebook
-const CATEGORY = params.get("category");   // th / inter (ถ้ามี)
-
-// ================= LOAD SERVICES =================
+/* LOAD SERVICES */
 fetch(API_URL,{
   method:"POST",
   body:JSON.stringify({ action:"getServices" })
 })
 .then(r=>r.json())
 .then(res=>{
-  if(!res.success){
-    list.innerHTML="โหลดบริการไม่สำเร็จ";
-    return;
-  }
+  if(!res.success){ list.innerHTML="โหลดไม่ได้"; return; }
+  allServices = res.services;
+  renderCats();
+  renderList();
+});
 
+/* CATEGORIES */
+function renderCats(){
+  const map = {
+    all:"ทั้งหมด",
+    thai:"ผู้ติดตามไทย",
+    foreign:"ต่างชาติ",
+    like:"ไลก์",
+    view:"วิว"
+  };
+
+  cats.innerHTML = "";
+  Object.keys(map).forEach(k=>{
+    const b = document.createElement("div");
+    b.className = "cat"+(k==="all"?" active":"");
+    b.innerText = map[k];
+    b.onclick=()=>{
+      document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      currentCat = k;
+      renderList();
+    };
+    cats.appendChild(b);
+  });
+}
+
+/* LIST */
+function renderList(){
   list.innerHTML="";
-
-  res.services
-    .filter(s=>{
-      if(PLATFORM && s.platform !== PLATFORM) return false;
-      if(CATEGORY && s.category !== CATEGORY) return false;
-      return true;
-    })
+  allServices
+    .filter(s=> currentCat==="all" || s.category===currentCat)
     .forEach(s=>{
-      const card = document.createElement("div");
-      card.className = "card";
-      card.dataset.service = JSON.stringify(s);
-
-      card.innerHTML = `
+      const d=document.createElement("div");
+      d.className="card";
+      d.innerHTML=`
         <div class="name">${s.service_name}</div>
         <div class="meta">
-          ขั้นต่ำ ${Number(s.min_qty).toLocaleString()}
-          • สูงสุด ${Number(s.max_qty).toLocaleString()}
+          ขั้นต่ำ ${Number(s.min_qty).toLocaleString()} •
+          สูงสุด ${Number(s.max_qty).toLocaleString()}
         </div>
         <div class="price">
-          ${Number(s.price).toFixed(3)} บาท / 1 หน่วย
+          ${Number(s.price).toFixed(3)} บาท / หน่วย
         </div>
-        ${s.note ? `<div class="badge">${s.note}</div>` : ""}
+        ${s.note?`<div class="badge">${s.note}</div>`:""}
       `;
-
-      card.onclick = ()=>{
-        localStorage.setItem("selectedService", card.dataset.service);
-        location.href = "order.html";
+      d.onclick=()=>{
+        localStorage.setItem("selectedService",JSON.stringify(s));
+        location.href="order.html";
       };
-
-      list.appendChild(card);
+      list.appendChild(d);
     });
-
-  if(!list.children.length){
-    list.innerHTML = "❌ ไม่มีบริการในหมวดนี้";
-  }
-})
-.catch(()=>{
-  list.innerHTML="เชื่อมต่อระบบไม่ได้";
-});
+}
 </script>
 
 </body>
