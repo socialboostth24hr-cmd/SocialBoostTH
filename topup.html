@@ -79,33 +79,25 @@ input[type="number"]{
   color:#fff;
   font-weight:900;
   cursor:pointer;
-  transition:.2s;
 }
-.btn:hover{transform:translateY(-1px)}
 .btn.active{
   outline:2px solid var(--p);
-  background:linear-gradient(180deg,#1f0b3f,#16062d);
 }
 
-/* QR */
+/* QR SECTION */
 .pay-box{
   margin-top:16px;
   padding:18px;
   border-radius:24px;
-  background:
-    linear-gradient(180deg,rgba(139,92,246,.15),rgba(236,72,153,.08)),
-    #0f0822;
+  background:linear-gradient(180deg,rgba(139,92,246,.15),rgba(236,72,153,.08)),#0f0822;
   border:1px solid rgba(139,92,246,.4);
 }
-
 .amount{
   text-align:center;
   font-size:34px;
   font-weight:900;
   color:#fbcfe8;
-  margin:6px 0 12px;
 }
-
 .qr-frame{
   padding:14px;
   border-radius:26px;
@@ -113,7 +105,6 @@ input[type="number"]{
   display:flex;
   justify-content:center;
 }
-
 .qr-inner{
   background:#fff;
   padding:14px;
@@ -122,24 +113,20 @@ input[type="number"]{
 .qr-inner img{
   width:210px;
   height:210px;
-  display:block;
 }
 
-/* SLIP UPLOAD */
+/* UPLOAD SLIP */
 .upload{
   margin-top:14px;
   padding:14px;
   border-radius:18px;
   border:1px dashed #8b5cf6;
   text-align:center;
-  font-size:14px;
   cursor:pointer;
 }
 .upload input{display:none}
-.preview{
-  margin-top:10px;
-}
 .preview img{
+  margin-top:10px;
   max-width:100%;
   border-radius:14px;
   border:1px solid var(--border);
@@ -154,13 +141,12 @@ input[type="number"]{
   border-radius:20px;
   font-size:16px;
   font-weight:900;
-  cursor:pointer;
   background:linear-gradient(135deg,var(--p),var(--pk));
   color:#fff;
+  cursor:pointer;
 }
 .submit:disabled{
   opacity:.6;
-  cursor:default;
 }
 
 /* STATUS */
@@ -171,7 +157,6 @@ input[type="number"]{
   text-align:center;
   font-size:14px;
   font-weight:900;
-  line-height:1.7;
   background:linear-gradient(180deg,#064e3b,#052e2b);
   border:1px solid #22c55e;
   color:#d1fae5;
@@ -205,39 +190,33 @@ input[type="number"]{
           <img id="qrImg">
         </div>
       </div>
-
       <div class="note" style="margin-top:12px">
-        โอนเงินเข้าบัญชี PromptPay <b>099-130-1221</b>
+        โอนเข้าบัญชี PromptPay <b>099-130-1221</b>
       </div>
     </div>
 
-    <!-- แนบสลิป -->
     <label class="upload">
       📎 แนบรูปสลิปการโอนเงิน
       <input type="file" id="slipInput" accept="image/*">
       <div class="preview" id="preview"></div>
     </label>
 
-    <button id="payBtn" class="submit" onclick="notify()" disabled>
-      ฉันโอนแล้ว
-    </button>
-    <div id="statusBox" style="display:none" class="status-box"></div>
+    <button id="payBtn" class="submit" onclick="notify()" disabled>ฉันโอนแล้ว</button>
+    <div id="statusBox" class="status-box" style="display:none"></div>
   </div>
 </div>
 
 <script>
-const API_URL =
-"https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
 const PROMPTPAY="0991301221";
-const MIN_AMOUNT=10;
 
 const user = JSON.parse(localStorage.getItem("user"));
-if(!user){ location.href="index.html"; }
+if(!user) location.href="index.html";
 
 let base=0;
 
 function generate(amount){
-  if(amount<MIN_AMOUNT) return;
+  if(amount<10) return;
   base=amount;
   const locked=(base+(Math.floor(Math.random()*90)+10)/100).toFixed(2);
   payAmount.innerText=locked+" บาท";
@@ -256,23 +235,19 @@ document.querySelectorAll(".btn").forEach(b=>{
   };
 });
 
-// preview สลิป
 slipInput.onchange=e=>{
   if(!e.target.files[0]) return;
+  preview.innerHTML="";
   const img=document.createElement("img");
   img.src=URL.createObjectURL(e.target.files[0]);
-  preview.innerHTML="";
   preview.appendChild(img);
   payBtn.disabled=false;
 };
 
 function notify(){
   statusBox.style.display="block";
-  statusBox.innerHTML=
-    "✅ ระบบได้รับแจ้งการชำระเงินแล้ว<br>⏳ รอแอดมินตรวจสอบและเติมเครดิต";
+  statusBox.innerHTML="✅ ระบบได้รับแจ้งการชำระเงินแล้ว<br>⏳ รอแอดมินตรวจสอบและเติมเครดิต";
   payBtn.disabled=true;
-  payBtn.innerText="รอตรวจสอบ...";
-
   fetch(API_URL,{
     method:"POST",
     body:JSON.stringify({
@@ -282,7 +257,6 @@ function notify(){
       has_slip:true
     })
   });
-
   setTimeout(()=>location.href="dashboard.html",4000);
 }
 </script>
