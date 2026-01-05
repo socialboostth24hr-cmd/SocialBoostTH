@@ -25,19 +25,50 @@ body{
 
 /* ===== Header ===== */
 .header{
-  padding:18px 22px;
+  padding:16px 22px;
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
 
+.left,
+.right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
 .logo{ height:36px }
 
+/* Buttons */
+.back-btn,
+.logout-btn{
+  border:none;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:13px;
+  cursor:pointer;
+  background:#ffffff;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+
+.back-btn:hover{
+  background:#f1f5f9;
+}
+
+.logout-btn{
+  background:#fee2e2;
+  color:#991b1b;
+}
+.logout-btn:hover{
+  background:#fecaca;
+}
+
 .wallet{
-  font-size:14px;
+  font-size:13px;
   color:#334155;
   background:#fff;
-  padding:8px 14px;
+  padding:6px 14px;
   border-radius:999px;
   box-shadow:0 6px 18px rgba(0,0,0,.06);
 }
@@ -155,9 +186,16 @@ body{
 <body>
 
 <header class="header">
-  <img src="logo.png" class="logo">
-  <div class="wallet">
-    เครดิต: <b id="credit">0</b> บาท
+  <div class="left">
+    <button class="back-btn" onclick="history.back()">← กลับ</button>
+    <img src="logo.png" class="logo">
+  </div>
+
+  <div class="right">
+    <div class="wallet">
+      เครดิต: <b id="credit">0</b> บาท
+    </div>
+    <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
   </div>
 </header>
 
@@ -224,6 +262,11 @@ fetch(API + '?action=services')
 function selectService(id){
   localStorage.setItem('service_id', id);
   location.href = 'order.html';
+}
+
+function logout(){
+  localStorage.clear();
+  location.href = 'login.html';
 }
 </script>
 
