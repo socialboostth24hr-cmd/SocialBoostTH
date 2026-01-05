@@ -10,27 +10,21 @@
   --bg:#0b0216;
   --card:#14062b;
   --border:#3b1775;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
+  --p:#8b5cf6;
+  --pk:#ec4899;
+  --soft:rgba(255,255,255,.75);
 }
+*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:system-ui;
+  margin:0;font-family:system-ui;
   background:linear-gradient(180deg,#0b0216,#14032a);
   color:#fff;
 }
-.box{
-  max-width:420px;
-  margin:26px auto;
-  padding:22px;
-}
+.box{max-width:420px;margin:24px auto;padding:22px}
 h1{
-  text-align:center;
-  font-size:24px;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  text-align:center;font-size:24px;font-weight:900;
+  background:linear-gradient(90deg,var(--p),var(--pk));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
 .card{
   margin-top:16px;
@@ -39,47 +33,23 @@ h1{
   border-radius:20px;
   padding:18px;
 }
-label{
-  font-size:14px;
-  color:#c4b5fd;
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.btn{
+  padding:12px;border-radius:14px;border:1px solid var(--border);
+  background:#120725;color:#fff;font-weight:900;cursor:pointer
 }
-input{
-  width:100%;
-  margin-top:8px;
-  padding:14px;
-  border-radius:14px;
-  border:1px solid var(--border);
-  background:#120725;
-  color:#fff;
-  font-size:18px;
+.btn.active{outline:2px solid var(--p)}
+.big{
+  margin-top:10px;text-align:center;
+  font-size:32px;font-weight:900;color:#fbcfe8
 }
-button{
-  width:100%;
-  margin-top:14px;
-  padding:16px;
-  border-radius:18px;
-  border:none;
-  font-size:16px;
-  font-weight:900;
-  background:linear-gradient(135deg,var(--purple),var(--pink));
-  color:#fff;
-  cursor:pointer;
-}
-.qr{
-  margin-top:16px;
-  text-align:center;
-}
-.amount{
-  margin-top:8px;
-  font-size:22px;
-  font-weight:900;
-  color:#fbcfe8;
-}
-.note{
-  margin-top:12px;
-  font-size:13px;
-  line-height:1.6;
-  color:#ddd6fe;
+.qr{text-align:center;margin-top:14px}
+.qr img{width:220px;height:220px;border-radius:18px;border:1px solid var(--border)}
+.note{font-size:13px;color:var(--soft);line-height:1.6;text-align:center}
+.submit{
+  margin-top:12px;width:100%;padding:14px;border:none;border-radius:18px;
+  font-size:16px;font-weight:900;cursor:pointer;
+  background:linear-gradient(135deg,var(--p),var(--pk));color:#fff
 }
 </style>
 </head>
@@ -89,57 +59,69 @@ button{
   <h1>เติมเงินเข้าระบบ</h1>
 
   <div class="card">
-    <label>จำนวนเงินที่ต้องการเติม (บาท)</label>
-    <input id="amount" type="number" min="10" placeholder="เช่น 20">
-    <button onclick="createTopup()">สร้าง QR ชำระเงิน</button>
+    <div class="note">เลือกยอดเติม</div>
+    <div class="grid">
+      <button class="btn" data-amt="20">20</button>
+      <button class="btn" data-amt="50">50</button>
+      <button class="btn" data-amt="100">100</button>
+      <button class="btn" data-amt="300">300</button>
+    </div>
   </div>
 
-  <div id="result"></div>
+  <div class="card" id="payBox" style="display:none">
+    <div class="note">ยอดที่ต้องโอนจริง</div>
+    <div class="big" id="payAmount"></div>
+
+    <div class="qr">
+      <img id="qrImg">
+    </div>
+
+    <div class="note">
+      ⚠️ กรุณาโอนตามยอดนี้เท่านั้น<br>
+      เงินเข้าบัญชี PromptPay 099-130-1221
+    </div>
+
+    <button class="submit" onclick="notify()">ฉันโอนแล้ว</button>
+  </div>
 </div>
 
 <script>
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
+const PROMPTPAY = "0991301221";
 
 const user = JSON.parse(localStorage.getItem("user"));
-if(!user){
-  alert("กรุณาเข้าสู่ระบบ");
-  location.href="index.html";
-}
+if(!user){ alert("กรุณาเข้าสู่ระบบ"); location.href="index.html"; }
 
-function createTopup(){
-  const amt = Number(amount.value);
-  if(amt < 10){
-    alert("ขั้นต่ำ 10 บาท");
-    return;
+let base = 0;
+let locked = 0;
+
+document.querySelectorAll(".btn").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll(".btn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    base = Number(b.dataset.amt);
+
+    const decimal = (Math.floor(Math.random()*90)+10)/100; // .10-.99
+    locked = Number((base + decimal).toFixed(2));
+
+    payAmount.innerText = locked.toFixed(2)+" บาท";
+    qrImg.src = `https://promptpay.io/${PROMPTPAY}/${locked}`;
+    payBox.style.display="block";
   }
+});
 
+function notify(){
   fetch(API_URL,{
     method:"POST",
     body:JSON.stringify({
-      action:"createTopup",
+      action:"createTopupQR",   // ใช้ action ที่มีอยู่แล้ว
       user_id:user.user_id,
-      amount:amt
+      amount:base
     })
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(!res.success){
-      alert(res.message);
-      return;
-    }
-
-    result.innerHTML = `
-      <div class="card qr">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(res.qr_text)}">
-        <div class="amount">${res.pay_amount.toFixed(2)} บาท</div>
-        <div class="note">
-          ✅ สแกน QR เพื่อโอนเงิน<br>
-          ⚠️ กรุณาโอน “ยอดตรงตามนี้เท่านั้น”<br>
-          ระบบจะเติมเครดิตหลังแอดมินตรวจสอบ
-        </div>
-      </div>
-    `;
+  }).then(()=>{
+    alert("บันทึกรายการแล้ว รอแอดมินตรวจสอบ");
+    location.href="dashboard.html";
   });
 }
 </script>
