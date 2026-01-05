@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ประวัติการเติมเงิน | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg:#0b0216;
+  --card:#14062b;
+  --border:#3b1775;
+  --p:#8b5cf6;
+  --pk:#ec4899;
+  --soft:rgba(255,255,255,.75);
+  --green:#22c55e;
+  --yellow:#facc15;
+  --red:#ef4444;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:
+    radial-gradient(900px 400px at top,#2a0d52,transparent),
+    linear-gradient(180deg,#0b0216,#14032a);
+  color:#fff;
+}
+.box{
+  max-width:420px;
+  margin:26px auto;
+  padding:22px
+}
+
+h1{
+  text-align:center;
+  font-size:26px;
+  font-weight:900;
+  margin-bottom:6px;
+  background:linear-gradient(90deg,var(--p),var(--pk));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  font-size:13px;
+  color:var(--soft);
+  margin-bottom:18px;
+}
+
+/* ITEM */
+.item{
+  background:linear-gradient(180deg,#1a0936,var(--card));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,.4);
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.amount{
+  font-size:20px;
+  font-weight:900;
+  color:#fbcfe8;
+}
+
+.date{
+  font-size:12px;
+  color:var(--soft);
+  margin-top:6px;
+}
+
+/* STATUS */
+.status{
+  font-size:12px;
+  font-weight:900;
+  padding:4px 10px;
+  border-radius:999px;
+}
+
+.pending{
+  background:rgba(250,204,21,.15);
+  color:var(--yellow);
+}
+
+.success{
+  background:rgba(34,197,94,.15);
+  color:var(--green);
+}
+
+.reject{
+  background:rgba(239,68,68,.15);
+  color:var(--red);
+}
+
+/* EMPTY */
+.empty{
+  text-align:center;
+  color:var(--soft);
+  font-size:14px;
+  margin-top:40px;
+}
+
+/* BUTTON */
+.back{
+  margin-top:20px;
+  width:100%;
+  padding:14px;
+  border-radius:18px;
+  border:none;
+  font-size:15px;
+  font-weight:900;
+  cursor:pointer;
+  background:#1e293b;
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>ประวัติการเติมเงิน</h1>
+  <div class="sub">ตรวจสอบสถานะการเติมเงินของคุณ</div>
+
+  <div id="list">กำลังโหลดข้อมูล...</div>
+
+  <button class="back" onclick="location.href='dashboard.html'">
+    ⬅ กลับหน้า Dashboard
+  </button>
+</div>
+
+<script>
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
+
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user) location.href="index.html";
+
+fetch(API_URL,{
+  method:"POST",
+  body:JSON.stringify({
+    action:"getTopupHistory",
+    user_id:user.user_id
+  })
+})
+.then(r=>r.json())
+.then(res=>{
+  if(!res.topups || !res.topups.length){
+    list.innerHTML =
+      `<div class="empty">ยังไม่มีประวัติการเติมเงิน</div>`;
+    return;
+  }
+
+  list.innerHTML="";
+  res.topups.forEach(t=>{
+    let statusText="", statusClass="";
+
+    if(t.status==="pending"){
+      statusText="⏳ รอตรวจสอบ";
+      statusClass="pending";
+    }else if(t.status==="success"){
+      statusText="✅ เติมเงินสำเร็จ";
+      statusClass="success";
+    }else{
+      statusText="❌ ไม่ผ่านการตรวจสอบ";
+      statusClass="reject";
+    }
+
+    list.innerHTML+=`
+      <div class="item">
+        <div class="row">
+          <div class="amount">${Number(t.amount).toFixed(2)} บาท</div>
+          <div class="status ${statusClass}">${statusText}</div>
+        </div>
+        <div class="date">
+          วันที่ ${t.created_at || "-"}
+        </div>
+      </div>
+    `;
+  });
+})
+.catch(()=>{
+  list.innerHTML =
+    `<div class="empty">ไม่สามารถโหลดข้อมูลได้</div>`;
+});
+</script>
+
+</body>
+</html>
