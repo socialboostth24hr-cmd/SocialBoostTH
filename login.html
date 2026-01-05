@@ -1,193 +1,49 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<title>เข้าสู่ระบบ | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-:root{
-  --pink:#ec4899;
-  --purple:#8b5cf6;
-  --blue:#38bdf8;
-}
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:system-ui,-apple-system;
-  background:
-    radial-gradient(800px 320px at top,#fde7f3,transparent),
-    linear-gradient(180deg,#eef6ff,#ffffff);
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-
-.card{
-  width:100%;
-  max-width:420px;
-  background:#fff;
-  border-radius:26px;
-  padding:32px 28px 28px;
-  box-shadow:
-    0 25px 60px rgba(139,92,246,.25),
-    0 8px 20px rgba(56,189,248,.15);
-}
-
-.logo{
-  width:90px;
-  display:block;
-  margin:0 auto 10px;
-}
-
-.title{
-  font-size:26px;
-  font-weight:900;
-  text-align:center;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  margin-bottom:6px;
-}
-
-.subtitle{
-  text-align:center;
-  font-size:14px;
-  color:#94a3b8;
-  margin-bottom:24px;
-}
-
-.label{
-  font-size:14px;
-  font-weight:600;
-  color:#475569;
-  margin-bottom:6px;
-  display:block;
-}
-
-.field{
-  margin-bottom:16px;
-}
-
-.input{
-  width:100%;
-  padding:14px 16px;
-  border-radius:18px;
-  border:1px solid #e5e7eb;
-  font-size:15px;
-  outline:none;
-}
-
-.input:focus{
-  border-color:var(--purple);
-  box-shadow:0 0 0 4px rgba(139,92,246,.15);
-}
-
-.login-btn{
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:20px;
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;
-  font-size:16px;
-  font-weight:900;
-  cursor:pointer;
-  margin-top:10px;
-}
-
-.login-btn:disabled{
-  opacity:.6;
-}
-
-.error{
-  margin-top:14px;
-  color:#ef4444;
-  font-size:14px;
-  text-align:center;
-}
-</style>
-</head>
-
-<body>
-
-<div class="card">
-
-  <img
-    src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png"
-    class="logo"
-    alt="SocialBoostTH">
-
-  <div class="title">เข้าสู่ระบบ</div>
-  <div class="subtitle">
-    ระบบให้บริการอัตโนมัติ 24 ชั่วโมง
-  </div>
-
-  <div class="field">
-    <label class="label">ชื่อผู้ใช้งาน</label>
-    <input id="username" class="input" placeholder="username">
-  </div>
-
-  <div class="field">
-    <label class="label">รหัสผ่าน</label>
-    <input id="password" class="input" type="password" placeholder="password">
-  </div>
-
-  <button class="login-btn" id="loginBtn" onclick="login()">
-    เข้าสู่ระบบ
-  </button>
-
-  <div id="error" class="error"></div>
-</div>
-
 <script>
 const API = "https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
 
+function togglePassword(){
+  const i = document.getElementById('password');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+
 function login(){
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
   const error = document.getElementById('error');
-  const btn = document.getElementById('loginBtn');
 
-  error.innerText = '';
+  error.textContent = '';
 
-  if(!username || !password){
-    error.innerText = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
+  if(!user || !pass){
+    error.textContent = 'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน';
     return;
   }
-
-  btn.disabled = true;
 
   fetch(API,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
-      action:'login',
-      username,
-      password
+      action: 'login',
+      username: user,
+      password: pass
     })
   })
-  .then(r=>r.json())
-  .then(res=>{
+  .then(r => r.json())
+  .then(res => {
     if(!res.success){
-      error.innerText = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
-      btn.disabled = false;
+      error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
       return;
     }
 
+    // ✅ เก็บข้อมูลจริง
     localStorage.setItem('user_id', res.user.user_id);
+    localStorage.setItem('username', res.user.username);
     localStorage.setItem('credit', res.user.credit);
 
     location.href = 'services.html';
   })
-  .catch(()=>{
-    error.innerText = 'เชื่อมต่อระบบไม่ได้';
-    btn.disabled = false;
+  .catch(err => {
+    console.error(err);
+    error.textContent = 'เชื่อมต่อระบบไม่ได้';
   });
 }
 </script>
-
-</body>
-</html>
