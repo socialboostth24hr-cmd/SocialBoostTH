@@ -148,93 +148,107 @@ input,textarea{
 <button class="buy-btn" id="buyBtn">ยืนยันสั่งซื้อ</button>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbwpc_dUSc6lmVu-z18mqq72QDzljOAcqsMHJrYNHoJMIK-pP8wVS6BpS9Lvh8ON4iQDCA/exec";
+const API="https://script.google.com/macros/s/AKfycbyZjZarJL7nB_zATaPk95OQNI_DqvCPj47mr7Hqnavv3BqGb5bUAMKyzAEOi-03vUsRUw/exec";
 
-const serviceId=localStorage.getItem('service_id');
-const userId=localStorage.getItem('user_id');
-const credit=Number(localStorage.getItem('credit')||0);
+const serviceId = localStorage.getItem('service_id');
+const userId    = localStorage.getItem('user_id');
+const credit    = Number(localStorage.getItem('credit') || 0);
 
-if(!serviceId||!userId) location.href='services.html';
+if(!serviceId || !userId){
+  location.href='services.html';
+}
 
 /* DOM */
-const qtyEl=document.getElementById('qty');
-const linkEl=document.getElementById('link');
-const basePriceEl=document.getElementById('basePrice');
-const discountEl=document.getElementById('discount');
-const totalEl=document.getElementById('total');
-const errorEl=document.getElementById('error');
-const minText=document.getElementById('minText');
-const buyBtn=document.getElementById('buyBtn');
+const qtyEl       = document.getElementById('qty');
+const linkEl      = document.getElementById('link');
+const basePriceEl = document.getElementById('basePrice');
+const discountEl  = document.getElementById('discount');
+const totalEl     = document.getElementById('total');
+const errorEl     = document.getElementById('error');
+const minTextEl   = document.getElementById('minText');
+const buyBtn      = document.getElementById('buyBtn');
 
-let service=null;
-let discounts=[];
-let finalTotal=0;
+let service = null;
+let discounts = [];
+let finalTotal = 0;
 
-/* LOAD */
+/* LOAD DATA */
 Promise.all([
   fetch(API+'?action=services').then(r=>r.json()),
   fetch(API+'?action=service_details&service_id='+serviceId).then(r=>r.json()),
   fetch(API+'?action=discounts&service_id='+serviceId).then(r=>r.json())
-]).then(([services,details,disc])=>{
-  service=services.find(s=>s.service_id===serviceId);
-  discounts=disc||[];
+]).then(([services, details, disc])=>{
+  service = services.find(s => s.service_id === serviceId);
+  discounts = disc || [];
 
-  serviceName.innerText=service.display_name;
-  serviceDesc.innerText=service.short_desc||'';
-  qtyEl.value=service.min_qty;
-  minText.innerText=`ขั้นต่ำ ${service.min_qty} ${service.unit}`;
+  serviceName.innerText = service.display_name;
+  serviceDesc.innerText = service.short_desc || '';
+  qtyEl.value = service.min_qty;
+  minTextEl.innerText = `ขั้นต่ำ ${service.min_qty} ${service.unit}`;
 
   details.forEach(d=>{
-    document.getElementById('details').innerHTML+=`
+    detailsBox.innerHTML += `
       <h4>${d.title}</h4>
-      <p>${d.content.replace(/\n/g,'<br>')}</p>`;
+      <p>${d.content.replace(/\n/g,'<br>')}</p>
+    `;
   });
 
   calc();
 });
 
-/* CALC */
-qtyEl.addEventListener('input',calc);
+/* CALCULATE */
+qtyEl.addEventListener('input', calc);
+
 function calc(){
   if(!service) return;
-  const qty=Number(qtyEl.value);
-  if(qty<service.min_qty) return;
 
-  const base=(qty/100)*service.price_per_100;
-  const dis=discounts.find(d=>qty>=d.min_qty&&qty<=d.max_qty);
+  const qty = Number(qtyEl.value);
+  if(qty < service.min_qty){
+    finalTotal = 0;
+    totalEl.innerText = '0';
+    return;
+  }
 
-  finalTotal = dis ? qty*dis.price : base;
+  const base = (qty * Number(service.price_per_100)) / 100;
+  const dis  = discounts.find(d => qty >= d.min_qty && qty <= d.max_qty);
 
-  basePriceEl.innerText=base.toFixed(2);
-  discountEl.innerText=(dis?dis.discount_percent:0)+'%';
-  totalEl.innerText=finalTotal.toFixed(2);
+  finalTotal = dis
+    ? qty * Number(dis.price)
+    : base;
+
+  basePriceEl.innerText = base.toFixed(2);
+  discountEl.innerText  = (dis ? dis.discount_percent : 0) + '%';
+  totalEl.innerText     = finalTotal.toFixed(2);
 }
 
 /* SUBMIT */
-buyBtn.onclick=()=>{
-  const qty=Number(qtyEl.value);
-  const link=linkEl.value.trim();
+buyBtn.onclick = () => {
+  errorEl.innerText = '';
 
-  if(qty<service.min_qty) return errorEl.innerText='ต่ำกว่าขั้นต่ำ';
-  if(!link) return errorEl.innerText='กรุณาใส่ลิงก์';
-  if(finalTotal>credit) return errorEl.innerText='เครดิตไม่พอ';
+  const qty  = Number(qtyEl.value);
+  const link = linkEl.value.trim();
 
-  buyBtn.disabled=true;
+  if(qty < service.min_qty) return errorEl.innerText='จำนวนต่ำกว่าขั้นต่ำ';
+  if(!link) return errorEl.innerText='กรุณากรอกลิงก์';
+  if(finalTotal > credit) return errorEl.innerText='เครดิตไม่พอ';
+
+  buyBtn.disabled = true;
 
   fetch(API,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      action:'create_order',
-      user_id:userId,
-      service_id:serviceId,
-      qty,
-      final_total:finalTotal,
-      link
+    body: JSON.stringify({
+      action: 'create_order',
+      user_id: userId,
+      service_id: serviceId,
+      qty: qty,
+      link: link
     })
-  }).then(r=>r.json())
+  })
+  .then(r=>r.json())
   .then(res=>{
     if(!res.success) throw res;
+    localStorage.removeItem('credit'); // บังคับโหลดใหม่
     alert('สั่งซื้อสำเร็จ');
     location.href='orders.html';
   })
