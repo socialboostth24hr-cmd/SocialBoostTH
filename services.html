@@ -1,105 +1,10 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<title>เลือกบริการ | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-:root{
-  --bg-main:#0b0216;
-  --bg-card:#14062b;
-  --border:#3b1775;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
-  --soft:rgba(255,255,255,.78);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui;
-  background:
-    radial-gradient(1000px 500px at top,#2a0d52,transparent),
-    linear-gradient(180deg,var(--bg-main),#14032a);
-  color:#fff;
-}
-.box{
-  max-width:420px;
-  margin:24px auto;
-  padding:22px;
-}
-h1{
-  margin:0 0 6px;
-  text-align:center;
-  font-size:24px;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.sub{
-  text-align:center;
-  font-size:14px;
-  color:var(--soft);
-  margin-bottom:18px;
-}
-.card{
-  background:linear-gradient(180deg,#1a0936,var(--bg-card));
-  border:1px solid var(--border);
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:14px;
-  cursor:pointer;
-  transition:.2s;
-}
-.card:hover{
-  box-shadow:0 0 0 1px rgba(139,92,246,.4),
-             0 0 16px rgba(139,92,246,.25);
-}
-.name{
-  font-size:16px;
-  font-weight:900;
-  color:#e9d5ff;
-}
-.meta{
-  margin-top:4px;
-  font-size:13px;
-  color:var(--soft);
-}
-.price{
-  margin-top:10px;
-  font-size:15px;
-  font-weight:900;
-  color:#fbcfe8;
-}
-.badge{
-  display:inline-block;
-  margin-top:8px;
-  padding:4px 10px;
-  font-size:12px;
-  font-weight:900;
-  border-radius:999px;
-  background:linear-gradient(90deg,#facc15,#fb7185);
-  color:#1e293b;
-}
-.loading{
-  text-align:center;
-  color:var(--soft);
-}
-</style>
-</head>
-
-<body>
-
-<div class="box">
-  <h1>เลือกบริการ</h1>
-  <div class="sub">บริการทั้งหมด ราคาคิดตามจริงจากระบบ</div>
-  <div id="list" class="loading">กำลังโหลดบริการ...</div>
-</div>
-
 <script>
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwUx7R2m0Jsubhrk35fOpN43sVVKXWr3iEBd0psuJejMEVZ_yKqEb6efxfsTj3bgPlo/exec";
+
+const params = new URLSearchParams(location.search);
+const PLATFORM = params.get("platform");
+const CATEGORY = params.get("category");
 
 fetch(API_URL,{
   method:"POST",
@@ -114,38 +19,38 @@ fetch(API_URL,{
 
   list.innerHTML="";
 
-  res.services.forEach((s,i)=>{
-    const card = document.createElement("div");
-    card.className = "card";
-    card.dataset.service = JSON.stringify(s);
+  res.services
+    .filter(s=>{
+      if(PLATFORM && s.platform !== PLATFORM) return false;
+      if(CATEGORY && s.category !== CATEGORY) return false;
+      return true;
+    })
+    .forEach(s=>{
+      const card = document.createElement("div");
+      card.className="card";
+      card.dataset.service = JSON.stringify(s);
 
-    card.innerHTML = `
-      <div class="name">${s.service_name}</div>
-      <div class="meta">
-        ขั้นต่ำ ${Number(s.min_qty).toLocaleString()}
-        • สูงสุด ${Number(s.max_qty).toLocaleString()}
-      </div>
-      <div class="price">
-        ${Number(s.price).toFixed(3)} บาท / 1 หน่วย
-      </div>
-      ${s.note ? `<div class="badge">${s.note}</div>` : ""}
-    `;
+      card.innerHTML=`
+        <div class="name">${s.service_name}</div>
+        <div class="meta">
+          ขั้นต่ำ ${Number(s.min_qty).toLocaleString()}
+          • สูงสุด ${Number(s.max_qty).toLocaleString()}
+        </div>
+        <div class="price">
+          ${Number(s.price).toFixed(3)} บาท / 1 หน่วย
+        </div>
+        ${s.note ? `<div class="badge">${s.note}</div>` : ""}
+      `;
 
-    card.addEventListener("click",()=>{
-      localStorage.setItem(
-        "selectedService",
-        card.dataset.service
-      );
-      location.href="order.html";
+      card.onclick=()=>{
+        localStorage.setItem("selectedService", card.dataset.service);
+        location.href="order.html";
+      };
+
+      list.appendChild(card);
     });
-
-    list.appendChild(card);
-  });
 })
 .catch(()=>{
   list.innerHTML="เชื่อมต่อระบบไม่ได้";
 });
 </script>
-
-</body>
-</html>
