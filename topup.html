@@ -23,7 +23,7 @@ body{
     linear-gradient(180deg,#0b0216,#14032a);
   color:#fff;
 }
-.box{max-width:420px;margin:26px auto;padding:22px}
+.box{max-width:420px;margin:24px auto;padding:22px}
 
 h1{
   text-align:center;
@@ -36,11 +36,11 @@ h1{
 }
 
 .card{
-  margin-top:18px;
+  margin-top:16px;
   background:linear-gradient(180deg,#1a0936,var(--card));
   border:1px solid var(--border);
   border-radius:22px;
-  padding:20px;
+  padding:18px;
   box-shadow:0 20px 50px rgba(0,0,0,.45);
 }
 
@@ -54,7 +54,7 @@ h1{
 /* INPUT */
 input[type="number"]{
   width:100%;
-  margin-top:12px;
+  margin-top:10px;
   padding:14px;
   border-radius:16px;
   border:1px solid var(--border);
@@ -69,7 +69,7 @@ input[type="number"]{
   display:grid;
   grid-template-columns:repeat(4,1fr);
   gap:10px;
-  margin-top:12px;
+  margin-top:10px;
 }
 .btn{
   padding:12px;
@@ -79,113 +79,80 @@ input[type="number"]{
   color:#fff;
   font-weight:900;
   cursor:pointer;
-  transition:.2s;
 }
-.btn.active{
-  outline:2px solid var(--p);
-  background:linear-gradient(180deg,#1f0b3f,#16062d);
-}
-
-/* QR SECTION */
-.pay-box{
-  margin-top:14px;
-  padding:22px;
-  border-radius:26px;
-  background:
-    linear-gradient(180deg,rgba(139,92,246,.18),rgba(236,72,153,.1)),
-    #0f0822;
-  border:1px solid rgba(139,92,246,.45);
-}
-
-.amount{
-  text-align:center;
-  font-size:36px;
-  font-weight:900;
-  color:#fbcfe8;
-  margin:8px 0 14px;
-}
+.btn.active{outline:2px solid var(--p)}
 
 /* QR */
+.pay-box{
+  margin-top:16px;
+  padding:18px;
+  border-radius:24px;
+  background:
+    linear-gradient(180deg,rgba(139,92,246,.15),rgba(236,72,153,.08)),#0f0822;
+  border:1px solid rgba(139,92,246,.4);
+}
+.amount{
+  text-align:center;
+  font-size:34px;
+  font-weight:900;
+  color:#fbcfe8;
+  margin-bottom:10px;
+}
 .qr-frame{
   padding:14px;
-  border-radius:28px;
+  border-radius:26px;
   background:linear-gradient(135deg,#8b5cf6,#ec4899);
-  display:flex;
-  justify-content:center;
-  margin-bottom:16px;
+  display:flex;justify-content:center;
 }
 .qr-inner{
   background:#fff;
-  padding:16px;
-  border-radius:20px;
+  padding:14px;
+  border-radius:18px;
 }
-.qr-inner img{
-  width:210px;
-  height:210px;
-  display:block;
-}
+.qr-inner img{width:210px;height:210px}
 
-/* UPLOAD SLIP */
+/* UPLOAD */
 .upload{
-  margin-top:18px;
-  padding:18px;
-  border-radius:20px;
-  border:1.5px dashed #8b5cf6;
+  margin-top:16px;
+  padding:14px;
+  border-radius:18px;
+  border:1px dashed #8b5cf6;
   text-align:center;
   cursor:pointer;
-  background:rgba(139,92,246,.06);
-  transition:.25s;
 }
-.upload:hover{
-  background:rgba(139,92,246,.12);
-}
-.upload strong{
-  display:block;
-  font-size:14px;
-  color:#e9d5ff;
-}
-.upload span{
-  font-size:12px;
-  color:var(--soft);
-}
-
 .upload input{display:none}
-
 .preview img{
-  margin-top:12px;
-  max-width:100%;
-  border-radius:16px;
-  border:1px solid var(--border);
+  margin-top:10px;max-width:100%;
+  border-radius:14px;border:1px solid var(--border)
 }
 
 /* BUTTON */
 .submit{
-  margin-top:18px;
+  margin-top:14px;
   width:100%;
   padding:16px;
-  border:none;
-  border-radius:20px;
-  font-size:16px;
-  font-weight:900;
+  border:none;border-radius:20px;
+  font-size:16px;font-weight:900;
   background:linear-gradient(135deg,var(--p),var(--pk));
-  color:#fff;
-  cursor:pointer;
+  color:#fff;cursor:pointer;
 }
-.submit:disabled{
-  opacity:.55;
-}
+.submit:disabled{opacity:.6}
 
 /* STATUS */
-.status-box{
-  margin-top:16px;
-  padding:18px;
+.status{
+  margin-top:14px;
+  padding:16px;
   border-radius:18px;
   text-align:center;
-  font-size:14px;
-  font-weight:900;
+  font-size:14px;font-weight:900;
   background:linear-gradient(180deg,#064e3b,#052e2b);
-  border:1px solid #22c55e;
-  color:#d1fae5;
+  border:1px solid #22c55e;color:#d1fae5;
+}
+.back{
+  margin-top:16px;width:100%;
+  padding:14px;border:none;border-radius:18px;
+  background:linear-gradient(135deg,#1e293b,#334155);
+  color:#fff;font-weight:900;cursor:pointer;
 }
 </style>
 </head>
@@ -213,58 +180,53 @@ input[type="number"]{
     <div class="pay-box">
       <div class="qr-frame">
         <div class="qr-inner">
-          <img id="qrImg">
+          <img id="qrImg" alt="PromptPay QR">
         </div>
       </div>
-      <div class="note">
-        โอนเข้าบัญชี PromptPay<br>
-        <b>099-130-1221</b>
+      <div class="note" style="margin-top:12px">
+        ⚠️ กรุณาโอน <b>ตามยอดนี้เท่านั้น</b><br>
+        PromptPay <b>099-130-1221</b>
       </div>
     </div>
 
     <label class="upload">
-      <strong>📎 แนบสลิปการโอนเงิน</strong>
-      <span>ใช้เพื่อยืนยันยอดกับแอดมิน</span>
+      📎 แนบรูปสลิปการโอนเงิน
       <input type="file" id="slipInput" accept="image/*">
       <div class="preview" id="preview"></div>
     </label>
 
-    <button id="payBtn" class="submit" onclick="notify()" disabled>
-      ฉันโอนแล้ว
-    </button>
-
-    <div id="statusBox" class="status-box" style="display:none"></div>
+    <button id="payBtn" class="submit" onclick="notify()" disabled>ฉันโอนแล้ว</button>
+    <div id="status" class="status" style="display:none"></div>
   </div>
+
+  <button class="back" onclick="location.href='dashboard.html'">⬅ กลับ Dashboard</button>
 </div>
 
 <script>
-const API_URL="https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
+const API_URL="https://script.google.com/macros/s/AKfycbzqcCkHBrhWaz4N69ZdXPeEV9H7YV5u8IgAwTvg-BaQYsH3JP5lj0GA9ps5vrPKWIKc/exec";
 const PROMPTPAY="0991301221";
+const MIN=10;
 
 const user = JSON.parse(localStorage.getItem("user"));
 if(!user) location.href="index.html";
 
-let base=0;
+let base=0, locked=0;
 
 function generate(amount){
-  if(amount<10) return;
+  if(amount<MIN) return;
   base=amount;
-  const locked=(base+(Math.floor(Math.random()*90)+10)/100).toFixed(2);
+  locked=(base+(Math.floor(Math.random()*90)+10)/100).toFixed(2);
   payAmount.innerText=locked+" บาท";
-  qrImg.src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data="
-    + encodeURIComponent(`promptpay:${PROMPTPAY}?amount=${locked}`);
+  qrImg.src=
+    "https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=" +
+    encodeURIComponent(promptpay:${PROMPTPAY}?amount=${locked});
   payBox.style.display="block";
 }
-
-amtInput.oninput=()=>generate(+amtInput.value);
+amtInput.oninput=()=>{clearActive(); generate(+amtInput.value);}
 document.querySelectorAll(".btn").forEach(b=>{
-  b.onclick=()=>{
-    document.querySelectorAll(".btn").forEach(x=>x.classList.remove("active"));
-    b.classList.add("active");
-    amtInput.value=b.dataset.amt;
-    generate(+b.dataset.amt);
-  };
+  b.onclick=()=>{clearActive(); b.classList.add("active"); amtInput.value=b.dataset.amt; generate(+b.dataset.amt);}
 });
+function clearActive(){document.querySelectorAll(".btn").forEach(x=>x.classList.remove("active"));}
 
 slipInput.onchange=e=>{
   if(!e.target.files[0]) return;
@@ -276,18 +238,17 @@ slipInput.onchange=e=>{
 };
 
 function notify(){
-  statusBox.style.display="block";
-  statusBox.innerHTML="✅ ระบบได้รับแจ้งการชำระเงินแล้ว<br>⏳ รอแอดมินตรวจสอบและเติมเครดิต";
   payBtn.disabled=true;
   fetch(API_URL,{
     method:"POST",
     body:JSON.stringify({
-      action:"createTopupQR",
+      action:"createTopup",
       user_id:user.user_id,
-      amount:base,
-      has_slip:true
+      amount:base
     })
   });
+  status.style.display="block";
+  status.innerHTML="✅ รับแจ้งการโอนแล้ว<br>⏳ รอแอดมินตรวจสอบและเติมเครดิต";
   setTimeout(()=>location.href="dashboard.html",4000);
 }
 </script>
