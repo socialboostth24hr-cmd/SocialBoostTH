@@ -7,246 +7,141 @@
 
 <style>
 :root{
-  --bg-main:#0b0216;
-  --bg-card:#14062b;
+  --bg:#0b0216;
+  --card:#14062b;
   --border:#3b1775;
   --purple:#8b5cf6;
   --pink:#ec4899;
-  --green:#22c55e;
-  --soft:rgba(255,255,255,.75);
 }
-
-*{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont;
-  background:
-    radial-gradient(1200px 600px at top,#2a0d52,transparent),
-    linear-gradient(180deg,var(--bg-main),#14032a);
+  font-family:system-ui;
+  background:linear-gradient(180deg,#0b0216,#14032a);
   color:#fff;
-  min-height:100vh;
 }
-
-/* CONTAINER */
-.container{
+.box{
   max-width:420px;
-  margin:30px auto;
-  padding:26px;
-  background:linear-gradient(180deg,#1a0936,var(--bg-card));
-  border-radius:26px;
-  box-shadow:0 30px 80px rgba(0,0,0,.6);
+  margin:26px auto;
+  padding:22px;
 }
-
-/* HEADER */
 h1{
-  margin:0;
   text-align:center;
-  font-size:26px;
+  font-size:24px;
   font-weight:900;
   background:linear-gradient(90deg,var(--purple),var(--pink));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
-.sub{
-  text-align:center;
-  margin:12px 0 26px;
-  font-size:14px;
-  color:var(--soft);
-  line-height:1.7;
-}
-
-/* CARD */
 .card{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:18px;
-  margin-bottom:16px;
-}
-
-/* USER */
-.user{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.user small{
-  color:#c4b5fd;
-  font-size:12px;
-}
-
-.user b{
-  font-size:15px;
-  font-weight:900;
-}
-
-.credit{
-  text-align:right;
-}
-
-.credit span{
-  font-size:12px;
-  color:#c4b5fd;
-}
-
-.credit b{
-  display:block;
-  font-size:26px;
-  font-weight:900;
-  color:#fbcfe8;
-  margin-top:4px;
-}
-
-/* BANK */
-.bank{
-  text-align:center;
-}
-
-.bank-badge{
-  display:inline-block;
-  margin-bottom:12px;
-  font-size:12px;
-  font-weight:900;
-  padding:6px 14px;
-  border-radius:999px;
-  background:rgba(139,92,246,.15);
-  border:1px solid rgba(139,92,246,.4);
-  color:#c4b5fd;
-}
-
-.bank-no{
-  font-size:26px;
-  font-weight:900;
-  letter-spacing:1.4px;
-  margin:8px 0;
-}
-
-.bank-owner{
-  font-size:14px;
-  color:#e9d5ff;
-}
-
-/* COPY */
-.copy{
-  margin-top:14px;
-  padding:13px;
-  border-radius:18px;
-  font-size:14px;
-  font-weight:900;
-  color:#fff;
-  cursor:pointer;
-  background:linear-gradient(90deg,var(--pink),#f472b6);
-  box-shadow:0 12px 30px rgba(236,72,153,.45);
-}
-
-.copy:hover{filter:brightness(1.08)}
-
-/* LINE */
-.line-btn{
-  display:block;
-  margin-top:18px;
-  padding:16px;
-  border-radius:22px;
-  text-align:center;
-  font-weight:900;
-  font-size:16px;
-  text-decoration:none;
-  color:#022c22;
-  background:linear-gradient(90deg,#22c55e,#4ade80);
-  box-shadow:0 12px 30px rgba(34,197,94,.45);
-}
-
-/* NOTICE */
-.notice{
   margin-top:16px;
-  font-size:13px;
-  color:#c4b5fd;
-  text-align:center;
-  line-height:1.7;
+  background:linear-gradient(180deg,#1a0936,var(--card));
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:18px;
 }
-
-/* BACK */
+label{
+  font-size:14px;
+  color:#c4b5fd;
+}
+input{
+  width:100%;
+  margin-top:8px;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:#120725;
+  color:#fff;
+  font-size:18px;
+}
 button{
   width:100%;
-  margin-top:20px;
-  padding:14px;
-  border:none;
+  margin-top:14px;
+  padding:16px;
   border-radius:18px;
-  font-weight:800;
-  background:#1e293b;
+  border:none;
+  font-size:16px;
+  font-weight:900;
+  background:linear-gradient(135deg,var(--purple),var(--pink));
   color:#fff;
   cursor:pointer;
+}
+.qr{
+  margin-top:16px;
+  text-align:center;
+}
+.amount{
+  margin-top:8px;
+  font-size:22px;
+  font-weight:900;
+  color:#fbcfe8;
+}
+.note{
+  margin-top:12px;
+  font-size:13px;
+  line-height:1.6;
+  color:#ddd6fe;
 }
 </style>
 </head>
 
 <body>
+<div class="box">
+  <h1>เติมเงินเข้าระบบ</h1>
 
-<script>
-const user = JSON.parse(localStorage.getItem("user"));
-if(!user) location.href="index.html";
-</script>
-
-<div class="container">
-  <h1>เติมเงิน</h1>
-  <div class="sub">
-    เติมเครดิตเพื่อใช้งานบริการ<br>
-    โอนเงินตามข้อมูลด้านล่าง แล้วส่งสลิปให้แอดมิน
+  <div class="card">
+    <label>จำนวนเงินที่ต้องการเติม (บาท)</label>
+    <input id="amount" type="number" min="10" placeholder="เช่น 20">
+    <button onclick="createTopup()">สร้าง QR ชำระเงิน</button>
   </div>
 
-  <!-- USER INFO -->
-  <div class="card user">
-    <div>
-      <small>ผู้ใช้งาน</small><br>
-      <b id="username">-</b>
-    </div>
-    <div class="credit">
-      <span>เครดิตคงเหลือ</span>
-      <b id="credit">0</b>
-    </div>
-  </div>
-
-  <!-- BANK -->
-  <div class="card bank">
-    <div class="bank-badge">🏦 ธนาคารกสิกรไทย</div>
-    <div class="bank-no" id="bankNo">066-1213-728</div>
-    <div class="bank-owner">สรวงสุดา ศรีสุวรรณ์</div>
-    <div class="copy" id="copyBtn" onclick="copyBank()">📋 คัดลอกเลขบัญชี</div>
-  </div>
-
-  <!-- LINE -->
-  <a class="line-btn"
-     href="https://line.me/R/ti/p/@geg4960w"
-     target="_blank">
-     💬 ส่งสลิปให้แอดมินทาง LINE
-  </a>
-
-  <div class="notice">
-    ⏱ หลังโอนเงิน กรุณาส่งสลิปให้แอดมิน<br>
-    เครดิตจะได้รับการเพิ่มภายในไม่เกิน 24 ชั่วโมง
-  </div>
-
-  <button onclick="goBack()">⬅ กลับหน้า Dashboard</button>
+  <div id="result"></div>
 </div>
 
 <script>
-username.innerText = user.fullname;
-credit.innerText = Number(user.credit||0).toLocaleString();
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
 
-function copyBank(){
-  navigator.clipboard.writeText(bankNo.innerText);
-  copyBtn.innerText = "✅ คัดลอกแล้ว";
-  setTimeout(()=>copyBtn.innerText="📋 คัดลอกเลขบัญชี",1500);
+const user = JSON.parse(localStorage.getItem("user"));
+if(!user){
+  alert("กรุณาเข้าสู่ระบบ");
+  location.href="index.html";
 }
 
-function goBack(){
-  location.href="dashboard.html";
+function createTopup(){
+  const amt = Number(amount.value);
+  if(amt < 10){
+    alert("ขั้นต่ำ 10 บาท");
+    return;
+  }
+
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"createTopup",
+      user_id:user.user_id,
+      amount:amt
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.success){
+      alert(res.message);
+      return;
+    }
+
+    result.innerHTML = `
+      <div class="card qr">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(res.qr_text)}">
+        <div class="amount">${res.pay_amount.toFixed(2)} บาท</div>
+        <div class="note">
+          ✅ สแกน QR เพื่อโอนเงิน<br>
+          ⚠️ กรุณาโอน “ยอดตรงตามนี้เท่านั้น”<br>
+          ระบบจะเติมเครดิตหลังแอดมินตรวจสอบ
+        </div>
+      </div>
+    `;
+  });
 }
 </script>
-
 </body>
 </html>
