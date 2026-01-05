@@ -7,141 +7,133 @@
 
 <style>
 :root{
-  --bg-main:#0b0216;
-  --bg-card:#14062b;
+  --bg:#0b0216;
+  --card:#14062b;
   --border:#3b1775;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
-  --soft:rgba(255,255,255,.7);
-  --green:#22c55e;
+  --p:#8b5cf6;
+  --pk:#ec4899;
+  --soft:rgba(255,255,255,.75);
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  font-family:system-ui;
   background:
     radial-gradient(1000px 500px at top,#2a0d52,transparent),
-    linear-gradient(180deg,var(--bg-main),#14032a);
+    linear-gradient(180deg,#0b0216,#14032a);
   color:#fff;
-  min-height:100vh;
 }
-
-.wrap{
+.box{
   max-width:420px;
-  margin:30px auto;
-  padding:24px;
+  margin:28px auto;
+  padding:22px;
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .header{
   text-align:center;
-  margin-bottom:22px;
+  margin-bottom:20px;
 }
-
 .header h1{
   margin:0;
   font-size:28px;
   font-weight:900;
-  background:linear-gradient(90deg,var(--purple),var(--pink));
+  background:linear-gradient(90deg,var(--p),var(--pk));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .header .sub{
+  margin-top:6px;
+  font-size:14px;
+  color:var(--soft);
+}
+
+/* ===== CREDIT CARD ===== */
+.credit-card{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:20px;
+  margin-bottom:22px;
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+}
+.credit-label{
+  font-size:13px;
+  color:#c4b5fd;
+}
+.credit-amount{
+  margin-top:6px;
+  font-size:34px;
+  font-weight:900;
+  color:#fbcfe8;
+}
+.credit-name{
   margin-top:8px;
   font-size:14px;
   color:var(--soft);
 }
 
-/* USER CARD */
-.card{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
-  border:1px solid var(--border);
+/* ===== MAIN ACTIONS ===== */
+.main-actions{
+  display:grid;
+  gap:14px;
+  margin-bottom:22px;
+}
+
+.action-big{
+  padding:20px;
   border-radius:22px;
-  padding:18px;
-  margin-bottom:18px;
-}
-
-.user-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.user-label{
-  font-size:13px;
-  color:#c4b5fd;
-}
-
-.user-name{
-  margin-top:4px;
-  font-size:16px;
-  font-weight:900;
-}
-
-.credit{
-  text-align:right;
-}
-
-.credit span{
-  font-size:12px;
-  color:#c4b5fd;
-}
-
-.credit b{
-  display:block;
-  margin-top:4px;
-  font-size:28px;
-  font-weight:900;
-  color:#fbcfe8;
-}
-
-/* BUTTONS */
-.btn{
-  width:100%;
-  padding:16px;
-  border-radius:18px;
   border:none;
   cursor:pointer;
-  font-size:15px;
+  font-size:17px;
   font-weight:900;
   color:#fff;
-  margin-bottom:12px;
-  background:linear-gradient(135deg,var(--purple),var(--pink));
-  box-shadow:0 14px 30px rgba(139,92,246,.35);
+  text-align:left;
+  line-height:1.4;
+  box-shadow:0 18px 40px rgba(0,0,0,.4);
+  transition:.2s;
 }
+.action-big:hover{transform:translateY(-2px)}
 
-.btn:hover{
-  filter:brightness(1.06);
-  transform:translateY(-1px);
+.action-service{
+  background:linear-gradient(135deg,#8b5cf6,#ec4899);
 }
-
-/* SECONDARY */
-.btn.secondary{
-  background:linear-gradient(135deg,#1e293b,#334155);
-  box-shadow:none;
-}
-
-/* HISTORY (GREEN) */
-.btn.history{
+.action-topup{
   background:linear-gradient(135deg,#22c55e,#16a34a);
-  color:#052e2b;
-  box-shadow:0 14px 30px rgba(34,197,94,.35);
 }
 
-/* LOGOUT */
-.btn.logout{
-  background:linear-gradient(135deg,#020617,#020617);
-  color:#94a3b8;
-  box-shadow:none;
+.action-big span{
+  display:block;
+  margin-top:6px;
+  font-size:13px;
+  font-weight:600;
+  opacity:.9;
+}
+
+/* ===== SECONDARY ===== */
+.secondary{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.btn-small{
+  padding:14px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  background:#120725;
+  color:#fff;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.btn-small:hover{
+  background:#1a0936;
 }
 
 /* FOOTER */
 .footer{
-  margin-top:24px;
+  margin-top:26px;
   text-align:center;
   font-size:12px;
   color:var(--soft);
@@ -151,48 +143,40 @@ body{
 
 <body>
 
-<div class="wrap">
+<div class="box">
 
-  <!-- HEADER -->
   <div class="header">
     <h1>SocialBoostTH</h1>
     <div class="sub">ระบบจัดการบัญชีลูกค้า</div>
   </div>
 
-  <!-- USER CARD -->
-  <div class="card">
-    <div class="user-row">
-      <div>
-        <div class="user-label">ผู้ใช้งาน</div>
-        <div class="user-name" id="name">-</div>
-      </div>
-      <div class="credit">
-        <span>เครดิตคงเหลือ</span>
-        <b id="credit">0</b>
-      </div>
+  <!-- CREDIT -->
+  <div class="credit-card">
+    <div class="credit-label">เครดิตคงเหลือ</div>
+    <div class="credit-amount" id="credit">0</div>
+    <div class="credit-name">
+      สวัสดี <b id="name">-</b>
     </div>
   </div>
 
-  <!-- ACTION BUTTONS -->
-  <button class="btn" onclick="go('services.html')">
-    🛍️ เลือกบริการ
-  </button>
+  <!-- MAIN -->
+  <div class="main-actions">
+    <button class="action-big action-service" onclick="go('services.html')">
+      🛍️ เลือกบริการ
+      <span>เพิ่มผู้ติดตาม • ไลก์ • วิว • บริการอื่นๆ</span>
+    </button>
 
-  <button class="btn" onclick="go('orders.html')">
-    📦 ออเดอร์ของฉัน
-  </button>
+    <button class="action-big action-topup" onclick="go('topup.html')">
+      ➕ เติมเงินเข้าระบบ
+      <span>โอนผ่าน PromptPay • ตรวจสอบรวดเร็ว</span>
+    </button>
+  </div>
 
-  <button class="btn secondary" onclick="go('topup.html')">
-    ➕ เติมเงิน
-  </button>
-
-  <button class="btn history" onclick="go('topup-history.html')">
-    🧾 ประวัติการเติมเงิน
-  </button>
-
-  <button class="btn logout" onclick="logout()">
-    🚪 ออกจากระบบ
-  </button>
+  <!-- SECONDARY -->
+  <div class="secondary">
+    <button class="btn-small" onclick="go('orders.html')">📦 ออเดอร์ของฉัน</button>
+    <button class="btn-small" onclick="go('topup_history.html')">🧾 ประวัติการเติมเงิน</button>
+  </div>
 
   <div class="footer">
     © SocialBoostTH
@@ -201,23 +185,19 @@ body{
 </div>
 
 <script>
-/* ===== AUTH GUARD ===== */
+/* ===== AUTH ===== */
 const user = JSON.parse(localStorage.getItem("user"));
 if(!user){
   location.href="index.html";
 }
 
-/* ===== SHOW USER ===== */
+/* SHOW DATA */
 document.getElementById("name").innerText = user.fullname;
 document.getElementById("credit").innerText =
   Number(user.credit || 0).toLocaleString();
 
-/* ===== NAV ===== */
+/* NAV */
 function go(p){ location.href=p; }
-function logout(){
-  localStorage.removeItem("user");
-  location.href="index.html";
-}
 </script>
 
 </body>
