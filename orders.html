@@ -12,7 +12,7 @@
   --border:#3b1775;
   --purple:#8b5cf6;
   --pink:#ec4899;
-  --soft:rgba(255,255,255,.7);
+  --soft:rgba(255,255,255,.75);
   --yellow:#facc15;
   --blue:#38bdf8;
   --green:#22c55e;
@@ -22,22 +22,20 @@
 
 body{
   margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  font-family:system-ui;
   background:
     radial-gradient(1000px 500px at top,#2a0d52,transparent),
     linear-gradient(180deg,var(--bg-main),#14032a);
   color:#fff;
-  min-height:100vh;
 }
 
 /* CONTAINER */
 .box{
   max-width:420px;
   margin:30px auto;
-  padding:24px;
+  padding:22px;
   background:linear-gradient(180deg,#1a0936,var(--bg-card));
   border-radius:24px;
-  box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
 
 /* HEADER */
@@ -50,7 +48,6 @@ h1{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .sub{
   margin-top:8px;
   text-align:center;
@@ -60,40 +57,51 @@ h1{
 
 /* ORDER CARD */
 .order{
+  position:relative;
   background:rgba(255,255,255,.05);
   border:1px solid var(--border);
   border-radius:18px;
   padding:16px;
-  margin-top:14px;
-  cursor:pointer;
-  transition:.25s;
+  margin-top:16px;
 }
 
-.order:hover{
-  box-shadow:0 0 0 1px rgba(139,92,246,.4),
-             0 0 18px rgba(139,92,246,.25);
+/* BADGE */
+.badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  font-size:12px;
+  font-weight:900;
+  padding:4px 10px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#facc15,#fb7185);
+  color:#1e293b;
 }
 
+/* TITLE */
 .order-title{
-  font-size:15px;
+  text-align:center;
+  font-size:16px;
   font-weight:900;
   color:#e9d5ff;
 }
 
+/* INFO */
 .order-info{
-  margin-top:6px;
+  margin-top:10px;
   font-size:13px;
   color:var(--soft);
-  line-height:1.6;
+  line-height:1.7;
+  text-align:center;
 }
 
 /* STATUS */
 .status{
-  margin-top:10px;
+  margin-top:12px;
   font-size:13px;
   font-weight:900;
+  text-align:center;
 }
-
 .pending{color:var(--yellow)}
 .processing{color:var(--blue)}
 .completed{color:var(--green)}
@@ -109,7 +117,7 @@ h1{
 /* BUTTON */
 button{
   width:100%;
-  margin-top:20px;
+  margin-top:22px;
   padding:14px;
   border-radius:18px;
   border:none;
@@ -159,18 +167,23 @@ fetch(API_URL,{
   }
 
   list.innerHTML = "";
-  res.orders.forEach(o=>{
+
+  res.orders.forEach((o,i)=>{
     const statusText =
       o.status==="pending" ? "⏳ รอดำเนินการ" :
       o.status==="processing" ? "⚙️ กำลังดำเนินการ" :
       "✅ ดำเนินการสำเร็จ";
 
+    const badge =
+      i===0 ? `<div class="badge">🔥 ขายดี</div>` : "";
+
     list.innerHTML += `
       <div class="order">
+        ${badge}
         <div class="order-title">${o.service_name}</div>
         <div class="order-info">
-          จำนวน: ${o.qty}<br>
-          ยอดชำระ: ${Number(o.amount).toFixed(2)} บาท
+          จำนวน ${o.qty.toLocaleString()}<br>
+          ยอดชำระ ${Number(o.amount).toFixed(2)} บาท
         </div>
         <div class="status ${o.status}">
           ${statusText}
