@@ -22,7 +22,7 @@ body{
   min-height:100vh;
 }
 
-/* ===== Header ===== */
+/* Header */
 .header{
   padding:16px 20px;
   display:flex;
@@ -56,7 +56,7 @@ body{
   box-shadow:0 6px 18px rgba(0,0,0,.06);
 }
 
-/* ===== Content ===== */
+/* Content */
 .container{
   max-width:720px;
   margin:0 auto;
@@ -76,7 +76,7 @@ body{
   margin-bottom:24px;
 }
 
-/* ===== Service Card ===== */
+/* Service Card */
 .service{
   background:#fff;
   border-radius:22px;
@@ -97,7 +97,7 @@ body{
   color:#64748b;
 }
 
-/* badge */
+/* Badge */
 .badge{
   position:absolute;
   top:18px;
@@ -176,16 +176,16 @@ body{
 const API =
 "https://script.google.com/macros/s/AKfycbwpc_dUSc6lmVu-z18mqq72QDzljOAcqsMHJrYNHoJMIK-pP8wVS6BpS9Lvh8ON4iQDCA/exec";
 
-// 🔒 Guard login
+/* Guard login */
 if(!localStorage.getItem('user_id')){
   location.href='login.html';
 }
 
-// Wallet
+/* Wallet */
 document.getElementById('credit').textContent =
   localStorage.getItem('credit') || 0;
 
-// Load services (กัน cache)
+/* Load services */
 fetch(API + '?action=services&_ts=' + Date.now())
 .then(r=>r.json())
 .then(list=>{
@@ -193,7 +193,9 @@ fetch(API + '?action=services&_ts=' + Date.now())
   box.innerHTML='';
 
   list.forEach(s=>{
-    const name = (s.display_name || s.service_name || '').trim();
+    const name = String(s.display_name || '').trim(); // 🔥 ไทยเท่านั้น
+
+    if(!name) return;
 
     box.innerHTML+=`
     <div class="service">
