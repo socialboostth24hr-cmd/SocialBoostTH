@@ -11,7 +11,6 @@
   --purple:#8b5cf6;
   --blue:#38bdf8;
 }
-
 *{box-sizing:border-box}
 
 body{
@@ -30,18 +29,13 @@ body{
   justify-content:space-between;
   align-items:center;
 }
-
 .left,.right{
   display:flex;
   align-items:center;
   gap:10px;
 }
+.logo{height:36px}
 
-.logo{
-  height:36px;
-}
-
-/* buttons */
 .back-btn,.logout-btn{
   border:none;
   padding:6px 14px;
@@ -51,14 +45,11 @@ body{
   background:#fff;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
-
-.back-btn:hover{background:#f1f5f9;}
 .logout-btn{background:#fee2e2;color:#991b1b;}
 .logout-btn:hover{background:#fecaca;}
 
 .wallet{
   font-size:13px;
-  color:#334155;
   background:#fff;
   padding:6px 14px;
   border-radius:999px;
@@ -71,7 +62,6 @@ body{
   margin:0 auto;
   padding:10px 20px 40px;
 }
-
 .title{
   font-size:26px;
   font-weight:800;
@@ -80,7 +70,6 @@ body{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .subtitle{
   font-size:14px;
   color:#94a3b8;
@@ -98,7 +87,6 @@ body{
     0 6px 16px rgba(56,189,248,.12);
   position:relative;
 }
-
 .service-name{
   font-size:18px;
   font-weight:700;
@@ -134,17 +122,14 @@ body{
   align-items:center;
   margin-top:16px;
 }
-
 .price{
   font-size:15px;
   font-weight:700;
-  color:#0f172a;
 }
 .price span{
   font-size:13px;
   color:#64748b;
 }
-
 .btn{
   padding:10px 18px;
   border-radius:14px;
@@ -170,7 +155,6 @@ body{
       src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png"
       class="logo">
   </div>
-
   <div class="right">
     <div class="wallet">
       เครดิต: <b id="credit">0</b> บาท
@@ -190,25 +174,27 @@ body{
 
 <script>
 const API =
-  "https://script.google.com/macros/s/AKfycbwpc_dUSc6lmVu-z18mqq72QDzljOAcqsMHJrYNHoJMIK-pP8wVS6BpS9Lvh8ON4iQDCA/exec";
+"https://script.google.com/macros/s/AKfycbwpc_dUSc6lmVu-z18mqq72QDzljOAcqsMHJrYNHoJMIK-pP8wVS6BpS9Lvh8ON4iQDCA/exec";
 
-/* 🔒 Guard login */
+// 🔒 Guard login
 if(!localStorage.getItem('user_id')){
-  location.href = 'login.html';
+  location.href='login.html';
 }
 
-/* Wallet */
+// Wallet
 document.getElementById('credit').textContent =
   localStorage.getItem('credit') || 0;
 
-/* Load services */
-fetch(API + '?action=services')
+// Load services (กัน cache)
+fetch(API + '?action=services&_ts=' + Date.now())
 .then(r=>r.json())
 .then(list=>{
   const box=document.getElementById('services');
   box.innerHTML='';
 
   list.forEach(s=>{
+    const name = (s.display_name || s.service_name || '').trim();
+
     box.innerHTML+=`
     <div class="service">
       ${s.badge_status==='on' && s.badge_type ? `
@@ -216,9 +202,7 @@ fetch(API + '?action=services')
         ${s.icon||''} ${s.badge_text||''}
       </div>`:''}
 
-      <div class="service-name">
-        ${s.display_name || s.service_name}
-      </div>
+      <div class="service-name">${name}</div>
 
       <div class="service-desc">
         ${s.short_desc || 'บริการคุณภาพ มาตรฐานร้าน'}
