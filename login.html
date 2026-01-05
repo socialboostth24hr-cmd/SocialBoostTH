@@ -1,95 +1,12 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<title>เข้าสู่ระบบ | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:linear-gradient(180deg,#eef6ff,#ffffff);
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.card{
-  width:100%;
-  max-width:360px;
-  background:#fff;
-  border-radius:22px;
-  padding:28px;
-  box-shadow:0 20px 50px rgba(139,92,246,.25);
-}
-h2{
-  text-align:center;
-  margin-bottom:20px;
-}
-input{
-  width:100%;
-  padding:14px;
-  margin-bottom:12px;
-  border-radius:12px;
-  border:1px solid #e5e7eb;
-  font-size:15px;
-}
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:999px;
-  background:linear-gradient(135deg,#38bdf8,#8b5cf6,#ec4899);
-  color:#fff;
-  font-weight:900;
-  font-size:16px;
-  cursor:pointer;
-}
-.error{
-  margin-top:10px;
-  color:#ef4444;
-  text-align:center;
-  font-size:14px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="card">
-  <h2>เข้าสู่ระบบ</h2>
-
-  <input id="username" placeholder="ชื่อผู้ใช้งาน">
-  <input id="password" type="password" placeholder="รหัสผ่าน">
-
-  <button id="loginBtn">เข้าสู่ระบบ</button>
-
-  <div class="error" id="error"></div>
-</div>
-
-<!-- ❗ สำคัญมาก: script ต้องอยู่ล่างสุด -->
-<script>
-const API = "https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
-
-document.getElementById('loginBtn').addEventListener('click', login);
-
 function login(){
-  const user = document.getElementById('username').value.trim();
-  const pass = document.getElementById('password').value.trim();
-  const error = document.getElementById('error');
-
-  error.textContent = '';
-
-  if(!user || !pass){
-    error.textContent = 'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน';
-    return;
-  }
+  const user = username.value.trim();
+  const pass = password.value.trim();
+  error.innerText = '';
 
   fetch(API,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
+    body:JSON.stringify({
       action:'login',
       username:user,
       password:pass
@@ -98,21 +15,12 @@ function login(){
   .then(r=>r.json())
   .then(res=>{
     if(!res.success){
-      error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
+      error.innerText = res.message;
       return;
     }
-
-    localStorage.setItem('user_id', res.user.user_id);
-    localStorage.setItem('username', res.user.username);
-    localStorage.setItem('credit', res.user.credit);
-
+    localStorage.setItem('user_id',res.user.user_id);
+    localStorage.setItem('credit',res.user.credit);
     location.href='services.html';
   })
-  .catch(()=>{
-    error.textContent = 'เชื่อมต่อระบบไม่ได้';
-  });
+  .catch(()=>error.innerText='เชื่อมต่อระบบไม่ได้');
 }
-</script>
-
-</body>
-</html>
