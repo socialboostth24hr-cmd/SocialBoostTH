@@ -176,28 +176,44 @@ body{
 const API =
 "https://script.google.com/macros/s/AKfycbwpc_dUSc6lmVu-z18mqq72QDzljOAcqsMHJrYNHoJMIK-pP8wVS6BpS9Lvh8ON4iQDCA/exec";
 
-/* Guard login */
+// 🔒 Guard login
 if(!localStorage.getItem('user_id')){
   location.href='login.html';
 }
 
-/* Wallet */
+// Wallet
 document.getElementById('credit').textContent =
   localStorage.getItem('credit') || 0;
 
-/* Load services */
+// Load services
 fetch(API + '?action=services&_ts=' + Date.now())
-.then(r=>r.json())
-.then(list=>{
-  const box=document.getElementById('services');
-  box.innerHTML='';
+.then(res => res.text())   // 🔥 อ่านเป็น text ก่อน
+.then(txt => {
+  let list;
+  try {
+    list = JSON.parse(txt); // 🔥 parse เอง
+  } catch(e){
+    document.getElementById('services').innerHTML =
+      '<p style="color:red">โหลดข้อมูลไม่สำเร็จ</p>';
+    console.error('JSON error', txt);
+    return;
+  }
+
+  // 🔥 กันกรณีไม่ใช่ array
+  if(!Array.isArray(list)){
+    document.getElementById('services').innerHTML =
+      '<p style="color:red">ข้อมูลบริการผิดรูปแบบ</p>';
+    console.error(list);
+    return;
+  }
+
+  const box = document.getElementById('services');
+  box.innerHTML = '';
 
   list.forEach(s=>{
-    const name = String(s.display_name || '').trim(); // 🔥 ไทยเท่านั้น
+    const name = (s.display_name || s.service_name || '').trim();
 
-    if(!name) return;
-
-    box.innerHTML+=`
+    box.innerHTML += `
     <div class="service">
       ${s.badge_status==='on' && s.badge_type ? `
       <div class="badge ${s.badge_type}">
@@ -222,6 +238,11 @@ fetch(API + '?action=services&_ts=' + Date.now())
       </div>
     </div>`;
   });
+})
+.catch(err=>{
+  document.getElementById('services').innerHTML =
+    '<p style="color:red">เชื่อมต่อระบบไม่ได้</p>';
+  console.error(err);
 });
 
 function selectService(id){
@@ -234,6 +255,7 @@ function logout(){
   location.href='login.html';
 }
 </script>
+
 
 </body>
 </html>
