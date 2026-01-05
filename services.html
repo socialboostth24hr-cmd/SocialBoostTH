@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>เลือกบริการ | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --pink:#ec4899;
+  --purple:#8b5cf6;
+  --blue:#38bdf8;
+  --gray:#64748b;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system;
+  background:
+    radial-gradient(900px 360px at top,#fde7f3,transparent),
+    linear-gradient(180deg,#eef6ff,#ffffff);
+  min-height:100vh;
+}
+
+/* ===== Header ===== */
+.header{
+  padding:18px 22px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo{
+  height:36px;
+}
+
+.wallet{
+  font-size:14px;
+  color:#334155;
+  background:#ffffff;
+  padding:8px 14px;
+  border-radius:999px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+
+/* ===== Content ===== */
+.container{
+  max-width:720px;
+  margin:0 auto;
+  padding:10px 20px 40px;
+}
+
+.title{
+  font-size:26px;
+  font-weight:800;
+  margin:18px 0 6px;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+  font-size:14px;
+  color:#94a3b8;
+  margin-bottom:24px;
+}
+
+/* ===== Service Card ===== */
+.service{
+  background:#ffffff;
+  border-radius:22px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:
+    0 20px 45px rgba(139,92,246,.18),
+    0 6px 16px rgba(56,189,248,.12);
+  position:relative;
+}
+
+.service-name{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.service-desc{
+  font-size:13px;
+  color:#64748b;
+}
+
+/* Badge */
+.badge{
+  position:absolute;
+  top:18px;
+  right:18px;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  color:#fff;
+}
+
+.badge.bestseller{
+  background:linear-gradient(90deg,#f97316,#ec4899);
+}
+.badge.recommended{
+  background:linear-gradient(90deg,#38bdf8,#8b5cf6);
+}
+.badge.premium{
+  background:linear-gradient(90deg,#a855f7,#ec4899);
+}
+.badge.boost{
+  background:linear-gradient(90deg,#22c55e,#16a34a);
+}
+
+/* Price + Button */
+.bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:16px;
+}
+
+.price{
+  font-size:15px;
+  font-weight:700;
+  color:#0f172a;
+}
+
+.price span{
+  font-size:13px;
+  color:#64748b;
+  font-weight:500;
+}
+
+.btn{
+  padding:10px 18px;
+  border-radius:14px;
+  border:none;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 10px 25px rgba(139,92,246,.45);
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <img src="logo.png" class="logo">
+  <div class="wallet">
+    เครดิต: <b id="credit">0</b> บาท
+  </div>
+</header>
+
+<div class="container">
+  <div class="title">เลือกบริการ</div>
+  <div class="subtitle">
+    เลือกแพ็กเกจที่เหมาะกับช่องของคุณ ระบบทำงานอัตโนมัติ
+  </div>
+
+  <div id="services"></div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbnVToVL1I8zCCoEW9PMK_KqbL1Zf8VUsQSAQ_6-A-AnQ/exec";
+
+// ===== Load User =====
+document.getElementById('credit').textContent =
+  localStorage.getItem('credit') || 0;
+
+// ===== Load Services =====
+fetch(API + '?action=services')
+  .then(r=>r.json())
+  .then(list=>{
+    const box = document.getElementById('services');
+    box.innerHTML = '';
+
+    list.forEach(s=>{
+      const div = document.createElement('div');
+      div.className = 'service';
+
+      div.innerHTML = `
+        ${s.badge_status === 'on' ? `
+          <div class="badge ${s.badge_type}">
+            ${s.icon || ''} ${s.badge_text || ''}
+          </div>` : ''}
+
+        <div class="service-name">${s.service_name}</div>
+        <div class="service-desc">
+          ${s.short_desc || 'บริการคุณภาพ มาตรฐานร้าน'}
+        </div>
+
+        <div class="bottom">
+          <div class="price">
+            ${s.price_per_100} บาท
+            <span>/ 100 ${s.unit}</span>
+          </div>
+
+          <button class="btn"
+            onclick="selectService('${s.service_id}')">
+            เลือกแพ็กเกจ
+          </button>
+        </div>
+      `;
+      box.appendChild(div);
+    });
+  });
+
+function selectService(id){
+  localStorage.setItem('service_id', id);
+  location.href = 'order.html'; // หน้าถัดไป
+}
+</script>
+
+</body>
+</html>
