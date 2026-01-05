@@ -123,3 +123,89 @@ input::placeholder{
 <body>
 
 <div class="wrapper">
+
+  <h1>เข้าสู่ระบบ</h1>
+  <div class="subtitle">
+    กรอกอีเมลและรหัสผ่านของคุณเพื่อเข้าสู่ระบบ
+  </div>
+
+  <div class="field">
+    <label>ชื่อผู้ใช้งาน</label>
+    <div class="input">
+      <input id="username" placeholder="กรอกชื่อผู้ใช้งานของคุณ">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>รหัสผ่าน</label>
+    <div class="input">
+      <input type="password" id="password" placeholder="กรอกรหัสผ่านของคุณ">
+    </div>
+  </div>
+
+  <button class="login-btn" onclick="login()">เข้าสู่ระบบ</button>
+
+  <a class="line-btn"
+     href="https://line.me/R/ti/p/@geg4960w"
+     target="_blank">
+    สมัครสมาชิก / ทักร้าน LINE @geg4960w
+  </a>
+
+  <div id="error" class="error"></div>
+
+  <div class="footer">
+    © 2026 SocialBoostTH All rights reserved.
+  </div>
+
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbnVToVL1I8zCCoEW9PMK_KqbL1Zf8VUsQSAQ_6-A-AnQ/exec";
+
+function login(){
+  const btn = document.querySelector('.login-btn');
+  const error = document.getElementById('error');
+  btn.disabled = true;
+  error.textContent = '';
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if(!username || !password){
+    error.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
+    btn.disabled = false;
+    return;
+  }
+
+  fetch(API,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      action:'login',
+      username,
+      password
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.success){
+      error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
+      btn.disabled = false;
+      return;
+    }
+
+    localStorage.setItem('user_id', res.user.user_id);
+    localStorage.setItem('username', res.user.username);
+    localStorage.setItem('credit', res.user.credit);
+
+    location.href = 'services.html';
+  })
+  .catch(()=>{
+    error.textContent = 'เชื่อมต่อระบบไม่ได้';
+    btn.disabled = false;
+  });
+}
+</script>
+
+</body>
+</html>
