@@ -51,9 +51,7 @@ h1{
   font-weight:900;
   cursor:pointer
 }
-.btn.active{
-  outline:2px solid var(--p)
-}
+.btn.active{outline:2px solid var(--p)}
 .big{
   margin-top:10px;
   text-align:center;
@@ -61,10 +59,7 @@ h1{
   font-weight:900;
   color:#fbcfe8
 }
-.qr{
-  text-align:center;
-  margin-top:14px
-}
+.qr{text-align:center;margin-top:14px}
 .qr img{
   width:220px;
   height:220px;
@@ -89,6 +84,17 @@ h1{
   background:linear-gradient(135deg,var(--p),var(--pk));
   color:#fff
 }
+input{
+  width:100%;
+  margin-top:10px;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:#120725;
+  color:#fff;
+  font-size:18px;
+  text-align:center
+}
 </style>
 </head>
 
@@ -97,7 +103,9 @@ h1{
   <h1>เติมเงินเข้าระบบ</h1>
 
   <div class="card">
-    <div class="note">เลือกยอดเติม</div>
+    <div class="note">ระบุจำนวนเงินที่ต้องการเติม</div>
+    <input id="amtInput" type="number" min="10" placeholder="กรอกจำนวนเงิน (ขั้นต่ำ 10 บาท)">
+    <div class="note" style="margin-top:10px">หรือเลือกจากปุ่มลัด</div>
     <div class="grid">
       <button class="btn" data-amt="20">20</button>
       <button class="btn" data-amt="50">50</button>
@@ -127,6 +135,7 @@ h1{
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
 const PROMPTPAY = "0991301221";
+const MIN_AMOUNT = 10;
 
 const user = JSON.parse(localStorage.getItem("user"));
 if(!user){
@@ -137,27 +146,36 @@ if(!user){
 let base = 0;
 let locked = 0;
 
+function generate(amount){
+  if(amount < MIN_AMOUNT) return;
+
+  base = amount;
+
+  const decimal = (Math.floor(Math.random() * 90) + 10) / 100;
+  locked = Number((base + decimal).toFixed(2));
+
+  payAmount.innerText = locked.toFixed(2) + " บาท";
+
+  const qrData = `promptpay:${PROMPTPAY}?amount=${locked}`;
+  qrImg.src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=240x240&data="
+    + encodeURIComponent(qrData);
+
+  payBox.style.display = "block";
+}
+
+amtInput.oninput = ()=>{
+  document.querySelectorAll(".btn").forEach(x=>x.classList.remove("active"));
+  generate(Number(amtInput.value));
+};
+
 document.querySelectorAll(".btn").forEach(b=>{
   b.onclick = ()=>{
     document.querySelectorAll(".btn").forEach(x=>x.classList.remove("active"));
     b.classList.add("active");
-
-    base = Number(b.dataset.amt);
-
-    // สุ่มเศษ .10 - .99
-    const decimal = (Math.floor(Math.random() * 90) + 10) / 100;
-    locked = Number((base + decimal).toFixed(2));
-
-    payAmount.innerText = locked.toFixed(2) + " บาท";
-
-    // ===== สร้าง QR แบบเสถียร =====
-    const qrData = `promptpay:${PROMPTPAY}?amount=${locked}`;
-    qrImg.src =
-      "https://api.qrserver.com/v1/create-qr-code/?size=240x240&data="
-      + encodeURIComponent(qrData);
-
-    payBox.style.display = "block";
-  }
+    amtInput.value = b.dataset.amt;
+    generate(Number(b.dataset.amt));
+  };
 });
 
 function notify(){
