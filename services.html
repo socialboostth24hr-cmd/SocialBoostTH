@@ -13,7 +13,6 @@
   --purple:#8b5cf6;
   --pink:#ec4899;
   --soft:rgba(255,255,255,.78);
-  --green:#22c55e;
 }
 *{box-sizing:border-box}
 body{
@@ -95,7 +94,6 @@ h1{
 <div class="box">
   <h1>เลือกบริการ</h1>
   <div class="sub">บริการทั้งหมด ราคาคิดตามจริงจากระบบ</div>
-
   <div id="list" class="loading">กำลังโหลดบริการ...</div>
 </div>
 
@@ -115,30 +113,38 @@ fetch(API_URL,{
   }
 
   list.innerHTML="";
-  res.services.forEach(s=>{
-    list.innerHTML += `
-      <div class="card" onclick='selectService(${JSON.stringify(s)})'>
-        <div class="name">${s.service_name}</div>
-        <div class="meta">
-          ขั้นต่ำ ${Number(s.min_qty).toLocaleString()} |
-          สูงสุด ${Number(s.max_qty).toLocaleString()}
-        </div>
-        <div class="price">
-          ${Number(s.price).toFixed(3)} บาท / 1 หน่วย
-        </div>
-        ${s.note ? `<div class="badge">${s.note}</div>` : ""}
+
+  res.services.forEach((s,i)=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.service = JSON.stringify(s);
+
+    card.innerHTML = `
+      <div class="name">${s.service_name}</div>
+      <div class="meta">
+        ขั้นต่ำ ${Number(s.min_qty).toLocaleString()}
+        • สูงสุด ${Number(s.max_qty).toLocaleString()}
       </div>
+      <div class="price">
+        ${Number(s.price).toFixed(3)} บาท / 1 หน่วย
+      </div>
+      ${s.note ? `<div class="badge">${s.note}</div>` : ""}
     `;
+
+    card.addEventListener("click",()=>{
+      localStorage.setItem(
+        "selectedService",
+        card.dataset.service
+      );
+      location.href="order.html";
+    });
+
+    list.appendChild(card);
   });
 })
 .catch(()=>{
   list.innerHTML="เชื่อมต่อระบบไม่ได้";
 });
-
-function selectService(service){
-  localStorage.setItem("selectedService", JSON.stringify(service));
-  location.href = "order.html";
-}
 </script>
 
 </body>
