@@ -13,6 +13,7 @@
   --purple:#8b5cf6;
   --pink:#ec4899;
   --soft:rgba(255,255,255,.7);
+  --green:#22c55e;
 }
 
 *{box-sizing:border-box}
@@ -33,14 +34,15 @@ body{
   padding:24px;
 }
 
+/* HEADER */
 .header{
   text-align:center;
-  margin-bottom:20px;
+  margin-bottom:22px;
 }
 
 .header h1{
   margin:0;
-  font-size:26px;
+  font-size:28px;
   font-weight:900;
   background:linear-gradient(90deg,var(--purple),var(--pink));
   -webkit-background-clip:text;
@@ -53,7 +55,7 @@ body{
   color:var(--soft);
 }
 
-/* CARD */
+/* USER CARD */
 .card{
   background:
     linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
@@ -75,9 +77,9 @@ body{
 }
 
 .user-name{
-  margin-top:2px;
-  font-size:15px;
-  font-weight:800;
+  margin-top:4px;
+  font-size:16px;
+  font-weight:900;
 }
 
 .credit{
@@ -92,7 +94,7 @@ body{
 .credit b{
   display:block;
   margin-top:4px;
-  font-size:26px;
+  font-size:28px;
   font-weight:900;
   color:#fbcfe8;
 }
@@ -105,23 +107,41 @@ body{
   border:none;
   cursor:pointer;
   font-size:15px;
-  font-weight:800;
+  font-weight:900;
   color:#fff;
+  margin-bottom:12px;
   background:linear-gradient(135deg,var(--purple),var(--pink));
   box-shadow:0 14px 30px rgba(139,92,246,.35);
-  margin-bottom:12px;
 }
 
-.btn:hover{filter:brightness(1.06)}
+.btn:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
 
+/* SECONDARY */
 .btn.secondary{
   background:linear-gradient(135deg,#1e293b,#334155);
   box-shadow:none;
 }
 
+/* HISTORY (GREEN) */
+.btn.history{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:#052e2b;
+  box-shadow:0 14px 30px rgba(34,197,94,.35);
+}
+
+/* LOGOUT */
+.btn.logout{
+  background:linear-gradient(135deg,#020617,#020617);
+  color:#94a3b8;
+  box-shadow:none;
+}
+
 /* FOOTER */
 .footer{
-  margin-top:22px;
+  margin-top:24px;
   text-align:center;
   font-size:12px;
   color:var(--soft);
@@ -133,6 +153,7 @@ body{
 
 <div class="wrap">
 
+  <!-- HEADER -->
   <div class="header">
     <h1>SocialBoostTH</h1>
     <div class="sub">ระบบจัดการบัญชีลูกค้า</div>
@@ -152,11 +173,26 @@ body{
     </div>
   </div>
 
-  <!-- ACTIONS -->
-  <button class="btn" onclick="go('services.html')">🛍️ เลือกบริการ</button>
-  <button class="btn" onclick="go('orders.html')">📦 ออเดอร์ของฉัน</button>
-  <button class="btn secondary" onclick="go('topup.html')">➕ เติมเงิน</button>
-  <button class="btn secondary" onclick="logout()">🚪 ออกจากระบบ</button>
+  <!-- ACTION BUTTONS -->
+  <button class="btn" onclick="go('services.html')">
+    🛍️ เลือกบริการ
+  </button>
+
+  <button class="btn" onclick="go('orders.html')">
+    📦 ออเดอร์ของฉัน
+  </button>
+
+  <button class="btn secondary" onclick="go('topup.html')">
+    ➕ เติมเงิน
+  </button>
+
+  <button class="btn history" onclick="go('topup-history.html')">
+    🧾 ประวัติการเติมเงิน
+  </button>
+
+  <button class="btn logout" onclick="logout()">
+    🚪 ออกจากระบบ
+  </button>
 
   <div class="footer">
     © SocialBoostTH
