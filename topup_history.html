@@ -17,40 +17,26 @@
   --green:#22c55e;
 }
 *{box-sizing:border-box}
-
 body{
-  margin:0;
-  font-family:system-ui;
+  margin:0;font-family:system-ui;
   background:
     radial-gradient(900px 400px at top,#2a0d52,transparent),
     linear-gradient(180deg,#0b0216,#14032a);
   color:#fff;
 }
-
-.box{
-  max-width:420px;
-  margin:24px auto;
-  padding:22px;
-}
+.box{max-width:420px;margin:24px auto;padding:22px}
 
 h1{
-  text-align:center;
-  font-size:26px;
-  font-weight:900;
-  margin-bottom:6px;
+  text-align:center;font-size:26px;font-weight:900;margin-bottom:6px;
   background:linear-gradient(90deg,var(--p),var(--pk));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
-
 .sub{
-  text-align:center;
-  font-size:14px;
-  color:var(--soft);
-  margin-bottom:18px;
+  text-align:center;font-size:14px;
+  color:var(--soft);margin-bottom:18px;
 }
 
-/* CARD */
+/* ITEM */
 .item{
   background:linear-gradient(180deg,#1a0936,var(--card));
   border:1px solid var(--border);
@@ -58,23 +44,20 @@ h1{
   padding:16px;
   margin-bottom:14px;
 }
-
 .row{
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
-
 .amount{
   font-size:18px;
   font-weight:900;
   color:#fbcfe8;
 }
-
 .date{
+  margin-top:6px;
   font-size:12px;
   color:var(--soft);
-  margin-top:6px;
 }
 
 /* STATUS */
@@ -84,13 +67,11 @@ h1{
   padding:6px 12px;
   border-radius:999px;
 }
-
 .pending{
   background:rgba(250,204,21,.15);
   color:var(--yellow);
   border:1px solid rgba(250,204,21,.4);
 }
-
 .success{
   background:rgba(34,197,94,.15);
   color:var(--green);
@@ -99,10 +80,10 @@ h1{
 
 /* EMPTY */
 .empty{
-  text-align:center;
-  font-size:14px;
-  color:var(--soft);
   margin-top:40px;
+  text-align:center;
+  color:var(--soft);
+  font-size:14px;
 }
 
 /* BACK */
@@ -122,7 +103,6 @@ h1{
 </head>
 
 <body>
-
 <div class="box">
   <h1>ประวัติการเติมเงิน</h1>
   <div class="sub">ตรวจสอบสถานะการเติมเครดิตของคุณ</div>
@@ -136,12 +116,10 @@ h1{
 
 <script>
 const API_URL =
-"https://script.google.com/macros/s/AKfycbwP1C_zdlnjCXUSKjBwpq0q6p70Ke507W7bjtp1enfGVK3nWT6Saz9jVg1OU5O4o6V7/exec";
+"https://script.google.com/macros/s/AKfycbzqcCkHBrhWaz4N69ZdXPeEV9H7YV5u8IgAwTvg-BaQYsH3JP5lj0GA9ps5vrPKWIKc/exec";
 
 const user = JSON.parse(localStorage.getItem("user"));
-if(!user){
-  location.href="index.html";
-}
+if(!user) location.href="index.html";
 
 fetch(API_URL,{
   method:"POST",
@@ -152,23 +130,22 @@ fetch(API_URL,{
 })
 .then(r=>r.json())
 .then(res=>{
-  if(!res.logs || !res.logs.length){
-    list.innerHTML =
-      `<div class="empty">ยังไม่มีประวัติการเติมเงิน</div>`;
+  const list=document.getElementById("list");
+  if(!res.logs||!res.logs.length){
+    list.innerHTML="<div class='empty'>ยังไม่มีประวัติการเติมเงิน</div>";
     return;
   }
 
   list.innerHTML="";
   res.logs.forEach(l=>{
-    const statusClass = l.status==="success" ? "success" : "pending";
-    const statusText =
-      l.status==="success" ? "✅ เติมเครดิตแล้ว" : "⏳ รอตรวจสอบ";
-
-    list.innerHTML += `
+    const ok=l.status==="success";
+    list.innerHTML+=`
       <div class="item">
         <div class="row">
           <div class="amount">${Number(l.amount).toFixed(2)} บาท</div>
-          <div class="status ${statusClass}">${statusText}</div>
+          <div class="status ${ok?"success":"pending"}">
+            ${ok?"✅ เติมเครดิตแล้ว":"⏳ รอตรวจสอบ"}
+          </div>
         </div>
         <div class="date">
           ${new Date(l.created_at).toLocaleString("th-TH")}
@@ -178,10 +155,9 @@ fetch(API_URL,{
   });
 })
 .catch(()=>{
-  list.innerHTML =
-    `<div class="empty">ไม่สามารถโหลดข้อมูลได้</div>`;
+  document.getElementById("list").innerHTML=
+    "<div class='empty'>ไม่สามารถโหลดข้อมูลได้</div>";
 });
 </script>
-
 </body>
 </html>
