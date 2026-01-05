@@ -11,7 +11,6 @@
   --purple:#8b5cf6;
   --blue:#38bdf8;
 }
-
 *{box-sizing:border-box}
 
 body{
@@ -31,37 +30,32 @@ body{
   align-items:center;
 }
 
-.left,
-.right{
+.left,.right{
   display:flex;
   align-items:center;
   gap:10px;
 }
 
-.logo{ height:36px }
-
-/* Buttons */
-.back-btn,
-.logout-btn{
+/* buttons */
+.back-btn,.logout-btn{
   border:none;
   padding:6px 12px;
   border-radius:999px;
   font-size:13px;
   cursor:pointer;
-  background:#ffffff;
+  background:#fff;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
+.back-btn:hover{background:#f1f5f9;}
+.logout-btn{background:#fee2e2;color:#991b1b;}
+.logout-btn:hover{background:#fecaca;}
 
-.back-btn:hover{
-  background:#f1f5f9;
-}
-
-.logout-btn{
-  background:#fee2e2;
-  color:#991b1b;
-}
-.logout-btn:hover{
-  background:#fecaca;
+.logo{
+  height:36px;
+  border-radius:10px;
+  background:#fff;
+  padding:4px;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
 }
 
 .wallet{
@@ -107,18 +101,9 @@ body{
   position:relative;
 }
 
-.service-name{
-  font-size:18px;
-  font-weight:700;
-  margin-bottom:6px;
-}
+.service-name{font-size:18px;font-weight:700;margin-bottom:6px;}
+.service-desc{font-size:13px;color:#64748b;}
 
-.service-desc{
-  font-size:13px;
-  color:#64748b;
-}
-
-/* Badge */
 .badge{
   position:absolute;
   top:18px;
@@ -132,21 +117,11 @@ body{
   gap:4px;
   align-items:center;
 }
+.badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899);}
+.badge.recommended{background:linear-gradient(90deg,#38bdf8,#8b5cf6);}
+.badge.premium{background:linear-gradient(90deg,#a855f7,#ec4899);}
+.badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
 
-.badge.bestseller{
-  background:linear-gradient(90deg,#f97316,#ec4899);
-}
-.badge.recommended{
-  background:linear-gradient(90deg,#38bdf8,#8b5cf6);
-}
-.badge.premium{
-  background:linear-gradient(90deg,#a855f7,#ec4899);
-}
-.badge.boost{
-  background:linear-gradient(90deg,#22c55e,#16a34a);
-}
-
-/* Price + Button */
 .bottom{
   display:flex;
   justify-content:space-between;
@@ -154,17 +129,8 @@ body{
   margin-top:16px;
 }
 
-.price{
-  font-size:15px;
-  font-weight:700;
-  color:#0f172a;
-}
-
-.price span{
-  font-size:13px;
-  color:#64748b;
-  font-weight:500;
-}
+.price{font-size:15px;font-weight:700;color:#0f172a;}
+.price span{font-size:13px;color:#64748b;font-weight:500;}
 
 .btn{
   padding:10px 18px;
@@ -174,7 +140,6 @@ body{
   color:#fff;
   font-weight:700;
   cursor:pointer;
-  transition:.2s;
 }
 .btn:hover{
   transform:translateY(-1px);
@@ -187,8 +152,13 @@ body{
 
 <header class="header">
   <div class="left">
-    <button class="back-btn" onclick="history.back()">← กลับ</button>
-    <img src="logo.png" class="logo">
+    <button class="back-btn" onclick="location.href='?page=login'">← กลับ</button>
+
+    <!-- ✅ โลโก้จาก Google Drive -->
+    <img
+      src="https://drive.google.com/uc?export=view&id=1M0D0DDNKBpGBIeGdNXu55-qotIz63_4W"
+      class="logo"
+      alt="SocialBoostTH Logo">
   </div>
 
   <div class="right">
@@ -212,9 +182,8 @@ body{
 const API = "https://script.google.com/macros/s/AKfycbwN8tuMRzZq29RUp25gh1klRlbnVToVL1I8zCCoEW9PMK_KqbL1Zf8VUsQSAQ_6-A-AnQ/exec";
 
 /* ===== Guard Login ===== */
-const userId = localStorage.getItem('user_id');
-if(!userId){
-  location.href = 'login.html';
+if(!localStorage.getItem('user_id')){
+  location.href = '?page=login';
 }
 
 /* ===== Wallet ===== */
@@ -223,50 +192,43 @@ document.getElementById('credit').textContent =
 
 /* ===== Load Services ===== */
 fetch(API + '?action=services')
-  .then(r=>r.json())
-  .then(list=>{
-    const box = document.getElementById('services');
-    box.innerHTML = '';
+.then(r=>r.json())
+.then(list=>{
+  const box = document.getElementById('services');
+  box.innerHTML = '';
 
-    list.forEach(s=>{
-      const div = document.createElement('div');
-      div.className = 'service';
-
-      div.innerHTML = `
-        ${s.badge_status === 'on' && s.badge_type ? `
-          <div class="badge ${s.badge_type}">
-            ${s.icon || ''} ${s.badge_text || ''}
-          </div>` : ''}
+  list.forEach(s=>{
+    box.innerHTML += `
+      <div class="service">
+        ${s.badge_status==='on' && s.badge_type ? `
+        <div class="badge ${s.badge_type}">
+          ${s.icon||''} ${s.badge_text||''}
+        </div>` : ''}
 
         <div class="service-name">${s.display_name || s.service_name}</div>
-        <div class="service-desc">
-          ${s.short_desc || 'บริการคุณภาพ มาตรฐานร้าน'}
-        </div>
+        <div class="service-desc">${s.short_desc||''}</div>
 
         <div class="bottom">
           <div class="price">
-            ${s.price_per_100} บาท
-            <span>/ 100 ${s.unit}</span>
+            ${s.price_per_100} บาท <span>/ 100 ${s.unit}</span>
           </div>
-
-          <button class="btn"
-            onclick="selectService('${s.service_id}')">
+          <button class="btn" onclick="selectService('${s.service_id}')">
             เลือกแพ็กเกจ
           </button>
         </div>
-      `;
-      box.appendChild(div);
-    });
+      </div>
+    `;
   });
+});
 
 function selectService(id){
-  localStorage.setItem('service_id', id);
-  location.href = 'order.html';
+  localStorage.setItem('service_id',id);
+  location.href='?page=order';
 }
 
 function logout(){
   localStorage.clear();
-  location.href = 'login.html';
+  location.href='?page=login';
 }
 </script>
 
