@@ -31,7 +31,6 @@ body{
   gap:10px;
 }
 
-/* sticky header บนมือถือ */
 @media (max-width:640px){
   .header{
     position:sticky;
@@ -98,7 +97,7 @@ body{
 .service{
   background:#fff;
   border-radius:22px;
-  padding:20px 20px 18px;
+  padding:54px 20px 18px; /* 🔥 เผื่อ badge */
   margin-bottom:16px;
   box-shadow:
     0 20px 45px rgba(139,92,246,.18),
@@ -121,8 +120,8 @@ body{
 /* badge */
 .badge{
   position:absolute;
-  top:14px;
-  right:14px;
+  top:16px;
+  right:16px;
   padding:6px 12px;
   border-radius:999px;
   font-size:12px;
@@ -139,6 +138,16 @@ body{
 .badge.premium{background:linear-gradient(90deg,#a855f7,#ec4899);}
 .badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
 
+/* 🔥 แก้ปัญหาบนมือถือ */
+@media (max-width:640px){
+  .badge{
+    top:20px;
+    right:14px;
+    font-size:11px;
+    padding:5px 10px;
+  }
+}
+
 .bottom{
   display:flex;
   justify-content:space-between;
@@ -152,13 +161,11 @@ body{
   font-size:15px;
   font-weight:800;
 }
-
 .price span{
   display:block;
   font-size:13px;
   color:#64748b;
 }
-
 .price .min{
   color:#ef4444;
   font-weight:800;
@@ -176,16 +183,10 @@ body{
   white-space:nowrap;
 }
 
-.btn:hover{
-  transform:translateY(-1px);
-  box-shadow:0 10px 25px rgba(139,92,246,.45);
-}
-
-/* ===== Floating Button (Mobile) ===== */
+/* ===== Floating Button ===== */
 .floating-btn{
   display:none;
 }
-
 @media (max-width:640px){
   .floating-btn{
     display:flex;
@@ -220,63 +221,44 @@ body{
     <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
   </div>
   <div class="right">
-    <div class="wallet">
-      เครดิต: <b id="credit">0</b> บาท
-    </div>
+    <div class="wallet">เครดิต: <b id="credit">0</b> บาท</div>
     <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
   </div>
 </header>
 
 <div class="container">
   <div class="title">เลือกบริการ</div>
-  <div class="subtitle">
-    เลือกแพ็กเกจที่เหมาะกับช่องของคุณ ระบบทำงานอัตโนมัติ
-  </div>
-
+  <div class="subtitle">เลือกแพ็กเกจที่เหมาะกับช่องของคุณ ระบบทำงานอัตโนมัติ</div>
   <div id="services"></div>
 </div>
 
-<button class="floating-btn" onclick="scrollToServices()">
-  เลือกแพ็กเกจ
-</button>
+<button class="floating-btn" onclick="scrollToServices()">เลือกแพ็กเกจ</button>
 
 <script>
-const API =
-"https://script.google.com/macros/s/AKfycbwpc_dUSc6lmVu-z18mqq72QDzljOAcqsMHJrYNHoJMIK-pP8wVS6BpS9Lvh8ON4iQDCA/exec";
+const API="https://script.google.com/macros/s/AKfycbwpc_dUSc6lmVu-z18mqq72QDzljOAcqsMHJrYNHoJMIK-pP8wVS6BpS9Lvh8ON4iQDCA/exec";
 
-/* Guard login */
 if(!localStorage.getItem('user_id')){
   location.href='login.html';
 }
 
-/* Wallet */
 document.getElementById('credit').textContent =
   localStorage.getItem('credit') || 0;
 
-/* Load services */
-fetch(API + '?action=services&_ts=' + Date.now())
-.then(res => res.json())
+fetch(API+'?action=services&_ts='+Date.now())
+.then(r=>r.json())
 .then(list=>{
-  if(!Array.isArray(list)) throw 'data error';
-
   const box=document.getElementById('services');
   box.innerHTML='';
-
   list.forEach(s=>{
-    box.innerHTML += `
+    box.innerHTML+=`
     <div class="service">
-      ${s.badge_status==='on' && s.badge_type ? `
+      ${s.badge_status==='on'?`
         <div class="badge ${s.badge_type}">
           ${s.icon||''} ${s.badge_text||''}
-        </div>` : ''}
+        </div>`:''}
 
-      <div class="service-name">
-        ${s.display_name || s.service_name}
-      </div>
-
-      <div class="service-desc">
-        ${s.short_desc || 'บริการคุณภาพ มาตรฐานร้าน'}
-      </div>
+      <div class="service-name">${s.display_name||s.service_name}</div>
+      <div class="service-desc">${s.short_desc||'บริการคุณภาพ มาตรฐานร้าน'}</div>
 
       <div class="bottom">
         <div class="price">
@@ -284,32 +266,24 @@ fetch(API + '?action=services&_ts=' + Date.now())
           <span>/ 100 ${s.unit}</span>
           <span class="min">ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
         </div>
-
         <button class="btn" onclick="selectService('${s.service_id}')">
           เลือกแพ็กเกจ
         </button>
       </div>
     </div>`;
   });
-})
-.catch(()=>{
-  document.getElementById('services').innerHTML =
-    '<p style="color:red">ไม่สามารถโหลดบริการได้</p>';
 });
 
 function selectService(id){
   localStorage.setItem('service_id',id);
   location.href='order.html';
 }
-
 function logout(){
   localStorage.clear();
   location.href='login.html';
 }
-
 function scrollToServices(){
-  document.getElementById('services')
-    .scrollIntoView({behavior:'smooth'});
+  document.getElementById('services').scrollIntoView({behavior:'smooth'});
 }
 </script>
 
