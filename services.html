@@ -24,45 +24,14 @@ body{
 
 /* ===== Header ===== */
 .header{
-  padding:16px 20px;
+  padding:14px 18px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
-}
-
-.left,.right{
-  display:flex;
   align-items:center;
   gap:10px;
 }
 
-.logo{height:36px}
-
-.back-btn,.logout-btn{
-  border:none;
-  padding:6px 14px;
-  border-radius:999px;
-  font-size:13px;
-  cursor:pointer;
-  background:#fff;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
-}
-
-.logout-btn{
-  background:#fee2e2;
-  color:#991b1b;
-}
-.logout-btn:hover{background:#fecaca;}
-
-.wallet{
-  font-size:13px;
-  background:#fff;
-  padding:6px 14px;
-  border-radius:999px;
-  box-shadow:0 6px 18px rgba(0,0,0,.06);
-}
-
-/* Sticky header (mobile) */
+/* sticky header บนมือถือ */
 @media (max-width:640px){
   .header{
     position:sticky;
@@ -73,16 +42,46 @@ body{
   }
 }
 
+.left,.right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.logo{height:34px}
+
+.back-btn,.logout-btn{
+  border:none;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:13px;
+  cursor:pointer;
+  background:#fff;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+.logout-btn{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.wallet{
+  font-size:13px;
+  background:#fff;
+  padding:6px 14px;
+  border-radius:999px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+
 /* ===== Content ===== */
 .container{
   max-width:720px;
   margin:0 auto;
-  padding:10px 20px 120px; /* เผื่อปุ่มลอย */
+  padding:10px 18px 140px;
 }
 
 .title{
   font-size:26px;
-  font-weight:800;
+  font-weight:900;
   margin:18px 0 6px;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
   -webkit-background-clip:text;
@@ -92,14 +91,14 @@ body{
 .subtitle{
   font-size:14px;
   color:#94a3b8;
-  margin-bottom:24px;
+  margin-bottom:22px;
 }
 
 /* ===== Service Card ===== */
 .service{
   background:#fff;
   border-radius:22px;
-  padding:22px;
+  padding:20px 20px 18px;
   margin-bottom:16px;
   box-shadow:
     0 20px 45px rgba(139,92,246,.18),
@@ -109,9 +108,9 @@ body{
 
 .service-name{
   font-size:17px;
-  font-weight:800;
-  margin-bottom:6px;
+  font-weight:900;
   line-height:1.4;
+  margin-bottom:6px;
 }
 
 .service-desc{
@@ -143,9 +142,9 @@ body{
 .bottom{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin-top:16px;
-  gap:10px;
+  align-items:flex-end;
+  margin-top:14px;
+  gap:12px;
   flex-wrap:wrap;
 }
 
@@ -155,8 +154,15 @@ body{
 }
 
 .price span{
+  display:block;
   font-size:13px;
   color:#64748b;
+}
+
+.price .min{
+  color:#ef4444;
+  font-weight:800;
+  margin-top:4px;
 }
 
 .btn{
@@ -165,8 +171,9 @@ body{
   border:none;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
   color:#fff;
-  font-weight:800;
+  font-weight:900;
   cursor:pointer;
+  white-space:nowrap;
 }
 
 .btn:hover{
@@ -174,7 +181,7 @@ body{
   box-shadow:0 10px 25px rgba(139,92,246,.45);
 }
 
-/* ===== Floating Button ===== */
+/* ===== Floating Button (Mobile) ===== */
 .floating-btn{
   display:none;
 }
@@ -210,11 +217,8 @@ body{
 <header class="header">
   <div class="left">
     <button class="back-btn" onclick="location.href='login.html'">← กลับ</button>
-    <img
-      src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png"
-      class="logo">
+    <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
   </div>
-
   <div class="right">
     <div class="wallet">
       เครดิต: <b id="credit">0</b> บาท
@@ -232,7 +236,6 @@ body{
   <div id="services"></div>
 </div>
 
-<!-- ปุ่มลอย -->
 <button class="floating-btn" onclick="scrollToServices()">
   เลือกแพ็กเกจ
 </button>
@@ -260,16 +263,16 @@ fetch(API + '?action=services&_ts=' + Date.now())
   box.innerHTML='';
 
   list.forEach(s=>{
-    const name = (s.display_name || s.service_name || '').trim();
-
     box.innerHTML += `
     <div class="service">
       ${s.badge_status==='on' && s.badge_type ? `
-      <div class="badge ${s.badge_type}">
-        ${s.icon||''} ${s.badge_text||''}
-      </div>`:''}
+        <div class="badge ${s.badge_type}">
+          ${s.icon||''} ${s.badge_text||''}
+        </div>` : ''}
 
-      <div class="service-name">${name}</div>
+      <div class="service-name">
+        ${s.display_name || s.service_name}
+      </div>
 
       <div class="service-desc">
         ${s.short_desc || 'บริการคุณภาพ มาตรฐานร้าน'}
@@ -279,6 +282,7 @@ fetch(API + '?action=services&_ts=' + Date.now())
         <div class="price">
           ${s.price_per_100} บาท
           <span>/ 100 ${s.unit}</span>
+          <span class="min">ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
         </div>
 
         <button class="btn" onclick="selectService('${s.service_id}')">
@@ -304,8 +308,7 @@ function logout(){
 }
 
 function scrollToServices(){
-  document
-    .getElementById('services')
+  document.getElementById('services')
     .scrollIntoView({behavior:'smooth'});
 }
 </script>
