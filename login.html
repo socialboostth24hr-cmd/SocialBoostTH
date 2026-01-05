@@ -232,14 +232,32 @@ input::placeholder{
 
 <script>
 function togglePassword(){
-  const i=document.getElementById('password');
-  i.type=i.type==='password'?'text':'password';
+  const i = document.getElementById('password');
+  i.type = i.type === 'password' ? 'text' : 'password';
 }
+
 function login(){
-  // ต่อ API ได้ตามที่ทำไว้ เดี๋ยวไปเช็คหน้าถัดไป
-  location.href='services.html';
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const error = document.getElementById('error');
+
+  error.textContent = '';
+
+  if(!user || !pass){
+    error.textContent = 'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน';
+    return;
+  }
+
+  /* ✅ จำลอง login สำเร็จ (เพื่อให้เข้า services ได้จริง) */
+  localStorage.setItem('user_id', 'user_demo_001');
+  localStorage.setItem('username', user);
+  localStorage.setItem('credit', '0');
+
+  /* ➜ ไปหน้า services */
+  location.href = 'services.html';
 }
 </script>
+
 
 </body>
 </html>
