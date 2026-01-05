@@ -1,49 +1,63 @@
 <script>
-const API = "https://script.google.com/macros/s/AKfycbzAJ-rKWxuipYYkxwBs35TehywYy34EHARUAIoa5C4bJ8hJpENA3hdSHFDWgX88ex2K/exec";
+const API = "https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
 
 function togglePassword(){
   const i = document.getElementById('password');
+  if(!i) return;
   i.type = i.type === 'password' ? 'text' : 'password';
 }
 
 function login(){
-  const user = document.getElementById('username').value.trim();
-  const pass = document.getElementById('password').value.trim();
-  const error = document.getElementById('error');
+  const userInput = document.getElementById('username');
+  const passInput = document.getElementById('password');
+  const errorBox  = document.getElementById('error');
 
-  error.textContent = '';
+  if(!userInput || !passInput || !errorBox){
+    alert('HTML element ไม่ครบ (username / password / error)');
+    return;
+  }
+
+  const user = userInput.value.trim();
+  const pass = passInput.value.trim();
+
+  errorBox.textContent = '';
 
   if(!user || !pass){
-    error.textContent = 'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน';
+    errorBox.textContent = 'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน';
     return;
   }
 
   fetch(API,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({
-      action:'login',
-      username:user,
-      password:pass
+      action: 'login',
+      username: user,
+      password: pass
     })
   })
-  .then(r=>r.json())
-  .then(res=>{
-    
+  .then(res => res.json())
+  .then(res => {
+    console.log('LOGIN RESPONSE:', res);
+
     if(!res.success){
-      error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
+      errorBox.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
       return;
     }
 
-    /* ✅ เก็บข้อมูลจริงจากระบบ */
+    /* ✅ เก็บข้อมูลจากระบบจริง */
     localStorage.setItem('user_id', res.user.user_id);
     localStorage.setItem('username', res.user.username);
-    localStorage.setItem('credit', res.user.credit);
+    localStorage.setItem('credit', String(res.user.credit || 0));
 
+    /* ➜ ไปหน้าเลือกบริการ */
     location.href = 'services.html';
   })
-  .catch(()=>{
-    error.textContent = 'ระบบขัดข้อง กรุณาลองใหม่';
+  .catch(err => {
+    console.error(err);
+    errorBox.textContent = 'ระบบขัดข้อง กรุณาลองใหม่';
   });
 }
 </script>
