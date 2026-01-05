@@ -12,7 +12,7 @@
   --border:#3b1775;
   --purple:#8b5cf6;
   --pink:#ec4899;
-  --soft:rgba(255,255,255,.7);
+  --soft:rgba(255,255,255,.75);
   --green:#22c55e;
   --yellow:#fde047;
 }
@@ -27,6 +27,7 @@ body{
   color:#fff;
 }
 
+/* container */
 .box{
   max-width:420px;
   margin:30px auto;
@@ -36,8 +37,9 @@ body{
   box-shadow:0 25px 70px rgba(0,0,0,.55);
 }
 
+/* header */
 h1{
-  margin:0 0 6px;
+  margin:0 0 8px;
   text-align:center;
   font-size:24px;
   font-weight:900;
@@ -52,6 +54,7 @@ h1{
   margin-bottom:18px;
 }
 
+/* card */
 .card{
   background:rgba(255,255,255,.05);
   border:1px solid var(--border);
@@ -63,6 +66,7 @@ h1{
 .label{font-size:13px;color:#c4b5fd}
 .value{margin-top:4px;font-size:15px;font-weight:800;color:#e9d5ff}
 
+/* input */
 input{
   width:100%;
   padding:14px;
@@ -74,6 +78,7 @@ input{
   font-size:15px;
 }
 
+/* price */
 .row{
   display:flex;
   justify-content:space-between;
@@ -81,15 +86,13 @@ input{
   color:var(--soft);
   margin-bottom:6px;
 }
-
 .total{
   margin-top:6px;
   text-align:center;
-  font-size:24px;
+  font-size:26px;
   font-weight:900;
   color:#fbcfe8;
 }
-
 .save{
   text-align:center;
   font-size:14px;
@@ -98,23 +101,23 @@ input{
   margin-top:6px;
 }
 
+/* discount list */
 .discount-box{
   border:1px dashed #a78bfa;
   background:rgba(139,92,246,.08);
 }
-
 .discount-item{
   display:flex;
   justify-content:space-between;
   font-size:14px;
   margin-bottom:6px;
 }
-
 .discount-active{
   color:var(--yellow);
   font-weight:900;
 }
 
+/* upsell */
 .upsell{
   margin-top:8px;
   text-align:center;
@@ -123,6 +126,29 @@ input{
   font-weight:800;
 }
 
+/* progress bar */
+.progress-text{
+  margin-top:10px;
+  font-size:14px;
+  text-align:center;
+  color:#ddd6fe;
+  font-weight:800;
+}
+.progress-bar{
+  margin-top:10px;
+  height:12px;
+  background:#1e1b4b;
+  border-radius:999px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  transition:.35s ease;
+}
+
+/* buttons */
 button{
   width:100%;
   margin-top:14px;
@@ -143,26 +169,39 @@ button{
 
 <div class="box">
   <h1>สั่งซื้อบริการ</h1>
-  <div class="sub">ตรวจสอบข้อมูลก่อนยืนยันคำสั่งซื้อ</div>
+  <div class="sub">ยิ่งสั่งมาก ยิ่งคุ้ม 🔥</div>
 
+  <!-- SERVICE -->
   <div class="card">
     <div class="label">บริการ</div>
     <div class="value" id="name"></div>
-    <div class="label" style="margin-top:10px">ราคา</div>
+    <div class="label" style="margin-top:10px">ราคา / หน่วย</div>
     <div class="value" id="price"></div>
   </div>
 
+  <!-- QTY -->
   <div class="card">
     <div class="label">จำนวนที่ต้องการ</div>
     <input id="qty" type="number">
     <div class="upsell" id="upsell"></div>
   </div>
 
+  <!-- DISCOUNT RULES -->
   <div class="card discount-box" id="discountBox" style="display:none">
     <div class="label">🔥 ส่วนลดตามจำนวน</div>
     <div id="discountList"></div>
   </div>
 
+  <!-- PROGRESS -->
+  <div class="card" id="progressBox" style="display:none">
+    <div class="label">📊 ระดับความคุ้มค่า</div>
+    <div class="progress-text" id="progressText"></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- TOTAL -->
   <div class="card">
     <div class="row">
       <span>ราคาปกติ</span>
@@ -184,34 +223,40 @@ button{
 
 <script>
 const API_URL="https://script.google.com/macros/s/AKfycbyarc1hrJZzI6g_EtrpzIZLQUDSOAPM-TlndrZ4BxdEEqvHkFpftXQ7oCWEjCix6heq/exec";
-const user=JSON.parse(localStorage.getItem("user"));
-const service=JSON.parse(localStorage.getItem("selectedService"));
-if(!user||!service)location.href="services.html";
 
-name.innerText=service.service_name;
-price.innerText=`${service.price} บาท / ${service.unit}`;
-qty.min=service.min;
-qty.max=service.max;
-qty.value=service.min;
+const user = JSON.parse(localStorage.getItem("user"));
+const service = JSON.parse(localStorage.getItem("selectedService"));
+if(!user || !service) location.href="services.html";
 
-let discounts=[];
+name.innerText = service.service_name;
+price.innerText = `${service.price} บาท / ${service.unit}`;
+qty.min = service.min;
+qty.max = service.max;
+qty.value = service.min;
 
+let discounts = [];
+
+/* LOAD DISCOUNTS */
 fetch(API_URL,{
   method:"POST",
-  body:JSON.stringify({action:"getDiscounts",service_code:service.service_code})
+  body:JSON.stringify({
+    action:"getDiscounts",
+    service_code:service.service_code
+  })
 })
 .then(r=>r.json())
 .then(res=>{
-  if(!res.success||res.discounts.length===0) return;
-  discounts=res.discounts;
+  if(!res.success || !res.discounts.length) return;
+  discounts = res.discounts.sort((a,b)=>a.min_qty-b.min_qty);
   discountBox.style.display="block";
+  progressBox.style.display="block";
   renderDiscounts();
   calc();
 });
 
-qty.oninput=calc;
-calc();
+qty.oninput = calc;
 
+/* RENDER DISCOUNT LIST */
 function renderDiscounts(){
   discountList.innerHTML="";
   discounts.forEach(d=>{
@@ -219,35 +264,44 @@ function renderDiscounts(){
       <div class="discount-item">
         <span>สั่ง ≥ ${d.min_qty}</span>
         <span>${d.percent}%</span>
-      </div>
-    `;
+      </div>`;
   });
 }
 
+/* CALCULATE */
 function calc(){
-  const q=+qty.value||0;
-  const base=q*service.price;
-  let discountAmount=0;
-  let active=null;
+  const q = +qty.value || 0;
+  const basePrice = q * service.price;
 
-  discounts.forEach(d=>{
-    if(q>=d.min_qty) active=d;
-  });
+  let active = null;
+  discounts.forEach(d=>{ if(q >= d.min_qty) active = d; });
 
-  if(active){
-    discountAmount=base*(active.percent/100);
-    upsell.innerText="";
+  let discountAmount = active ? basePrice * active.percent / 100 : 0;
+
+  base.innerText = basePrice.toFixed(2);
+  discount.innerText = "-" + discountAmount.toFixed(2);
+  totalBig.innerText = (basePrice - discountAmount).toFixed(2);
+
+  save.innerText = discountAmount>0
+    ? `🎉 ประหยัด ${discountAmount.toFixed(2)} บาท`
+    : "";
+
+  /* PROGRESS */
+  let next = discounts.find(d=>q < d.min_qty);
+  if(next){
+    const percent = Math.min(100,(q/next.min_qty)*100);
+    progressFill.style.width = percent+"%";
+    progressText.innerText =
+      `ซื้อเพิ่มอีก ${next.min_qty-q} รับส่วนลด ${next.percent}% 🔥`;
+    upsell.innerText = "💡 ลูกค้าส่วนใหญ่เลือกแพ็กนี้";
   }else if(discounts.length){
-    const next=discounts[0];
-    upsell.innerText=`เพิ่มอีก ${next.min_qty-q} จะได้ลด ${next.percent}% 🔥`;
+    progressFill.style.width="100%";
+    progressText.innerText="🔥 คุณได้ส่วนลดสูงสุดแล้ว คุ้มที่สุด!";
+    upsell.innerText="";
   }
-
-  baseSpan.innerText=base.toFixed(2);
-  discount.innerText="-"+discountAmount.toFixed(2);
-  totalBig.innerText=(base-discountAmount).toFixed(2);
-  save.innerText=discountAmount>0?`ประหยัด ${discountAmount.toFixed(2)} บาท 🎉`:"";
 }
 
+/* SUBMIT */
 function submitOrder(){
   fetch(API_URL,{
     method:"POST",
@@ -262,8 +316,8 @@ function submitOrder(){
   })
   .then(r=>r.json())
   .then(res=>{
-    if(!res.success){alert(res.message);return;}
-    user.credit=res.new_credit;
+    if(!res.success){ alert(res.message); return; }
+    user.credit = res.new_credit;
     localStorage.setItem("user",JSON.stringify(user));
     alert("✅ สั่งซื้อสำเร็จ");
     location.href="orders.html";
