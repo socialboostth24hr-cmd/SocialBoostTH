@@ -1,113 +1,115 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-/* ================= CONFIG ================= */
-const API = "https://script.google.com/macros/s/AKfycbxd3FO7ZHfOHDGDgVQNI1Uf3Owtmh8wXE1-00O2UimH6tA8k83PkqKItfo0_q-22sMeuQ/exec";
-const API_KEY = "SBTH-SECURE-2026";
+  /* ================= CONFIG ================= */
+  const API = "https://script.google.com/macros/s/AKfycbxd3FO7ZHfOHDGDgVQNI1Uf3Owtmh8wXE1-00O2UimH6tA8k83PkqKItfo0_q-22sMeuQ/exec";
+  const API_KEY = "SBTH-SECURE-2026";
 
-/* ================= AUTH ================= */
-const userId = localStorage.getItem('user_id');
-if (!userId) {
-  location.href = 'login.html';
-  return;
-}
+  /* ================= AUTH ================= */
+  const userId = localStorage.getItem('user_id');
+  if (!userId) {
+    location.href = 'login.html';
+    return;
+  }
 
-/* ================= DOM ================= */
-const creditEl = document.getElementById('credit');
-const box = document.getElementById('services');
-const sideMenu = document.getElementById('sideMenu');
-const menuOverlay = document.getElementById('menuOverlay');
+  /* ================= DOM ================= */
+  const creditEl = document.getElementById('credit');
+  const box = document.getElementById('services');
+  const sideMenu = document.getElementById('sideMenu');
+  const menuOverlay = document.getElementById('menuOverlay');
 
-/* ================= MENU ================= */
-window.openMenu = function () {
-  sideMenu?.classList.add('open');
-  menuOverlay.style.display = 'block';
-}
+  /* ================= MENU ================= */
+  window.openMenu = function () {
+    sideMenu && sideMenu.classList.add('open');
+    if (menuOverlay) menuOverlay.style.display = 'block';
+  };
 
-window.closeMenu = function () {
-  sideMenu?.classList.remove('open');
-  menuOverlay.style.display = 'none';
-}
+  window.closeMenu = function () {
+    sideMenu && sideMenu.classList.remove('open');
+    if (menuOverlay) menuOverlay.style.display = 'none';
+  };
 
-window.logout = function () {
-  localStorage.clear();
-  location.href = 'login.html';
-}
+  window.logout = function () {
+    localStorage.clear();
+    location.href = 'login.html';
+  };
 
-/* ================= LOAD CREDIT ================= */
-function loadCredit() {
-  fetch(`${API}?action=getUser&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
-    .then(r => r.json())
-    .then(u => {
-      if (!creditEl) return;
-      if (u.error) {
+  /* ================= LOAD CREDIT ================= */
+  function loadCredit() {
+    if (!creditEl) return;
+    fetch(`${API}?action=getUser&user_id=${encodeURIComponent(userId)}&api_key=${API_KEY}&_=${Date.now()}`)
+      .then(r => r.json())
+      .then(u => {
+        if (u && !u.error) {
+          creditEl.innerText = Number(u.credit || 0).toFixed(2);
+          localStorage.setItem('credit', u.credit || 0);
+        } else {
+          creditEl.innerText = '0.00';
+        }
+      })
+      .catch(() => {
         creditEl.innerText = '0.00';
-        return;
-      }
-      creditEl.innerText = Number(u.credit).toFixed(2);
-      localStorage.setItem('credit', u.credit);
-    })
-    .catch(() => {
-      if (creditEl) creditEl.innerText = '0.00';
-    });
-}
-
-/* ================= LOAD SERVICES ================= */
-function loadServices() {
-  fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
-    .then(r => r.json())
-    .then(list => {
-      if (!box) return;
-
-      box.innerHTML = '';
-      if (!Array.isArray(list) || !list.length) {
-        box.innerHTML = '<div style="text-align:center;color:#94a3b8">ไม่มีบริการ</div>';
-        return;
-      }
-
-      list.forEach(s => {
-        box.innerHTML += `
-          <div class="service">
-            ${s.badge_status === 'on'
-              ? `<div class="badge ${s.badge_type}">${s.badge_text || ''}</div>`
-              : ''}
-
-            <div class="service-name">${s.display_name}</div>
-            <div class="service-desc">${s.short_desc || ''}</div>
-
-            <div class="bottom">
-              <div class="price">
-                ${s.price_per_100} บาท
-                <span>/ 100 ${s.unit}</span>
-                <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
-              </div>
-
-              <button class="btn" onclick="selectService('${s.service_id}')">
-                เลือกแพ็กเกจ
-              </button>
-            </div>
-          </div>
-        `;
       });
-    })
-    .catch(() => {
-      if (box) box.innerHTML = '<div style="text-align:center;color:red">โหลดบริการไม่สำเร็จ</div>';
-    });
-}
+  }
 
-/* ================= SELECT ================= */
-window.selectService = function (id) {
-  localStorage.setItem('service_id', id);
-  location.href = 'order.html';
-}
+  /* ================= LOAD SERVICES ================= */
+  function loadServices() {
+    if (!box) return;
+    fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
+      .then(r => r.json())
+      .then(list => {
+        box.innerHTML = '';
+        if (!Array.isArray(list) || !list.length) {
+          box.innerHTML = '<div style="text-align:center;color:#94a3b8">ไม่มีบริการ</div>';
+          return;
+        }
 
-/* ================= INIT ================= */
-function reloadAll() {
-  loadCredit();
-  loadServices();
-}
+        list.forEach(s => {
+          box.insertAdjacentHTML('beforeend', `
+            <div class="service">
+              ${s.badge_status === 'on'
+                ? `<div class="badge ${s.badge_type}">${s.badge_text || ''}</div>`
+                : ''}
 
-reloadAll();
+              <div class="service-name">${s.display_name}</div>
+              <div class="service-desc">${s.short_desc || ''}</div>
+
+              <div class="bottom">
+                <div class="price">
+                  ${s.price_per_100} บาท
+                  <span>/ 100 ${s.unit}</span>
+                  <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
+                </div>
+
+                <button class="btn" data-id="${s.service_id}">
+                  เลือกแพ็กเกจ
+                </button>
+              </div>
+            </div>
+          `);
+        });
+
+        // bind buttons
+        box.querySelectorAll('.btn[data-id]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            localStorage.setItem('service_id', id);
+            location.href = 'order.html';
+          });
+        });
+      })
+      .catch(() => {
+        box.innerHTML = '<div style="text-align:center;color:red">โหลดบริการไม่สำเร็จ</div>';
+      });
+  }
+
+  /* ================= INIT ================= */
+  function reloadAll() {
+    loadCredit();
+    loadServices();
+  }
+
+  reloadAll();
 
 });
 </script>
