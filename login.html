@@ -229,17 +229,24 @@ function login(){
   btn.textContent = 'กำลังเข้าสู่ระบบ...';
 
   fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`)
-    .then(r=>r.json())
+    .then(r=>{
+      if(!r.ok) throw 'NETWORK';
+      return r.json();
+    })
     .then(res=>{
-      if(!res.success || !res.user) throw 0;
+      if(!res.success || !res.user) throw 'LOGIN_FAIL';
 
       localStorage.setItem('user_id', res.user.user_id);
       localStorage.setItem('username', res.user.username);
 
       location.href = 'services.html';
     })
-    .catch(()=>{
-      err.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+    .catch(e=>{
+      err.textContent =
+        e === 'NETWORK'
+          ? 'ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่'
+          : 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+
       btn.disabled = false;
       btn.textContent = 'เข้าสู่ระบบ';
       loading = false;
