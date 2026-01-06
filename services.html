@@ -21,7 +21,7 @@ body{
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
 
-/* ===== HEADER (ใช้ร่วมทุกหน้า) ===== */
+/* ===== HEADER (มาตรฐานทุกหน้า) ===== */
 .header{
   padding:12px 16px;
   display:flex;
@@ -33,30 +33,42 @@ body{
   z-index:50;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
+
 .left,.center,.right{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
 }
+
 .logo{height:32px}
 
+/* ปุ่มเมนู */
 .nav-btn{
   border:none;
-  padding:8px 14px;
+  padding:8px 16px;
   border-radius:999px;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;
+  background:#f1f5f9;
   font-size:13px;
   font-weight:800;
   cursor:pointer;
 }
+
+/* 🔥 เน้นปุ่มเติมเงิน */
+.nav-btn.topup{
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;
+}
+
+/* เครดิต */
 .wallet{
   font-size:13px;
   background:#f8fafc;
   padding:6px 14px;
   border-radius:999px;
-  font-weight:800;
+  font-weight:900;
 }
+
+/* logout */
 .logout-btn{
   border:none;
   padding:6px 14px;
@@ -82,6 +94,7 @@ body{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
+
 .subtitle{
   font-size:14px;
   color:#94a3b8;
@@ -97,15 +110,19 @@ body{
   box-shadow:0 20px 45px rgba(139,92,246,.18);
   position:relative;
 }
+
 .service-name{
   font-size:17px;
   font-weight:900;
 }
+
 .service-desc{
   font-size:13px;
   color:#64748b;
+  margin-top:4px;
 }
 
+/* badge */
 .badge{
   position:absolute;
   top:16px;
@@ -127,6 +144,7 @@ body{
   margin-top:14px;
   gap:12px;
 }
+
 .price{
   font-size:15px;
   font-weight:900;
@@ -136,6 +154,7 @@ body{
   font-size:13px;
   color:#64748b;
 }
+
 .btn{
   padding:10px 18px;
   border-radius:14px;
@@ -150,43 +169,54 @@ body{
 
 <body>
 
+<!-- ===== HEADER ===== -->
 <header class="header">
   <div class="left">
-    <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+    <img
+      src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png"
+      class="logo">
   </div>
 
   <div class="center">
-    <button class="nav-btn" onclick="location.href='services.html'">🛒 บริการ</button>
-    <button class="nav-btn" onclick="location.href='topup.html'">💰 เติมเงิน</button>
-    <button class="nav-btn" onclick="location.href='orders.html'">📦 คำสั่งซื้อ</button>
+    <button class="nav-btn" onclick="location.href='services.html'">บริการ</button>
+    <button class="nav-btn" onclick="location.href='orders.html'">คำสั่งซื้อ</button>
+    <button class="nav-btn topup" onclick="location.href='topup.html'">เติมเงิน</button>
   </div>
 
   <div class="right">
     <div class="wallet">เครดิต: <span id="credit">0</span> บาท</div>
-    <button class="logout-btn" onclick="logout()">ออก</button>
+    <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
   </div>
 </header>
 
 <div class="container">
   <div class="title">เลือกบริการ</div>
-  <div class="subtitle">เลือกแพ็กเกจที่เหมาะกับช่องของคุณ ระบบทำงานอัตโนมัติ</div>
+  <div class="subtitle">
+    เลือกแพ็กเกจที่เหมาะกับช่องของคุณ ระบบทำงานอัตโนมัติ
+  </div>
+
   <div id="services"></div>
 </div>
 
 <script>
 const API="https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
 
+/* auth */
 if(!localStorage.getItem('user_id')){
   location.href='login.html';
 }
+
+/* credit */
 document.getElementById('credit').innerText =
   localStorage.getItem('credit') || 0;
 
+/* load services */
 fetch(API+'?action=services&_ts='+Date.now())
 .then(r=>r.json())
 .then(list=>{
   const box=document.getElementById('services');
   box.innerHTML='';
+
   list.forEach(s=>{
     box.innerHTML+=`
       <div class="service">
@@ -203,18 +233,21 @@ fetch(API+'?action=services&_ts='+Date.now())
             <span>/ 100 ${s.unit}</span>
             <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
           </div>
+
           <button class="btn" onclick="selectService('${s.service_id}')">
             เลือกแพ็กเกจ
           </button>
         </div>
-      </div>`;
+      </div>
+    `;
   });
 });
 
 function selectService(id){
-  localStorage.setItem('service_id',id);
+  localStorage.setItem('service_id', id);
   location.href='order.html';
 }
+
 function logout(){
   localStorage.clear();
   location.href='login.html';
