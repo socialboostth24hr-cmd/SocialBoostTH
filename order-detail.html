@@ -6,116 +6,57 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root{
-  --pink:#ec4899;
-  --purple:#8b5cf6;
-  --blue:#38bdf8;
-}
+:root{--pink:#ec4899;--purple:#8b5cf6;--blue:#38bdf8}
 *{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:system-ui,-apple-system;
+  margin:0;font-family:system-ui,-apple-system;
   background:
     radial-gradient(900px 360px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
   color:#111827;
 }
-
-/* HEADER */
 .header{
-  padding:12px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:#fff;
-  position:sticky;
-  top:0;
-  z-index:50;
+  padding:12px 16px;display:flex;justify-content:space-between;align-items:center;
+  background:#fff;position:sticky;top:0;z-index:50;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 .left{display:flex;gap:8px;align-items:center}
 .logo{height:32px}
 .back-btn,.menu-btn{
-  border:none;
-  padding:6px 14px;
-  border-radius:999px;
-  background:#f1f5f9;
-  font-weight:800;
-  cursor:pointer;
+  border:none;padding:6px 14px;border-radius:999px;
+  background:#f1f5f9;font-weight:800;cursor:pointer;
 }
-
-/* MENU */
-.menu-overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.35);
-  display:none; z-index:99;
-}
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:99}
 .side-menu{
-  position:fixed; right:-260px; top:0;
-  width:260px; height:100%;
-  background:#fff; padding:20px;
-  z-index:100; transition:.3s;
+  position:fixed;right:-260px;top:0;width:260px;height:100%;
+  background:#fff;padding:20px;z-index:100;transition:.3s;
   box-shadow:-10px 0 30px rgba(0,0,0,.2);
 }
 .side-menu.open{right:0}
 .side-menu a{
-  display:block;padding:12px 0;
-  font-weight:800;color:#111827;
-  text-decoration:none;border-bottom:1px solid #e5e7eb;
+  display:block;padding:12px 0;font-weight:800;
+  color:#111827;text-decoration:none;border-bottom:1px solid #e5e7eb;
 }
 .side-menu a.logout{color:#ef4444;border:none}
 
-/* CONTENT */
-.container{
-  max-width:720px;
-  margin:0 auto;
-  padding:16px 18px 120px;
-}
+.container{max-width:720px;margin:0 auto;padding:16px 18px 120px}
 .card{
-  background:#fff;
-  border-radius:22px;
-  padding:20px;
-  margin-bottom:16px;
+  background:#fff;border-radius:22px;padding:20px;margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
 }
-.row{
-  display:flex;
-  justify-content:space-between;
-  margin-top:10px;
-  font-size:14px;
-}
+.row{display:flex;justify-content:space-between;margin-top:10px;font-size:14px}
 .row b{font-weight:900}
-
 .status{
-  display:inline-block;
-  padding:6px 14px;
-  border-radius:999px;
-  font-size:13px;
-  font-weight:900;
-  margin-top:14px;
+  display:inline-block;padding:6px 14px;border-radius:999px;
+  font-size:13px;font-weight:900;margin-top:14px
 }
-.pending{background:#fef3c7;color:#92400e;}
-.processing{background:#dbeafe;color:#1e40af;}
-.success{background:#dcfce7;color:#166534;}
-.cancel{background:#fee2e2;color:#991b1b;}
-
-.link{
-  word-break:break-all;
-  color:#2563eb;
-  font-size:14px;
-}
-
-.update-text{
-  font-size:13px;
-  color:#64748b;
-  margin-bottom:10px;
-}
-.error{
-  text-align:center;
-  color:#ef4444;
-  font-weight:900;
-  margin-top:20px;
-}
+.pending{background:#fef3c7;color:#92400e}
+.processing{background:#dbeafe;color:#1e40af}
+.success{background:#dcfce7;color:#166534}
+.cancel{background:#fee2e2;color:#991b1b}
+.link{word-break:break-all;color:#2563eb;font-size:14px}
+.update-text{font-size:13px;color:#64748b;margin-bottom:10px}
+.error{text-align:center;color:#ef4444;font-weight:900;margin-top:20px}
 </style>
 </head>
 
@@ -132,7 +73,7 @@ body{
 <div class="container">
   <div class="update-text" id="updateText">กำลังโหลด…</div>
 
-  <div class="card" id="detailCard">
+  <div class="card">
     <div class="row"><b>รหัสคำสั่งซื้อ</b><span id="oid">-</span></div>
     <div class="row"><b>บริการ</b><span id="service">-</span></div>
     <div class="row"><b>จำนวน</b><span id="qty">-</span></div>
@@ -157,48 +98,45 @@ body{
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
-
-/* ===== CONFIG ===== */
-const API="https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
-const API_KEY="SBTH-SECURE-2026";
+/* ===== CONFIG (ตัวเดียวกับ create_order) ===== */
+const API = "https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
+const API_KEY = "SBTH-SECURE-2026";
 
 /* ===== AUTH ===== */
 const orderId = localStorage.getItem('order_id');
 const userId  = localStorage.getItem('user_id');
-if(!orderId || !userId){
-  location.href='orders.html';
-  return;
-}
+if(!orderId || !userId){ location.href='orders.html'; }
 
-/* ===== DOM ===== */
-const oidEl = document.getElementById('oid');
-const serviceEl = document.getElementById('service');
-const qtyEl = document.getElementById('qty');
-const discountEl = document.getElementById('discount');
-const totalEl = document.getElementById('total');
-const dateEl = document.getElementById('date');
-const linkEl = document.getElementById('link');
-const statusEl = document.getElementById('status');
-const updateText = document.getElementById('updateText');
+/* DOM */
+const oidEl=document.getElementById('oid');
+const serviceEl=document.getElementById('service');
+const qtyEl=document.getElementById('qty');
+const discountEl=document.getElementById('discount');
+const totalEl=document.getElementById('total');
+const dateEl=document.getElementById('date');
+const linkEl=document.getElementById('link');
+const statusEl=document.getElementById('status');
+const updateText=document.getElementById('updateText');
 
-/* ===== MENU ===== */
-window.openMenu = ()=>{ sideMenu.classList.add('open'); menuOverlay.style.display='block'; }
-window.closeMenu = ()=>{ sideMenu.classList.remove('open'); menuOverlay.style.display='none'; }
-window.logout = ()=>{ localStorage.clear(); location.href='login.html'; }
-window.goBack = ()=>{ history.length>1?history.back():location.href='orders.html'; }
+let loading=false;
 
-/* ===== STATUS TEXT ===== */
+/* MENU */
+function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
+function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
+function logout(){localStorage.clear();location.href='login.html'}
+function goBack(){history.length>1?history.back():location.href='orders.html'}
+
 function statusText(s){
   if(s==='pending')return'⏳ รอดำเนินการ';
   if(s==='processing')return'🚀 กำลังดำเนินการ';
   if(s==='success')return'✅ สำเร็จ';
   if(s==='cancel')return'❌ ยกเลิก';
-  return s||'-';
+  return '-';
 }
 
-/* ===== LOAD DETAIL ===== */
 async function loadDetail(){
+  if(loading) return;
+  loading=true;
   updateText.innerText='กำลังอัปเดต...';
 
   try{
@@ -212,29 +150,27 @@ async function loadDetail(){
       return;
     }
 
-    oidEl.innerText = o.order_id || '-';
-    serviceEl.innerText = o.service_name || '-';
-    qtyEl.innerText = o.qty ?? '-';
-    discountEl.innerText = (o.discount_percent||0)+'%';
-    totalEl.innerText = Number(o.final_total||0).toFixed(2)+' บาท';
-    dateEl.innerText = new Date(o.datetime).toLocaleString();
-    linkEl.innerText = o.link || '-';
-    statusEl.className = 'status '+(o.status||'');
-    statusEl.innerText = statusText(o.status);
+    oidEl.innerText=o.order_id||'-';
+    serviceEl.innerText=o.service_name||'-';
+    qtyEl.innerText=o.qty??'-';
+    discountEl.innerText=(o.discount_percent||0)+'%';
+    totalEl.innerText=Number(o.final_total||0).toFixed(2)+' บาท';
+    dateEl.innerText=new Date(o.datetime).toLocaleString();
+    linkEl.innerText=o.link||'-';
+    statusEl.className='status '+o.status;
+    statusEl.innerText=statusText(o.status);
 
     updateText.innerText='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
-
-  }catch(err){
-    console.error(err);
+  }catch(e){
+    console.error(e);
     updateText.innerText='โหลดข้อมูลไม่สำเร็จ';
+  }finally{
+    loading=false;
   }
 }
 
-/* ===== INIT ===== */
 loadDetail();
-setInterval(loadDetail,10000);
-
-});
+setInterval(loadDetail,15000);
 </script>
 
 </body>
