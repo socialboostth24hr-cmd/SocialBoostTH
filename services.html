@@ -135,6 +135,29 @@ body{
   box-shadow:
     0 35px 90px rgba(0,0,0,.75),
     0 0 0 1px rgba(139,92,246,.25);
+
+  /* ✨ เพิ่มฟีลหรู */
+  transition:
+    transform .28s ease,
+    box-shadow .28s ease;
+}
+
+.service:hover{
+  transform:translateY(-4px);
+  box-shadow:
+    0 45px 110px rgba(0,0,0,.85),
+    0 0 0 1px rgba(139,92,246,.35),
+    0 0 40px rgba(139,92,246,.18);
+}
+
+/* มือถือไม่กระตุก */
+@media (hover:none){
+  .service:hover{
+    transform:none;
+    box-shadow:
+      0 35px 90px rgba(0,0,0,.75),
+      0 0 0 1px rgba(139,92,246,.25);
+  }
 }
 
 .service-name{
@@ -147,7 +170,7 @@ body{
   margin-top:6px;
 }
 
-/* ===== BADGE (animate แบบหรู เบา ๆ) ===== */
+/* ===== BADGE ===== */
 .badge{
   position:absolute;
   top:16px;
@@ -157,45 +180,10 @@ body{
   font-size:12px;
   font-weight:900;
   color:#fff;
-  overflow:hidden;
-
-  /* animation หลัก */
-  animation:
-    badge-pulse 3.5s ease-in-out infinite,
-    badge-shine 6s linear infinite;
 }
-
-/* สี badge */
 .badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899);}
 .badge.recommended{background:linear-gradient(90deg,var(--blue),var(--purple));}
 .badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
-
-/* pulse เบา ๆ */
-@keyframes badge-pulse{
-  0%,100%{
-    box-shadow:0 0 0 rgba(255,255,255,0);
-    transform:translateY(0);
-  }
-  50%{
-    box-shadow:0 0 14px rgba(255,255,255,.25);
-    transform:translateY(-1px);
-  }
-}
-
-/* shine วิ่งผ่านช้า ๆ */
-@keyframes badge-shine{
-  0%{background-position:-200%}
-  100%{background-position:200%}
-}
-
-.badge{
-  background-size:200% auto;
-}
-
-/* รองรับคนไม่อยากเห็น motion */
-@media (prefers-reduced-motion: reduce){
-  .badge{animation:none}
-}
 
 /* ===== BOTTOM ===== */
 .bottom{
@@ -229,20 +217,99 @@ body{
 }
 .btn:hover{transform:translateY(-1px)}
 
-.empty{
-  text-align:center;
-  color:#94a3b8;
-  margin-top:40px;
-}
-.error{
-  text-align:center;
-  color:#fb7185;
-  margin-top:40px;
-  font-weight:900;
-}
+.empty{text-align:center;color:#94a3b8;margin-top:40px}
+.error{text-align:center;color:#fb7185;margin-top:40px;font-weight:900}
 </style>
 </head>
 
 <body>
 
-<!-- 🔽 HTML + JS เดิมทั้งหมด ใช้เหมือนเดิม ไม่แตะ -->
+<header class="header">
+  <div class="left">
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+    <button class="refresh-btn" onclick="reloadAll()">⟳</button>
+  </div>
+  <div class="center">SocialBoostTH</div>
+  <div class="right">
+    <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
+    <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+  </div>
+</header>
+
+<div class="container">
+  <div class="title">เลือกบริการ</div>
+  <div class="subtitle">ระบบอัตโนมัติ • ปลอดภัย • 24 ชั่วโมง</div>
+  <div id="services"></div>
+</div>
+
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<div class="side-menu" id="sideMenu">
+  <a href="services.html">📦 บริการ</a>
+  <a href="orders.html">🧾 คำสั่งซื้อ</a>
+  <a href="topup.html">💰 เติมเงิน</a>
+  <a href="#" class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
+</div>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
+const API_KEY="SBTH-SECURE-2026";
+
+const userId=localStorage.getItem('user_id');
+if(!userId){location.href='login.html';throw'';}
+
+const creditEl=document.getElementById('credit');
+const box=document.getElementById('services');
+const sideMenu=document.getElementById('sideMenu');
+const menuOverlay=document.getElementById('menuOverlay');
+
+function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
+function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
+function logout(){localStorage.clear();location.href='login.html'}
+
+function loadCredit(){
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}&_=${Date.now()}`)
+    .then(r=>r.json())
+    .then(u=>creditEl.textContent=Number(u.credit||0).toFixed(2))
+    .catch(()=>creditEl.textContent='0.00');
+}
+
+function loadServices(){
+  box.innerHTML='⏳ กำลังโหลดบริการ...';
+  fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
+    .then(r=>r.json())
+    .then(list=>{
+      box.innerHTML='';
+      if(!list.length){box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';return;}
+      list.forEach(s=>{
+        box.insertAdjacentHTML('beforeend',`
+          <div class="service">
+            ${s.badge_status==='on'
+              ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`:''}
+            <div class="service-name">${s.display_name}</div>
+            <div class="service-desc">${s.short_desc||''}</div>
+            <div class="bottom">
+              <div class="price">
+                ${s.price_per_100} บาท
+                <span>/ 100 ${s.unit}</span>
+                <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
+              </div>
+              <button class="btn" onclick="selectService('${s.service_id}')">เลือกแพ็กเกจ</button>
+            </div>
+          </div>
+        `);
+      });
+    })
+    .catch(()=>box.innerHTML='<div class="error">❌ ไม่สามารถเชื่อมต่อระบบได้</div>');
+}
+
+function selectService(id){
+  localStorage.setItem('service_id',id);
+  location.href='order.html';
+}
+
+function reloadAll(){loadCredit();loadServices();}
+reloadAll();
+</script>
+
+</body>
+</html>
