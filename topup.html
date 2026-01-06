@@ -19,6 +19,8 @@ body{
     radial-gradient(900px 360px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
+
+/* HEADER */
 .header{
   padding:12px 16px;
   display:flex;
@@ -58,6 +60,7 @@ body{
 }
 .side-menu a.logout{color:#ef4444;border:none}
 
+/* CONTENT */
 .container{max-width:720px;margin:0 auto;padding:16px 18px 120px}
 .card{
   background:#fff;border-radius:22px;
@@ -106,6 +109,7 @@ input{
 .status{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900}
 .pending{background:#fef3c7;color:#92400e}
 .success{background:#dcfce7;color:#166534}
+.use{background:#e5e7eb;color:#374151}
 .empty{text-align:center;color:#94a3b8}
 </style>
 </head>
@@ -178,21 +182,21 @@ input{
 </div>
 
 <script>
-/* ===== CONFIG (ตัวจริง) ===== */
-const API="https://script.google.com/macros/s/AKfycby9v2qEZUQ8khjh5h0rTx0uvc2XXUDm4WBQ1WOQKvhAlUF6MYXflVG45ulNLDy-V542lg/exec";
+/* CONFIG – deploy ล่าสุด */
+const API="https://script.google.com/macros/s/AKfycbwoL6ihJ5kZ8U00RUSD_Yc10u0WMbqpvkGihFRb2W8wLR1SxbHY1BvtyBe-U_U5cBKbUg/exec";
 const API_KEY="SBTH-SECURE-2026";
 
 const userId=localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
 /* DOM */
-const amountEl=document.getElementById('amount');
-const errorText=document.getElementById('errorText');
-const calcBox=document.getElementById('calcBox');
-const qrBox=document.getElementById('qrBox');
-const qrImg=document.getElementById('qrImg');
-const confirmedBox=document.getElementById('confirmedBox');
-const wallet=document.getElementById('wallet');
+const amountEl=amount;
+const errorText=errorText;
+const calcBox=calcBox;
+const qrBox=qrBox;
+const qrImg=qrImg;
+const confirmedBox=confirmedBox;
+const wallet=wallet;
 
 let lockedAmount=null;
 
@@ -241,27 +245,28 @@ function confirmTopup(){
 /* WALLET */
 function loadWallet(){
   fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
-  .then(r=>r.json())
-  .then(list=>{
-    wallet.innerHTML='';
-    if(!list.length){
-      wallet.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
-      return;
-    }
-    list.reverse().forEach(w=>{
-      wallet.innerHTML+=`
-        <tr>
-          <td>${new Date(w.datetime).toLocaleString()}</td>
-          <td>${Number(w.amount).toFixed(2)}</td>
-          <td>
-            <span class="status ${w.amount>0?'success':'pending'}">
-              ${w.amount>0?'รอตรวจสอบ':'ใช้เครดิต'}
-            </span>
-          </td>
-        </tr>`;
+    .then(r=>r.json())
+    .then(list=>{
+      wallet.innerHTML='';
+      if(!Array.isArray(list) || !list.length){
+        wallet.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
+        return;
+      }
+      list.reverse().forEach(w=>{
+        wallet.innerHTML+=`
+          <tr>
+            <td>${new Date(w.datetime).toLocaleString()}</td>
+            <td>${Number(w.amount).toFixed(2)}</td>
+            <td>
+              <span class="status ${w.amount>0?'pending':'use'}">
+                ${w.amount>0?'รอตรวจสอบ':'ใช้เครดิต'}
+              </span>
+            </td>
+          </tr>`;
+      });
     });
-  });
 }
+
 loadWallet();
 </script>
 
