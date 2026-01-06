@@ -108,7 +108,6 @@ input{
 .table th,.table td{padding:10px;border-bottom:1px solid #e5e7eb}
 .status{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900}
 .pending{background:#fef3c7;color:#92400e}
-.success{background:#dcfce7;color:#166534}
 .use{background:#e5e7eb;color:#374151}
 .empty{text-align:center;color:#94a3b8}
 </style>
@@ -182,23 +181,23 @@ input{
 </div>
 
 <script>
-/* CONFIG – deploy ล่าสุด */
-const API="https://script.google.com/macros/s/AKfycbz1hXWmSQMPuZH4Ph2PcyXVgQ_hDtC5QNsLFuiSnEeTSoO83iLNgMKoxbut1Nob56iq-w/exec";
+/* ================= CONFIG (ตัวเดียวทั้งเว็บ) ================= */
+const API="https://script.google.com/macros/s/AKfycbxd3FO7ZHfOHDGDgVQNI1Uf3Owtmh8wXE1-00O2UimH6tA8k83PkqKItfo0_q-22sMeuQ/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId=localStorage.getItem('user_id');
+const userId = localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
 /* DOM */
-const amountEl=amount;
-const errorText=errorText;
-const calcBox=calcBox;
-const qrBox=qrBox;
-const qrImg=qrImg;
-const confirmedBox=confirmedBox;
-const wallet=wallet;
+const amountEl = document.getElementById('amount');
+const errorText = document.getElementById('errorText');
+const calcBox = document.getElementById('calcBox');
+const qrBox = document.getElementById('qrBox');
+const qrImg = document.getElementById('qrImg');
+const confirmedBox = document.getElementById('confirmedBox');
+const walletBox = document.getElementById('wallet');
 
-let lockedAmount=null;
+let lockedAmount = null;
 
 /* MENU */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
@@ -206,26 +205,29 @@ function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display
 function logout(){localStorage.clear();location.href='login.html'}
 
 /* CALC */
-amountEl.oninput=()=>{
-  const base=Number(amountEl.value);
-  if(!base || base<20){
-    errorText.style.display='block';
-    calcBox.style.display=qrBox.style.display='none';
-    lockedAmount=null;return;
+amountEl.oninput = () => {
+  const base = Number(amountEl.value);
+  if(!base || base < 20){
+    errorText.style.display = 'block';
+    calcBox.style.display = qrBox.style.display = 'none';
+    lockedAmount = null;
+    return;
   }
-  errorText.style.display='none';
-  const s=Math.floor(Math.random()*99)+1;
-  lockedAmount=(base+s/100).toFixed(2);
-  calcBox.style.display='block';
-  calcBox.innerHTML=`🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
-  qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
-  qrBox.style.display='block';
-  confirmedBox.style.display='none';
+  errorText.style.display = 'none';
+  const s = Math.floor(Math.random() * 99) + 1;
+  lockedAmount = (base + s / 100).toFixed(2);
+
+  calcBox.style.display = 'block';
+  calcBox.innerHTML = `🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
+  qrImg.src = `https://promptpay.io/0991301221/${lockedAmount}.png`;
+  qrBox.style.display = 'block';
+  confirmedBox.style.display = 'none';
 };
 
 /* CONFIRM */
 function confirmTopup(){
   if(!lockedAmount) return alert('กรุณากรอกยอดก่อน');
+
   fetch(API,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
@@ -238,6 +240,7 @@ function confirmTopup(){
     })
   }).then(()=>{
     confirmedBox.style.display='block';
+    amountEl.value='';
     loadWallet();
   });
 }
@@ -247,13 +250,13 @@ function loadWallet(){
   fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
     .then(r=>r.json())
     .then(list=>{
-      wallet.innerHTML='';
+      walletBox.innerHTML='';
       if(!Array.isArray(list) || !list.length){
-        wallet.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
+        walletBox.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
         return;
       }
       list.reverse().forEach(w=>{
-        wallet.innerHTML+=`
+        walletBox.innerHTML+=`
           <tr>
             <td>${new Date(w.datetime).toLocaleString()}</td>
             <td>${Number(w.amount).toFixed(2)}</td>
