@@ -69,7 +69,15 @@ input{
   border-radius:14px;
   border:1px solid #e5e7eb;
   font-size:15px;
+  margin-bottom:8px;
+}
+
+.error{
+  font-size:13px;
+  font-weight:800;
+  color:#dc2626;
   margin-bottom:10px;
+  display:none;
 }
 
 .calc-box{
@@ -141,35 +149,16 @@ input{
   display:none;
 }
 
-.note{
+.notice{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#9a3412;
+  padding:14px;
+  border-radius:14px;
   font-size:13px;
-  color:#64748b;
-  margin-top:10px;
-}
-
-.table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-}
-.table th,.table td{
-  padding:10px;
-  border-bottom:1px solid #e5e7eb;
-}
-
-.status{
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-}
-.pending{background:#fef3c7;color:#92400e}
-.success{background:#dcfce7;color:#166534}
-
-.empty{
-  text-align:center;
-  color:#94a3b8;
-  padding:20px;
+  font-weight:800;
+  line-height:1.6;
+  margin-top:14px;
 }
 </style>
 </head>
@@ -190,7 +179,8 @@ input{
   <div class="card">
     <h2>➕ เติมเงิน (พร้อมเพย์)</h2>
 
-    <input type="number" id="amount" placeholder="กรอกยอดที่ต้องการเติม เช่น 50">
+    <input type="number" id="amount" placeholder="กรอกยอดที่ต้องการเติม (ขั้นต่ำ 20 บาท)">
+    <div class="error" id="errorText">❗ กรุณากรอกยอดตั้งแต่ 20 บาทขึ้นไป</div>
 
     <div class="calc-box" id="calcBox"></div>
 
@@ -202,7 +192,6 @@ input{
       </div>
     </div>
 
-    <!-- 🔥 ปุ่มหลัก -->
     <div class="btn-row">
       <button class="line-btn"
         onclick="window.open('https://line.me/R/ti/p/@geg4960w','_blank')">
@@ -216,37 +205,22 @@ input{
 
     <div class="confirmed" id="confirmedBox">
       📤 ส่งสลิปเรียบร้อยแล้ว<br>
-      ⏳ กำลังรอแอดมินตรวจสอบ
+      ⏳ รอแอดมินตรวจสอบเครดิต
     </div>
 
-    <div class="note">
-      📌 ส่งสลิป + <b>Username</b> ทาง LINE เท่านั้น<br>
-      ❗ เครดิตจะเข้าเมื่อแอดมินยืนยัน
+    <div class="notice">
+      🔴 เงื่อนไขสำคัญ<br>
+      • กรุณาส่ง <b>สลิป + Username</b> ทาง LINE เท่านั้น<br>
+      • เติมเงินแล้ว <u>ไม่สามารถถอนหรือขอคืนเงินได้ทุกกรณี</u><br>
+      • เครดิตจะเข้าเมื่อแอดมินตรวจสอบเรียบร้อย
     </div>
-  </div>
-
-  <div class="card">
-    <h2>💰 ประวัติการเติมเงิน</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>วันที่</th>
-          <th>จำนวน</th>
-          <th>สถานะ</th>
-        </tr>
-      </thead>
-      <tbody id="wallet"></tbody>
-    </table>
   </div>
 
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
-const userId=localStorage.getItem('user_id');
-if(!userId) location.href='login.html';
-
 const input=document.getElementById('amount');
+const errorText=document.getElementById('errorText');
 const calcBox=document.getElementById('calcBox');
 const qrBox=document.getElementById('qrBox');
 const qrImg=document.getElementById('qrImg');
@@ -256,18 +230,22 @@ let lockedAmount=null;
 
 input.addEventListener('input',()=>{
   const base=Number(input.value);
-  if(!base || base<10){
+
+  if(!base || base < 20){
+    errorText.style.display='block';
     calcBox.style.display='none';
     qrBox.style.display='none';
     lockedAmount=null;
     return;
   }
 
+  errorText.style.display='none';
+
   const satang=Math.floor(Math.random()*99)+1;
   lockedAmount=(base+satang/100).toFixed(2);
 
   calcBox.style.display='block';
-  calcBox.innerHTML=`👉 โอน ${lockedAmount} บาท`;
+  calcBox.innerHTML=`👉 กรุณาโอน <span style="font-size:18px">${lockedAmount}</span> บาท`;
 
   qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
   qrBox.style.display='block';
@@ -276,7 +254,7 @@ input.addEventListener('input',()=>{
 
 function markSent(){
   if(!lockedAmount){
-    alert('กรุณากรอกจำนวนเงินก่อน');
+    alert('กรุณากรอกยอดให้ถูกต้องก่อน');
     return;
   }
   confirmedBox.style.display='block';
