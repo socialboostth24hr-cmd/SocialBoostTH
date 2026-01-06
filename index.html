@@ -5,150 +5,128 @@
 <title>SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<!-- GOOGLE FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --pink:#ec4899;
-  --purple:#8b5cf6;
-  --blue:#38bdf8;
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  height:100%;
+  font-family:'Sora',system-ui;
+  background:
+    radial-gradient(1000px 500px at top,#2a0d52,transparent),
+    linear-gradient(180deg,#0b0216,#14032a);
+  overflow:hidden;
 }
 
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  height:100vh;
+/* CENTER */
+.wrapper{
+  height:100%;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:
-    radial-gradient(1200px 500px at top,#fde7f3,transparent),
-    linear-gradient(180deg,#eef6ff,#ffffff);
-  font-family:'Inter',system-ui;
-  overflow:hidden;
 }
 
-/* background glow */
-.bg{
-  position:absolute;
-  inset:-40%;
-  background:
-    radial-gradient(circle at 30% 40%, rgba(139,92,246,.25), transparent 40%),
-    radial-gradient(circle at 70% 60%, rgba(56,189,248,.25), transparent 40%);
-  animation:bgMove 18s linear infinite;
-}
-@keyframes bgMove{
-  0%{transform:translate(0,0)}
-  50%{transform:translate(-8%,6%)}
-  100%{transform:translate(0,0)}
-}
-
-/* container */
-.loader{
-  position:relative;
-  z-index:1;
-  text-align:center;
-}
-
-/* brand */
-.brand{
-  font-family:'Space Grotesk',system-ui;
+/* LOGO TEXT */
+.logo{
   font-size:52px;
-  font-weight:700;
-  letter-spacing:.5px;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  font-weight:800;
+  letter-spacing:1px;
+  background:linear-gradient(135deg,#38bdf8,#8b5cf6,#ec4899);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:float 1.8s ease-in-out infinite;
-}
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-10px)}
-}
-
-/* percent */
-.percent{
-  margin-top:16px;
-  font-size:18px;
-  font-weight:800;
-  color:#0f172a;
+  text-shadow:
+    0 4px 18px rgba(139,92,246,.55),
+    0 18px 50px rgba(236,72,153,.45);
+  animation:
+    reveal 1.2s ease-out forwards,
+    float 3.2s ease-in-out infinite;
 }
 
-/* bar */
-.bar{
-  width:260px;
-  height:8px;
-  background:#e5e7eb;
-  border-radius:999px;
-  overflow:hidden;
-  margin:14px auto 0;
-}
-.bar span{
-  display:block;
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  transition:.3s;
-}
-
-/* text */
+/* SUB */
 .sub{
-  margin-top:14px;
-  font-size:13px;
-  font-weight:600;
-  color:#64748b;
+  margin-top:10px;
+  text-align:center;
+  font-size:14px;
+  letter-spacing:.3px;
+  color:rgba(255,255,255,.7);
+  opacity:0;
+  animation: fadeIn 1s ease forwards;
+  animation-delay:1s;
+}
+
+/* EFFECTS */
+@keyframes reveal{
+  from{
+    opacity:0;
+    filter:blur(14px);
+    transform:scale(.94);
+  }
+  to{
+    opacity:1;
+    filter:blur(0);
+    transform:scale(1);
+  }
+}
+
+@keyframes float{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+  100%{transform:translateY(0)}
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+/* FADE OUT */
+.fade-out{
+  animation: exit .9s ease forwards;
+}
+
+@keyframes exit{
+  to{
+    opacity:0;
+    transform:scale(1.03);
+    filter:blur(20px);
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="bg"></div>
-
-<div class="loader">
-  <div class="brand">SocialBoostTH</div>
-  <div class="percent" id="percent">0%</div>
-
-  <div class="bar">
-    <span id="bar"></span>
+<div class="wrapper">
+  <div>
+    <div class="logo" id="logo">SocialBoostTH</div>
+    <div class="sub">Boost • Grow • Viral</div>
   </div>
-
-  <div class="sub" id="text">กำลังเริ่มระบบ…</div>
 </div>
 
+<!-- SOUND -->
+<audio id="uiSound" preload="auto">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-soft-ui-confirmation-2868.mp3" type="audio/mp3">
+</audio>
+
 <script>
-let p = 0;
-const percent = document.getElementById('percent');
-const bar = document.getElementById('bar');
-const text = document.getElementById('text');
+const sound=document.getElementById('uiSound');
+sound.volume=0.22;
 
-const steps = [
-  'กำลังเริ่มระบบ…',
-  'ตรวจสอบบัญชี…',
-  'โหลดบริการ…',
-  'เชื่อมต่อระบบ…',
-  'พร้อมใช้งาน'
-];
+/* เล่นเสียงครั้งเดียว */
+setTimeout(()=>{
+  sound.play().catch(()=>{});
+},600);
 
-const timer = setInterval(()=>{
-  p += Math.floor(Math.random()*6)+2;
-  if(p >= 100){
-    p = 100;
-    clearInterval(timer);
-    setTimeout(()=>{
-      location.href = localStorage.getItem('user_id')
-        ? 'services.html'
-        : 'login.html';
-    },400);
-  }
+/* พาเข้าเว็บหลัก */
+setTimeout(()=>{
+  document.body.classList.add('fade-out');
+},2600);
 
-  percent.innerText = p + '%';
-  bar.style.width = p + '%';
-  text.innerText = steps[Math.min(steps.length-1, Math.floor(p/25))];
-
-},120);
+setTimeout(()=>{
+  window.location.href='services.html';
+},3400);
 </script>
 
 </body>
