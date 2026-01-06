@@ -1,10 +1,5 @@
 <script>
-const API = "https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
-
-function togglePassword(){
-  const i = document.getElementById('password');
-  i.type = i.type === 'password' ? 'text' : 'password';
-}
+const API = "https://script.google.com/macros/s/AKfycbzPwjgsZpvTviaOuWu_FWAD9yw1-64MsT49jO9muE3EmKkAFeX4zQYz1jsKZBK6qIMfgA/exec";
 
 function login(){
   const user = document.getElementById('username').value.trim();
@@ -18,32 +13,22 @@ function login(){
     return;
   }
 
-  fetch(API,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      action: 'login',
-      username: user,
-      password: pass
+  fetch(`${API}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res.success){
+        error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
+        return;
+      }
+
+      localStorage.setItem('user_id', res.user.user_id);
+      localStorage.setItem('username', res.user.username);
+      localStorage.setItem('credit', res.user.credit);
+
+      location.href = 'services.html';
     })
-  })
-  .then(r => r.json())
-  .then(res => {
-    if(!res.success){
-      error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
-      return;
-    }
-
-    // ✅ เก็บข้อมูลจริง
-    localStorage.setItem('user_id', res.user.user_id);
-    localStorage.setItem('username', res.user.username);
-    localStorage.setItem('credit', res.user.credit);
-
-    location.href = 'services.html';
-  })
-  .catch(err => {
-    console.error(err);
-    error.textContent = 'เชื่อมต่อระบบไม่ได้';
-  });
+    .catch(()=>{
+      error.textContent = 'ไม่สามารถเชื่อมต่อระบบได้';
+    });
 }
 </script>
