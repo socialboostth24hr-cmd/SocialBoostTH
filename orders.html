@@ -153,23 +153,23 @@ body{
 </div>
 
 <script>
-/* ===== CONFIG (deploy ล่าสุด) ===== */
-const API="https://script.google.com/macros/s/AKfycbz1hXWmSQMPuZH4Ph2PcyXVgQ_hDtC5QNsLFuiSnEeTSoO83iLNgMKoxbut1Nob56iq-w/exec";
-const API_KEY="SBTH-SECURE-2026";
+/* ================= CONFIG (ตัวเดียวทั้งเว็บ) ================= */
+const API = "https://script.google.com/macros/s/AKfycbxd3FO7ZHfOHDGDgVQNI1Uf3Owtmh8wXE1-00O2UimH6tA8k83PkqKItfo0_q-22sMeuQ/exec";
+const API_KEY = "SBTH-SECURE-2026";
 
 const userId = localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
-const box=document.getElementById('orders');
-const updateText=document.getElementById('updateText');
-let servicesCache={};
+const box = document.getElementById('orders');
+const updateText = document.getElementById('updateText');
+const servicesCache = {};
 
 /* MENU */
 function openMenu(){ sideMenu.classList.add('open'); menuOverlay.style.display='block'; }
 function closeMenu(){ sideMenu.classList.remove('open'); menuOverlay.style.display='none'; }
 function logout(){ localStorage.clear(); location.href='login.html'; }
 
-/* STATUS */
+/* STATUS TEXT */
 function statusText(s){
   if(s==='pending') return '⏳ รอดำเนินการ';
   if(s==='processing') return '🚀 กำลังดำเนินการ';
@@ -178,16 +178,13 @@ function statusText(s){
   return s;
 }
 
-/* LOAD SERVICES (map ชื่อ) */
-function loadServices(){
-  return fetch(`${API}?action=services&api_key=${API_KEY}`)
-    .then(r=>r.json())
-    .then(list=>{
-      if(!Array.isArray(list)) return;
-      list.forEach(s=>{
-        servicesCache[s.service_id]=s.display_name;
-      });
-    });
+/* LOAD SERVICES (ครั้งเดียว) */
+async function loadServices(){
+  if(Object.keys(servicesCache).length) return;
+  const list = await fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`).then(r=>r.json());
+  if(Array.isArray(list)){
+    list.forEach(s=> servicesCache[s.service_id] = s.display_name);
+  }
 }
 
 /* LOAD ORDERS */
@@ -212,7 +209,7 @@ async function loadOrders(){
               <div class="order-id">${o.order_id}</div>
               <div class="amount">${Number(o.final_total).toFixed(2)} บาท</div>
             </div>
-            <div class="row"><div>บริการ</div><div>${servicesCache[o.service_id]||o.service_id}</div></div>
+            <div class="row"><div>บริการ</div><div>${servicesCache[o.service_id] || o.service_id}</div></div>
             <div class="row"><div>จำนวน</div><div>${o.qty}</div></div>
             <div class="row"><div>วันที่</div><div>${new Date(o.datetime).toLocaleString()}</div></div>
             <div class="status ${o.status}">${statusText(o.status)}</div>
@@ -220,7 +217,7 @@ async function loadOrders(){
         `;
       });
 
-      updateText.innerText='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
+      updateText.innerText='อัปเดตล่าสุด: ' + new Date().toLocaleTimeString();
     })
     .catch(()=>{
       updateText.innerText='โหลดข้อมูลไม่สำเร็จ';
@@ -231,7 +228,6 @@ function openDetail(id){
   localStorage.setItem('order_id',id);
   location.href='order-detail.html';
 }
-
 function goBack(){
   history.length>1 ? history.back() : location.href='services.html';
 }
