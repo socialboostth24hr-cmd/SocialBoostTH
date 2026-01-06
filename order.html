@@ -13,9 +13,7 @@
   --green:#22c55e;
   --red:#ef4444;
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui;
@@ -24,7 +22,7 @@ body{
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
 
-/* ===== HEADER (ใช้ทุกหน้า) ===== */
+/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:flex;
@@ -36,130 +34,63 @@ body{
   z-index:50;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
-
-.left,.center{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
+.left,.center{display:flex;gap:8px;align-items:center}
 .logo{height:32px}
-
 .back-btn{
-  border:none;
-  padding:6px 14px;
-  border-radius:999px;
-  background:#f1f5f9;
-  font-weight:700;
-  cursor:pointer;
+  border:none;padding:6px 14px;border-radius:999px;
+  background:#f1f5f9;font-weight:700;cursor:pointer;
 }
-
 .nav-btn{
-  border:none;
-  padding:8px 16px;
-  border-radius:999px;
-  background:#f1f5f9;
-  font-size:13px;
-  font-weight:800;
-  cursor:pointer;
+  border:none;padding:8px 16px;border-radius:999px;
+  background:#f1f5f9;font-size:13px;font-weight:800;cursor:pointer;
 }
-
-/* 🔥 เน้นเฉพาะปุ่มเติมเงิน */
 .nav-btn.topup{
   background:linear-gradient(135deg,var(--blue),var(--purple));
   color:#fff;
 }
 
 /* ===== CONTENT ===== */
-.container{
-  max-width:720px;
-  margin:0 auto;
-  padding:14px 18px 140px;
-}
-
+.container{max-width:720px;margin:auto;padding:14px 18px 140px}
 .card{
-  background:#fff;
-  border-radius:22px;
-  padding:20px;
-  margin-bottom:16px;
+  background:#fff;border-radius:22px;padding:20px;margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
 }
-
 .title{font-size:22px;font-weight:900}
 .desc{font-size:14px;color:#64748b}
-
 .badge-pop{
-  display:inline-block;
+  display:none;margin-top:6px;
   background:linear-gradient(90deg,#fde68a,#f59e0b);
-  color:#92400e;
-  font-size:12px;
-  font-weight:800;
-  padding:4px 10px;
-  border-radius:999px;
-  margin-top:6px;
+  color:#92400e;font-size:12px;font-weight:800;
+  padding:4px 10px;border-radius:999px;
 }
-
 .field{margin-top:14px}
 label{font-weight:700}
 input,textarea{
-  width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:1px solid #e5e7eb;
-  margin-top:6px;
-  font-size:15px;
+  width:100%;padding:14px;border-radius:14px;
+  border:1px solid #e5e7eb;margin-top:6px;font-size:15px;
 }
-
-.price-box{
-  display:flex;
-  justify-content:space-between;
-  margin-top:10px;
-}
+.price-box{display:flex;justify-content:space-between;margin-top:10px}
 .discount{color:#ef4444}
 .total{font-size:20px;font-weight:900;margin-top:14px}
-.error{color:#ef4444;margin-top:10px}
+.error{color:#ef4444;margin-top:10px;font-weight:800}
 
-.save-text{
-  margin-top:8px;
-  font-weight:900;
-  color:var(--green);
-}
-.next-dis{
-  margin-top:4px;
-  color:#4f46e5;
-  font-weight:700;
-}
+.save-text{margin-top:8px;font-weight:900;color:var(--green)}
+.next-dis{margin-top:4px;color:#4f46e5;font-weight:700}
 
-.progress-wrap{margin-top:12px}
-.progress{
-  height:10px;
-  background:#e5e7eb;
-  border-radius:999px;
-  overflow:hidden;
-}
-.progress>div{
-  height:100%;
-  width:0%;
+.progress{height:10px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.progress div{
+  height:100%;width:0%;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
   transition:.3s;
 }
 
-/* ===== FIXED BUY BUTTON ===== */
+/* BUY BUTTON */
 .buy-btn{
-  position:fixed;
-  bottom:16px;
-  left:50%;
-  transform:translateX(-50%);
-  width:calc(100% - 32px);
-  max-width:480px;
-  padding:16px;
-  border-radius:999px;
-  border:none;
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 32px);max-width:480px;
+  padding:16px;border-radius:999px;border:none;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;
-  font-size:18px;
-  font-weight:900;
-  cursor:pointer;
+  color:#fff;font-size:18px;font-weight:900;cursor:pointer;
 }
 .buy-btn:disabled{opacity:.6}
 </style>
@@ -167,43 +98,34 @@ input,textarea{
 
 <body>
 
-<!-- ===== HEADER ===== -->
 <header class="header">
   <div class="left">
     <button class="back-btn" onclick="goBack()">← กลับ</button>
   </div>
-
   <div class="center">
     <button class="nav-btn" onclick="location.href='services.html'">บริการ</button>
     <button class="nav-btn" onclick="location.href='orders.html'">คำสั่งซื้อ</button>
     <button class="nav-btn topup" onclick="location.href='topup.html'">เติมเงิน</button>
   </div>
-
   <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
 </header>
 
-<!-- ===== CONTENT ===== -->
 <div class="container">
 
   <div class="card">
     <div class="title" id="serviceName">กำลังโหลด...</div>
     <div class="desc" id="serviceDesc"></div>
-    <div class="badge-pop" id="popularBadge" style="display:none">
-      ⭐ คนส่วนใหญ่สั่งระดับนี้
-    </div>
+    <div class="badge-pop" id="popularBadge">⭐ คนส่วนใหญ่สั่งระดับนี้</div>
   </div>
 
   <div class="card">
-
     <div class="field">
       <label>จำนวน</label>
       <input type="number" id="qty">
       <div class="error" id="minText"></div>
     </div>
 
-    <div class="progress-wrap">
-      <div class="progress"><div id="progressBar"></div></div>
-    </div>
+    <div class="progress"><div id="progressBar"></div></div>
 
     <div class="field">
       <label>ลิงก์ TikTok</label>
@@ -235,61 +157,58 @@ input,textarea{
 <button class="buy-btn" id="buyBtn">ยืนยันสั่งซื้อ</button>
 
 <script>
-/* ===== CONFIG ===== */
-const API = "https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
+const API="https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
 
 const serviceId = localStorage.getItem('service_id');
 const userId    = localStorage.getItem('user_id');
-const credit    = Number(localStorage.getItem('credit') || 0);
 
 if(!serviceId || !userId){
   location.href='services.html';
 }
 
-/* SMART BACK */
-function goBack(){
-  history.length > 1 ? history.back() : location.href='services.html';
-}
-
-/* DOM */
-const qtyEl = qty.value;
-const linkEl = document.getElementById('link');
+const qtyInput = document.getElementById('qty');
+const linkEl   = document.getElementById('link');
 const basePriceEl = document.getElementById('basePrice');
-const discountEl = document.getElementById('discount');
-const totalEl = document.getElementById('total');
-const saveText = document.getElementById('saveText');
-const nextDiscount = document.getElementById('nextDiscount');
+const discountEl  = document.getElementById('discount');
+const totalEl     = document.getElementById('total');
+const saveText    = document.getElementById('saveText');
+const nextDis     = document.getElementById('nextDiscount');
 const progressBar = document.getElementById('progressBar');
-const minText = document.getElementById('minText');
-const errorEl = document.getElementById('error');
-const popularBadge = document.getElementById('popularBadge');
-const buyBtn = document.getElementById('buyBtn');
+const minText     = document.getElementById('minText');
+const errorEl     = document.getElementById('error');
+const popularBadge= document.getElementById('popularBadge');
+const buyBtn      = document.getElementById('buyBtn');
 
 let service=null, discounts=[], finalTotal=0;
 
 /* LOAD DATA */
 Promise.all([
-  fetch(API+'?action=services').then(r=>r.json()),
-  fetch(API+'?action=discounts&service_id='+serviceId).then(r=>r.json())
+  fetch(`${API}?action=services`).then(r=>r.json()),
+  fetch(`${API}?action=discounts&service_id=${serviceId}`).then(r=>r.json())
 ]).then(([services,disc])=>{
   service = services.find(s=>s.service_id===serviceId);
   discounts = disc || [];
 
+  if(!service){
+    alert('ไม่พบบริการ');
+    location.href='services.html';
+    return;
+  }
+
   serviceName.innerText = service.display_name;
   serviceDesc.innerText = service.short_desc || '';
-  qty.value = service.min_qty;
+  qtyInput.value = service.min_qty;
   minText.innerText = `ขั้นต่ำ ${service.min_qty} ${service.unit}`;
-
   calc();
 });
 
-qty.addEventListener('input',calc);
+qtyInput.addEventListener('input', calc);
 
-/* CALCULATE */
+/* CALC */
 function calc(){
-  const q = Number(qty.value);
+  const q = Number(qtyInput.value);
   if(q < service.min_qty){
-    errorEl.innerText = 'จำนวนต่ำกว่าขั้นต่ำ';
+    errorEl.innerText='จำนวนต่ำกว่าขั้นต่ำ';
     return;
   }
   errorEl.innerText='';
@@ -301,32 +220,27 @@ function calc(){
   finalTotal = current ? q * current.price : base;
 
   basePriceEl.innerText = base.toFixed(2);
-  discountEl.innerText = (current ? current.discount_percent : 0) + '%';
+  discountEl.innerText = (current?.discount_percent || 0) + '%';
   totalEl.innerText = finalTotal.toFixed(2);
 
-  saveText.innerText = base > finalTotal
-    ? `🔥 ลดไป ${(base-finalTotal).toFixed(2)} บาท`
-    : '';
-
-  nextDiscount.innerText = next
-    ? `เพิ่มอีก ${next.min_qty - q} ${service.unit} จะได้ ${next.discount_percent}%`
+  saveText.innerText = base > finalTotal ? `🔥 ประหยัด ${(base-finalTotal).toFixed(2)} บาท` : '';
+  nextDis.innerText = next
+    ? `เพิ่มอีก ${next.min_qty - q} ${service.unit} รับ ${next.discount_percent}%`
     : 'คุณได้ส่วนลดสูงสุดแล้ว';
 
-  const max = next ? next.min_qty : q;
-  progressBar.style.width = Math.min(100, (q/max)*100) + '%';
-
-  if(current && current.is_popular === 'on'){
-    popularBadge.style.display='inline-block';
-  }else{
-    popularBadge.style.display='none';
-  }
+  progressBar.style.width = Math.min(100, (q/(next?next.min_qty:q))*100)+'%';
+  popularBadge.style.display = current?.is_popular==='on'?'inline-block':'none';
 }
 
-/* SUBMIT ORDER */
-buyBtn.onclick = ()=>{
-  const q = Number(qty.value);
-  if(!linkEl.value.trim()) return errorEl.innerText='กรุณาใส่ลิงก์';
-  if(finalTotal > credit) return errorEl.innerText='เครดิตไม่พอ';
+/* SUBMIT */
+buyBtn.onclick=()=>{
+  errorEl.innerText='';
+  const q = Number(qtyInput.value);
+
+  if(!linkEl.value.trim()){
+    errorEl.innerText='กรุณาใส่ลิงก์';
+    return;
+  }
 
   buyBtn.disabled=true;
 
@@ -343,14 +257,20 @@ buyBtn.onclick = ()=>{
   })
   .then(r=>r.json())
   .then(res=>{
-    if(!res.success) throw res;
+    if(!res.success){
+      throw new Error(res.message || 'ERROR');
+    }
     location.href='orders.html';
   })
-  .catch(()=>{
-    errorEl.innerText='สั่งซื้อไม่สำเร็จ';
+  .catch(err=>{
+    errorEl.innerText = err.message || 'สั่งซื้อไม่สำเร็จ';
     buyBtn.disabled=false;
   });
 };
+
+function goBack(){
+  history.length>1 ? history.back() : location.href='services.html';
+}
 </script>
 
 </body>
