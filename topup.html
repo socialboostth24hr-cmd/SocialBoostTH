@@ -228,34 +228,44 @@ amountEl.oninput = () => {
   confirmedBox.style.display='none';
 };
 
-/* CONFIRM */
-confirmBtn.onclick = async ()=>{
-  if(!lockedAmount) return alert('กรุณากรอกยอดก่อน');
+/* CONFIRM (GET เท่านั้น) */
+confirmBtn.onclick = ()=>{
+  if(!lockedAmount){
+    alert('กรุณากรอกยอดก่อน');
+    return;
+  }
+
   confirmBtn.disabled=true;
 
-  try{
-    await fetch(API,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        api_key:API_KEY,
-        action:'topup',
-        user_id:userId,
-        amount:lockedAmount,
-        method:'promptpay'
-      })
+  const url =
+    API +
+    `?action=topup` +
+    `&api_key=${API_KEY}` +
+    `&user_id=${encodeURIComponent(userId)}` +
+    `&amount=${encodeURIComponent(lockedAmount)}` +
+    `&method=promptpay` +
+    `&_=${Date.now()}`;
+
+  fetch(url)
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res || res.success!==true){
+        alert('บันทึกการเติมเงินไม่สำเร็จ');
+        confirmBtn.disabled=false;
+        return;
+      }
+
+      confirmedBox.style.display='block';
+      amountEl.value='';
+      lockedAmount=null;
+      loadWallet();
+    })
+    .catch(()=>{
+      alert('เชื่อมต่อระบบไม่ได้');
+    })
+    .finally(()=>{
+      confirmBtn.disabled=false;
     });
-
-    confirmedBox.style.display='block';
-    amountEl.value='';
-    lockedAmount=null;
-    loadWallet();
-
-  }catch{
-    alert('เชื่อมต่อระบบไม่ได้');
-  }finally{
-    confirmBtn.disabled=false;
-  }
 };
 
 /* WALLET */
