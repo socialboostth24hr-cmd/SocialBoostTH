@@ -178,7 +178,7 @@ body{
   <div class="center">SocialBoostTH</div>
 
   <div class="right">
-    <div class="wallet">เครดิต: <span id="credit">0</span> บาท</div>
+    <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
     <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
   </div>
 </header>
@@ -200,34 +200,44 @@ body{
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxzt4nj3NhnS-P6K4b_VHGeclJYS1ZWyv04BtPe0IpKVTg60yaLmO7oAFKwD1wfCE9-qg/exec";
+/* ===== CONFIG (ตรงกับ Apps Script ตัวล่าสุด) ===== */
+const API="https://script.google.com/macros/s/AKfycby9v2qEZUQ8khjh5h0rTx0uvc2XXUDm4WBQ1WOQKvhAlUF6MYXflVG45ulNLDy-V542lg/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId=localStorage.getItem('user_id');
+const userId = localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
 const creditEl=document.getElementById('credit');
 const box=document.getElementById('services');
 
-/* MENU */
-function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.href='login.html'}
+/* ===== MENU ===== */
+function openMenu(){
+  sideMenu.classList.add('open');
+  menuOverlay.style.display='block';
+}
+function closeMenu(){
+  sideMenu.classList.remove('open');
+  menuOverlay.style.display='none';
+}
+function logout(){
+  localStorage.clear();
+  location.href='login.html';
+}
 
-/* LOAD CREDIT */
+/* ===== LOAD CREDIT (ใช้ getUser เท่านั้น) ===== */
 function loadCredit(){
-  fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}`)
+  fetch(`${API}?action=getUser&user_id=${userId}&api_key=${API_KEY}`)
     .then(r=>r.json())
-    .then(w=>{
-      const credit=w.reduce((s,x)=>s+Number(x.amount),0);
-      localStorage.setItem('credit',credit);
-      creditEl.innerText=credit.toFixed(2);
+    .then(u=>{
+      if(u.error) return;
+      creditEl.innerText = Number(u.credit).toFixed(2);
+      localStorage.setItem('credit',u.credit);
     });
 }
 
-/* LOAD SERVICES */
+/* ===== LOAD SERVICES ===== */
 function loadServices(){
-  fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
+  fetch(`${API}?action=services&api_key=${API_KEY}&_ts=${Date.now()}`)
     .then(r=>r.json())
     .then(list=>{
       box.innerHTML='';
