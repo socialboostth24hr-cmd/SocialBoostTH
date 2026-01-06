@@ -1,22 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>เข้าสู่ระบบ | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --pink:#ec4899;
+  --purple:#8b5cf6;
+  --blue:#38bdf8;
+  --line:#22c55e;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system;
+  background:
+    radial-gradient(800px 320px at top,#fde7f3,transparent),
+    linear-gradient(180deg,#eef6ff,#ffffff);
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.card{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border-radius:28px;
+  padding:34px 30px 30px;
+  box-shadow:
+    0 25px 60px rgba(139,92,246,.25),
+    0 8px 20px rgba(56,189,248,.15);
+}
+
+.logo{
+  width:90px;
+  display:block;
+  margin:0 auto 16px;
+}
+
+h1{
+  text-align:center;
+  font-size:28px;
+  margin:0;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.sub{
+  text-align:center;
+  color:#94a3b8;
+  font-size:14px;
+  margin:6px 0 24px;
+}
+
+label{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:6px;
+  display:block;
+  color:#475569;
+}
+
+.field{
+  margin-bottom:18px;
+}
+
+.input{
+  display:flex;
+  align-items:center;
+  border:1px solid #e5e7eb;
+  border-radius:18px;
+  padding:14px 16px;
+}
+
+.input:focus-within{
+  border-color:var(--purple);
+  box-shadow:0 0 0 4px rgba(139,92,246,.15);
+}
+
+.input input{
+  border:none;
+  outline:none;
+  width:100%;
+  font-size:15px;
+}
+
+.toggle{
+  border:none;
+  background:#f1f5f9;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.login-btn{
+  width:100%;
+  border:none;
+  border-radius:22px;
+  padding:16px;
+  font-size:16px;
+  font-weight:800;
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+  cursor:pointer;
+  box-shadow:0 18px 45px rgba(139,92,246,.45);
+}
+
+.or{
+  text-align:center;
+  color:#cbd5e1;
+  margin:18px 0 12px;
+  font-size:13px;
+}
+
+.line-btn{
+  display:block;
+  text-align:center;
+  padding:15px;
+  background:linear-gradient(180deg,#22c55e,#16a34a);
+  color:#fff;
+  border-radius:22px;
+  font-weight:800;
+  text-decoration:none;
+  box-shadow:0 16px 36px rgba(34,197,94,.35);
+}
+
+.error{
+  text-align:center;
+  color:#ef4444;
+  margin-top:14px;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+
+  <h1>เข้าสู่ระบบ</h1>
+  <div class="sub">ระบบให้บริการอัตโนมัติ 24 ชั่วโมง</div>
+
+  <div class="field">
+    <label>ชื่อผู้ใช้งาน</label>
+    <div class="input">
+      <input id="username" placeholder="username หรือ email">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>รหัสผ่าน</label>
+    <div class="input">
+      <input type="password" id="password" placeholder="••••••">
+      <button class="toggle" onclick="togglePassword()">แสดง</button>
+    </div>
+  </div>
+
+  <button class="login-btn" onclick="login()">เข้าสู่ระบบ</button>
+
+  <div class="or">ยังไม่มีบัญชี?</div>
+
+  <a class="line-btn" href="https://line.me/R/ti/p/@geg4960w" target="_blank">
+    สมัครสมาชิก / ติดต่อร้านทาง LINE
+  </a>
+
+  <div id="error" class="error"></div>
+</div>
+
 <script>
 const API = "https://script.google.com/macros/s/AKfycbzPwjgsZpvTviaOuWu_FWAD9yw1-64MsT49jO9muE3EmKkAFeX4zQYz1jsKZBK6qIMfgA/exec";
+
+function togglePassword(){
+  const p = document.getElementById('password');
+  p.type = p.type === 'password' ? 'text' : 'password';
+}
 
 function login(){
   const user = document.getElementById('username').value.trim();
   const pass = document.getElementById('password').value.trim();
-  const error = document.getElementById('error');
-  error.textContent = '';
+  const err  = document.getElementById('error');
+
+  err.textContent = '';
 
   if(!user || !pass){
-    error.textContent = 'กรุณากรอกชื่อผู้ใช้งานและรหัสผ่าน';
+    err.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
     return;
   }
 
   fetch(`${API}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`)
-    .then(r => r.json())
-    .then(res => {
+    .then(r=>r.json())
+    .then(res=>{
       if(!res.success){
-        error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
+        err.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
         return;
       }
 
@@ -26,8 +210,11 @@ function login(){
 
       location.href = 'services.html';
     })
-    .catch(() => {
-      error.textContent = 'ไม่สามารถเชื่อมต่อระบบได้';
+    .catch(()=>{
+      err.textContent = 'เชื่อมต่อระบบไม่ได้';
     });
 }
 </script>
+
+</body>
+</html>
