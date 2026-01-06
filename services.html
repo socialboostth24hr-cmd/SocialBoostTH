@@ -72,7 +72,7 @@ body{
   border:1px solid transparent;
 }
 
-/* ===== MENU (FIX: SLIDE FROM LEFT) ===== */
+/* ===== MENU ===== */
 .menu-overlay{
   position:fixed;
   inset:0;
@@ -83,7 +83,7 @@ body{
 
 .side-menu{
   position:fixed;
-  left:-260px; /* ← แก้จาก right */
+  left:-260px;
   top:0;
   width:260px;
   height:100%;
@@ -91,9 +91,8 @@ body{
   padding:20px;
   z-index:100;
   transition:.3s;
-  box-shadow:20px 0 60px rgba(0,0,0,.85); /* เงาไปทางขวา */
+  box-shadow:20px 0 60px rgba(0,0,0,.85);
 }
-
 .side-menu.open{left:0}
 
 .side-menu a{
@@ -149,22 +148,23 @@ body{
   margin-top:6px;
 }
 
-/* BADGE */
+/* ===== BADGE (ย้ายมาฝั่งซ้าย) ===== */
 .badge{
   position:absolute;
   top:16px;
-  right:16px;
+  left:16px;       /* ← เปลี่ยนจาก right เป็น left */
   padding:6px 14px;
   border-radius:999px;
   font-size:12px;
   font-weight:900;
   color:#fff;
 }
+
 .badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899);}
 .badge.recommended{background:linear-gradient(90deg,var(--blue),var(--purple));}
 .badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
 
-/* BOTTOM */
+/* ===== BOTTOM ===== */
 .bottom{
   display:flex;
   justify-content:space-between;
