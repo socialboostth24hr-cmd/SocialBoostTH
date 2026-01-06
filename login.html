@@ -138,12 +138,8 @@ label{
   overflow:hidden;
   transition:.25s;
 }
-.login-btn:hover{
-  transform:translateY(-1px);
-}
-.login-btn:disabled{
-  opacity:.7;
-}
+.login-btn:hover{transform:translateY(-1px)}
+.login-btn:disabled{opacity:.7}
 
 /* ripple */
 .login-btn::after{
@@ -189,12 +185,6 @@ label{
   margin-top:14px;
   font-size:14px;
   font-weight:800;
-  animation:shake .35s linear;
-}
-@keyframes shake{
-  0%,100%{transform:translateX(0)}
-  25%{transform:translateX(-4px)}
-  75%{transform:translateX(4px)}
 }
 </style>
 </head>
@@ -220,7 +210,7 @@ label{
     <label>รหัสผ่าน</label>
     <div class="input">
       <input type="password" id="password" placeholder="••••••">
-      <button class="toggle" id="toggleBtn">แสดง</button>
+      <button class="toggle" id="toggleBtn" type="button">แสดง</button>
     </div>
   </div>
 
@@ -236,6 +226,15 @@ label{
 </div>
 
 <script>
+/* ================= CONFIG ================= */
+const API = "https://script.google.com/macros/s/AKfycbxtq60vnw-hLOvJvO6bPWGFMbkSjAde8hw3Fftv172kqKMtzJB4k9JfSQYI3A0N0la8RQ/exec";
+const API_KEY = "SBTH-SECURE-2026";
+
+/* ===== AUTO REDIRECT ===== */
+if(localStorage.getItem('user_id')){
+  location.href='services.html';
+}
+
 /* ===== PARALLAX CARD ===== */
 const card = document.getElementById('card');
 document.addEventListener('mousemove',e=>{
@@ -246,10 +245,49 @@ document.addEventListener('mousemove',e=>{
 
 /* ===== PASSWORD TOGGLE ===== */
 toggleBtn.onclick=()=>{
-  const p=password;
-  toggleBtn.textContent=p.type==='password'?'ซ่อน':'แสดง';
-  p.type=p.type==='password'?'text':'password';
+  password.type = password.type==='password'?'text':'password';
+  toggleBtn.textContent = password.type==='password'?'แสดง':'ซ่อน';
 };
+
+/* ===== LOGIN ===== */
+let loading=false;
+loginBtn.onclick=login;
+
+function login(){
+  if(loading) return;
+
+  const u=username.value.trim();
+  const p=password.value.trim();
+  error.textContent='';
+
+  if(!u||!p){
+    error.textContent='กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
+    return;
+  }
+
+  loading=true;
+  loginBtn.disabled=true;
+  loginBtn.textContent='กำลังเข้าสู่ระบบ...';
+
+  fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res.success) throw 0;
+      localStorage.setItem('user_id',res.user.user_id);
+      localStorage.setItem('username',res.user.username);
+      location.href='services.html';
+    })
+    .catch(()=>{
+      error.textContent='ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+      loginBtn.disabled=false;
+      loginBtn.textContent='เข้าสู่ระบบ';
+      loading=false;
+    });
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter') login();
+});
 </script>
 
 </body>
