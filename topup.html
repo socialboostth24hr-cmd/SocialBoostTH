@@ -74,27 +74,37 @@ input{
 
 .error{
   font-size:13px;
-  font-weight:800;
+  font-weight:900;
   color:#dc2626;
   margin-bottom:10px;
   display:none;
 }
 
+/* 🔥 กล่องยอดโอน (เด่นมาก) */
 .calc-box{
-  margin-top:12px;
-  padding:14px;
-  border-radius:14px;
-  background:#f0fdf4;
-  color:#166534;
-  font-weight:800;
-  line-height:1.7;
+  margin-top:14px;
+  padding:18px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#dcfce7,#bbf7d0);
+  color:#14532d;
+  font-weight:900;
+  font-size:18px;
+  text-align:center;
+  line-height:1.8;
   display:none;
+  box-shadow:0 10px 30px rgba(34,197,94,.35);
 }
 
+.calc-box span{
+  font-size:28px;
+  color:#166534;
+}
+
+/* QR */
 .qr-box{
   display:none;
   text-align:center;
-  margin-top:14px;
+  margin-top:16px;
 }
 .qr-box img{
   width:220px;
@@ -111,7 +121,7 @@ input{
 .btn-row{
   display:flex;
   gap:10px;
-  margin-top:14px;
+  margin-top:16px;
 }
 
 .line-btn{
@@ -149,6 +159,7 @@ input{
   display:none;
 }
 
+/* เงื่อนไข */
 .notice{
   background:#fff7ed;
   border:1px solid #fed7aa;
@@ -159,6 +170,30 @@ input{
   font-weight:800;
   line-height:1.6;
   margin-top:14px;
+}
+
+/* ตาราง */
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+.table th,.table td{
+  padding:10px;
+  border-bottom:1px solid #e5e7eb;
+}
+.status{
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+}
+.pending{background:#fef3c7;color:#92400e}
+.success{background:#dcfce7;color:#166534}
+.empty{
+  text-align:center;
+  color:#94a3b8;
+  padding:20px;
 }
 </style>
 </head>
@@ -176,6 +211,7 @@ input{
 
 <div class="container">
 
+  <!-- เติมเงิน -->
   <div class="card">
     <h2>➕ เติมเงิน (พร้อมเพย์)</h2>
 
@@ -210,10 +246,29 @@ input{
 
     <div class="notice">
       🔴 เงื่อนไขสำคัญ<br>
-      • กรุณาส่ง <b>สลิป + Username</b> ทาง LINE เท่านั้น<br>
-      • เติมเงินแล้ว <u>ไม่สามารถถอนหรือขอคืนเงินได้ทุกกรณี</u><br>
-      • เครดิตจะเข้าเมื่อแอดมินตรวจสอบเรียบร้อย
+      • ส่ง <b>สลิป + Username</b> ทาง LINE เท่านั้น<br>
+      • เติมเงินแล้ว <u>ไม่สามารถถอนหรือขอคืนเงินได้</u><br>
+      • เครดิตเข้าเมื่อแอดมินยืนยัน
     </div>
+  </div>
+
+  <!-- ประวัติการเติมเงิน -->
+  <div class="card">
+    <h2>💰 ประวัติการเติมเงิน</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>วันที่</th>
+          <th>จำนวน</th>
+          <th>สถานะ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="3" class="empty">ยังไม่มีข้อมูล</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
 </div>
@@ -245,7 +300,10 @@ input.addEventListener('input',()=>{
   lockedAmount=(base+satang/100).toFixed(2);
 
   calcBox.style.display='block';
-  calcBox.innerHTML=`👉 กรุณาโอน <span style="font-size:18px">${lockedAmount}</span> บาท`;
+  calcBox.innerHTML=`
+    🔔 กรุณาโอนยอดนี้เท่านั้น<br>
+    <span>${lockedAmount}</span> บาท
+  `;
 
   qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
   qrBox.style.display='block';
