@@ -14,25 +14,34 @@ body{
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
 
+/* ===== HEADER มาตรฐาน ===== */
 .header{
-  padding:14px 18px;
+  padding:12px 16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   background:#fff;
   position:sticky;
   top:0;
+  z-index:50;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 
-.logo{height:34px}
+.logo{height:32px}
 
-.back-btn{
+.nav-btn{
   border:none;
-  padding:6px 14px;
+  padding:8px 16px;
   border-radius:999px;
-  background:#fff;
+  background:#f1f5f9;
+  font-size:13px;
+  font-weight:800;
   cursor:pointer;
-  box-shadow:0 6px 18px rgba(0,0,0,.1);
+}
+
+.nav-btn.topup{
+  background:linear-gradient(135deg,#38bdf8,#8b5cf6);
+  color:#fff;
 }
 
 .container{
@@ -98,10 +107,8 @@ input{
   font-size:12px;
   font-weight:900;
 }
-
 .pending{background:#fef3c7;color:#92400e}
 .success{background:#dcfce7;color:#166534}
-.cancel{background:#fee2e2;color:#991b1b}
 
 .empty{
   text-align:center;
@@ -114,17 +121,23 @@ input{
 <body>
 
 <header class="header">
-  <button class="back-btn" onclick="location.href='services.html'">← กลับ</button>
   <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+
+  <div>
+    <button class="nav-btn" onclick="location.href='services.html'">บริการ</button>
+    <button class="nav-btn" onclick="location.href='orders.html'">คำสั่งซื้อ</button>
+    <button class="nav-btn topup">เติมเงิน</button>
+  </div>
 </header>
 
 <div class="container">
 
-  <!-- 🔹 แจ้งเติมเงิน -->
+  <!-- แจ้งเติมเงิน -->
   <div class="card">
     <h2>➕ แจ้งเติมเงิน</h2>
 
-    <input type="number" id="amount" placeholder="กรอกจำนวนเงินที่โอนจริง เช่น 50.03">
+    <input type="number" id="amount" step="0.01"
+      placeholder="กรอกจำนวนเงินที่โอนจริง เช่น 50.09">
 
     <button class="topup-btn" onclick="requestTopup()">
       แจ้งเติมเงิน
@@ -135,7 +148,7 @@ input{
     </div>
   </div>
 
-  <!-- 🔹 ประวัติการเติมเงิน -->
+  <!-- ประวัติ -->
   <div class="card">
     <h2>💰 ประวัติการเติมเงิน</h2>
 
@@ -161,7 +174,7 @@ if(!userId){
   location.href='login.html';
 }
 
-/* แจ้งเติมเงิน (status = pending) */
+/* แจ้งเติมเงิน → pending */
 function requestTopup(){
   const amount = Number(document.getElementById('amount').value);
   if(!amount || amount < 10){
@@ -178,7 +191,8 @@ function requestTopup(){
       amount:amount,
       method:'manual',
       ref:'USER_NOTIFY',
-      admin:''
+      admin:'',
+      note:'PENDING'
     })
   })
   .then(r=>r.json())
@@ -196,23 +210,25 @@ function loadWallet(){
     .then(list=>{
       const box=document.getElementById('wallet');
       box.innerHTML='';
+
       if(!list.length){
         box.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
         return;
       }
 
       list.reverse().forEach(w=>{
-        const status = w.amount > 0 ? 'success' : 'pending';
+        const success = (w.note||'').includes('CONFIRMED');
         box.innerHTML+=`
           <tr>
             <td>${new Date(w.datetime).toLocaleString()}</td>
             <td>${Number(w.amount).toFixed(2)}</td>
             <td>
-              <span class="status ${status}">
-                ${status==='pending'?'⏳ รอตรวจสอบ':'✅ สำเร็จ'}
+              <span class="status ${success?'success':'pending'}">
+                ${success?'✅ สำเร็จ':'⏳ รอตรวจสอบ'}
               </span>
             </td>
-          </tr>`;
+          </tr>
+        `;
       });
     });
 }
