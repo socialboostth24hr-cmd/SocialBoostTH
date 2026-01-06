@@ -1,62 +1,79 @@
 <script>
-/* CONFIG – ใช้ script ตัวล่าสุดตัวเดียว */
-const API="https://script.google.com/macros/s/AKfycbxd3FO7ZHfOHDGDgVQNI1Uf3Owtmh8wXE1-00O2UimH6tA8k83PkqKItfo0_q-22sMeuQ/exec";
-const API_KEY="SBTH-SECURE-2026";
+document.addEventListener('DOMContentLoaded', () => {
 
+/* ================= CONFIG ================= */
+const API = "https://script.google.com/macros/s/AKfycbxd3FO7ZHfOHDGDgVQNI1Uf3Owtmh8wXE1-00O2UimH6tA8k83PkqKItfo0_q-22sMeuQ/exec";
+const API_KEY = "SBTH-SECURE-2026";
+
+/* ================= AUTH ================= */
 const userId = localStorage.getItem('user_id');
-if(!userId) location.href='login.html';
+if (!userId) {
+  location.href = 'login.html';
+  return;
+}
 
+/* ================= DOM ================= */
 const creditEl = document.getElementById('credit');
 const box = document.getElementById('services');
+const sideMenu = document.getElementById('sideMenu');
+const menuOverlay = document.getElementById('menuOverlay');
 
-/* MENU */
-function openMenu(){
-  sideMenu.classList.add('open');
-  menuOverlay.style.display='block';
+/* ================= MENU ================= */
+window.openMenu = function () {
+  sideMenu?.classList.add('open');
+  menuOverlay.style.display = 'block';
 }
-function closeMenu(){
-  sideMenu.classList.remove('open');
-  menuOverlay.style.display='none';
+
+window.closeMenu = function () {
+  sideMenu?.classList.remove('open');
+  menuOverlay.style.display = 'none';
 }
-function logout(){
+
+window.logout = function () {
   localStorage.clear();
-  location.href='login.html';
+  location.href = 'login.html';
 }
 
-/* ✅ LOAD CREDIT – แหล่งเดียวที่ถูกต้อง */
-function loadCredit(){
+/* ================= LOAD CREDIT ================= */
+function loadCredit() {
   fetch(`${API}?action=getUser&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
-    .then(r=>r.json())
-    .then(u=>{
-      if(u.error) {
+    .then(r => r.json())
+    .then(u => {
+      if (!creditEl) return;
+      if (u.error) {
         creditEl.innerText = '0.00';
         return;
       }
       creditEl.innerText = Number(u.credit).toFixed(2);
       localStorage.setItem('credit', u.credit);
     })
-    .catch(()=>{
-      creditEl.innerText = '0.00';
+    .catch(() => {
+      if (creditEl) creditEl.innerText = '0.00';
     });
 }
 
-/* LOAD SERVICES */
-function loadServices(){
+/* ================= LOAD SERVICES ================= */
+function loadServices() {
   fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
-    .then(r=>r.json())
-    .then(list=>{
-      box.innerHTML='';
-      if(!Array.isArray(list)) return;
+    .then(r => r.json())
+    .then(list => {
+      if (!box) return;
 
-      list.forEach(s=>{
+      box.innerHTML = '';
+      if (!Array.isArray(list) || !list.length) {
+        box.innerHTML = '<div style="text-align:center;color:#94a3b8">ไม่มีบริการ</div>';
+        return;
+      }
+
+      list.forEach(s => {
         box.innerHTML += `
           <div class="service">
-            ${s.badge_status==='on'
-              ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`
+            ${s.badge_status === 'on'
+              ? `<div class="badge ${s.badge_type}">${s.badge_text || ''}</div>`
               : ''}
 
             <div class="service-name">${s.display_name}</div>
-            <div class="service-desc">${s.short_desc||''}</div>
+            <div class="service-desc">${s.short_desc || ''}</div>
 
             <div class="bottom">
               <div class="price">
@@ -72,19 +89,25 @@ function loadServices(){
           </div>
         `;
       });
+    })
+    .catch(() => {
+      if (box) box.innerHTML = '<div style="text-align:center;color:red">โหลดบริการไม่สำเร็จ</div>';
     });
 }
 
-function selectService(id){
+/* ================= SELECT ================= */
+window.selectService = function (id) {
   localStorage.setItem('service_id', id);
-  location.href='order.html';
+  location.href = 'order.html';
 }
 
-function reloadAll(){
+/* ================= INIT ================= */
+function reloadAll() {
   loadCredit();
   loadServices();
 }
 
-/* INIT */
 reloadAll();
+
+});
 </script>
