@@ -14,10 +14,11 @@
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui;
+  font-family:system-ui,-apple-system;
   background:
     radial-gradient(900px 360px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
+  color:#111827;
 }
 
 /* HEADER */
@@ -145,7 +146,7 @@ input{
         onclick="window.open('https://line.me/R/ti/p/@geg4960w','_blank')">
         📤 แจ้งสลิปทาง LINE
       </button>
-      <button class="confirm-btn" onclick="confirmTopup()">
+      <button class="confirm-btn" id="confirmBtn">
         ✅ ยืนยันว่าแจ้งแล้ว
       </button>
     </div>
@@ -181,14 +182,15 @@ input{
 </div>
 
 <script>
-/* ================= CONFIG (ตัวเดียวทั้งเว็บ) ================= */
+/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
 const API_KEY="SBTH-SECURE-2026";
 
+/* ===== AUTH ===== */
 const userId = localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
-/* DOM */
+/* ===== DOM ===== */
 const amountEl = document.getElementById('amount');
 const errorText = document.getElementById('errorText');
 const calcBox = document.getElementById('calcBox');
@@ -196,6 +198,7 @@ const qrBox = document.getElementById('qrBox');
 const qrImg = document.getElementById('qrImg');
 const confirmedBox = document.getElementById('confirmedBox');
 const walletBox = document.getElementById('wallet');
+const confirmBtn = document.getElementById('confirmBtn');
 
 let lockedAmount = null;
 
@@ -208,53 +211,66 @@ function logout(){localStorage.clear();location.href='login.html'}
 amountEl.oninput = () => {
   const base = Number(amountEl.value);
   if(!base || base < 20){
-    errorText.style.display = 'block';
-    calcBox.style.display = qrBox.style.display = 'none';
-    lockedAmount = null;
+    errorText.style.display='block';
+    calcBox.style.display=qrBox.style.display='none';
+    lockedAmount=null;
     return;
   }
-  errorText.style.display = 'none';
-  const s = Math.floor(Math.random() * 99) + 1;
-  lockedAmount = (base + s / 100).toFixed(2);
 
-  calcBox.style.display = 'block';
-  calcBox.innerHTML = `🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
-  qrImg.src = `https://promptpay.io/0991301221/${lockedAmount}.png`;
-  qrBox.style.display = 'block';
-  confirmedBox.style.display = 'none';
+  errorText.style.display='none';
+  const s=Math.floor(Math.random()*99)+1;
+  lockedAmount=(base+s/100).toFixed(2);
+
+  calcBox.style.display='block';
+  calcBox.innerHTML=`🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
+  qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
+  qrBox.style.display='block';
+  confirmedBox.style.display='none';
 };
 
 /* CONFIRM */
-function confirmTopup(){
+confirmBtn.onclick = async ()=>{
   if(!lockedAmount) return alert('กรุณากรอกยอดก่อน');
+  confirmBtn.disabled=true;
 
-  fetch(API,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      api_key:API_KEY,
-      action:'topup',
-      user_id:userId,
-      amount:lockedAmount,
-      method:'promptpay'
-    })
-  }).then(()=>{
+  try{
+    await fetch(API,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        api_key:API_KEY,
+        action:'topup',
+        user_id:userId,
+        amount:lockedAmount,
+        method:'promptpay'
+      })
+    });
+
     confirmedBox.style.display='block';
     amountEl.value='';
+    lockedAmount=null;
     loadWallet();
-  });
-}
+
+  }catch{
+    alert('เชื่อมต่อระบบไม่ได้');
+  }finally{
+    confirmBtn.disabled=false;
+  }
+};
 
 /* WALLET */
 function loadWallet(){
+  walletBox.innerHTML='<tr><td colspan="3" class="empty">กำลังโหลด...</td></tr>';
+
   fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
     .then(r=>r.json())
     .then(list=>{
       walletBox.innerHTML='';
-      if(!Array.isArray(list) || !list.length){
+      if(!Array.isArray(list)||!list.length){
         walletBox.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
         return;
       }
+
       list.reverse().forEach(w=>{
         walletBox.innerHTML+=`
           <tr>
