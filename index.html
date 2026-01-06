@@ -1,11 +1,160 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>SocialBoostTH</title>
-  <meta http-equiv="refresh" content="0; url=login.html">
+<meta charset="UTF-8">
+<title>SocialBoostTH | ระบบเพิ่มยอดโซเชียลอัตโนมัติ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --pink:#ec4899;
+  --purple:#8b5cf6;
+  --blue:#38bdf8;
+  --dark:#0f172a;
+}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,sans-serif;
+  min-height:100vh;
+  background:
+    radial-gradient(1000px 420px at top,#fde7f3,transparent),
+    linear-gradient(180deg,#eef6ff,#ffffff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--dark);
+}
+
+/* ===== CARD ===== */
+.card{
+  width:100%;
+  max-width:420px;
+  background:#fff;
+  border-radius:28px;
+  padding:36px 28px 32px;
+  text-align:center;
+  box-shadow:0 30px 80px rgba(139,92,246,.25);
+}
+
+/* LOGO */
+.logo{
+  width:84px;
+  height:84px;
+  margin:0 auto 18px;
+  border-radius:24px;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 16px 40px rgba(139,92,246,.35);
+}
+.logo img{
+  width:48px;
+  height:48px;
+}
+
+/* TEXT */
+h1{
+  font-size:24px;
+  font-weight:900;
+  margin:0 0 6px;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.subtitle{
+  font-size:14px;
+  color:#64748b;
+  margin-bottom:24px;
+  line-height:1.6;
+}
+
+/* FEATURES */
+.features{
+  text-align:left;
+  margin-bottom:26px;
+}
+.features div{
+  display:flex;
+  gap:10px;
+  font-size:14px;
+  font-weight:700;
+  margin:8px 0;
+  color:#334155;
+}
+.features span{
+  color:var(--purple);
+}
+
+/* BUTTON */
+.enter-btn{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:999px;
+  font-size:17px;
+  font-weight:900;
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+  cursor:pointer;
+  box-shadow:0 16px 40px rgba(139,92,246,.4);
+}
+.enter-btn:hover{
+  transform:translateY(-1px);
+}
+
+/* FOOTER */
+.footer{
+  margin-top:20px;
+  font-size:12px;
+  color:#94a3b8;
+}
+</style>
 </head>
+
 <body>
-  กำลังเข้าสู่ระบบ...
+
+<div class="card">
+
+  <div class="logo">
+    <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" alt="SocialBoostTH">
+  </div>
+
+  <h1>SocialBoostTH</h1>
+  <div class="subtitle">
+    ระบบเพิ่มผู้ติดตาม ถูกใจ และยอดวิว<br>
+    ทำงานอัตโนมัติ 24 ชั่วโมง
+  </div>
+
+  <div class="features">
+    <div><span>✔</span> สั่งซื้ออัตโนมัติ ไม่ต้องทักแอดมิน</div>
+    <div><span>✔</span> หักเครดิตทันที ตรวจสอบได้</div>
+    <div><span>✔</span> อัปเดตสถานะแบบเรียลไทม์</div>
+    <div><span>✔</span> ปลอดภัย ไม่มีรหัสผ่าน TikTok</div>
+  </div>
+
+  <button class="enter-btn" onclick="goNext()">
+    🚀 เข้าสู่ระบบ
+  </button>
+
+  <div class="footer">
+    © 2026 SocialBoostTH
+  </div>
+
+</div>
+
+<script>
+function goNext(){
+  // ถ้ามี login แล้ว -> เข้าบริการ
+  if(localStorage.getItem('user_id')){
+    location.href='services.html';
+  }else{
+    location.href='login.html';
+  }
+}
+</script>
+
 </body>
 </html>
