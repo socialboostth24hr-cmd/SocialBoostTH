@@ -141,30 +141,13 @@ label{
 .login-btn:hover{transform:translateY(-1px)}
 .login-btn:disabled{opacity:.7}
 
-/* ripple */
-.login-btn::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:radial-gradient(circle at center,rgba(255,255,255,.4),transparent 55%);
-  opacity:0;
-}
-.login-btn:active::after{
-  opacity:1;
-  animation:ripple .6s ease-out;
-}
-@keyframes ripple{
-  from{opacity:.8}
-  to{opacity:0}
-}
-
+/* ===== LINE ===== */
 .or{
   text-align:center;
   color:#cbd5e1;
   margin:18px 0 14px;
   font-size:13px;
 }
-
 .line-btn{
   display:block;
   text-align:center;
@@ -175,9 +158,7 @@ label{
   font-weight:900;
   text-decoration:none;
   box-shadow:0 16px 36px rgba(34,197,94,.35);
-  transition:.25s;
 }
-.line-btn:hover{transform:translateY(-2px)}
 
 .error{
   text-align:center;
@@ -186,6 +167,29 @@ label{
   font-size:14px;
   font-weight:800;
 }
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(4px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  border-radius:28px;
+  z-index:10;
+}
+
+.spinner{
+  width:48px;
+  height:48px;
+  border:4px solid #e5e7eb;
+  border-top-color:var(--purple);
+  border-radius:50%;
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 
@@ -223,6 +227,11 @@ label{
   </a>
 
   <div id="error" class="error"></div>
+
+  <!-- LOADING -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+  </div>
 </div>
 
 <script>
@@ -230,26 +239,24 @@ label{
 const API = "https://script.google.com/macros/s/AKfycbxtq60vnw-hLOvJvO6bPWGFMbkSjAde8hw3Fftv172kqKMtzJB4k9JfSQYI3A0N0la8RQ/exec";
 const API_KEY = "SBTH-SECURE-2026";
 
-/* ===== AUTO REDIRECT ===== */
+/* AUTO REDIRECT */
 if(localStorage.getItem('user_id')){
   location.href='services.html';
 }
 
-/* ===== PARALLAX CARD ===== */
-const card = document.getElementById('card');
+/* PARALLAX */
 document.addEventListener('mousemove',e=>{
-  const x = (window.innerWidth/2 - e.clientX)/30;
-  const y = (window.innerHeight/2 - e.clientY)/30;
-  card.style.transform = `translate(${x}px,${y}px)`;
+  card.style.transform=
+    `translate(${(innerWidth/2-e.clientX)/30}px,${(innerHeight/2-e.clientY)/30}px)`;
 });
 
-/* ===== PASSWORD TOGGLE ===== */
+/* PASSWORD */
 toggleBtn.onclick=()=>{
-  password.type = password.type==='password'?'text':'password';
-  toggleBtn.textContent = password.type==='password'?'แสดง':'ซ่อน';
+  password.type=password.type==='password'?'text':'password';
+  toggleBtn.textContent=password.type==='password'?'แสดง':'ซ่อน';
 };
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 let loading=false;
 loginBtn.onclick=login;
 
@@ -268,6 +275,7 @@ function login(){
   loading=true;
   loginBtn.disabled=true;
   loginBtn.textContent='กำลังเข้าสู่ระบบ...';
+  loadingEl.style.display='flex';
 
   fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(u)}&password=${encodeURIComponent(p)}`)
     .then(r=>r.json())
@@ -279,6 +287,7 @@ function login(){
     })
     .catch(()=>{
       error.textContent='ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+      loadingEl.style.display='none';
       loginBtn.disabled=false;
       loginBtn.textContent='เข้าสู่ระบบ';
       loading=false;
@@ -288,6 +297,8 @@ function login(){
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter') login();
 });
+
+const loadingEl=document.getElementById('loading');
 </script>
 
 </body>
