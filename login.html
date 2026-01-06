@@ -5,7 +5,6 @@ function login(){
   const user = document.getElementById('username').value.trim();
   const pass = document.getElementById('password').value.trim();
   const error = document.getElementById('error');
-
   error.textContent = '';
 
   if(!user || !pass){
@@ -14,8 +13,8 @@ function login(){
   }
 
   fetch(`${API}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`)
-    .then(r=>r.json())
-    .then(res=>{
+    .then(r => r.json())
+    .then(res => {
       if(!res.success){
         error.textContent = res.message || 'เข้าสู่ระบบไม่สำเร็จ';
         return;
@@ -27,7 +26,7 @@ function login(){
 
       location.href = 'services.html';
     })
-    .catch(()=>{
+    .catch(() => {
       error.textContent = 'ไม่สามารถเชื่อมต่อระบบได้';
     });
 }
