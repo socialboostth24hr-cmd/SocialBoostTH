@@ -72,7 +72,7 @@ body{
   border:1px solid transparent;
 }
 
-/* ===== MENU ===== */
+/* ===== MENU (FIX: SLIDE FROM LEFT) ===== */
 .menu-overlay{
   position:fixed;
   inset:0;
@@ -80,9 +80,10 @@ body{
   display:none;
   z-index:99;
 }
+
 .side-menu{
   position:fixed;
-  right:-260px;
+  left:-260px; /* ← แก้จาก right */
   top:0;
   width:260px;
   height:100%;
@@ -90,9 +91,10 @@ body{
   padding:20px;
   z-index:100;
   transition:.3s;
-  box-shadow:-20px 0 60px rgba(0,0,0,.85);
+  box-shadow:20px 0 60px rgba(0,0,0,.85); /* เงาไปทางขวา */
 }
-.side-menu.open{right:0}
+
+.side-menu.open{left:0}
 
 .side-menu a{
   display:block;
@@ -127,8 +129,7 @@ body{
 
 /* ===== SERVICE CARD ===== */
 .service{
-  background:
-    linear-gradient(180deg,#111827,#0b1020);
+  background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:26px;
   padding:54px 22px 20px;
   margin-bottom:18px;
