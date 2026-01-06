@@ -20,8 +20,6 @@ body{
     linear-gradient(180deg,#eef6ff,#ffffff);
   color:#111827;
 }
-
-/* HEADER */
 .header{
   padding:12px 16px;
   display:flex;
@@ -36,15 +34,9 @@ body{
 .left{display:flex;gap:8px;align-items:center}
 .logo{height:32px}
 .back-btn,.menu-btn,.refresh-btn{
-  border:none;
-  padding:6px 14px;
-  border-radius:999px;
-  background:#f1f5f9;
-  font-weight:800;
-  cursor:pointer;
+  border:none;padding:6px 14px;border-radius:999px;
+  background:#f1f5f9;font-weight:800;cursor:pointer;
 }
-
-/* MENU */
 .menu-overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.35);
@@ -60,77 +52,42 @@ body{
 .side-menu.open{right:0}
 .side-menu h3{margin:0 0 16px}
 .side-menu a{
-  display:block;
-  padding:12px 0;
-  font-weight:800;
-  color:#111827;
-  text-decoration:none;
-  border-bottom:1px solid #e5e7eb;
+  display:block;padding:12px 0;
+  font-weight:800;color:#111827;
+  text-decoration:none;border-bottom:1px solid #e5e7eb;
 }
 .side-menu a.logout{color:#ef4444;border:none}
 
-/* CONTENT */
 .container{
-  max-width:720px;
-  margin:0 auto;
+  max-width:720px;margin:0 auto;
   padding:14px 18px 120px;
 }
-.title{
-  font-size:24px;
-  font-weight:900;
-  margin-bottom:6px;
-}
-.update-text{
-  font-size:13px;
-  color:#64748b;
-  margin-bottom:14px;
-}
+.title{font-size:24px;font-weight:900;margin-bottom:6px}
+.update-text{font-size:13px;color:#64748b;margin-bottom:14px}
 
-/* ORDER CARD */
 .order{
-  background:#fff;
-  border-radius:20px;
-  padding:16px;
-  margin-bottom:14px;
+  background:#fff;border-radius:20px;
+  padding:16px;margin-bottom:14px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
-  cursor:pointer;
-  transition:.2s;
+  cursor:pointer;transition:.2s;
 }
 .order:hover{transform:translateY(-2px)}
 .row{
-  display:flex;
-  justify-content:space-between;
-  margin-top:6px;
-  font-size:14px;
+  display:flex;justify-content:space-between;
+  margin-top:6px;font-size:14px;
 }
 .order-id,.amount{font-weight:900}
-
 .status{
   display:inline-block;
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-  margin-top:8px;
+  padding:4px 10px;border-radius:999px;
+  font-size:12px;font-weight:900;margin-top:8px;
 }
 .pending{background:#fef3c7;color:#92400e}
 .processing{background:#dbeafe;color:#1e40af}
 .success{background:#dcfce7;color:#166534}
 .cancel{background:#fee2e2;color:#991b1b}
-
-.empty{
-  text-align:center;
-  color:#64748b;
-  margin-top:40px;
-  font-size:15px;
-}
-.error{
-  text-align:center;
-  color:#ef4444;
-  margin-top:30px;
-  font-size:15px;
-  font-weight:900;
-}
+.empty{text-align:center;color:#64748b;margin-top:40px}
+.error{text-align:center;color:#ef4444;margin-top:30px;font-weight:900}
 </style>
 </head>
 
@@ -161,64 +118,59 @@ body{
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
-
-/* ===== CONFIG ===== */
-const API = "https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
+/* ===== CONFIG (API ตัวเดียวทั้งเว็บ) ===== */
+const API = "https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
 const API_KEY = "SBTH-SECURE-2026";
 
 /* ===== AUTH ===== */
 const userId = localStorage.getItem('user_id');
-if(!userId){
-  location.href='login.html';
-  return;
-}
+if(!userId){ location.href='login.html'; }
 
 /* ===== DOM ===== */
 const box = document.getElementById('orders');
 const updateText = document.getElementById('updateText');
 const servicesCache = {};
+let loading = false;
 
 /* ===== MENU ===== */
-window.openMenu = ()=>{ sideMenu.classList.add('open'); menuOverlay.style.display='block'; }
-window.closeMenu = ()=>{ sideMenu.classList.remove('open'); menuOverlay.style.display='none'; }
-window.logout = ()=>{ localStorage.clear(); location.href='login.html'; }
+function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
+function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
+function logout(){localStorage.clear();location.href='login.html'}
+function goBack(){history.length>1?history.back():location.href='services.html'}
 
-/* ===== STATUS TEXT ===== */
 function statusText(s){
-  if(s==='pending') return '⏳ รอดำเนินการ';
-  if(s==='processing') return '🚀 กำลังดำเนินการ';
-  if(s==='success') return '✅ สำเร็จ';
-  if(s==='cancel') return '❌ ยกเลิก';
-  return s || '-';
+  if(s==='pending')return'⏳ รอดำเนินการ';
+  if(s==='processing')return'🚀 กำลังดำเนินการ';
+  if(s==='success')return'✅ สำเร็จ';
+  if(s==='cancel')return'❌ ยกเลิก';
+  return '-';
 }
 
-/* ===== LOAD SERVICES (cache ครั้งเดียว) ===== */
+/* ===== LOAD SERVICES (ครั้งเดียว) ===== */
 async function loadServices(){
   if(Object.keys(servicesCache).length) return;
   const res = await fetch(`${API}?action=services&api_key=${API_KEY}`);
   const list = await res.json();
   if(Array.isArray(list)){
-    list.forEach(s=>{
-      servicesCache[s.service_id] = s.display_name;
-    });
+    list.forEach(s=>servicesCache[s.service_id]=s.display_name);
   }
 }
 
 /* ===== LOAD ORDERS ===== */
 async function loadOrders(){
-  updateText.innerText = 'กำลังอัปเดต...';
-  box.innerHTML = '';
+  if(loading) return;
+  loading = true;
+  updateText.innerText='กำลังอัปเดต...';
+  box.innerHTML='';
 
   try{
     await loadServices();
-
-    const res = await fetch(`${API}?action=orders&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`);
+    const res = await fetch(`${API}?action=orders&api_key=${API_KEY}&user_id=${userId}&_=${Date.now()}`);
     const list = await res.json();
 
     if(!Array.isArray(list) || !list.length){
-      box.innerHTML = '<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
-      updateText.innerText = '—';
+      box.innerHTML='<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
+      updateText.innerText='—';
       return;
     }
 
@@ -229,7 +181,7 @@ async function loadOrders(){
             <div class="order-id">${o.order_id}</div>
             <div class="amount">${Number(o.final_total||0).toFixed(2)} บาท</div>
           </div>
-          <div class="row"><div>บริการ</div><div>${servicesCache[o.service_id] || o.service_id}</div></div>
+          <div class="row"><div>บริการ</div><div>${servicesCache[o.service_id]||o.service_id}</div></div>
           <div class="row"><div>จำนวน</div><div>${o.qty}</div></div>
           <div class="row"><div>วันที่</div><div>${new Date(o.datetime).toLocaleString()}</div></div>
           <div class="status ${o.status}">${statusText(o.status)}</div>
@@ -237,29 +189,25 @@ async function loadOrders(){
       `);
     });
 
-    updateText.innerText = 'อัปเดตล่าสุด: ' + new Date().toLocaleTimeString();
+    updateText.innerText='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
 
-  }catch(err){
-    console.error(err);
-    box.innerHTML = '<div class="error">โหลดข้อมูลไม่สำเร็จ</div>';
-    updateText.innerText = '—';
+  }catch(e){
+    console.error(e);
+    box.innerHTML='<div class="error">โหลดข้อมูลไม่สำเร็จ</div>';
+    updateText.innerText='—';
+  }finally{
+    loading = false;
   }
 }
 
-window.openDetail = (id)=>{
+function openDetail(id){
   localStorage.setItem('order_id',id);
   location.href='order-detail.html';
 }
 
-window.goBack = ()=>{
-  history.length > 1 ? history.back() : location.href='services.html';
-}
-
-/* ===== INIT ===== */
+/* INIT */
 loadOrders();
-setInterval(loadOrders, 10000);
-
-});
+setInterval(loadOrders, 15000);
 </script>
 
 </body>
