@@ -73,14 +73,30 @@ input{
 }
 
 .calc-box{
-  margin-top:10px;
+  margin-top:12px;
   padding:14px;
   border-radius:14px;
   background:#f0fdf4;
   color:#166534;
   font-weight:800;
-  line-height:1.6;
+  line-height:1.7;
   display:none;
+}
+
+.qr-box{
+  display:none;
+  text-align:center;
+  margin-top:14px;
+}
+.qr-box img{
+  width:220px;
+  border-radius:16px;
+  box-shadow:0 12px 30px rgba(0,0,0,.15);
+}
+.qr-note{
+  margin-top:8px;
+  font-size:14px;
+  font-weight:900;
 }
 
 .topup-btn{
@@ -93,7 +109,7 @@ input{
   color:#fff;
   background:linear-gradient(135deg,#22c55e,#16a34a);
   cursor:pointer;
-  margin-top:12px;
+  margin-top:14px;
 }
 
 .note{
@@ -144,19 +160,27 @@ input{
 
   <!-- แจ้งเติมเงิน -->
   <div class="card">
-    <h2>➕ แจ้งเติมเงิน</h2>
+    <h2>➕ เติมเงิน (พร้อมเพย์)</h2>
 
     <input type="number" id="amount" placeholder="กรอกยอดที่ต้องการเติม เช่น 50">
 
     <div class="calc-box" id="calcBox"></div>
 
+    <div class="qr-box" id="qrBox">
+      <img id="qrImg">
+      <div class="qr-note">
+        พร้อมเพย์ 099-130-1221<br>
+        สรวงสุดา ศรีสุวรรณ์
+      </div>
+    </div>
+
     <button class="topup-btn" onclick="requestTopup()">
-      แจ้งเติมเงิน
+      แจ้งเติมเงิน (โอนแล้ว)
     </button>
 
     <div class="note">
-      📌 กรุณาโอนตามยอดที่ระบบคำนวณให้<br>
-      📌 ส่งสลิป + <b>Username</b> ทาง LINE เท่านั้น<br>
+      📌 โอนตาม QR และยอดที่ระบบกำหนดเท่านั้น<br>
+      📌 ส่ง <b>สลิป + Username</b> ทาง LINE<br>
       ⏳ เครดิตจะเข้าเมื่อแอดมินตรวจสอบ
     </div>
   </div>
@@ -185,34 +209,44 @@ if(!userId) location.href='login.html';
 
 const input = document.getElementById('amount');
 const calcBox = document.getElementById('calcBox');
+const qrBox = document.getElementById('qrBox');
+const qrImg = document.getElementById('qrImg');
+
 let lockedAmount = null;
 
-/* ===== CALCULATE & LOCK AMOUNT ===== */
+/* ===== CALCULATE + PROMPTPAY QR ===== */
 input.addEventListener('input',()=>{
   const base = Number(input.value);
   if(!base || base < 10){
     calcBox.style.display='none';
+    qrBox.style.display='none';
     lockedAmount=null;
     return;
   }
 
   const key = 'topup_lock_'+base;
   let final = localStorage.getItem(key);
-
   if(!final){
     const satang = Math.floor(Math.random()*99)+1;
     final = (base + satang/100).toFixed(2);
     localStorage.setItem(key, final);
   }
 
-  lockedAmount = Number(final);
+  lockedAmount = final;
 
   calcBox.style.display='block';
   calcBox.innerHTML = `
-    👉 กรุณาโอน <span style="font-size:20px">${final}</span> บาท<br>
-    🔒 ยอดนี้ถูกล็อคแล้ว (รีเฟรชไม่เปลี่ยน)<br>
-    📤 ส่งสลิป + Username ทาง LINE
+    👉 โอนยอด <span style="font-size:20px">${final}</span> บาท<br>
+    🔒 ยอดนี้ถูกล็อค (รีเฟรชไม่เปลี่ยน)
   `;
+
+  /* PromptPay QR (เบอร์ + amount) */
+  const phone = '0991301221';
+  const qrUrl =
+    `https://promptpay.io/${phone}/${final}.png`;
+
+  qrImg.src = qrUrl;
+  qrBox.style.display='block';
 });
 
 /* ===== SEND TOPUP (PENDING) ===== */
@@ -228,15 +262,16 @@ function requestTopup(){
     body: JSON.stringify({
       action:'topup',
       user_id:userId,
-      amount:lockedAmount,
-      method:'manual',
+      amount:Number(lockedAmount),
+      method:'promptpay',
       ref:'USER_NOTIFY',
       note:'PENDING'
     })
   }).then(()=>{
-    alert('แจ้งเติมเงินเรียบร้อย รอแอดมินตรวจสอบ');
+    alert('แจ้งเติมเงินแล้ว กรุณาส่งสลิปทาง LINE');
     input.value='';
     calcBox.style.display='none';
+    qrBox.style.display='none';
     lockedAmount=null;
     loadWallet();
   });
