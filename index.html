@@ -2,131 +2,134 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SocialBoostTH</title>
+<title>Socialboost</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- GOOGLE FONT -->
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box}
-html,body{
+body{
   margin:0;
-  height:100%;
-  font-family:'Sora',system-ui;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   background:
-    radial-gradient(1000px 500px at top,#2a0d52,transparent),
-    linear-gradient(180deg,#0b0216,#14032a);
+    radial-gradient(800px 400px at top,#fde7f3,transparent),
+    linear-gradient(180deg,#0f172a,#020617);
+  color:#fff;
+  font-family:'Montserrat',system-ui;
   overflow:hidden;
 }
 
-/* CENTER */
-.wrapper{
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* MAIN */
+.wrap{
+  text-align:center;
+  animation:fadeIn .9s ease forwards;
 }
 
-/* LOGO TEXT */
 .logo{
-  font-size:52px;
-  font-weight:800;
+  font-size:54px;
+  font-weight:900;
   letter-spacing:1px;
-  background:linear-gradient(135deg,#38bdf8,#8b5cf6,#ec4899);
+  background:linear-gradient(90deg,#38bdf8,#8b5cf6,#ec4899);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  animation:float 2.4s ease-in-out infinite;
   text-shadow:
-    0 4px 18px rgba(139,92,246,.55),
-    0 18px 50px rgba(236,72,153,.45);
-  animation:
-    reveal 1.2s ease-out forwards,
-    float 3.2s ease-in-out infinite;
+    0 0 40px rgba(139,92,246,.6);
 }
 
-/* SUB */
 .sub{
   margin-top:10px;
-  text-align:center;
+  font-size:16px;
+  opacity:.85;
+  animation:fadeUp 1.2s ease forwards;
+}
+
+/* TAP */
+.tap{
+  margin-top:28px;
   font-size:14px;
-  letter-spacing:.3px;
-  color:rgba(255,255,255,.7);
-  opacity:0;
-  animation: fadeIn 1s ease forwards;
-  animation-delay:1s;
+  opacity:.9;
+  animation:pulse 1.5s infinite;
+  cursor:pointer;
 }
 
-/* EFFECTS */
-@keyframes reveal{
-  from{
-    opacity:0;
-    filter:blur(14px);
-    transform:scale(.94);
-  }
-  to{
-    opacity:1;
-    filter:blur(0);
-    transform:scale(1);
-  }
+/* LOADING */
+.loader{
+  margin:26px auto 0;
+  width:220px;
+  height:6px;
+  background:rgba(255,255,255,.15);
+  border-radius:999px;
+  overflow:hidden;
+  display:none;
+}
+.loader div{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,#38bdf8,#8b5cf6,#ec4899);
+  animation:load 2.6s linear forwards;
 }
 
+/* ANIMATIONS */
 @keyframes float{
-  0%{transform:translateY(0)}
-  50%{transform:translateY(-12px)}
-  100%{transform:translateY(0)}
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
 }
-
+@keyframes pulse{
+  0%{opacity:.4}
+  50%{opacity:1}
+  100%{opacity:.4}
+}
 @keyframes fadeIn{
   from{opacity:0}
   to{opacity:1}
 }
-
-/* FADE OUT */
-.fade-out{
-  animation: exit .9s ease forwards;
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(12px)}
+  to{opacity:1;transform:none}
 }
-
-@keyframes exit{
-  to{
-    opacity:0;
-    transform:scale(1.03);
-    filter:blur(20px);
-  }
+@keyframes load{
+  to{width:100%}
 }
 </style>
 </head>
 
 <body>
 
-<div class="wrapper">
-  <div>
-    <div class="logo" id="logo">SocialBoostTH</div>
-    <div class="sub">Boost • Grow • Viral</div>
+<div class="wrap" onclick="start()">
+  <div class="logo">Socialboost</div>
+  <div class="sub">บริการโซเชียล ราคาถูก ระบบอัตโนมัติ</div>
+  <div class="tap">🔊 แตะเพื่อเริ่มเข้าสู่ระบบ</div>
+
+  <div class="loader" id="loader">
+    <div></div>
   </div>
 </div>
 
 <!-- SOUND -->
-<audio id="uiSound" preload="auto">
-  <source src="https://assets.mixkit.co/sfx/preview/mixkit-soft-ui-confirmation-2868.mp3" type="audio/mp3">
+<audio id="sound" preload="auto">
+  <!-- 🔊 ใส่ไฟล์เสียงของคุณ -->
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-const sound=document.getElementById('uiSound');
-sound.volume=0.22;
+function start(){
+  const audio=document.getElementById('sound');
+  const loader=document.getElementById('loader');
 
-/* เล่นเสียงครั้งเดียว */
-setTimeout(()=>{
-  sound.play().catch(()=>{});
-},600);
+  audio.volume=0.35;
+  audio.play().catch(()=>{});
+  loader.style.display='block';
 
-/* พาเข้าเว็บหลัก */
-setTimeout(()=>{
-  document.body.classList.add('fade-out');
-},2600);
-
-setTimeout(()=>{
-  window.location.href='services.html';
-},3400);
+  setTimeout(()=>{
+    location.href='login.html';
+  },2600);
+}
 </script>
 
 </body>
