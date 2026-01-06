@@ -1,212 +1,55 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<title>เลือกบริการ | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-:root{
-  --pink:#ec4899;
-  --purple:#8b5cf6;
-  --blue:#38bdf8;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui;
-  background:
-    radial-gradient(1000px 420px at top,#fde7f3,transparent),
-    linear-gradient(180deg,#eef6ff,#ffffff);
-}
-
-/* HEADER */
-.header{
-  padding:12px 16px;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-  gap:12px;
-  background:#fff;
-  position:sticky;
-  top:0;
-  z-index:50;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
-}
-.left{display:flex;gap:10px}
-.center{font-weight:900;font-size:17px}
-.right{display:flex;gap:10px;align-items:center}
-.logo{height:32px}
-.menu-btn,.refresh-btn{
-  border:none;
-  padding:6px 14px;
-  border-radius:999px;
-  background:#f1f5f9;
-  font-weight:800;
-  cursor:pointer;
-}
-.wallet{
-  font-size:13px;
-  background:#f8fafc;
-  padding:6px 14px;
-  border-radius:999px;
-  font-weight:900;
-}
-
-/* MENU */
-.menu-overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.35);
-  display:none; z-index:99;
-}
-.side-menu{
-  position:fixed; right:-260px; top:0;
-  width:260px; height:100%;
-  background:#fff; padding:20px;
-  z-index:100; transition:.3s;
-  box-shadow:-10px 0 30px rgba(0,0,0,.25);
-}
-.side-menu.open{right:0}
-.side-menu h3{margin:0 0 16px}
-.side-menu a{
-  display:block;
-  padding:12px 0;
-  font-weight:800;
-  text-decoration:none;
-  color:#111827;
-  border-bottom:1px solid #e5e7eb;
-}
-.side-menu a.logout{color:#ef4444;border:none}
-
-/* CONTENT */
-.container{
-  max-width:720px;
-  margin:0 auto;
-  padding:18px 18px 140px;
-}
-.title{
-  font-size:26px;
-  font-weight:900;
-  margin:18px 0 6px;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.subtitle{
-  font-size:14px;
-  color:#94a3b8;
-  margin-bottom:20px;
-}
-
-/* SERVICE */
-.service{
-  background:#fff;
-  border-radius:22px;
-  padding:54px 20px 18px;
-  margin-bottom:16px;
-  box-shadow:0 20px 45px rgba(139,92,246,.18);
-  position:relative;
-}
-.service-name{font-size:17px;font-weight:900}
-.service-desc{font-size:13px;color:#64748b;margin-top:4px}
-.badge{
-  position:absolute; top:16px; right:16px;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-  color:#fff;
-}
-.badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899);}
-.badge.recommended{background:linear-gradient(90deg,#38bdf8,#8b5cf6);}
-.badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
-.bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  margin-top:16px;
-}
-.price{font-weight:900}
-.price span{display:block;font-size:13px;color:#64748b}
-.btn{
-  padding:10px 18px;
-  border-radius:14px;
-  border:none;
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;
-  font-weight:900;
-  cursor:pointer;
-}
-</style>
-</head>
-
-<body>
-
-<header class="header">
-  <div class="left">
-    <button class="menu-btn" onclick="openMenu()">☰</button>
-    <button class="refresh-btn" onclick="reloadAll()">🔄</button>
-  </div>
-  <div class="center">SocialBoostTH</div>
-  <div class="right">
-    <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
-    <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
-  </div>
-</header>
-
-<div class="container">
-  <div class="title">เลือกบริการ</div>
-  <div class="subtitle">เลือกแพ็กเกจที่เหมาะกับช่องของคุณ ระบบอัตโนมัติ 100%</div>
-  <div id="services"></div>
-</div>
-
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
-<div class="side-menu" id="sideMenu">
-  <h3>เมนู</h3>
-  <a href="services.html">📦 บริการ</a>
-  <a href="orders.html">🧾 คำสั่งซื้อ</a>
-  <a href="topup.html">💰 เติมเงิน</a>
-  <a href="#" class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
-</div>
-
 <script>
-/* CONFIG – deploy ล่าสุด */
-const API="https://script.google.com/macros/s/AKfycbz1hXWmSQMPuZH4Ph2PcyXVgQ_hDtC5QNsLFuiSnEeTSoO83iLNgMKoxbut1Nob56iq-w/exec";
+/* CONFIG – ใช้ script ตัวล่าสุดตัวเดียว */
+const API="https://script.google.com/macros/s/AKfycbxd3FO7ZHfOHDGDgVQNI1Uf3Owtmh8wXE1-00O2UimH6tA8k83PkqKItfo0_q-22sMeuQ/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId=localStorage.getItem('user_id');
+const userId = localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
-const creditEl=document.getElementById('credit');
-const box=document.getElementById('services');
+const creditEl = document.getElementById('credit');
+const box = document.getElementById('services');
 
 /* MENU */
-function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.href='login.html'}
+function openMenu(){
+  sideMenu.classList.add('open');
+  menuOverlay.style.display='block';
+}
+function closeMenu(){
+  sideMenu.classList.remove('open');
+  menuOverlay.style.display='none';
+}
+function logout(){
+  localStorage.clear();
+  location.href='login.html';
+}
 
-/* LOAD CREDIT – จาก wallet (ถูกต้องกับ script) */
+/* ✅ LOAD CREDIT – แหล่งเดียวที่ถูกต้อง */
 function loadCredit(){
-  fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}`)
+  fetch(`${API}?action=getUser&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
     .then(r=>r.json())
-    .then(w=>{
-      if(!Array.isArray(w)) return;
-      const credit=w.reduce((s,x)=>s+Number(x.amount||0),0);
-      creditEl.innerText=credit.toFixed(2);
-      localStorage.setItem('credit',credit);
+    .then(u=>{
+      if(u.error) {
+        creditEl.innerText = '0.00';
+        return;
+      }
+      creditEl.innerText = Number(u.credit).toFixed(2);
+      localStorage.setItem('credit', u.credit);
+    })
+    .catch(()=>{
+      creditEl.innerText = '0.00';
     });
 }
 
 /* LOAD SERVICES */
 function loadServices(){
-  fetch(`${API}?action=services&api_key=${API_KEY}`)
+  fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
     .then(r=>r.json())
     .then(list=>{
       box.innerHTML='';
       if(!Array.isArray(list)) return;
 
       list.forEach(s=>{
-        box.innerHTML+=`
+        box.innerHTML += `
           <div class="service">
             ${s.badge_status==='on'
               ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`
@@ -221,6 +64,7 @@ function loadServices(){
                 <span>/ 100 ${s.unit}</span>
                 <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
               </div>
+
               <button class="btn" onclick="selectService('${s.service_id}')">
                 เลือกแพ็กเกจ
               </button>
@@ -232,7 +76,7 @@ function loadServices(){
 }
 
 function selectService(id){
-  localStorage.setItem('service_id',id);
+  localStorage.setItem('service_id', id);
   location.href='order.html';
 }
 
@@ -241,8 +85,6 @@ function reloadAll(){
   loadServices();
 }
 
+/* INIT */
 reloadAll();
 </script>
-
-</body>
-</html>
