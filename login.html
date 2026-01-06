@@ -179,16 +179,17 @@ label{
 </div>
 
 <script>
-/* ========= CONFIG ========= */
-const API = "https://script.google.com/macros/s/AKfycbzPwjgsZpvTviaOuWu_FWAD9yw1-64MsT49jO9muE3EmKkAFeX4zQYz1jsKZBK6qIMfgA/exec";
+/* ===== CONFIG (ตัวจริงที่ยืนยันแล้ว) ===== */
+const API = "https://script.google.com/macros/s/AKfycby9v2qEZUQ8khjh5h0rTx0uvc2XXUDm4WBQ1WOQKvhAlUF6MYXflVG45ulNLDy-V542lg/exec";
+const API_KEY = "SBTH-SECURE-2026";
 
-/* ========= UI ========= */
+/* ===== UI ===== */
 function togglePassword(){
   const p=document.getElementById('password');
   p.type = p.type==='password'?'text':'password';
 }
 
-/* ========= LOGIN ========= */
+/* ===== LOGIN ===== */
 function login(){
   const btn=document.getElementById('loginBtn');
   const user=document.getElementById('username').value.trim();
@@ -204,27 +205,34 @@ function login(){
   btn.disabled=true;
   btn.textContent='กำลังเข้าสู่ระบบ...';
 
-  fetch(`${API}?action=login&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if(!res.success){
-        err.textContent=res.message||'เข้าสู่ระบบไม่สำเร็จ';
-        btn.disabled=false;
-        btn.textContent='เข้าสู่ระบบ';
-        return;
-      }
-
-      localStorage.setItem('user_id',res.user.user_id);
-      localStorage.setItem('username',res.user.username);
-      localStorage.setItem('credit',res.user.credit);
-
-      location.href='services.html';
-    })
-    .catch(()=>{
-      err.textContent='ไม่สามารถเชื่อมต่อระบบได้';
+  fetch(
+    `${API}?action=login`
+    + `&api_key=${API_KEY}`
+    + `&username=${encodeURIComponent(user)}`
+    + `&password=${encodeURIComponent(pass)}`
+  )
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.success){
+      err.textContent='ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
       btn.disabled=false;
       btn.textContent='เข้าสู่ระบบ';
-    });
+      return;
+    }
+
+    /* เก็บข้อมูลหลัก */
+    localStorage.setItem('user_id',res.user.user_id);
+    localStorage.setItem('username',res.user.username);
+    localStorage.setItem('credit',res.user.credit);
+
+    /* เข้าใช้งาน */
+    location.href='services.html';
+  })
+  .catch(()=>{
+    err.textContent='ไม่สามารถเชื่อมต่อระบบได้';
+    btn.disabled=false;
+    btn.textContent='เข้าสู่ระบบ';
+  });
 }
 
 /* Enter key */
