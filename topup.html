@@ -99,23 +99,52 @@ input{
   font-weight:900;
 }
 
-.topup-btn{
-  width:100%;
+/* ===== BUTTON GROUP ===== */
+.btn-row{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
+
+.line-btn{
+  flex:1;
   padding:16px;
   border:none;
   border-radius:999px;
-  font-size:18px;
+  font-size:16px;
   font-weight:900;
   color:#fff;
-  background:linear-gradient(135deg,#22c55e,#16a34a);
+  background:#22c55e;
   cursor:pointer;
+}
+
+.confirm-btn{
+  flex:1;
+  padding:16px;
+  border:none;
+  border-radius:999px;
+  font-size:16px;
+  font-weight:900;
+  color:#fff;
+  background:linear-gradient(135deg,#38bdf8,#8b5cf6);
+  cursor:pointer;
+}
+
+.confirmed{
+  background:#e0f2fe;
+  color:#0369a1;
+  font-weight:900;
+  padding:14px;
+  border-radius:14px;
   margin-top:14px;
+  text-align:center;
+  display:none;
 }
 
 .note{
   font-size:13px;
   color:#64748b;
-  margin-top:8px;
+  margin-top:10px;
 }
 
 .table{
@@ -158,7 +187,6 @@ input{
 
 <div class="container">
 
-  <!-- แจ้งเติมเงิน -->
   <div class="card">
     <h2>➕ เติมเงิน (พร้อมเพย์)</h2>
 
@@ -174,18 +202,29 @@ input{
       </div>
     </div>
 
-    <button class="topup-btn" onclick="requestTopup()">
-      แจ้งเติมเงิน (โอนแล้ว)
-    </button>
+    <!-- 🔥 ปุ่มหลัก -->
+    <div class="btn-row">
+      <button class="line-btn"
+        onclick="window.open('https://line.me/R/ti/p/@geg4960w','_blank')">
+        📤 แจ้งสลิปทาง LINE
+      </button>
+
+      <button class="confirm-btn" onclick="markSent()">
+        ✅ ยืนยันว่าแจ้งแล้ว
+      </button>
+    </div>
+
+    <div class="confirmed" id="confirmedBox">
+      📤 ส่งสลิปเรียบร้อยแล้ว<br>
+      ⏳ กำลังรอแอดมินตรวจสอบ
+    </div>
 
     <div class="note">
-      📌 โอนตาม QR และยอดที่ระบบกำหนดเท่านั้น<br>
-      📌 ส่ง <b>สลิป + Username</b> ทาง LINE<br>
-      ⏳ เครดิตจะเข้าเมื่อแอดมินตรวจสอบ
+      📌 ส่งสลิป + <b>Username</b> ทาง LINE เท่านั้น<br>
+      ❗ เครดิตจะเข้าเมื่อแอดมินยืนยัน
     </div>
   </div>
 
-  <!-- ประวัติ -->
   <div class="card">
     <h2>💰 ประวัติการเติมเงิน</h2>
     <table class="table">
@@ -203,109 +242,45 @@ input{
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
-const userId = localStorage.getItem('user_id');
+const API="https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
+const userId=localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
-const input = document.getElementById('amount');
-const calcBox = document.getElementById('calcBox');
-const qrBox = document.getElementById('qrBox');
-const qrImg = document.getElementById('qrImg');
+const input=document.getElementById('amount');
+const calcBox=document.getElementById('calcBox');
+const qrBox=document.getElementById('qrBox');
+const qrImg=document.getElementById('qrImg');
+const confirmedBox=document.getElementById('confirmedBox');
 
-let lockedAmount = null;
+let lockedAmount=null;
 
-/* ===== CALCULATE + PROMPTPAY QR ===== */
 input.addEventListener('input',()=>{
-  const base = Number(input.value);
-  if(!base || base < 10){
+  const base=Number(input.value);
+  if(!base || base<10){
     calcBox.style.display='none';
     qrBox.style.display='none';
     lockedAmount=null;
     return;
   }
 
-  const key = 'topup_lock_'+base;
-  let final = localStorage.getItem(key);
-  if(!final){
-    const satang = Math.floor(Math.random()*99)+1;
-    final = (base + satang/100).toFixed(2);
-    localStorage.setItem(key, final);
-  }
-
-  lockedAmount = final;
+  const satang=Math.floor(Math.random()*99)+1;
+  lockedAmount=(base+satang/100).toFixed(2);
 
   calcBox.style.display='block';
-  calcBox.innerHTML = `
-    👉 โอนยอด <span style="font-size:20px">${final}</span> บาท<br>
-    🔒 ยอดนี้ถูกล็อค (รีเฟรชไม่เปลี่ยน)
-  `;
+  calcBox.innerHTML=`👉 โอน ${lockedAmount} บาท`;
 
-  /* PromptPay QR (เบอร์ + amount) */
-  const phone = '0991301221';
-  const qrUrl =
-    `https://promptpay.io/${phone}/${final}.png`;
-
-  qrImg.src = qrUrl;
+  qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
   qrBox.style.display='block';
+  confirmedBox.style.display='none';
 });
 
-/* ===== SEND TOPUP (PENDING) ===== */
-function requestTopup(){
+function markSent(){
   if(!lockedAmount){
     alert('กรุณากรอกจำนวนเงินก่อน');
     return;
   }
-
-  fetch(API,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      action:'topup',
-      user_id:userId,
-      amount:Number(lockedAmount),
-      method:'promptpay',
-      ref:'USER_NOTIFY',
-      note:'PENDING'
-    })
-  }).then(()=>{
-    alert('แจ้งเติมเงินแล้ว กรุณาส่งสลิปทาง LINE');
-    input.value='';
-    calcBox.style.display='none';
-    qrBox.style.display='none';
-    lockedAmount=null;
-    loadWallet();
-  });
+  confirmedBox.style.display='block';
 }
-
-/* ===== LOAD WALLET ===== */
-function loadWallet(){
-  fetch(API+'?action=wallet&user_id='+userId)
-    .then(r=>r.json())
-    .then(list=>{
-      const box=document.getElementById('wallet');
-      box.innerHTML='';
-      if(!list.length){
-        box.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
-        return;
-      }
-
-      list.reverse().forEach(w=>{
-        const success=(w.note||'').includes('CONFIRMED');
-        box.innerHTML+=`
-          <tr>
-            <td>${new Date(w.datetime).toLocaleString()}</td>
-            <td>${Number(w.amount).toFixed(2)}</td>
-            <td>
-              <span class="status ${success?'success':'pending'}">
-                ${success?'✅ สำเร็จ':'⏳ รอตรวจสอบ'}
-              </span>
-            </td>
-          </tr>
-        `;
-      });
-    });
-}
-loadWallet();
 </script>
 
 </body>
