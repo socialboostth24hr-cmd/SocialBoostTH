@@ -28,7 +28,6 @@ body{
   display:grid;
   grid-template-columns:auto 1fr auto;
   align-items:center;
-  gap:12px;
   background:#fff;
   position:sticky;
   top:0;
@@ -36,12 +35,7 @@ body{
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 .left,.right{display:flex;align-items:center;gap:10px}
-.center{
-  text-align:center;
-  font-weight:900;
-  font-size:16px;
-  letter-spacing:.3px;
-}
+.center{font-weight:900;font-size:16px}
 .logo{height:32px}
 .menu-btn,.back-btn{
   border:none;
@@ -49,7 +43,6 @@ body{
   border-radius:999px;
   background:#f1f5f9;
   font-weight:800;
-  cursor:pointer;
 }
 .wallet{
   font-size:13px;
@@ -58,30 +51,6 @@ body{
   border-radius:999px;
   font-weight:900;
 }
-
-/* ===== MENU ===== */
-.menu-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.35);
-  display:none;z-index:99;
-}
-.side-menu{
-  position:fixed;right:-260px;top:0;
-  width:260px;height:100%;
-  background:#fff;padding:20px;
-  z-index:100;transition:.3s;
-  box-shadow:-10px 0 30px rgba(0,0,0,.2);
-}
-.side-menu.open{right:0}
-.side-menu a{
-  display:block;
-  padding:12px 0;
-  font-weight:800;
-  color:#111827;
-  text-decoration:none;
-  border-bottom:1px solid #e5e7eb;
-}
-.side-menu a.logout{color:#ef4444;border:none}
 
 /* ===== CONTENT ===== */
 .container{
@@ -96,19 +65,9 @@ body{
   margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
 }
+
 .title{font-size:22px;font-weight:900}
 .desc{font-size:14px;color:#64748b}
-
-.badge-pop{
-  display:none;
-  margin-top:8px;
-  background:linear-gradient(90deg,#fde68a,#f59e0b);
-  color:#92400e;
-  font-size:12px;
-  font-weight:900;
-  padding:4px 12px;
-  border-radius:999px;
-}
 
 .field{margin-top:14px}
 label{font-weight:800}
@@ -135,10 +94,10 @@ input,textarea{
 }
 
 .price-box{display:flex;justify-content:space-between;margin-top:10px}
-.discount{color:#ef4444}
+.discount{color:var(--red)}
 .total{font-size:20px;font-weight:900;margin-top:14px}
 .save-text{margin-top:8px;font-weight:900;color:var(--green)}
-.error{color:#ef4444;margin-top:10px;font-weight:900}
+.error{color:var(--red);margin-top:10px;font-weight:900}
 
 /* BUY BUTTON */
 .buy-btn{
@@ -154,7 +113,6 @@ input,textarea{
   color:#fff;
   font-size:18px;
   font-weight:900;
-  cursor:pointer;
 }
 .buy-btn:disabled{opacity:.6}
 </style>
@@ -169,7 +127,7 @@ input,textarea{
   </div>
   <div class="center">SocialBoostTH</div>
   <div class="right">
-    <div class="wallet">เครดิต: <span id="credit">0</span> บาท</div>
+    <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
     <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
   </div>
 </header>
@@ -179,37 +137,21 @@ input,textarea{
   <div class="card">
     <div class="title" id="serviceName">กำลังโหลด…</div>
     <div class="desc" id="serviceDesc"></div>
-    <div class="badge-pop" id="popularBadge">⭐ คนส่วนใหญ่สั่งระดับนี้</div>
   </div>
 
   <div class="card">
-    <div class="field">
-      <label>จำนวน</label>
-      <input type="number" id="qty">
-      <div class="error" id="minText"></div>
-    </div>
-
+    <label>จำนวน</label>
+    <input type="number" id="qty">
     <div class="progress"><div id="progressBar"></div></div>
 
-    <div class="field">
-      <label>ลิงก์ TikTok</label>
-      <textarea id="link" placeholder="https://www.tiktok.com/@username"></textarea>
-    </div>
+    <label>ลิงก์ TikTok</label>
+    <textarea id="link"></textarea>
 
-    <div class="price-box">
-      <div>ราคาปกติ</div>
-      <div><b id="basePrice">0</b> บาท</div>
-    </div>
-
-    <div class="price-box discount">
-      <div>ส่วนลด</div>
-      <div><b id="discount">0%</b></div>
-    </div>
+    <div class="price-box"><div>ราคาปกติ</div><b id="basePrice">0</b></div>
+    <div class="price-box discount"><div>ส่วนลด</div><b id="discount">0%</b></div>
 
     <div class="save-text" id="saveText"></div>
-
-    <div class="total">รวมทั้งหมด: <span id="total">0</span> บาท</div>
-
+    <div class="total">รวม: <span id="total">0</span> บาท</div>
     <div class="error" id="error"></div>
   </div>
 
@@ -217,16 +159,8 @@ input,textarea{
 
 <button class="buy-btn" id="buyBtn">ยืนยันสั่งซื้อ</button>
 
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
-<div class="side-menu" id="sideMenu">
-  <a href="services.html">📦 บริการ</a>
-  <a href="orders.html">🧾 คำสั่งซื้อ</a>
-  <a href="topup.html">💰 เติมเงิน</a>
-  <a href="#" class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
-</div>
-
 <script>
-const API="https://script.google.com/macros/s/AKfycbxzt4nj3NhnS-P6K4b_VHGeclJYS1ZWyv04BtPe0IpKVTg60yaLmO7oAFKwD1wfCE9-qg/exec";
+const API="https://script.google.com/macros/s/AKfycby9v2qEZUQ8khjh5h0rTx0uvc2XXUDm4WBQ1WOQKvhAlUF6MYXflVG45ulNLDy-V542lg/exec";
 const API_KEY="SBTH-SECURE-2026";
 
 const userId=localStorage.getItem('user_id');
@@ -234,25 +168,17 @@ const serviceId=localStorage.getItem('service_id');
 if(!userId) location.href='login.html';
 if(!serviceId) location.href='services.html';
 
-const creditEl=document.getElementById('credit');
 const qty=document.getElementById('qty');
+const creditEl=document.getElementById('credit');
 const progressBar=document.getElementById('progressBar');
-const popularBadge=document.getElementById('popularBadge');
 
 let service=null,discounts=[],finalTotal=0;
 
-/* MENU */
-function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.href='login.html'}
-
 /* LOAD CREDIT */
-fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}`)
+fetch(`${API}?action=getUser&user_id=${userId}&api_key=${API_KEY}`)
 .then(r=>r.json())
-.then(w=>{
-  const credit=w.reduce((s,x)=>s+Number(x.amount),0);
-  localStorage.setItem('credit',credit);
-  creditEl.innerText=credit.toFixed(2);
+.then(u=>{
+  creditEl.innerText=Number(u.credit).toFixed(2);
 });
 
 /* LOAD SERVICE */
@@ -265,7 +191,6 @@ Promise.all([
  serviceName.innerText=service.display_name;
  serviceDesc.innerText=service.short_desc||'';
  qty.value=service.min_qty;
- minText.innerText=`ขั้นต่ำ ${service.min_qty}`;
  calc();
 });
 
@@ -273,17 +198,14 @@ qty.oninput=calc;
 
 function calc(){
  const q=Number(qty.value);
- if(q<service.min_qty){error.innerText='ต่ำกว่าขั้นต่ำ';return}
- error.innerText='';
  const base=(q*service.price_per_100)/100;
  const d=discounts.find(x=>q>=x.min_qty&&q<=x.max_qty);
- finalTotal=d? q*d.price:base;
+ finalTotal=d? q*Number(d.price):base;
  basePrice.innerText=base.toFixed(2);
  discount.innerText=(d?.discount_percent||0)+'%';
  total.innerText=finalTotal.toFixed(2);
  saveText.innerText=base>finalTotal?`🔥 ประหยัด ${(base-finalTotal).toFixed(2)} บาท`:'';
- progressBar.style.width=Math.min(100,(q/(d?d.min_qty:q))*100)+'%';
- popularBadge.style.display=d?.is_popular==='on'?'inline-block':'none';
+ progressBar.style.width=Math.min(100,(q/service.min_qty)*100)+'%';
 }
 
 buyBtn.onclick=()=>{
@@ -307,8 +229,10 @@ buyBtn.onclick=()=>{
   if(!res.success) throw res;
   location.href='orders.html';
  })
- .catch(()=>{
-  error.innerText='สั่งซื้อไม่สำเร็จ';
+ .catch(e=>{
+  error.innerText=e.message==='NO_CREDIT'
+    ? 'เครดิตไม่เพียงพอ'
+    : 'สั่งซื้อไม่สำเร็จ';
   buyBtn.disabled=false;
  });
 };
