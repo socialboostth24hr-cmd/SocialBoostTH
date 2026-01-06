@@ -18,29 +18,54 @@ body{
   margin:0;
   font-family:system-ui,-apple-system;
   background:
-    radial-gradient(800px 320px at top,#fde7f3,transparent),
+    radial-gradient(900px 360px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
   height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
+  overflow:hidden;
 }
 
+/* ===== FLOAT BACKGROUND ===== */
+.bg-glow{
+  position:absolute;
+  width:420px;
+  height:420px;
+  background:radial-gradient(circle,var(--purple),transparent 70%);
+  opacity:.18;
+  filter:blur(60px);
+  animation:float 8s ease-in-out infinite;
+}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-35px)}
+}
+
+/* ===== CARD ===== */
 .card{
   width:100%;
   max-width:420px;
   background:#fff;
   border-radius:28px;
-  padding:34px 30px 30px;
+  padding:36px 30px 30px;
   box-shadow:
-    0 25px 60px rgba(139,92,246,.25),
-    0 8px 20px rgba(56,189,248,.15);
+    0 35px 80px rgba(139,92,246,.28),
+    0 10px 28px rgba(56,189,248,.15);
+  position:relative;
+  animation:pop .7s cubic-bezier(.2,1.6,.4,1);
+  transition:transform .2s ease;
+}
+@keyframes pop{
+  from{transform:scale(.88);opacity:0}
+  to{transform:scale(1);opacity:1}
 }
 
 .logo{
-  width:90px;
+  width:86px;
   display:block;
   margin:0 auto 16px;
+  filter:drop-shadow(0 12px 20px rgba(236,72,153,.35));
 }
 
 h1{
@@ -56,32 +81,30 @@ h1{
   text-align:center;
   color:#94a3b8;
   font-size:14px;
-  margin:6px 0 24px;
+  margin:6px 0 26px;
 }
 
 label{
   font-size:14px;
-  font-weight:600;
-  margin-bottom:6px;
-  display:block;
+  font-weight:700;
   color:#475569;
 }
 
-.field{margin-bottom:18px}
+.field{margin-bottom:20px}
 
+/* ===== INPUT ===== */
 .input{
   display:flex;
   align-items:center;
   border:1px solid #e5e7eb;
   border-radius:18px;
   padding:14px 16px;
+  transition:.25s;
 }
-
 .input:focus-within{
   border-color:var(--purple);
-  box-shadow:0 0 0 4px rgba(139,92,246,.15);
+  box-shadow:0 0 0 6px rgba(139,92,246,.18);
 }
-
 .input input{
   border:none;
   outline:none;
@@ -92,35 +115,57 @@ label{
 .toggle{
   border:none;
   background:#f1f5f9;
-  padding:6px 12px;
+  padding:6px 14px;
   border-radius:999px;
   font-size:12px;
   cursor:pointer;
-  font-weight:700;
+  font-weight:800;
 }
 
+/* ===== BUTTON ===== */
 .login-btn{
   width:100%;
   border:none;
   border-radius:22px;
-  padding:16px;
+  padding:17px;
   font-size:16px;
-  font-weight:800;
+  font-weight:900;
   color:#fff;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
   cursor:pointer;
   box-shadow:0 18px 45px rgba(139,92,246,.45);
+  position:relative;
+  overflow:hidden;
+  transition:.25s;
+}
+.login-btn:hover{
+  transform:translateY(-1px);
+}
+.login-btn:disabled{
+  opacity:.7;
 }
 
-.login-btn:disabled{
-  opacity:.6;
-  cursor:not-allowed;
+/* ripple */
+.login-btn::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at center,rgba(255,255,255,.4),transparent 55%);
+  opacity:0;
+}
+.login-btn:active::after{
+  opacity:1;
+  animation:ripple .6s ease-out;
+}
+@keyframes ripple{
+  from{opacity:.8}
+  to{opacity:0}
 }
 
 .or{
   text-align:center;
   color:#cbd5e1;
-  margin:18px 0 12px;
+  margin:18px 0 14px;
   font-size:13px;
 }
 
@@ -131,24 +176,34 @@ label{
   background:linear-gradient(180deg,#22c55e,#16a34a);
   color:#fff;
   border-radius:22px;
-  font-weight:800;
+  font-weight:900;
   text-decoration:none;
   box-shadow:0 16px 36px rgba(34,197,94,.35);
+  transition:.25s;
 }
+.line-btn:hover{transform:translateY(-2px)}
 
 .error{
   text-align:center;
   color:#ef4444;
   margin-top:14px;
   font-size:14px;
-  font-weight:700;
+  font-weight:800;
+  animation:shake .35s linear;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-4px)}
+  75%{transform:translateX(4px)}
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="bg-glow"></div>
+
+<div class="card" id="card">
   <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
 
   <h1>เข้าสู่ระบบ</h1>
@@ -157,15 +212,15 @@ label{
   <div class="field">
     <label>ชื่อผู้ใช้งาน</label>
     <div class="input">
-      <input id="username" placeholder="username" autocomplete="username">
+      <input id="username" placeholder="username">
     </div>
   </div>
 
   <div class="field">
     <label>รหัสผ่าน</label>
     <div class="input">
-      <input type="password" id="password" placeholder="••••••" autocomplete="current-password">
-      <button class="toggle" type="button" id="toggleBtn">แสดง</button>
+      <input type="password" id="password" placeholder="••••••">
+      <button class="toggle" id="toggleBtn">แสดง</button>
     </div>
   </div>
 
@@ -181,82 +236,20 @@ label{
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const API = "https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
-const API_KEY = "SBTH-SECURE-2026";
-
-/* ================= AUTO REDIRECT ================= */
-if(localStorage.getItem('user_id')){
-  location.href = 'services.html';
-}
-
-/* ================= STATE ================= */
-let loading = false;
-
-/* ================= PASSWORD TOGGLE ================= */
-document.getElementById('toggleBtn').onclick = () => {
-  const p = document.getElementById('password');
-  const btn = document.getElementById('toggleBtn');
-  if(p.type === 'password'){
-    p.type = 'text';
-    btn.textContent = 'ซ่อน';
-  }else{
-    p.type = 'password';
-    btn.textContent = 'แสดง';
-  }
-};
-
-/* ================= LOGIN ================= */
-document.getElementById('loginBtn').onclick = login;
-
-function login(){
-  if(loading) return;
-
-  const user = document.getElementById('username').value.trim();
-  const pass = document.getElementById('password').value.trim();
-  const err  = document.getElementById('error');
-  const btn  = document.getElementById('loginBtn');
-
-  err.textContent = '';
-
-  if(!user || !pass){
-    err.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
-    return;
-  }
-
-  loading = true;
-  btn.disabled = true;
-  btn.textContent = 'กำลังเข้าสู่ระบบ...';
-
-  fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`)
-    .then(r=>{
-      if(!r.ok) throw 'NETWORK';
-      return r.json();
-    })
-    .then(res=>{
-      if(!res.success || !res.user) throw 'LOGIN_FAIL';
-
-      localStorage.setItem('user_id', res.user.user_id);
-      localStorage.setItem('username', res.user.username);
-
-      location.href = 'services.html';
-    })
-    .catch(e=>{
-      err.textContent =
-        e === 'NETWORK'
-          ? 'ไม่สามารถเชื่อมต่อระบบได้ กรุณาลองใหม่'
-          : 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
-
-      btn.disabled = false;
-      btn.textContent = 'เข้าสู่ระบบ';
-      loading = false;
-    });
-}
-
-/* ENTER */
-document.addEventListener('keydown',e=>{
-  if(e.key === 'Enter') login();
+/* ===== PARALLAX CARD ===== */
+const card = document.getElementById('card');
+document.addEventListener('mousemove',e=>{
+  const x = (window.innerWidth/2 - e.clientX)/30;
+  const y = (window.innerHeight/2 - e.clientY)/30;
+  card.style.transform = `translate(${x}px,${y}px)`;
 });
+
+/* ===== PASSWORD TOGGLE ===== */
+toggleBtn.onclick=()=>{
+  const p=password;
+  toggleBtn.textContent=p.type==='password'?'ซ่อน':'แสดง';
+  p.type=p.type==='password'?'text':'password';
+};
 </script>
 
 </body>
