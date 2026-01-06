@@ -165,11 +165,11 @@ label{
     <label>รหัสผ่าน</label>
     <div class="input">
       <input type="password" id="password" placeholder="••••••" autocomplete="current-password">
-      <button class="toggle" type="button" onclick="togglePassword()">แสดง</button>
+      <button class="toggle" type="button" id="toggleBtn">แสดง</button>
     </div>
   </div>
 
-  <button id="loginBtn" class="login-btn" onclick="login()">เข้าสู่ระบบ</button>
+  <button id="loginBtn" class="login-btn">เข้าสู่ระบบ</button>
 
   <div class="or">ยังไม่มีบัญชี?</div>
 
@@ -181,16 +181,22 @@ label{
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const API = "https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
+/* ================= CONFIG ================= */
+const API = "https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
 const API_KEY = "SBTH-SECURE-2026";
 
-let isLoading = false;
+/* ================= AUTO REDIRECT ================= */
+if(localStorage.getItem('user_id')){
+  location.href = 'services.html';
+}
 
-/* ===== UI ===== */
-function togglePassword(){
+/* ================= STATE ================= */
+let loading = false;
+
+/* ================= PASSWORD TOGGLE ================= */
+document.getElementById('toggleBtn').onclick = () => {
   const p = document.getElementById('password');
-  const btn = event.target;
+  const btn = document.getElementById('toggleBtn');
   if(p.type === 'password'){
     p.type = 'text';
     btn.textContent = 'ซ่อน';
@@ -198,16 +204,18 @@ function togglePassword(){
     p.type = 'password';
     btn.textContent = 'แสดง';
   }
-}
+};
 
-/* ===== LOGIN ===== */
+/* ================= LOGIN ================= */
+document.getElementById('loginBtn').onclick = login;
+
 function login(){
-  if(isLoading) return;
+  if(loading) return;
 
-  const btn  = document.getElementById('loginBtn');
   const user = document.getElementById('username').value.trim();
   const pass = document.getElementById('password').value.trim();
   const err  = document.getElementById('error');
+  const btn  = document.getElementById('loginBtn');
 
   err.textContent = '';
 
@@ -216,34 +224,29 @@ function login(){
     return;
   }
 
-  isLoading = true;
+  loading = true;
   btn.disabled = true;
   btn.textContent = 'กำลังเข้าสู่ระบบ...';
 
-  fetch(
-    `${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`
-  )
-  .then(r => r.json())
-  .then(res => {
-    if(!res || !res.success || !res.user){
-      throw new Error('LOGIN_FAIL');
-    }
+  fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res.success || !res.user) throw 0;
 
-    localStorage.setItem('user_id', res.user.user_id);
-    localStorage.setItem('username', res.user.username);
-    localStorage.setItem('credit', res.user.credit);
+      localStorage.setItem('user_id', res.user.user_id);
+      localStorage.setItem('username', res.user.username);
 
-    location.href = 'services.html';
-  })
-  .catch(()=>{
-    err.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
-    btn.disabled = false;
-    btn.textContent = 'เข้าสู่ระบบ';
-    isLoading = false;
-  });
+      location.href = 'services.html';
+    })
+    .catch(()=>{
+      err.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
+      btn.disabled = false;
+      btn.textContent = 'เข้าสู่ระบบ';
+      loading = false;
+    });
 }
 
-/* Enter key */
+/* ENTER */
 document.addEventListener('keydown',e=>{
   if(e.key === 'Enter') login();
 });
