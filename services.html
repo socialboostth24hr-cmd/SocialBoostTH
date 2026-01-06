@@ -35,81 +35,54 @@ body{
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 .left,.right{display:flex;align-items:center;gap:10px}
-.center{
-  text-align:center;
-  font-weight:900;
-  font-size:17px;
-}
+.center{text-align:center;font-weight:900;font-size:17px}
 .logo{height:32px}
 .menu-btn,.refresh-btn{
-  border:none;
-  padding:6px 14px;
-  border-radius:999px;
-  background:#f1f5f9;
-  font-weight:800;
-  cursor:pointer;
+  border:none;padding:6px 14px;border-radius:999px;
+  background:#f1f5f9;font-weight:800;cursor:pointer;
 }
 .wallet{
-  font-size:13px;
-  background:#f8fafc;
-  padding:6px 14px;
-  border-radius:999px;
-  font-weight:900;
+  font-size:13px;background:#f8fafc;
+  padding:6px 14px;border-radius:999px;font-weight:900;
 }
 
 /* MENU */
 .menu-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.35);
+  position:fixed;inset:0;background:rgba(0,0,0,.35);
   display:none;z-index:99;
 }
 .side-menu{
-  position:fixed;
-  right:-260px;top:0;
-  width:260px;height:100%;
-  background:#fff;
-  padding:20px;
-  z-index:100;
-  transition:.3s;
+  position:fixed;right:-260px;top:0;
+  width:260px;height:100%;background:#fff;padding:20px;
+  z-index:100;transition:.3s;
   box-shadow:-10px 0 30px rgba(0,0,0,.25);
 }
 .side-menu.open{right:0}
 .side-menu a{
-  display:block;
-  padding:12px 0;
-  font-weight:800;
-  text-decoration:none;
-  color:#111827;
+  display:block;padding:12px 0;font-weight:800;
+  text-decoration:none;color:#111827;
   border-bottom:1px solid #e5e7eb;
 }
 .side-menu a.logout{color:#ef4444;border:none}
 
 /* CONTENT */
 .container{
-  max-width:720px;
-  margin:0 auto;
+  max-width:720px;margin:0 auto;
   padding:20px 18px 140px;
 }
 .title{
-  font-size:26px;
-  font-weight:900;
-  margin:10px 0 6px;
+  font-size:26px;font-weight:900;margin:10px 0 6px;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
 .subtitle{
-  font-size:14px;
-  color:#94a3b8;
-  margin-bottom:20px;
+  font-size:14px;color:#94a3b8;margin-bottom:20px;
 }
 
 /* SERVICE CARD */
 .service{
-  background:#fff;
-  border-radius:22px;
-  padding:54px 20px 18px;
-  margin-bottom:16px;
+  background:#fff;border-radius:22px;
+  padding:54px 20px 18px;margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
   position:relative;
 }
@@ -117,51 +90,33 @@ body{
 .service-desc{font-size:13px;color:#64748b;margin-top:4px}
 
 .badge{
-  position:absolute;
-  top:16px;
-  right:16px;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-  color:#fff;
+  position:absolute;top:16px;right:16px;
+  padding:6px 12px;border-radius:999px;
+  font-size:12px;font-weight:900;color:#fff;
 }
 .badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899);}
 .badge.recommended{background:linear-gradient(90deg,#38bdf8,#8b5cf6);}
 .badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
 
 .bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  margin-top:16px;
-  gap:14px;
+  display:flex;justify-content:space-between;
+  align-items:flex-end;margin-top:16px;gap:14px;
 }
-.price{
-  font-size:15px;
-  font-weight:900;
-}
-.price span{
-  display:block;
-  font-size:13px;
-  color:#64748b;
-}
+.price{font-size:15px;font-weight:900}
+.price span{display:block;font-size:13px;color:#64748b}
 
 .btn{
-  padding:10px 18px;
-  border-radius:14px;
-  border:none;
+  padding:10px 18px;border-radius:14px;border:none;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;
-  font-weight:900;
-  cursor:pointer;
+  color:#fff;font-weight:900;cursor:pointer;
 }
+.empty{text-align:center;color:#94a3b8;margin-top:30px}
+.error{text-align:center;color:#ef4444;margin-top:30px;font-weight:800}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="left">
     <button class="menu-btn" onclick="openMenu()">☰</button>
@@ -176,16 +131,12 @@ body{
   </div>
 </header>
 
-<!-- CONTENT -->
 <div class="container">
   <div class="title">เลือกบริการ</div>
   <div class="subtitle">ระบบอัตโนมัติ ราคาถูก ปลอดภัย</div>
-
-  <!-- ⭐ สำคัญที่สุด ห้ามลบ -->
   <div id="services"></div>
 </div>
 
-<!-- MENU -->
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
   <a href="services.html">📦 บริการ</a>
@@ -195,87 +146,91 @@ body{
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded',()=>{
 
-  /* CONFIG */
-  const API = "https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
-  const API_KEY = "SBTH-SECURE-2026";
+/* CONFIG */
+const API = "https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
+const API_KEY = "SBTH-SECURE-2026";
 
-  /* AUTH */
-  const userId = localStorage.getItem('user_id') || 'U001';
+/* AUTH */
+const userId = localStorage.getItem('user_id');
+if(!userId){
+  location.href='login.html';
+  return;
+}
 
-  const creditEl   = document.getElementById('credit');
-  const box        = document.getElementById('services');
-  const sideMenu   = document.getElementById('sideMenu');
-  const menuOverlay= document.getElementById('menuOverlay');
+/* DOM */
+const creditEl=document.getElementById('credit');
+const box=document.getElementById('services');
+const sideMenu=document.getElementById('sideMenu');
+const menuOverlay=document.getElementById('menuOverlay');
 
-  window.openMenu = () => {
-    sideMenu.classList.add('open');
-    menuOverlay.style.display = 'block';
-  };
-  window.closeMenu = () => {
-    sideMenu.classList.remove('open');
-    menuOverlay.style.display = 'none';
-  };
-  window.logout = () => {
-    localStorage.clear();
-    location.href='login.html';
-  };
+/* MENU */
+window.openMenu=()=>{sideMenu.classList.add('open');menuOverlay.style.display='block';}
+window.closeMenu=()=>{sideMenu.classList.remove('open');menuOverlay.style.display='none';}
+window.logout=()=>{localStorage.clear();location.href='login.html';}
 
-  function loadCredit(){
-    fetch(`${API}?action=getUser&user_id=${userId}&api_key=${API_KEY}`)
-      .then(r=>r.json())
-      .then(u=>{
-        creditEl.innerText = u && !u.error
-          ? Number(u.credit||0).toFixed(2)
-          : '0.00';
-      });
-  }
+/* CREDIT */
+function loadCredit(){
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+    .then(r=>r.json())
+    .then(u=>{
+      creditEl.innerText = u && !u.error
+        ? Number(u.credit||0).toFixed(2)
+        : '0.00';
+    })
+    .catch(()=>creditEl.innerText='0.00');
+}
 
-  function loadServices(){
-    box.innerHTML='⏳ กำลังโหลดบริการ...';
-    fetch(`${API}?action=services&api_key=${API_KEY}`)
-      .then(r=>r.json())
-      .then(list=>{
-        box.innerHTML='';
-        list.forEach(s=>{
-          box.insertAdjacentHTML('beforeend',`
-            <div class="service">
-              ${s.badge_status==='on'
-                ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>` : ''}
-
-              <div class="service-name">${s.display_name}</div>
-              <div class="service-desc">${s.short_desc||''}</div>
-
-              <div class="bottom">
-                <div class="price">
-                  ${s.price_per_100} บาท
-                  <span>/ 100 ${s.unit}</span>
-                  <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
-                </div>
-                <button class="btn" data-id="${s.service_id}">
-                  เลือกแพ็กเกจ
-                </button>
+/* SERVICES */
+function loadServices(){
+  box.innerHTML='⏳ กำลังโหลดบริการ...';
+  fetch(`${API}?action=services&api_key=${API_KEY}`)
+    .then(r=>r.json())
+    .then(list=>{
+      box.innerHTML='';
+      if(!Array.isArray(list)||!list.length){
+        box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';
+        return;
+      }
+      list.forEach(s=>{
+        box.insertAdjacentHTML('beforeend',`
+          <div class="service">
+            ${s.badge_status==='on'
+              ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`:''
+            }
+            <div class="service-name">${s.display_name}</div>
+            <div class="service-desc">${s.short_desc||''}</div>
+            <div class="bottom">
+              <div class="price">
+                ${s.price_per_100} บาท
+                <span>/ 100 ${s.unit}</span>
+                <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
               </div>
+              <button class="btn" data-id="${s.service_id}">เลือกแพ็กเกจ</button>
             </div>
-          `);
-        });
-
-        box.querySelectorAll('.btn').forEach(b=>{
-          b.onclick=()=>{
-            localStorage.setItem('service_id',b.dataset.id);
-            location.href='order.html';
-          }
-        });
+          </div>
+        `);
       });
-  }
+      box.querySelectorAll('.btn').forEach(btn=>{
+        btn.onclick=()=>{
+          localStorage.setItem('service_id',btn.dataset.id);
+          location.href='order.html';
+        };
+      });
+    })
+    .catch(()=>{
+      box.innerHTML='<div class="error">❌ โหลดบริการไม่สำเร็จ</div>';
+    });
+}
 
-  function reloadAll(){
-    loadCredit();
-    loadServices();
-  }
+/* INIT */
+function reloadAll(){
+  loadCredit();
+  loadServices();
+}
+reloadAll();
 
-  reloadAll();
 });
 </script>
 
