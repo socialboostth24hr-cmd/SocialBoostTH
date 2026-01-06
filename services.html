@@ -20,7 +20,7 @@ body{
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
   padding:12px 16px;
   display:grid;
@@ -33,16 +33,10 @@ body{
   z-index:50;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
-.left{display:flex;align-items:center;gap:10px}
-.center{
-  text-align:center;
-  font-weight:900;
-  font-size:17px;
-  letter-spacing:.3px;
-}
-.right{display:flex;align-items:center;gap:10px}
+.left{display:flex;gap:10px}
+.center{font-weight:900;font-size:17px}
+.right{display:flex;gap:10px;align-items:center}
 .logo{height:32px}
-
 .menu-btn,.refresh-btn{
   border:none;
   padding:6px 14px;
@@ -51,7 +45,6 @@ body{
   font-weight:800;
   cursor:pointer;
 }
-
 .wallet{
   font-size:13px;
   background:#f8fafc;
@@ -60,19 +53,17 @@ body{
   font-weight:900;
 }
 
-/* ===== MENU ===== */
+/* MENU */
 .menu-overlay{
-  position:fixed;inset:0;
+  position:fixed; inset:0;
   background:rgba(0,0,0,.35);
-  display:none;z-index:99;
+  display:none; z-index:99;
 }
 .side-menu{
-  position:fixed;
-  right:-260px;top:0;
-  width:260px;height:100%;
-  background:#fff;padding:20px;
-  z-index:100;
-  transition:.3s;
+  position:fixed; right:-260px; top:0;
+  width:260px; height:100%;
+  background:#fff; padding:20px;
+  z-index:100; transition:.3s;
   box-shadow:-10px 0 30px rgba(0,0,0,.25);
 }
 .side-menu.open{right:0}
@@ -81,19 +72,18 @@ body{
   display:block;
   padding:12px 0;
   font-weight:800;
-  color:#111827;
   text-decoration:none;
+  color:#111827;
   border-bottom:1px solid #e5e7eb;
 }
 .side-menu a.logout{color:#ef4444;border:none}
 
-/* ===== CONTENT ===== */
+/* CONTENT */
 .container{
   max-width:720px;
   margin:0 auto;
   padding:18px 18px 140px;
 }
-
 .title{
   font-size:26px;
   font-weight:900;
@@ -108,7 +98,7 @@ body{
   margin-bottom:20px;
 }
 
-/* ===== SERVICE CARD ===== */
+/* SERVICE */
 .service{
   background:#fff;
   border-radius:22px;
@@ -117,15 +107,10 @@ body{
   box-shadow:0 20px 45px rgba(139,92,246,.18);
   position:relative;
 }
-
 .service-name{font-size:17px;font-weight:900}
 .service-desc{font-size:13px;color:#64748b;margin-top:4px}
-
-/* badge */
 .badge{
-  position:absolute;
-  top:16px;
-  right:16px;
+  position:absolute; top:16px; right:16px;
   padding:6px 12px;
   border-radius:999px;
   font-size:12px;
@@ -135,25 +120,14 @@ body{
 .badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899);}
 .badge.recommended{background:linear-gradient(90deg,#38bdf8,#8b5cf6);}
 .badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
-
 .bottom{
   display:flex;
   justify-content:space-between;
   align-items:flex-end;
   margin-top:16px;
-  gap:14px;
 }
-
-.price{
-  font-size:15px;
-  font-weight:900;
-}
-.price span{
-  display:block;
-  font-size:13px;
-  color:#64748b;
-}
-
+.price{font-weight:900}
+.price span{display:block;font-size:13px;color:#64748b}
 .btn{
   padding:10px 18px;
   border-radius:14px;
@@ -168,15 +142,12 @@ body{
 
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="left">
     <button class="menu-btn" onclick="openMenu()">☰</button>
     <button class="refresh-btn" onclick="reloadAll()">🔄</button>
   </div>
-
   <div class="center">SocialBoostTH</div>
-
   <div class="right">
     <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
     <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
@@ -189,7 +160,6 @@ body{
   <div id="services"></div>
 </div>
 
-<!-- MENU -->
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
   <h3>เมนู</h3>
@@ -200,47 +170,41 @@ body{
 </div>
 
 <script>
-/* ===== CONFIG (ตรงกับ Apps Script ตัวล่าสุด) ===== */
-const API="https://script.google.com/macros/s/AKfycby9v2qEZUQ8khjh5h0rTx0uvc2XXUDm4WBQ1WOQKvhAlUF6MYXflVG45ulNLDy-V542lg/exec";
+/* CONFIG – deploy ล่าสุด */
+const API="https://script.google.com/macros/s/AKfycbwoL6ihJ5kZ8U00RUSD_Yc10u0WMbqpvkGihFRb2W8wLR1SxbHY1BvtyBe-U_U5cBKbUg/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId = localStorage.getItem('user_id');
+const userId=localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
 const creditEl=document.getElementById('credit');
 const box=document.getElementById('services');
 
-/* ===== MENU ===== */
-function openMenu(){
-  sideMenu.classList.add('open');
-  menuOverlay.style.display='block';
-}
-function closeMenu(){
-  sideMenu.classList.remove('open');
-  menuOverlay.style.display='none';
-}
-function logout(){
-  localStorage.clear();
-  location.href='login.html';
-}
+/* MENU */
+function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
+function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
+function logout(){localStorage.clear();location.href='login.html'}
 
-/* ===== LOAD CREDIT (ใช้ getUser เท่านั้น) ===== */
+/* LOAD CREDIT – จาก wallet (ถูกต้องกับ script) */
 function loadCredit(){
-  fetch(`${API}?action=getUser&user_id=${userId}&api_key=${API_KEY}`)
+  fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}`)
     .then(r=>r.json())
-    .then(u=>{
-      if(u.error) return;
-      creditEl.innerText = Number(u.credit).toFixed(2);
-      localStorage.setItem('credit',u.credit);
+    .then(w=>{
+      if(!Array.isArray(w)) return;
+      const credit=w.reduce((s,x)=>s+Number(x.amount||0),0);
+      creditEl.innerText=credit.toFixed(2);
+      localStorage.setItem('credit',credit);
     });
 }
 
-/* ===== LOAD SERVICES ===== */
+/* LOAD SERVICES */
 function loadServices(){
-  fetch(`${API}?action=services&api_key=${API_KEY}&_ts=${Date.now()}`)
+  fetch(`${API}?action=services&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(list=>{
       box.innerHTML='';
+      if(!Array.isArray(list)) return;
+
       list.forEach(s=>{
         box.innerHTML+=`
           <div class="service">
@@ -257,7 +221,6 @@ function loadServices(){
                 <span>/ 100 ${s.unit}</span>
                 <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
               </div>
-
               <button class="btn" onclick="selectService('${s.service_id}')">
                 เลือกแพ็กเกจ
               </button>
@@ -278,7 +241,6 @@ function reloadAll(){
   loadServices();
 }
 
-/* INIT */
 reloadAll();
 </script>
 
