@@ -15,67 +15,63 @@
 
 body{
   margin:0;
-  font-family:system-ui,-apple-system;
+  font-family:system-ui;
   background:
     radial-gradient(900px 360px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
-  min-height:100vh;
 }
 
-/* ===== Header ===== */
+/* ===== HEADER (ใช้ร่วมทุกหน้า) ===== */
 .header{
-  padding:14px 18px;
+  padding:12px 16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:10px;
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:50;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
-
-@media (max-width:640px){
-  .header{
-    position:sticky;
-    top:0;
-    z-index:50;
-    background:rgba(255,255,255,.92);
-    backdrop-filter:blur(8px);
-  }
-}
-
-.left,.right{
+.left,.center,.right{
   display:flex;
   align-items:center;
   gap:10px;
 }
+.logo{height:32px}
 
-.logo{height:34px}
-
-.back-btn,.logout-btn{
+.nav-btn{
+  border:none;
+  padding:8px 14px;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+}
+.wallet{
+  font-size:13px;
+  background:#f8fafc;
+  padding:6px 14px;
+  border-radius:999px;
+  font-weight:800;
+}
+.logout-btn{
   border:none;
   padding:6px 14px;
   border-radius:999px;
-  font-size:13px;
-  cursor:pointer;
-  background:#fff;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
-}
-.logout-btn{
   background:#fee2e2;
   color:#991b1b;
+  font-weight:800;
+  cursor:pointer;
 }
 
-.wallet{
-  font-size:13px;
-  background:#fff;
-  padding:6px 14px;
-  border-radius:999px;
-  box-shadow:0 6px 18px rgba(0,0,0,.06);
-}
-
-/* ===== Content ===== */
+/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:0 auto;
-  padding:10px 18px 140px;
+  padding:14px 18px 120px;
 }
 
 .title{
@@ -86,38 +82,30 @@ body{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .subtitle{
   font-size:14px;
   color:#94a3b8;
   margin-bottom:22px;
 }
 
-/* ===== Service Card ===== */
+/* ===== SERVICE CARD ===== */
 .service{
   background:#fff;
   border-radius:22px;
-  padding:54px 20px 18px; /* 🔥 เผื่อ badge */
+  padding:54px 20px 18px;
   margin-bottom:16px;
-  box-shadow:
-    0 20px 45px rgba(139,92,246,.18),
-    0 6px 16px rgba(56,189,248,.12);
+  box-shadow:0 20px 45px rgba(139,92,246,.18);
   position:relative;
 }
-
 .service-name{
   font-size:17px;
   font-weight:900;
-  line-height:1.4;
-  margin-bottom:6px;
 }
-
 .service-desc{
   font-size:13px;
   color:#64748b;
 }
 
-/* badge */
 .badge{
   position:absolute;
   top:16px;
@@ -125,28 +113,12 @@ body{
   padding:6px 12px;
   border-radius:999px;
   font-size:12px;
-  font-weight:800;
+  font-weight:900;
   color:#fff;
-  display:flex;
-  gap:4px;
-  align-items:center;
-  white-space:nowrap;
 }
-
 .badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899);}
 .badge.recommended{background:linear-gradient(90deg,#38bdf8,#8b5cf6);}
-.badge.premium{background:linear-gradient(90deg,#a855f7,#ec4899);}
 .badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
-
-/* 🔥 แก้ปัญหาบนมือถือ */
-@media (max-width:640px){
-  .badge{
-    top:20px;
-    right:14px;
-    font-size:11px;
-    padding:5px 10px;
-  }
-}
 
 .bottom{
   display:flex;
@@ -154,24 +126,16 @@ body{
   align-items:flex-end;
   margin-top:14px;
   gap:12px;
-  flex-wrap:wrap;
 }
-
 .price{
   font-size:15px;
-  font-weight:800;
+  font-weight:900;
 }
 .price span{
   display:block;
   font-size:13px;
   color:#64748b;
 }
-.price .min{
-  color:#ef4444;
-  font-weight:800;
-  margin-top:4px;
-}
-
 .btn{
   padding:10px 18px;
   border-radius:14px;
@@ -180,35 +144,6 @@ body{
   color:#fff;
   font-weight:900;
   cursor:pointer;
-  white-space:nowrap;
-}
-
-/* ===== Floating Button ===== */
-.floating-btn{
-  display:none;
-}
-@media (max-width:640px){
-  .floating-btn{
-    display:flex;
-    position:fixed;
-    bottom:16px;
-    left:50%;
-    transform:translateX(-50%);
-    width:calc(100% - 32px);
-    max-width:480px;
-    padding:15px;
-    border-radius:999px;
-    background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-    color:#fff;
-    font-size:16px;
-    font-weight:900;
-    justify-content:center;
-    align-items:center;
-    border:none;
-    box-shadow:0 20px 45px rgba(139,92,246,.45);
-    cursor:pointer;
-    z-index:100;
-  }
 }
 </style>
 </head>
@@ -217,12 +152,18 @@ body{
 
 <header class="header">
   <div class="left">
-    <button class="back-btn" onclick="location.href='login.html'">← กลับ</button>
     <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
   </div>
+
+  <div class="center">
+    <button class="nav-btn" onclick="location.href='services.html'">🛒 บริการ</button>
+    <button class="nav-btn" onclick="location.href='topup.html'">💰 เติมเงิน</button>
+    <button class="nav-btn" onclick="location.href='orders.html'">📦 คำสั่งซื้อ</button>
+  </div>
+
   <div class="right">
-    <div class="wallet">เครดิต: <b id="credit">0</b> บาท</div>
-    <button class="logout-btn" onclick="logout()">ออกจากระบบ</button>
+    <div class="wallet">เครดิต: <span id="credit">0</span> บาท</div>
+    <button class="logout-btn" onclick="logout()">ออก</button>
   </div>
 </header>
 
@@ -232,16 +173,13 @@ body{
   <div id="services"></div>
 </div>
 
-<button class="floating-btn" onclick="scrollToServices()">เลือกแพ็กเกจ</button>
-
 <script>
 const API="https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
 
 if(!localStorage.getItem('user_id')){
   location.href='login.html';
 }
-
-document.getElementById('credit').textContent =
+document.getElementById('credit').innerText =
   localStorage.getItem('credit') || 0;
 
 fetch(API+'?action=services&_ts='+Date.now())
@@ -251,26 +189,25 @@ fetch(API+'?action=services&_ts='+Date.now())
   box.innerHTML='';
   list.forEach(s=>{
     box.innerHTML+=`
-    <div class="service">
-      ${s.badge_status==='on'?`
-        <div class="badge ${s.badge_type}">
-          ${s.icon||''} ${s.badge_text||''}
-        </div>`:''}
+      <div class="service">
+        ${s.badge_status==='on'
+          ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`
+          : ''}
 
-      <div class="service-name">${s.display_name||s.service_name}</div>
-      <div class="service-desc">${s.short_desc||'บริการคุณภาพ มาตรฐานร้าน'}</div>
+        <div class="service-name">${s.display_name}</div>
+        <div class="service-desc">${s.short_desc||''}</div>
 
-      <div class="bottom">
-        <div class="price">
-          ${s.price_per_100} บาท
-          <span>/ 100 ${s.unit}</span>
-          <span class="min">ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
+        <div class="bottom">
+          <div class="price">
+            ${s.price_per_100} บาท
+            <span>/ 100 ${s.unit}</span>
+            <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
+          </div>
+          <button class="btn" onclick="selectService('${s.service_id}')">
+            เลือกแพ็กเกจ
+          </button>
         </div>
-        <button class="btn" onclick="selectService('${s.service_id}')">
-          เลือกแพ็กเกจ
-        </button>
-      </div>
-    </div>`;
+      </div>`;
   });
 });
 
@@ -281,9 +218,6 @@ function selectService(id){
 function logout(){
   localStorage.clear();
   location.href='login.html';
-}
-function scrollToServices(){
-  document.getElementById('services').scrollIntoView({behavior:'smooth'});
 }
 </script>
 
