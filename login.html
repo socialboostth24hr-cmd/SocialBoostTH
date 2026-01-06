@@ -96,6 +96,7 @@ label{
   border-radius:999px;
   font-size:12px;
   cursor:pointer;
+  font-weight:700;
 }
 
 .login-btn{
@@ -140,6 +141,7 @@ label{
   color:#ef4444;
   margin-top:14px;
   font-size:14px;
+  font-weight:700;
 }
 </style>
 </head>
@@ -155,14 +157,14 @@ label{
   <div class="field">
     <label>ชื่อผู้ใช้งาน</label>
     <div class="input">
-      <input id="username" placeholder="username">
+      <input id="username" placeholder="username" autocomplete="username">
     </div>
   </div>
 
   <div class="field">
     <label>รหัสผ่าน</label>
     <div class="input">
-      <input type="password" id="password" placeholder="••••••">
+      <input type="password" id="password" placeholder="••••••" autocomplete="current-password">
       <button class="toggle" type="button" onclick="togglePassword()">แสดง</button>
     </div>
   </div>
@@ -179,60 +181,65 @@ label{
 </div>
 
 <script>
-/* ===== CONFIG (DEPLOY ล่าสุด) ===== */
+/* ===== CONFIG ===== */
 const API = "https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
 const API_KEY = "SBTH-SECURE-2026";
+
+let isLoading = false;
 
 /* ===== UI ===== */
 function togglePassword(){
   const p = document.getElementById('password');
-  p.type = p.type === 'password' ? 'text' : 'password';
+  const btn = event.target;
+  if(p.type === 'password'){
+    p.type = 'text';
+    btn.textContent = 'ซ่อน';
+  }else{
+    p.type = 'password';
+    btn.textContent = 'แสดง';
+  }
 }
 
 /* ===== LOGIN ===== */
 function login(){
+  if(isLoading) return;
+
   const btn  = document.getElementById('loginBtn');
   const user = document.getElementById('username').value.trim();
   const pass = document.getElementById('password').value.trim();
   const err  = document.getElementById('error');
 
   err.textContent = '';
+
   if(!user || !pass){
     err.textContent = 'กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
     return;
   }
 
+  isLoading = true;
   btn.disabled = true;
   btn.textContent = 'กำลังเข้าสู่ระบบ...';
 
   fetch(
-    `${API}?action=login`
-    + `&api_key=${API_KEY}`
-    + `&username=${encodeURIComponent(user)}`
-    + `&password=${encodeURIComponent(pass)}`
+    `${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`
   )
   .then(r => r.json())
   .then(res => {
-    if(!res.success || !res.user){
-      err.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
-      btn.disabled = false;
-      btn.textContent = 'เข้าสู่ระบบ';
-      return;
+    if(!res || !res.success || !res.user){
+      throw new Error('LOGIN_FAIL');
     }
 
-    /* เก็บข้อมูลผู้ใช้ */
     localStorage.setItem('user_id', res.user.user_id);
     localStorage.setItem('username', res.user.username);
     localStorage.setItem('credit', res.user.credit);
 
-    /* ไปหน้าบริการ */
     location.href = 'services.html';
   })
-  .catch(errFetch => {
-    console.error(errFetch);
-    err.textContent = 'เชื่อมต่อระบบไม่สำเร็จ';
+  .catch(()=>{
+    err.textContent = 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง';
     btn.disabled = false;
     btn.textContent = 'เข้าสู่ระบบ';
+    isLoading = false;
   });
 }
 
