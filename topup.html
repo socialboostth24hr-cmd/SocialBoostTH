@@ -26,21 +26,49 @@ body{
   z-index:50;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
+.left,.right{display:flex;gap:8px;align-items:center}
 .logo{height:32px}
 
-.nav-btn{
+.menu-btn,.refresh-btn{
   border:none;
-  padding:8px 16px;
+  padding:6px 14px;
   border-radius:999px;
   background:#f1f5f9;
-  font-size:13px;
   font-weight:800;
   cursor:pointer;
 }
-.nav-btn.topup{
-  background:linear-gradient(135deg,#38bdf8,#8b5cf6);
-  color:#fff;
+
+/* ===== MENU ===== */
+.menu-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  display:none;
+  z-index:99;
 }
+.side-menu{
+  position:fixed;
+  right:-260px;
+  top:0;
+  width:260px;
+  height:100%;
+  background:#fff;
+  padding:20px;
+  z-index:100;
+  transition:.3s;
+  box-shadow:-10px 0 30px rgba(0,0,0,.2);
+}
+.side-menu.open{right:0}
+.side-menu h3{margin:0 0 16px}
+.side-menu a{
+  display:block;
+  padding:12px 0;
+  font-weight:800;
+  color:#111827;
+  text-decoration:none;
+  border-bottom:1px solid #e5e7eb;
+}
+.side-menu a.logout{color:#ef4444;border:none}
 
 /* ===== CONTENT ===== */
 .container{
@@ -80,7 +108,7 @@ input{
   display:none;
 }
 
-/* 🔥 กล่องยอดโอน (เด่นมาก) */
+/* ===== CALC BOX ===== */
 .calc-box{
   margin-top:14px;
   padding:18px;
@@ -92,60 +120,33 @@ input{
   text-align:center;
   line-height:1.8;
   display:none;
-  box-shadow:0 10px 30px rgba(34,197,94,.35);
 }
-
-.calc-box span{
-  font-size:28px;
-  color:#166534;
-}
+.calc-box span{font-size:28px}
 
 /* QR */
-.qr-box{
-  display:none;
-  text-align:center;
-  margin-top:16px;
-}
+.qr-box{display:none;text-align:center;margin-top:16px}
 .qr-box img{
   width:220px;
   border-radius:16px;
   box-shadow:0 12px 30px rgba(0,0,0,.15);
 }
-.qr-note{
-  margin-top:8px;
-  font-size:14px;
-  font-weight:900;
-}
+.qr-note{margin-top:8px;font-size:14px;font-weight:900}
 
-/* ===== BUTTON GROUP ===== */
-.btn-row{
-  display:flex;
-  gap:10px;
-  margin-top:16px;
-}
-
-.line-btn{
+/* BUTTONS */
+.btn-row{display:flex;gap:10px;margin-top:16px}
+.line-btn,.confirm-btn{
   flex:1;
   padding:16px;
   border:none;
   border-radius:999px;
   font-size:16px;
   font-weight:900;
-  color:#fff;
-  background:#22c55e;
   cursor:pointer;
 }
-
+.line-btn{background:#22c55e;color:#fff}
 .confirm-btn{
-  flex:1;
-  padding:16px;
-  border:none;
-  border-radius:999px;
-  font-size:16px;
-  font-weight:900;
-  color:#fff;
   background:linear-gradient(135deg,#38bdf8,#8b5cf6);
-  cursor:pointer;
+  color:#fff;
 }
 
 .confirmed{
@@ -159,7 +160,6 @@ input{
   display:none;
 }
 
-/* เงื่อนไข */
 .notice{
   background:#fff7ed;
   border:1px solid #fed7aa;
@@ -172,16 +172,9 @@ input{
   margin-top:14px;
 }
 
-/* ตาราง */
-.table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-}
-.table th,.table td{
-  padding:10px;
-  border-bottom:1px solid #e5e7eb;
-}
+/* TABLE */
+.table{width:100%;border-collapse:collapse;font-size:14px}
+.table th,.table td{padding:10px;border-bottom:1px solid #e5e7eb}
 .status{
   padding:4px 10px;
   border-radius:999px;
@@ -190,28 +183,24 @@ input{
 }
 .pending{background:#fef3c7;color:#92400e}
 .success{background:#dcfce7;color:#166534}
-.empty{
-  text-align:center;
-  color:#94a3b8;
-  padding:20px;
-}
+.empty{text-align:center;color:#94a3b8;padding:20px}
 </style>
 </head>
 
 <body>
 
 <header class="header">
-  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
-  <div>
-    <button class="nav-btn" onclick="location.href='services.html'">บริการ</button>
-    <button class="nav-btn" onclick="location.href='orders.html'">คำสั่งซื้อ</button>
-    <button class="nav-btn topup">เติมเงิน</button>
+  <div class="left">
+    <button class="refresh-btn" onclick="loadWallet()">🔄</button>
   </div>
+
+  <button class="menu-btn" onclick="openMenu()">☰</button>
+
+  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
 </header>
 
 <div class="container">
 
-  <!-- เติมเงิน -->
   <div class="card">
     <h2>➕ เติมเงิน (พร้อมเพย์)</h2>
 
@@ -229,30 +218,22 @@ input{
     </div>
 
     <div class="btn-row">
-      <button class="line-btn"
-        onclick="window.open('https://line.me/R/ti/p/@geg4960w','_blank')">
+      <button class="line-btn" onclick="window.open('https://line.me/R/ti/p/@geg4960w','_blank')">
         📤 แจ้งสลิปทาง LINE
       </button>
-
-      <button class="confirm-btn" onclick="markSent()">
-        ✅ ยืนยันว่าแจ้งแล้ว
-      </button>
+      <button class="confirm-btn" onclick="markSent()">✅ ยืนยันว่าแจ้งแล้ว</button>
     </div>
 
     <div class="confirmed" id="confirmedBox">
-      📤 ส่งสลิปเรียบร้อยแล้ว<br>
-      ⏳ รอแอดมินตรวจสอบเครดิต
+      📤 ส่งสลิปเรียบร้อยแล้ว<br>⏳ รอแอดมินตรวจสอบ
     </div>
 
     <div class="notice">
-      🔴 เงื่อนไขสำคัญ<br>
       • ส่ง <b>สลิป + Username</b> ทาง LINE เท่านั้น<br>
-      • เติมเงินแล้ว <u>ไม่สามารถถอนหรือขอคืนเงินได้</u><br>
-      • เครดิตเข้าเมื่อแอดมินยืนยัน
+      • เติมเงินแล้วไม่สามารถคืนเงินได้ทุกกรณี
     </div>
   </div>
 
-  <!-- ประวัติการเติมเงิน -->
   <div class="card">
     <h2>💰 ประวัติการเติมเงิน</h2>
     <table class="table">
@@ -263,60 +244,94 @@ input{
           <th>สถานะ</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td colspan="3" class="empty">ยังไม่มีข้อมูล</td>
-        </tr>
-      </tbody>
+      <tbody id="wallet"></tbody>
     </table>
   </div>
 
 </div>
 
-<script>
-const input=document.getElementById('amount');
-const errorText=document.getElementById('errorText');
-const calcBox=document.getElementById('calcBox');
-const qrBox=document.getElementById('qrBox');
-const qrImg=document.getElementById('qrImg');
-const confirmedBox=document.getElementById('confirmedBox');
+<!-- MENU -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<div class="side-menu" id="sideMenu">
+  <h3>เมนู</h3>
+  <a href="services.html">📦 บริการ</a>
+  <a href="orders.html">🧾 คำสั่งซื้อ</a>
+  <a href="topup.html">💰 เติมเงิน</a>
+  <a href="#" class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
+</div>
 
+<script>
+const API="https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
+const userId=localStorage.getItem('user_id');
+
+if(!userId) location.href='login.html';
+
+/* MENU */
+function openMenu(){
+  sideMenu.classList.add('open');
+  menuOverlay.style.display='block';
+}
+function closeMenu(){
+  sideMenu.classList.remove('open');
+  menuOverlay.style.display='none';
+}
+function logout(){
+  localStorage.clear();
+  location.href='login.html';
+}
+
+/* CALC */
+const input=amount,errorText=errorText,calcBox=calcBox,qrBox=qrBox,qrImg=qrImg,confirmedBox=confirmedBox;
 let lockedAmount=null;
 
 input.addEventListener('input',()=>{
   const base=Number(input.value);
-
-  if(!base || base < 20){
+  if(!base||base<20){
     errorText.style.display='block';
-    calcBox.style.display='none';
-    qrBox.style.display='none';
-    lockedAmount=null;
-    return;
+    calcBox.style.display=qrBox.style.display='none';
+    lockedAmount=null;return;
   }
-
   errorText.style.display='none';
-
-  const satang=Math.floor(Math.random()*99)+1;
-  lockedAmount=(base+satang/100).toFixed(2);
-
+  const s=Math.floor(Math.random()*99)+1;
+  lockedAmount=(base+s/100).toFixed(2);
   calcBox.style.display='block';
-  calcBox.innerHTML=`
-    🔔 กรุณาโอนยอดนี้เท่านั้น<br>
-    <span>${lockedAmount}</span> บาท
-  `;
-
+  calcBox.innerHTML=`🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
   qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
   qrBox.style.display='block';
   confirmedBox.style.display='none';
 });
 
 function markSent(){
-  if(!lockedAmount){
-    alert('กรุณากรอกยอดให้ถูกต้องก่อน');
-    return;
-  }
+  if(!lockedAmount) return alert('กรุณากรอกยอดให้ถูกต้อง');
   confirmedBox.style.display='block';
 }
+
+/* WALLET */
+function loadWallet(){
+  fetch(`${API}?action=wallet&user_id=${userId}&_ts=${Date.now()}`)
+  .then(r=>r.json())
+  .then(list=>{
+    const box=document.getElementById('wallet');
+    box.innerHTML='';
+    if(!list.length){
+      box.innerHTML=`<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>`;
+      return;
+    }
+    list.reverse().forEach(w=>{
+      box.innerHTML+=`
+        <tr>
+          <td>${new Date(w.datetime).toLocaleString()}</td>
+          <td>${Number(w.amount).toFixed(2)}</td>
+          <td><span class="status ${w.amount>0?'success':'pending'}">
+            ${w.amount>0?'สำเร็จ':'รอตรวจสอบ'}
+          </span></td>
+        </tr>`;
+    });
+  });
+}
+
+/* INIT */
+loadWallet();
 </script>
 
 </body>
