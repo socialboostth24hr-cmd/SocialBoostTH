@@ -14,10 +14,11 @@
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui;
+  font-family:system-ui,-apple-system;
   background:
     radial-gradient(900px 360px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
+  color:#111827;
 }
 
 /* HEADER */
@@ -123,6 +124,13 @@ body{
   margin-top:40px;
   font-size:15px;
 }
+.error{
+  text-align:center;
+  color:#ef4444;
+  margin-top:30px;
+  font-size:15px;
+  font-weight:900;
+}
 </style>
 </head>
 
@@ -153,88 +161,105 @@ body{
 </div>
 
 <script>
-/* ================= CONFIG (ตัวเดียวทั้งเว็บ) ================= */
+document.addEventListener('DOMContentLoaded',()=>{
+
+/* ===== CONFIG ===== */
 const API = "https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
 const API_KEY = "SBTH-SECURE-2026";
 
+/* ===== AUTH ===== */
 const userId = localStorage.getItem('user_id');
-if(!userId) location.href='login.html';
+if(!userId){
+  location.href='login.html';
+  return;
+}
 
+/* ===== DOM ===== */
 const box = document.getElementById('orders');
 const updateText = document.getElementById('updateText');
 const servicesCache = {};
 
-/* MENU */
-function openMenu(){ sideMenu.classList.add('open'); menuOverlay.style.display='block'; }
-function closeMenu(){ sideMenu.classList.remove('open'); menuOverlay.style.display='none'; }
-function logout(){ localStorage.clear(); location.href='login.html'; }
+/* ===== MENU ===== */
+window.openMenu = ()=>{ sideMenu.classList.add('open'); menuOverlay.style.display='block'; }
+window.closeMenu = ()=>{ sideMenu.classList.remove('open'); menuOverlay.style.display='none'; }
+window.logout = ()=>{ localStorage.clear(); location.href='login.html'; }
 
-/* STATUS TEXT */
+/* ===== STATUS TEXT ===== */
 function statusText(s){
   if(s==='pending') return '⏳ รอดำเนินการ';
   if(s==='processing') return '🚀 กำลังดำเนินการ';
   if(s==='success') return '✅ สำเร็จ';
   if(s==='cancel') return '❌ ยกเลิก';
-  return s;
+  return s || '-';
 }
 
-/* LOAD SERVICES (ครั้งเดียว) */
+/* ===== LOAD SERVICES (cache ครั้งเดียว) ===== */
 async function loadServices(){
   if(Object.keys(servicesCache).length) return;
-  const list = await fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`).then(r=>r.json());
+  const res = await fetch(`${API}?action=services&api_key=${API_KEY}`);
+  const list = await res.json();
   if(Array.isArray(list)){
-    list.forEach(s=> servicesCache[s.service_id] = s.display_name);
+    list.forEach(s=>{
+      servicesCache[s.service_id] = s.display_name;
+    });
   }
 }
 
-/* LOAD ORDERS */
+/* ===== LOAD ORDERS ===== */
 async function loadOrders(){
-  updateText.innerText='กำลังอัปเดต...';
-  await loadServices();
+  updateText.innerText = 'กำลังอัปเดต...';
+  box.innerHTML = '';
 
-  fetch(`${API}?action=orders&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
-    .then(r=>r.json())
-    .then(list=>{
-      box.innerHTML='';
-      if(!Array.isArray(list) || !list.length){
-        box.innerHTML='<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
-        updateText.innerText='—';
-        return;
-      }
+  try{
+    await loadServices();
 
-      list.reverse().forEach(o=>{
-        box.innerHTML+=`
-          <div class="order" onclick="openDetail('${o.order_id}')">
-            <div class="row">
-              <div class="order-id">${o.order_id}</div>
-              <div class="amount">${Number(o.final_total).toFixed(2)} บาท</div>
-            </div>
-            <div class="row"><div>บริการ</div><div>${servicesCache[o.service_id] || o.service_id}</div></div>
-            <div class="row"><div>จำนวน</div><div>${o.qty}</div></div>
-            <div class="row"><div>วันที่</div><div>${new Date(o.datetime).toLocaleString()}</div></div>
-            <div class="status ${o.status}">${statusText(o.status)}</div>
+    const res = await fetch(`${API}?action=orders&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`);
+    const list = await res.json();
+
+    if(!Array.isArray(list) || !list.length){
+      box.innerHTML = '<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
+      updateText.innerText = '—';
+      return;
+    }
+
+    list.reverse().forEach(o=>{
+      box.insertAdjacentHTML('beforeend',`
+        <div class="order" onclick="openDetail('${o.order_id}')">
+          <div class="row">
+            <div class="order-id">${o.order_id}</div>
+            <div class="amount">${Number(o.final_total||0).toFixed(2)} บาท</div>
           </div>
-        `;
-      });
-
-      updateText.innerText='อัปเดตล่าสุด: ' + new Date().toLocaleTimeString();
-    })
-    .catch(()=>{
-      updateText.innerText='โหลดข้อมูลไม่สำเร็จ';
+          <div class="row"><div>บริการ</div><div>${servicesCache[o.service_id] || o.service_id}</div></div>
+          <div class="row"><div>จำนวน</div><div>${o.qty}</div></div>
+          <div class="row"><div>วันที่</div><div>${new Date(o.datetime).toLocaleString()}</div></div>
+          <div class="status ${o.status}">${statusText(o.status)}</div>
+        </div>
+      `);
     });
+
+    updateText.innerText = 'อัปเดตล่าสุด: ' + new Date().toLocaleTimeString();
+
+  }catch(err){
+    console.error(err);
+    box.innerHTML = '<div class="error">โหลดข้อมูลไม่สำเร็จ</div>';
+    updateText.innerText = '—';
+  }
 }
 
-function openDetail(id){
+window.openDetail = (id)=>{
   localStorage.setItem('order_id',id);
   location.href='order-detail.html';
 }
-function goBack(){
-  history.length>1 ? history.back() : location.href='services.html';
+
+window.goBack = ()=>{
+  history.length > 1 ? history.back() : location.href='services.html';
 }
 
-/* INIT */
+/* ===== INIT ===== */
 loadOrders();
-setInterval(loadOrders,10000);
+setInterval(loadOrders, 10000);
+
+});
 </script>
 
 </body>
