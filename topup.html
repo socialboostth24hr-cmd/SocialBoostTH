@@ -14,7 +14,7 @@ body{
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
 
-/* ===== HEADER มาตรฐาน ===== */
+/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:flex;
@@ -26,7 +26,6 @@ body{
   z-index:50;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
-
 .logo{height:32px}
 
 .nav-btn{
@@ -38,12 +37,12 @@ body{
   font-weight:800;
   cursor:pointer;
 }
-
 .nav-btn.topup{
   background:linear-gradient(135deg,#38bdf8,#8b5cf6);
   color:#fff;
 }
 
+/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:0 auto;
@@ -70,7 +69,18 @@ input{
   border-radius:14px;
   border:1px solid #e5e7eb;
   font-size:15px;
-  margin-bottom:12px;
+  margin-bottom:10px;
+}
+
+.calc-box{
+  margin-top:10px;
+  padding:14px;
+  border-radius:14px;
+  background:#f0fdf4;
+  color:#166534;
+  font-weight:800;
+  line-height:1.6;
+  display:none;
 }
 
 .topup-btn{
@@ -83,6 +93,7 @@ input{
   color:#fff;
   background:linear-gradient(135deg,#22c55e,#16a34a);
   cursor:pointer;
+  margin-top:12px;
 }
 
 .note{
@@ -122,7 +133,6 @@ input{
 
 <header class="header">
   <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
-
   <div>
     <button class="nav-btn" onclick="location.href='services.html'">บริการ</button>
     <button class="nav-btn" onclick="location.href='orders.html'">คำสั่งซื้อ</button>
@@ -136,22 +146,24 @@ input{
   <div class="card">
     <h2>➕ แจ้งเติมเงิน</h2>
 
-    <input type="number" id="amount" step="0.01"
-      placeholder="กรอกจำนวนเงินที่โอนจริง เช่น 50.09">
+    <input type="number" id="amount" placeholder="กรอกยอดที่ต้องการเติม เช่น 50">
+
+    <div class="calc-box" id="calcBox"></div>
 
     <button class="topup-btn" onclick="requestTopup()">
       แจ้งเติมเงิน
     </button>
 
     <div class="note">
-      ⏳ ระบบจะเพิ่มเครดิตหลังแอดมินตรวจสอบ
+      📌 กรุณาโอนตามยอดที่ระบบคำนวณให้<br>
+      📌 ส่งสลิป + <b>Username</b> ทาง LINE เท่านั้น<br>
+      ⏳ เครดิตจะเข้าเมื่อแอดมินตรวจสอบ
     </div>
   </div>
 
   <!-- ประวัติ -->
   <div class="card">
     <h2>💰 ประวัติการเติมเงิน</h2>
-
     <table class="table">
       <thead>
         <tr>
@@ -169,16 +181,44 @@ input{
 <script>
 const API = "https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
 const userId = localStorage.getItem('user_id');
+if(!userId) location.href='login.html';
 
-if(!userId){
-  location.href='login.html';
-}
+const input = document.getElementById('amount');
+const calcBox = document.getElementById('calcBox');
+let lockedAmount = null;
 
-/* แจ้งเติมเงิน → pending */
+/* ===== CALCULATE & LOCK AMOUNT ===== */
+input.addEventListener('input',()=>{
+  const base = Number(input.value);
+  if(!base || base < 10){
+    calcBox.style.display='none';
+    lockedAmount=null;
+    return;
+  }
+
+  const key = 'topup_lock_'+base;
+  let final = localStorage.getItem(key);
+
+  if(!final){
+    const satang = Math.floor(Math.random()*99)+1;
+    final = (base + satang/100).toFixed(2);
+    localStorage.setItem(key, final);
+  }
+
+  lockedAmount = Number(final);
+
+  calcBox.style.display='block';
+  calcBox.innerHTML = `
+    👉 กรุณาโอน <span style="font-size:20px">${final}</span> บาท<br>
+    🔒 ยอดนี้ถูกล็อคแล้ว (รีเฟรชไม่เปลี่ยน)<br>
+    📤 ส่งสลิป + Username ทาง LINE
+  `;
+});
+
+/* ===== SEND TOPUP (PENDING) ===== */
 function requestTopup(){
-  const amount = Number(document.getElementById('amount').value);
-  if(!amount || amount < 10){
-    alert('กรุณากรอกจำนวนเงินให้ถูกต้อง');
+  if(!lockedAmount){
+    alert('กรุณากรอกจำนวนเงินก่อน');
     return;
   }
 
@@ -188,36 +228,34 @@ function requestTopup(){
     body: JSON.stringify({
       action:'topup',
       user_id:userId,
-      amount:amount,
+      amount:lockedAmount,
       method:'manual',
       ref:'USER_NOTIFY',
-      admin:'',
       note:'PENDING'
     })
-  })
-  .then(r=>r.json())
-  .then(()=>{
+  }).then(()=>{
     alert('แจ้งเติมเงินเรียบร้อย รอแอดมินตรวจสอบ');
-    document.getElementById('amount').value='';
+    input.value='';
+    calcBox.style.display='none';
+    lockedAmount=null;
     loadWallet();
   });
 }
 
-/* โหลดประวัติ */
+/* ===== LOAD WALLET ===== */
 function loadWallet(){
   fetch(API+'?action=wallet&user_id='+userId)
     .then(r=>r.json())
     .then(list=>{
       const box=document.getElementById('wallet');
       box.innerHTML='';
-
       if(!list.length){
         box.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
         return;
       }
 
       list.reverse().forEach(w=>{
-        const success = (w.note||'').includes('CONFIRMED');
+        const success=(w.note||'').includes('CONFIRMED');
         box.innerHTML+=`
           <tr>
             <td>${new Date(w.datetime).toLocaleString()}</td>
@@ -232,7 +270,6 @@ function loadWallet(){
       });
     });
 }
-
 loadWallet();
 </script>
 
