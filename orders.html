@@ -12,7 +12,6 @@
   --blue:#38bdf8;
 }
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui;
@@ -170,14 +169,19 @@ body{
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
+/* ===== CONFIG ===== */
+const API="https://script.google.com/macros/s/AKfycbxzt4nj3NhnS-P6K4b_VHGeclJYS1ZWyv04BtPe0IpKVTg60yaLmO7oAFKwD1wfCE9-qg/exec";
+const API_KEY="SBTH-SECURE-2026";
+
 const userId = localStorage.getItem('user_id');
-if(!userId) location.href='login.html';
+if(!userId){
+  location.href='login.html';
+}
 
 const box=document.getElementById('orders');
 const updateText=document.getElementById('updateText');
 
-/* MENU */
+/* ===== MENU ===== */
 function openMenu(){
   sideMenu.classList.add('open');
   menuOverlay.style.display='block';
@@ -191,7 +195,7 @@ function logout(){
   location.href='login.html';
 }
 
-/* STATUS TEXT */
+/* ===== STATUS ===== */
 function statusText(s){
   if(s==='pending') return '⏳ รอดำเนินการ';
   if(s==='processing') return '🚀 กำลังดำเนินการ';
@@ -200,15 +204,16 @@ function statusText(s){
   return s;
 }
 
-/* LOAD ORDERS */
+/* ===== LOAD ORDERS ===== */
 function loadOrders(){
   updateText.innerText='กำลังอัปเดต...';
-  fetch(API+'?action=orders&user_id='+userId)
+  fetch(`${API}?action=orders&user_id=${userId}&api_key=${API_KEY}&_ts=${Date.now()}`)
     .then(r=>r.json())
     .then(list=>{
       box.innerHTML='';
-      if(!list.length){
+      if(!Array.isArray(list) || !list.length){
         box.innerHTML='<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
+        updateText.innerText='—';
         return;
       }
       list.reverse().forEach(o=>{
@@ -226,6 +231,9 @@ function loadOrders(){
         `;
       });
       updateText.innerText='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
+    })
+    .catch(()=>{
+      updateText.innerText='โหลดข้อมูลไม่สำเร็จ';
     });
 }
 
@@ -238,7 +246,7 @@ function goBack(){
   history.length>1 ? history.back() : location.href='services.html';
 }
 
-/* INIT + AUTO REFRESH */
+/* INIT */
 loadOrders();
 setInterval(loadOrders,10000);
 </script>
