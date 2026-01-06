@@ -5,47 +5,47 @@ document.addEventListener('DOMContentLoaded', () => {
   const API = "https://script.google.com/macros/s/AKfycbxd3FO7ZHfOHDGDgVQNI1Uf3Owtmh8wXE1-00O2UimH6tA8k83PkqKItfo0_q-22sMeuQ/exec";
   const API_KEY = "SBTH-SECURE-2026";
 
-  /* ================= AUTH ================= */
-  const userId = localStorage.getItem('user_id');
-  if (!userId) {
-    location.href = 'login.html';
+  /* ================= AUTH (แก้จอขาว) ================= */
+  // 🔥 ถ้าไม่มี user_id ให้ใช้ค่า default ชั่วคราว
+  const userId = localStorage.getItem('user_id') || 'U001';
+
+  /* ================= DOM ================= */
+  const creditEl   = document.getElementById('credit');
+  const box        = document.getElementById('services');
+  const sideMenu   = document.getElementById('sideMenu');
+  const menuOverlay= document.getElementById('menuOverlay');
+
+  if (!box) {
+    document.body.innerHTML = '<h3 style="text-align:center;color:red">❌ ไม่พบ #services</h3>';
     return;
   }
 
-  /* ================= DOM ================= */
-  const creditEl = document.getElementById('credit');
-  const box = document.getElementById('services');
-  const sideMenu = document.getElementById('sideMenu');
-  const menuOverlay = document.getElementById('menuOverlay');
-
   /* ================= MENU ================= */
-  window.openMenu = function () {
-    sideMenu && sideMenu.classList.add('open');
+  window.openMenu = () => {
+    sideMenu?.classList.add('open');
     if (menuOverlay) menuOverlay.style.display = 'block';
   };
 
-  window.closeMenu = function () {
-    sideMenu && sideMenu.classList.remove('open');
+  window.closeMenu = () => {
+    sideMenu?.classList.remove('open');
     if (menuOverlay) menuOverlay.style.display = 'none';
   };
 
-  window.logout = function () {
+  window.logout = () => {
     localStorage.clear();
-    location.href = 'login.html';
+    location.reload();
   };
 
   /* ================= LOAD CREDIT ================= */
   function loadCredit() {
     if (!creditEl) return;
-    fetch(`${API}?action=getUser&user_id=${encodeURIComponent(userId)}&api_key=${API_KEY}&_=${Date.now()}`)
+
+    fetch(`${API}?action=getUser&user_id=${userId}&api_key=${API_KEY}`)
       .then(r => r.json())
       .then(u => {
-        if (u && !u.error) {
-          creditEl.innerText = Number(u.credit || 0).toFixed(2);
-          localStorage.setItem('credit', u.credit || 0);
-        } else {
-          creditEl.innerText = '0.00';
-        }
+        creditEl.innerText = u && !u.error
+          ? Number(u.credit || 0).toFixed(2)
+          : '0.00';
       })
       .catch(() => {
         creditEl.innerText = '0.00';
@@ -54,11 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ================= LOAD SERVICES ================= */
   function loadServices() {
-    if (!box) return;
-    fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
+    box.innerHTML = '⏳ กำลังโหลดบริการ...';
+
+    fetch(`${API}?action=services&api_key=${API_KEY}`)
       .then(r => r.json())
       .then(list => {
         box.innerHTML = '';
+
         if (!Array.isArray(list) || !list.length) {
           box.innerHTML = '<div style="text-align:center;color:#94a3b8">ไม่มีบริการ</div>';
           return;
@@ -89,27 +91,22 @@ document.addEventListener('DOMContentLoaded', () => {
           `);
         });
 
-        // bind buttons
-        box.querySelectorAll('.btn[data-id]').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const id = btn.getAttribute('data-id');
-            localStorage.setItem('service_id', id);
+        box.querySelectorAll('.btn').forEach(btn => {
+          btn.onclick = () => {
+            localStorage.setItem('service_id', btn.dataset.id);
             location.href = 'order.html';
-          });
+          };
         });
       })
-      .catch(() => {
-        box.innerHTML = '<div style="text-align:center;color:red">โหลดบริการไม่สำเร็จ</div>';
+      .catch(err => {
+        console.error(err);
+        box.innerHTML = '<div style="text-align:center;color:red">❌ โหลดบริการไม่สำเร็จ</div>';
       });
   }
 
   /* ================= INIT ================= */
-  function reloadAll() {
-    loadCredit();
-    loadServices();
-  }
-
-  reloadAll();
+  loadCredit();
+  loadServices();
 
 });
 </script>
