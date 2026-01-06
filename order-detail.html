@@ -165,8 +165,8 @@ body{
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const API="https://script.google.com/macros/s/AKfycbxzt4nj3NhnS-P6K4b_VHGeclJYS1ZWyv04BtPe0IpKVTg60yaLmO7oAFKwD1wfCE9-qg/exec";
+/* ===== CONFIG (Script ตัวจริง) ===== */
+const API="https://script.google.com/macros/s/AKfycby9v2qEZUQ8khjh5h0rTx0uvc2XXUDm4WBQ1WOQKvhAlUF6MYXflVG45ulNLDy-V542lg/exec";
 const API_KEY="SBTH-SECURE-2026";
 
 const orderId = localStorage.getItem('order_id');
@@ -207,7 +207,7 @@ function goBack(){
 /* LOAD DETAIL */
 function loadDetail(){
   updateText.innerText='กำลังอัปเดต...';
-  fetch(`${API}?action=order_detail&order_id=${orderId}&user_id=${userId}&api_key=${API_KEY}&_ts=${Date.now()}`)
+  fetch(`${API}?action=order_detail&order_id=${orderId}&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
     .then(r=>r.json())
     .then(o=>{
       if(o.error){
@@ -231,7 +231,6 @@ function loadDetail(){
     });
 }
 
-/* INIT */
 loadDetail();
 setInterval(loadDetail,10000);
 </script>
