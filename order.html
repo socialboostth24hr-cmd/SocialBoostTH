@@ -58,6 +58,7 @@ input,textarea{
   width:100%;padding:14px;border-radius:14px;
   border:1px solid #e5e7eb;margin-top:6px;font-size:15px;
 }
+textarea{min-height:140px}
 .total{font-size:22px;font-weight:900;margin-top:18px}
 .error{color:var(--red);margin-top:10px;font-weight:900}
 .buy-btn{
@@ -69,6 +70,7 @@ input,textarea{
   color:#fff;font-size:18px;font-weight:900;cursor:pointer;
 }
 .buy-btn:disabled{opacity:.6;cursor:not-allowed}
+.hide{display:none}
 </style>
 </head>
 
@@ -92,8 +94,19 @@ input,textarea{
   </div>
 
   <div class="card">
-    <label>จำนวน</label>
-    <input type="number" id="qty">
+
+    <!-- จำนวน (ปกติ) -->
+    <div id="qtyBox">
+      <label>จำนวน</label>
+      <input type="number" id="qty">
+    </div>
+
+    <!-- คอมเมนต์ -->
+    <div id="commentBox" class="hide">
+      <label>ข้อความคอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
+      <textarea id="commentText" placeholder="พิมพ์ 1 บรรทัด ต่อ 1 คอมเมนต์&#10;เช่น&#10;น่ารักมาก&#10;ชอบคลิปนี้"></textarea>
+      <div class="desc">จำนวนคอมเมนต์: <b><span id="commentCount">0</span></b></div>
+    </div>
 
     <label>ลิงก์ TikTok</label>
     <textarea id="link" placeholder="https://www.tiktok.com/@username"></textarea>
@@ -106,115 +119,133 @@ input,textarea{
 <button class="buy-btn" id="buyBtn">ยืนยันสั่งซื้อ</button>
 
 <script>
-/* ===== CONFIG ===== */
-const API = "https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
-const API_KEY = "SBTH-SECURE-2026";
+/* ===== CONFIG (ตัวล่าสุด) ===== */
+const API="https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
+const API_KEY="SBTH-SECURE-2026";
 
 /* ===== AUTH ===== */
-const userId = localStorage.getItem('user_id');
-const serviceId = localStorage.getItem('service_id');
-if(!userId || !serviceId){
-  location.href = 'services.html';
-  throw '';
-}
+const userId=localStorage.getItem('user_id');
+const serviceId=localStorage.getItem('service_id');
+if(!userId||!serviceId){location.href='services.html';throw'';}
 
 /* ===== DOM ===== */
 const creditEl=document.getElementById('credit');
 const serviceName=document.getElementById('serviceName');
 const serviceDesc=document.getElementById('serviceDesc');
 const qtyEl=document.getElementById('qty');
+const commentText=document.getElementById('commentText');
+const commentCountEl=document.getElementById('commentCount');
+const qtyBox=document.getElementById('qtyBox');
+const commentBox=document.getElementById('commentBox');
 const linkEl=document.getElementById('link');
 const totalEl=document.getElementById('total');
 const errorEl=document.getElementById('error');
 const buyBtn=document.getElementById('buyBtn');
 
-let service=null, discounts=[], finalTotal=0, credit=0;
+let service=null, discounts=[], credit=0, finalQty=0, finalTotal=0;
 
 /* ===== LOAD CREDIT ===== */
-fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}&_=${Date.now()}`)
+fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
 .then(r=>r.json())
 .then(u=>{
-  credit = Number(u?.credit||0);
-  creditEl.innerText = credit.toFixed(2);
-})
-.catch(()=>creditEl.innerText='0.00');
+  credit=Number(u?.credit||0);
+  creditEl.innerText=credit.toFixed(2);
+});
 
 /* ===== LOAD SERVICE ===== */
 Promise.all([
   fetch(`${API}?action=services&api_key=${API_KEY}`).then(r=>r.json()),
   fetch(`${API}?action=discounts&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json())
 ]).then(([services,disc])=>{
-  service = services.find(s=>String(s.service_id)===String(serviceId));
-  discounts = Array.isArray(disc)?disc:[];
-  if(!service){
-    alert('ไม่พบบริการ');
-    location.href='services.html';
-    return;
+  service=services.find(s=>String(s.service_id)===String(serviceId));
+  discounts=Array.isArray(disc)?disc:[];
+  serviceName.innerText=service.display_name;
+  serviceDesc.innerText=service.short_desc||'';
+
+  if(service.service_type==='comment'){
+    qtyBox.classList.add('hide');
+    commentBox.classList.remove('hide');
+    commentText.oninput=calcComment;
+  }else{
+    qtyEl.value=service.min_qty;
+    qtyEl.oninput=calcNormal;
+    calcNormal();
   }
-  serviceName.innerText = service.display_name;
-  serviceDesc.innerText = service.short_desc || '';
-  qtyEl.value = service.min_qty;
-  calc();
 });
 
-/* ===== CALC ===== */
-qtyEl.oninput = calc;
-function calc(){
-  if(!service) return;
-  const q = Number(qtyEl.value||0);
-  buyBtn.disabled = true;
+/* ===== CALC NORMAL ===== */
+function calcNormal(){
+  const q=Number(qtyEl.value||0);
+  finalQty=q;
+  calcTotal(q);
+}
 
-  if(q < Number(service.min_qty)){
-    errorEl.innerText = `ขั้นต่ำ ${service.min_qty}`;
-    totalEl.innerText = '0.00';
+/* ===== CALC COMMENT ===== */
+function calcComment(){
+  const lines=commentText.value
+    .split('\n')
+    .map(x=>x.trim())
+    .filter(x=>x!=='');
+
+  finalQty=lines.length;
+  commentCountEl.innerText=finalQty;
+  calcTotal(finalQty);
+}
+
+/* ===== CALC TOTAL ===== */
+function calcTotal(q){
+  buyBtn.disabled=true;
+  errorEl.innerText='';
+
+  if(q<Number(service.min_qty)){
+    errorEl.innerText=`ขั้นต่ำ ${service.min_qty}`;
+    totalEl.innerText='0.00';
     return;
   }
 
-  const base = (q*Number(service.price_per_100))/100;
-  const d = discounts.find(x=>q>=Number(x.min_qty)&&q<=Number(x.max_qty));
-  finalTotal = d ? q*Number(d.price) : base;
+  const base=(q*Number(service.price_per_100))/100;
+  const d=discounts.find(x=>q>=Number(x.min_qty)&&q<=Number(x.max_qty));
+  finalTotal=d? q*Number(d.price):base;
 
-  if(finalTotal > credit){
-    errorEl.innerText = 'เครดิตไม่เพียงพอ';
-    totalEl.innerText = finalTotal.toFixed(2);
+  if(finalTotal>credit){
+    errorEl.innerText='เครดิตไม่เพียงพอ';
+    totalEl.innerText=finalTotal.toFixed(2);
     return;
   }
 
-  errorEl.innerText = '';
-  totalEl.innerText = finalTotal.toFixed(2);
-  buyBtn.disabled = false;
+  totalEl.innerText=finalTotal.toFixed(2);
+  buyBtn.disabled=false;
 }
 
 /* ===== CREATE ORDER ===== */
-buyBtn.onclick = ()=>{
+buyBtn.onclick=()=>{
   if(!linkEl.value.trim()){
-    errorEl.innerText = 'กรุณาใส่ลิงก์';
+    errorEl.innerText='กรุณาใส่ลิงก์';
     return;
   }
 
-  buyBtn.disabled = true;
+  buyBtn.disabled=true;
 
   fetch(
     `${API}?action=create_order&api_key=${API_KEY}`+
     `&user_id=${userId}&service_id=${serviceId}`+
-    `&qty=${qtyEl.value}&link=${encodeURIComponent(linkEl.value.trim())}`+
-    `&_=${Date.now()}`
+    `&qty=${finalQty}`+
+    `&link=${encodeURIComponent(linkEl.value.trim())}`+
+    `&comment_text=${encodeURIComponent(commentText.value||'')}`
   )
   .then(r=>r.json())
   .then(res=>{
     if(!res.success){
-      errorEl.innerText = res.message==='NO_CREDIT'
-        ? 'เครดิตไม่เพียงพอ'
-        : 'สั่งซื้อไม่สำเร็จ';
-      buyBtn.disabled = false;
+      errorEl.innerText='สั่งซื้อไม่สำเร็จ';
+      buyBtn.disabled=false;
       return;
     }
     localStorage.removeItem('service_id');
-    location.href = 'orders.html';
+    location.href='orders.html';
   })
   .catch(()=>{
-    errorEl.innerText = 'เชื่อมต่อระบบไม่ได้';
-    buyBtn.disabled = false;
+    errorEl.innerText='เชื่อมต่อระบบไม่ได้';
+    buyBtn.disabled=false;
   });
 };
 </script>
