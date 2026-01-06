@@ -130,6 +130,7 @@ const API_KEY = "SBTH-SECURE-2026";
 const userId = localStorage.getItem('user_id');
 if(!userId){
   location.href='login.html';
+  throw '';
 }
 
 /* ================= DOM ================= */
@@ -145,26 +146,37 @@ function logout(){localStorage.clear();location.href='login.html'}
 
 /* ================= CREDIT ================= */
 function loadCredit(){
-  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
-    .then(r=>r.json())
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${encodeURIComponent(userId)}&_=${Date.now()}`)
+    .then(r=>{
+      if(!r.ok) throw 0;
+      return r.json();
+    })
     .then(u=>{
       if(!u || u.error) throw 0;
       creditEl.innerText = Number(u.credit||0).toFixed(2);
     })
-    .catch(()=>creditEl.innerText='0.00');
+    .catch(()=>{
+      creditEl.innerText='0.00';
+    });
 }
 
 /* ================= SERVICES ================= */
 function loadServices(){
   box.innerHTML='⏳ กำลังโหลดบริการ...';
-  fetch(`${API}?action=services&api_key=${API_KEY}`)
-    .then(r=>r.json())
+
+  fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
+    .then(r=>{
+      if(!r.ok) throw 0;
+      return r.json();
+    })
     .then(list=>{
       box.innerHTML='';
-      if(!Array.isArray(list)||!list.length){
+
+      if(!Array.isArray(list) || !list.length){
         box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';
         return;
       }
+
       list.forEach(s=>{
         box.insertAdjacentHTML('beforeend',`
           <div class="service">
@@ -179,14 +191,16 @@ function loadServices(){
                 <span>/ 100 ${s.unit}</span>
                 <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
               </div>
-              <button class="btn" onclick="selectService('${s.service_id}')">เลือกแพ็กเกจ</button>
+              <button class="btn" onclick="selectService('${s.service_id}')">
+                เลือกแพ็กเกจ
+              </button>
             </div>
           </div>
         `);
       });
     })
     .catch(()=>{
-      box.innerHTML='<div class="error">❌ โหลดบริการไม่สำเร็จ</div>';
+      box.innerHTML='<div class="error">❌ ไม่สามารถเชื่อมต่อระบบได้</div>';
     });
 }
 
