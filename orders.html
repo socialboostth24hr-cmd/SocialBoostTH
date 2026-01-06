@@ -10,9 +10,6 @@
   --pink:#ec4899;
   --purple:#8b5cf6;
   --blue:#38bdf8;
-  --green:#22c55e;
-  --red:#ef4444;
-  --yellow:#f59e0b;
 }
 *{box-sizing:border-box}
 
@@ -24,7 +21,7 @@ body{
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
 
-/* ===== HEADER (ใช้ร่วมทุกหน้า) ===== */
+/* ===== HEADER (กลาง ใช้ทุกหน้า) ===== */
 .header{
   padding:12px 16px;
   display:flex;
@@ -36,12 +33,15 @@ body{
   z-index:50;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
+
 .left,.center{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
 }
+
 .logo{height:32px}
+
 .back-btn{
   border:none;
   padding:6px 14px;
@@ -50,18 +50,25 @@ body{
   font-weight:700;
   cursor:pointer;
 }
+
+/* ปุ่มเมนูกลาง */
 .nav-btn{
   border:none;
-  padding:8px 14px;
+  padding:8px 16px;
   border-radius:999px;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;
+  background:#f1f5f9;
   font-size:13px;
   font-weight:800;
   cursor:pointer;
 }
 
-/* layout */
+/* 🔥 เน้นเฉพาะปุ่มเติมเงิน */
+.nav-btn.topup{
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;
+}
+
+/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:0 auto;
@@ -74,7 +81,7 @@ body{
   margin-bottom:14px;
 }
 
-/* order card */
+/* ===== ORDER CARD ===== */
 .order{
   background:#fff;
   border-radius:20px;
@@ -84,9 +91,7 @@ body{
   cursor:pointer;
   transition:.2s;
 }
-.order:hover{
-  transform:translateY(-2px);
-}
+.order:hover{ transform:translateY(-2px); }
 
 .row{
   display:flex;
@@ -98,7 +103,7 @@ body{
 .order-id{font-weight:900}
 .amount{font-weight:900}
 
-/* status badge */
+/* status */
 .status{
   display:inline-block;
   padding:4px 10px;
@@ -126,13 +131,13 @@ body{
 <!-- ===== HEADER ===== -->
 <header class="header">
   <div class="left">
-    <button class="back-btn" onclick="location.href='services.html'">← กลับ</button>
+    <button class="back-btn" onclick="goBack()">← กลับ</button>
   </div>
 
   <div class="center">
-    <button class="nav-btn" onclick="location.href='services.html'">🛒 บริการ</button>
-    <button class="nav-btn" onclick="location.href='topup.html'">💰 เติมเงิน</button>
-    <button class="nav-btn" onclick="location.href='orders.html'">📦 คำสั่งซื้อ</button>
+    <button class="nav-btn" onclick="location.href='services.html'">บริการ</button>
+    <button class="nav-btn" onclick="location.href='orders.html'">คำสั่งซื้อ</button>
+    <button class="nav-btn topup" onclick="location.href='topup.html'">เติมเงิน</button>
   </div>
 
   <img
@@ -146,12 +151,15 @@ body{
 </div>
 
 <script>
+/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycby58YZ9GnqXOkvJ-OxGYGKuxBgAzRKgTAKUFmatesWd5DAqQUlksagVuB5Pg_5Y5oBJIw/exec";
-const userId=localStorage.getItem('user_id');
+const userId = localStorage.getItem('user_id');
 
-if(!userId) location.href='login.html';
+if(!userId){
+  location.href='login.html';
+}
 
-const box=document.getElementById('orders');
+const box = document.getElementById('orders');
 
 function statusText(s){
   if(s==='pending') return '⏳ รอดำเนินการ';
@@ -161,7 +169,7 @@ function statusText(s){
   return s;
 }
 
-/* load orders */
+/* LOAD ORDERS */
 function loadOrders(){
   fetch(API+'?action=orders&user_id='+userId)
     .then(r=>r.json())
@@ -209,7 +217,14 @@ function openDetail(id){
   location.href='order-detail.html';
 }
 
-/* initial + realtime */
+/* SMART BACK */
+function goBack(){
+  history.length > 1
+    ? history.back()
+    : location.href='services.html';
+}
+
+/* INIT */
 loadOrders();
 setInterval(loadOrders,10000);
 </script>
