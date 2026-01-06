@@ -21,30 +21,73 @@ body{
     radial-gradient(900px 360px at top,#fde7f3,transparent),
     linear-gradient(180deg,#eef6ff,#ffffff);
 }
+
+/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
-  display:flex;
-  justify-content:space-between;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
   align-items:center;
+  gap:12px;
   background:#fff;
   position:sticky;
   top:0;
   z-index:50;
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
+.left,.right{display:flex;align-items:center;gap:10px}
+.center{
+  text-align:center;
+  font-weight:900;
+  font-size:16px;
+  letter-spacing:.3px;
+}
 .logo{height:32px}
-.back-btn,.menu-btn{
+.menu-btn,.back-btn{
   border:none;
-  padding:8px 14px;
+  padding:6px 14px;
   border-radius:999px;
   background:#f1f5f9;
+  font-weight:800;
   cursor:pointer;
-  font-size:16px;
 }
+.wallet{
+  font-size:13px;
+  background:#f8fafc;
+  padding:6px 14px;
+  border-radius:999px;
+  font-weight:900;
+}
+
+/* ===== MENU ===== */
+.menu-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.35);
+  display:none;z-index:99;
+}
+.side-menu{
+  position:fixed;right:-260px;top:0;
+  width:260px;height:100%;
+  background:#fff;padding:20px;
+  z-index:100;transition:.3s;
+  box-shadow:-10px 0 30px rgba(0,0,0,.2);
+}
+.side-menu.open{right:0}
+.side-menu a{
+  display:block;
+  padding:12px 0;
+  font-weight:800;
+  color:#111827;
+  text-decoration:none;
+  border-bottom:1px solid #e5e7eb;
+}
+.side-menu a.logout{color:#ef4444;border:none}
+
+/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:auto;
-  padding:14px 18px 140px;
+  padding:16px 18px 140px;
 }
 .card{
   background:#fff;
@@ -55,18 +98,20 @@ body{
 }
 .title{font-size:22px;font-weight:900}
 .desc{font-size:14px;color:#64748b}
+
 .badge-pop{
   display:none;
-  margin-top:6px;
+  margin-top:8px;
   background:linear-gradient(90deg,#fde68a,#f59e0b);
   color:#92400e;
   font-size:12px;
-  font-weight:800;
-  padding:4px 10px;
+  font-weight:900;
+  padding:4px 12px;
   border-radius:999px;
 }
+
 .field{margin-top:14px}
-label{font-weight:700}
+label{font-weight:800}
 input,textarea{
   width:100%;
   padding:14px;
@@ -74,25 +119,31 @@ input,textarea{
   border:1px solid #e5e7eb;
   margin-top:6px;
 }
-.price-box{display:flex;justify-content:space-between;margin-top:10px}
-.discount{color:#ef4444}
-.total{font-size:20px;font-weight:900;margin-top:14px}
-.error{color:#ef4444;margin-top:10px;font-weight:900}
+
 .progress{
   height:10px;
   background:#e5e7eb;
   border-radius:999px;
   overflow:hidden;
+  margin-top:10px;
 }
 .progress div{
   height:100%;
   width:0%;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  transition:.3s;
 }
+
+.price-box{display:flex;justify-content:space-between;margin-top:10px}
+.discount{color:#ef4444}
+.total{font-size:20px;font-weight:900;margin-top:14px}
+.save-text{margin-top:8px;font-weight:900;color:var(--green)}
+.error{color:#ef4444;margin-top:10px;font-weight:900}
+
+/* BUY BUTTON */
 .buy-btn{
   position:fixed;
-  bottom:16px;
-  left:50%;
+  bottom:16px;left:50%;
   transform:translateX(-50%);
   width:calc(100% - 32px);
   max-width:480px;
@@ -103,62 +154,65 @@ input,textarea{
   color:#fff;
   font-size:18px;
   font-weight:900;
+  cursor:pointer;
 }
 .buy-btn:disabled{opacity:.6}
-.menu-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.35);
-  display:none;z-index:99;
-}
-.side-menu{
-  position:fixed;top:0;right:-260px;
-  width:260px;height:100%;
-  background:#fff;z-index:100;
-  padding:20px;transition:.3s;
-}
-.side-menu.open{right:0}
-.side-menu a{
-  display:block;
-  padding:12px 0;
-  font-weight:800;
-  text-decoration:none;
-  color:#111827;
-}
-.side-menu a.logout{color:#ef4444}
 </style>
 </head>
 
 <body>
 
 <header class="header">
-  <button class="back-btn" onclick="history.back()">← กลับ</button>
-  <button class="menu-btn" onclick="openMenu()">☰</button>
-  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+  <div class="left">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+  </div>
+  <div class="center">SocialBoostTH</div>
+  <div class="right">
+    <div class="wallet">เครดิต: <span id="credit">0</span> บาท</div>
+    <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+  </div>
 </header>
 
 <div class="container">
+
   <div class="card">
-    <div class="title" id="serviceName">กำลังโหลด...</div>
+    <div class="title" id="serviceName">กำลังโหลด…</div>
     <div class="desc" id="serviceDesc"></div>
     <div class="badge-pop" id="popularBadge">⭐ คนส่วนใหญ่สั่งระดับนี้</div>
   </div>
 
   <div class="card">
-    <label>จำนวน</label>
-    <input type="number" id="qty">
-    <div class="error" id="minText"></div>
+    <div class="field">
+      <label>จำนวน</label>
+      <input type="number" id="qty">
+      <div class="error" id="minText"></div>
+    </div>
 
     <div class="progress"><div id="progressBar"></div></div>
 
-    <label>ลิงก์ TikTok</label>
-    <textarea id="link"></textarea>
+    <div class="field">
+      <label>ลิงก์ TikTok</label>
+      <textarea id="link" placeholder="https://www.tiktok.com/@username"></textarea>
+    </div>
 
-    <div class="price-box"><div>ราคาปกติ</div><b id="basePrice">0</b></div>
-    <div class="price-box discount"><div>ส่วนลด</div><b id="discount">0%</b></div>
-    <div class="total">รวม: <span id="total">0</span> บาท</div>
+    <div class="price-box">
+      <div>ราคาปกติ</div>
+      <div><b id="basePrice">0</b> บาท</div>
+    </div>
+
+    <div class="price-box discount">
+      <div>ส่วนลด</div>
+      <div><b id="discount">0%</b></div>
+    </div>
+
+    <div class="save-text" id="saveText"></div>
+
+    <div class="total">รวมทั้งหมด: <span id="total">0</span> บาท</div>
 
     <div class="error" id="error"></div>
   </div>
+
 </div>
 
 <button class="buy-btn" id="buyBtn">ยืนยันสั่งซื้อ</button>
@@ -180,12 +234,28 @@ const serviceId=localStorage.getItem('service_id');
 if(!userId) location.href='login.html';
 if(!serviceId) location.href='services.html';
 
+const creditEl=document.getElementById('credit');
+const qty=document.getElementById('qty');
+const progressBar=document.getElementById('progressBar');
+const popularBadge=document.getElementById('popularBadge');
+
+let service=null,discounts=[],finalTotal=0;
+
+/* MENU */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
 function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
 function logout(){localStorage.clear();location.href='login.html'}
 
-let service=null,discounts=[],finalTotal=0;
+/* LOAD CREDIT */
+fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}`)
+.then(r=>r.json())
+.then(w=>{
+  const credit=w.reduce((s,x)=>s+Number(x.amount),0);
+  localStorage.setItem('credit',credit);
+  creditEl.innerText=credit.toFixed(2);
+});
 
+/* LOAD SERVICE */
 Promise.all([
  fetch(`${API}?action=services&api_key=${API_KEY}`).then(r=>r.json()),
  fetch(`${API}?action=discounts&service_id=${serviceId}&api_key=${API_KEY}`).then(r=>r.json())
@@ -203,12 +273,17 @@ qty.oninput=calc;
 
 function calc(){
  const q=Number(qty.value);
+ if(q<service.min_qty){error.innerText='ต่ำกว่าขั้นต่ำ';return}
+ error.innerText='';
  const base=(q*service.price_per_100)/100;
  const d=discounts.find(x=>q>=x.min_qty&&q<=x.max_qty);
  finalTotal=d? q*d.price:base;
  basePrice.innerText=base.toFixed(2);
  discount.innerText=(d?.discount_percent||0)+'%';
  total.innerText=finalTotal.toFixed(2);
+ saveText.innerText=base>finalTotal?`🔥 ประหยัด ${(base-finalTotal).toFixed(2)} บาท`:'';
+ progressBar.style.width=Math.min(100,(q/(d?d.min_qty:q))*100)+'%';
+ popularBadge.style.display=d?.is_popular==='on'?'inline-block':'none';
 }
 
 buyBtn.onclick=()=>{
@@ -230,12 +305,6 @@ buyBtn.onclick=()=>{
  .then(r=>r.json())
  .then(res=>{
   if(!res.success) throw res;
-  return fetch(`${API}?action=wallet&user_id=${userId}&api_key=${API_KEY}`);
- })
- .then(r=>r.json())
- .then(w=>{
-  const credit=w.reduce((s,x)=>s+Number(x.amount),0);
-  localStorage.setItem('credit',credit);
   location.href='orders.html';
  })
  .catch(()=>{
