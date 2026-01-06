@@ -169,14 +169,12 @@ body{
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const API="https://script.google.com/macros/s/AKfycbxzt4nj3NhnS-P6K4b_VHGeclJYS1ZWyv04BtPe0IpKVTg60yaLmO7oAFKwD1wfCE9-qg/exec";
+/* ===== CONFIG (ใช้ Script ตัวล่าสุดเท่านั้น) ===== */
+const API="https://script.google.com/macros/s/AKfycby9v2qEZUQ8khjh5h0rTx0uvc2XXUDm4WBQ1WOQKvhAlUF6MYXflVG45ulNLDy-V542lg/exec";
 const API_KEY="SBTH-SECURE-2026";
 
 const userId = localStorage.getItem('user_id');
-if(!userId){
-  location.href='login.html';
-}
+if(!userId) location.href='login.html';
 
 const box=document.getElementById('orders');
 const updateText=document.getElementById('updateText');
@@ -195,7 +193,7 @@ function logout(){
   location.href='login.html';
 }
 
-/* ===== STATUS ===== */
+/* ===== STATUS TEXT ===== */
 function statusText(s){
   if(s==='pending') return '⏳ รอดำเนินการ';
   if(s==='processing') return '🚀 กำลังดำเนินการ';
@@ -207,7 +205,7 @@ function statusText(s){
 /* ===== LOAD ORDERS ===== */
 function loadOrders(){
   updateText.innerText='กำลังอัปเดต...';
-  fetch(`${API}?action=orders&user_id=${userId}&api_key=${API_KEY}&_ts=${Date.now()}`)
+  fetch(`${API}?action=orders&user_id=${userId}&api_key=${API_KEY}&_=${Date.now()}`)
     .then(r=>r.json())
     .then(list=>{
       box.innerHTML='';
@@ -216,6 +214,7 @@ function loadOrders(){
         updateText.innerText='—';
         return;
       }
+
       list.reverse().forEach(o=>{
         box.innerHTML+=`
           <div class="order" onclick="openDetail('${o.order_id}')">
@@ -230,6 +229,7 @@ function loadOrders(){
           </div>
         `;
       });
+
       updateText.innerText='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
     })
     .catch(()=>{
