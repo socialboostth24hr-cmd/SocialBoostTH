@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>เติมเงิน | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 :root{--pink:#ec4899;--purple:#8b5cf6;--blue:#38bdf8}
 *{box-sizing:border-box}
@@ -37,17 +38,69 @@ body{
   color:#111827;text-decoration:none;border-bottom:1px solid #e5e7eb;
 }
 .side-menu a.logout{color:#ef4444;border:none}
+
 .container{max-width:720px;margin:0 auto;padding:16px 18px 120px}
 .card{
   background:#fff;border-radius:22px;padding:20px;margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
 }
 h2{margin:0 0 14px;font-size:22px;font-weight:900}
+
 input{
   width:100%;padding:14px;border-radius:14px;border:1px solid #e5e7eb;
   font-size:15px;
 }
 .error{margin-top:8px;font-size:13px;font-weight:900;color:#dc2626;display:none}
+
+/* 🔥 PACKAGE */
+.pkg-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-bottom:16px;
+}
+.pkg{
+  background:#fff;
+  border-radius:18px;
+  padding:14px 10px;
+  text-align:center;
+  cursor:pointer;
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+  transition:.2s;
+}
+.pkg:hover{transform:translateY(-2px)}
+.pkg.highlight{
+  border:2px solid var(--purple);
+  box-shadow:0 18px 40px rgba(139,92,246,.35);
+}
+.pkg-price{
+  font-size:24px;
+  font-weight:900;
+}
+.pkg-desc{
+  font-size:12px;
+  color:#64748b;
+  margin-top:4px;
+}
+.pkg-badge{
+  display:inline-block;
+  background:#e5e7eb;
+  color:#111827;
+  font-size:11px;
+  font-weight:900;
+  padding:4px 10px;
+  border-radius:999px;
+  margin-bottom:6px;
+}
+.pkg-badge.best{
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;
+}
+@media(max-width:520px){
+  .pkg-grid{grid-template-columns:1fr}
+}
+
+/* ===== ของเดิม ===== */
 .calc-box{
   margin-top:14px;padding:18px;border-radius:18px;
   background:linear-gradient(135deg,#dcfce7,#bbf7d0);
@@ -93,6 +146,31 @@ input{
 
 <div class="container">
 
+  <!-- 🔥 PACKAGE -->
+  <div class="card">
+    <h2>🔥 แพ็กเกจแนะนำ (คุ้มกว่า)</h2>
+    <div class="pkg-grid">
+      <div class="pkg" onclick="pickAmount(199)">
+        <div class="pkg-badge">ทดลอง</div>
+        <div class="pkg-price">199฿</div>
+        <div class="pkg-desc">ลองใช้งานระบบ</div>
+      </div>
+
+      <div class="pkg highlight" onclick="pickAmount(299)">
+        <div class="pkg-badge best">แนะนำ</div>
+        <div class="pkg-price">299฿</div>
+        <div class="pkg-desc">คุ้มสุด • ใช้ได้หลายงาน</div>
+      </div>
+
+      <div class="pkg" onclick="pickAmount(499)">
+        <div class="pkg-badge">ยอดนิยม</div>
+        <div class="pkg-price">499฿</div>
+        <div class="pkg-desc">ใช้งานต่อเนื่อง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🧾 เติมเงิน -->
   <div class="card">
     <h2>➕ เติมเงิน (พร้อมเพย์)</h2>
 
@@ -124,6 +202,7 @@ input{
     </div>
   </div>
 
+  <!-- WALLET -->
   <div class="card">
     <h2>💰 ประวัติการเติมเงิน</h2>
     <table class="table">
@@ -137,9 +216,9 @@ input{
       <tbody id="wallet"></tbody>
     </table>
   </div>
-
 </div>
 
+<!-- MENU -->
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
   <a href="services.html">📦 บริการ</a>
@@ -149,15 +228,12 @@ input{
 </div>
 
 <script>
-/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* ===== AUTH ===== */
 const userId = localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
-/* ===== DOM ===== */
 const amountEl=document.getElementById('amount');
 const errorText=document.getElementById('errorText');
 const calcBox=document.getElementById('calcBox');
@@ -167,6 +243,13 @@ const confirmedBox=document.getElementById('confirmedBox');
 const walletBox=document.getElementById('wallet');
 const confirmBtn=document.getElementById('confirmBtn');
 let lockedAmount=null;
+
+/* PACKAGE PICK */
+function pickAmount(v){
+  amountEl.value=v;
+  amountEl.dispatchEvent(new Event('input'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
 /* MENU */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
@@ -192,45 +275,35 @@ amountEl.oninput=()=>{
   confirmedBox.style.display='none';
 };
 
-/* CONFIRM — ✅ ใช้ request_topup (ไม่กระทบของเดิม) */
+/* CONFIRM */
 confirmBtn.onclick=()=>{
   if(!lockedAmount){alert('กรุณากรอกยอดก่อน');return;}
   confirmBtn.disabled=true;
 
-  const url =
-    API +
-    `?action=request_topup` +
-    `&api_key=${API_KEY}` +
-    `&user_id=${encodeURIComponent(userId)}` +
-    `&amount=${encodeURIComponent(lockedAmount)}` +
-    `&method=promptpay` +
-    `&_=${Date.now()}`;
-
-  fetch(url)
-    .then(r=>r.json())
-    .then(res=>{
-      if(!res||res.success!==true){
-        alert('บันทึกการเติมเงินไม่สำเร็จ');
-        confirmBtn.disabled=false;
-        return;
-      }
+  fetch(
+    `${API}?action=request_topup&api_key=${API_KEY}`+
+    `&user_id=${userId}&amount=${lockedAmount}`
+  )
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.success){
       confirmedBox.style.display='block';
       amountEl.value='';
       lockedAmount=null;
       loadWallet();
-    })
-    .catch(()=>alert('เชื่อมต่อระบบไม่ได้'))
-    .finally(()=>confirmBtn.disabled=false);
+    }else alert('บันทึกไม่สำเร็จ');
+  })
+  .finally(()=>confirmBtn.disabled=false);
 };
 
 /* WALLET */
 function loadWallet(){
   walletBox.innerHTML='<tr><td colspan="3" class="empty">กำลังโหลด...</td></tr>';
-  fetch(`${API}?action=wallet&api_key=${API_KEY}&user_id=${userId}&_=${Date.now()}`)
+  fetch(`${API}?action=wallet&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(list=>{
       walletBox.innerHTML='';
-      if(!Array.isArray(list)||!list.length){
+      if(!list.length){
         walletBox.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
         return;
       }
