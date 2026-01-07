@@ -13,6 +13,7 @@
   --purple:#8b5cf6;
   --pink:#ec4899;
   --green:#22c55e;
+  --red:#fb7185;
 }
 *{box-sizing:border-box}
 body{
@@ -23,95 +24,64 @@ body{
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
+
 .header{
   padding:12px 16px;
   display:grid;
   grid-template-columns:auto 1fr auto;
   align-items:center;
-  gap:12px;
   background:rgba(2,6,23,.85);
   backdrop-filter:blur(14px);
-  position:sticky;
-  top:0;
-  z-index:50;
+  position:sticky;top:0;z-index:50;
 }
+
 .left,.right{display:flex;gap:10px;align-items:center}
 .center{
-  text-align:center;
-  font-weight:900;
-  font-size:17px;
+  font-weight:900;font-size:17px;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 .logo{height:32px}
+
 .menu-btn,.refresh-btn{
-  border:none;
-  padding:6px 14px;
-  border-radius:999px;
+  border:none;padding:6px 14px;border-radius:999px;
   background:rgba(255,255,255,.08);
-  font-weight:900;
-  color:#e5e7eb;
-  cursor:pointer;
+  font-weight:900;color:#e5e7eb;cursor:pointer;
 }
+
 .wallet{
-  font-size:13px;
-  padding:6px 14px;
-  border-radius:999px;
+  font-size:13px;padding:6px 14px;border-radius:999px;
   font-weight:900;
   background:
     linear-gradient(180deg,#020617,#020617) padding-box,
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
+
 .container{
-  max-width:720px;
-  margin:auto;
+  max-width:720px;margin:auto;
   padding:26px 18px 140px;
 }
 .title{font-size:28px;font-weight:900;margin:10px 0 6px}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:14px}
 
-.search{margin-bottom:18px}
+/* SEARCH */
 .search input{
-  width:100%;
-  padding:14px 16px;
-  border-radius:14px;
+  width:100%;padding:14px 16px;border-radius:14px;
   border:1px solid rgba(148,163,184,.2);
-  background:#020617;
-  color:#fff;
-  font-size:14px;
+  background:#020617;color:#fff;
 }
 
-/* menu */
-.menu-overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.6);
-  z-index:999;
-  display:none;
-}
-.side-menu{
-  position:fixed;
-  left:-260px; top:0;
-  width:260px;height:100%;
-  background:#05070f;
-  padding:22px 20px;
-  z-index:1000;
-  transition:.3s;
-}
-.side-menu.open{left:0}
-.side-menu .user{font-weight:900;margin-bottom:20px}
-.side-menu a{
-  display:block;
-  padding:14px 0;
-  color:#e5e7eb;
-  text-decoration:none;
+/* SECTION */
+.section-title{
+  font-size:16px;
   font-weight:900;
-  border-bottom:1px solid rgba(255,255,255,.08);
+  color:#fde047;
+  margin:22px 0 10px;
 }
-.side-menu a.logout{color:#fb7185}
 
-/* service card */
+/* SERVICE CARD */
 .service{
   background:#020617;
   border:1px solid rgba(148,163,184,.15);
@@ -121,29 +91,25 @@ body{
 }
 .service-name{font-weight:900;font-size:18px}
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
-.value-hint{font-size:12px;color:#e5e7eb;margin-bottom:10px}
+.value-hint{font-size:12px;margin-bottom:10px}
 .bottom{display:flex;justify-content:space-between;align-items:center}
 .price{font-weight:900;color:#a5b4fc}
+
 .btn{
-  border:none;
-  padding:10px 16px;
-  border-radius:999px;
-  font-weight:900;
-  color:#fff;
-  cursor:pointer;
+  border:none;padding:10px 16px;border-radius:999px;
+  font-weight:900;color:#fff;
   background:linear-gradient(135deg,var(--blue),var(--purple));
 }
+
+/* BADGE */
 .badge{
-  display:inline-block;
-  font-size:11px;
+  display:inline-block;font-size:11px;
+  padding:4px 10px;border-radius:999px;margin-left:6px;
   font-weight:900;
-  padding:4px 10px;
-  border-radius:999px;
-  margin-left:6px;
 }
-.badge.bestseller{background:#fb7185}
-.badge.recommended{background:#38bdf8}
-.badge.premium{background:#22c55e}
+.badge.bestseller{background:var(--red)}
+.badge.recommended{background:var(--blue)}
+.badge.premium{background:var(--green)}
 .badge.boost{background:#a78bfa}
 </style>
 </head>
@@ -167,52 +133,25 @@ body{
   <div class="subtitle">ระบบอัตโนมัติ • ปลอดภัย • 24 ชั่วโมง</div>
 
   <div class="search">
-    <input id="search" placeholder="🔍 ค้นหาบริการ เช่น Followers, Likes, TH…" oninput="renderServices()">
+    <input id="search" placeholder="🔍 ค้นหาบริการ" oninput="renderServices()">
   </div>
 
+  <div id="bestsellerBox"></div>
   <div id="services"></div>
 </div>
 
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
-<div class="side-menu" id="sideMenu">
-  <div class="user">👤 <span id="username"></span></div>
-  <a href="services.html">📦 บริการ</a>
-  <a href="orders.html">🧾 คำสั่งซื้อ</a>
-  <a href="topup.html">💰 เติมเงิน</a>
-  <a class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
-</div>
-
 <script>
-/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
-const SESSION_LIMIT = 24*60*60*1000;
-const CACHE_TTL = 5*60*1000;
 
-/* ===== AUTH (หัวใจของปัญหาเดิม) ===== */
-const userId   = localStorage.getItem('user_id');
-const username = localStorage.getItem('username');
-const loginAt  = Number(localStorage.getItem('login_at'));
+/* AUTH */
+const userId=localStorage.getItem('user_id');
+const username=localStorage.getItem('username');
+if(!userId||!username){location.replace('login.html')}
 
-if(!userId || !username || !loginAt || Date.now()-loginAt>SESSION_LIMIT){
-  localStorage.clear();
-  location.replace('login.html');
-}
-
-document.getElementById('username').textContent=username;
-
-/* ===== MENU ===== */
-const sideMenu=document.getElementById('sideMenu');
-const menuOverlay=document.getElementById('menuOverlay');
-function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.replace('login.html')}
-
-/* ===== CREDIT ===== */
+/* CREDIT AUTO REFRESH */
 const creditEl=document.getElementById('credit');
 function loadCredit(){
-  const cache=localStorage.getItem('credit');
-  if(cache) creditEl.textContent=Number(cache).toFixed(2);
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
@@ -222,60 +161,65 @@ function loadCredit(){
       }
     });
 }
+setInterval(loadCredit,25000);
+loadCredit();
 
-/* ===== SERVICES + CACHE ===== */
+/* SERVICES */
 let allServices=[];
 function loadServices(){
-  const cache=JSON.parse(localStorage.getItem('services_cache')||'null');
-  if(cache && Date.now()-cache.time<CACHE_TTL){
-    allServices=cache.data;
-    renderServices();
-    return;
-  }
   fetch(`${API}?action=getServices&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(res=>{
       allServices=res.services||[];
-      localStorage.setItem('services_cache',JSON.stringify({time:Date.now(),data:allServices}));
       renderServices();
     });
 }
 
+function card(s){
+return `
+<div class="service">
+  <div class="service-name">
+    ${s.display_name}
+    ${s.badge?`<span class="badge ${s.badge}">${s.badge}</span>`:''}
+  </div>
+  <div class="service-desc">${s.short_desc||''}</div>
+  <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
+  <div class="bottom">
+    <div class="price">${s.price_per_100} /100 ${s.unit}</div>
+    <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
+  </div>
+</div>`;
+}
+
 function renderServices(){
   const q=document.getElementById('search').value.toLowerCase();
+  const best=document.getElementById('bestsellerBox');
   const box=document.getElementById('services');
-  box.innerHTML='';
-  allServices
-    .filter(s=>s.display_name.toLowerCase().includes(q))
-    .forEach(s=>{
-      box.insertAdjacentHTML('beforeend',`
-        <div class="service">
-          <div class="service-name">
-            ${s.display_name}
-            ${s.badge?`<span class="badge ${s.badge}">${s.badge}</span>`:''}
-          </div>
-          <div class="service-desc">${s.short_desc||''}</div>
-          <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
-          <div class="bottom">
-            <div class="price">${s.price_per_100} /100 ${s.unit}</div>
-            <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
-          </div>
-        </div>
-      `);
-    });
+  best.innerHTML=''; box.innerHTML='';
+
+  const filtered=allServices.filter(s=>s.display_name.toLowerCase().includes(q));
+
+  const bestseller=filtered.filter(s=>s.badge==='bestseller');
+  if(bestseller.length){
+    best.innerHTML='<div class="section-title">🔥 บริการขายดี</div>'+
+      bestseller.map(card).join('');
+  }
+
+  filtered
+    .filter(s=>s.badge!=='bestseller')
+    .sort((a,b)=>{
+      const rank={recommended:1,premium:2,boost:3};
+      return (rank[a.badge]||9)-(rank[b.badge]||9);
+    })
+    .forEach(s=>box.insertAdjacentHTML('beforeend',card(s)));
 }
 
 function selectService(id){
   localStorage.setItem('service_id',id);
   location.href='order.html';
 }
+function hardReload(){loadServices()}
 
-function hardReload(){
-  localStorage.removeItem('services_cache');
-  loadServices();
-}
-
-loadCredit();
 loadServices();
 </script>
 
