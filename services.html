@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>เลือกบริการ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 /* ===== CSS เดิมทั้งหมด ไม่แตะ ===== */
 :root{
@@ -72,6 +73,57 @@ body{
 }
 .title{font-size:28px;font-weight:900;margin:10px 0 6px}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:22px}
+
+/* ===== เพิ่มใหม่: SERVICE CARD ===== */
+.service{
+  background:linear-gradient(180deg,#0b1022,#070b18);
+  border:1px solid rgba(148,163,184,.15);
+  border-radius:18px;
+  padding:16px 16px 14px;
+  margin-bottom:16px;
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+}
+.service-name{
+  font-weight:900;
+  font-size:16px;
+  margin-bottom:6px;
+}
+.service-desc{
+  font-size:13px;
+  color:#cbd5e1;
+  margin-bottom:10px;
+}
+.value-hint{
+  font-size:12px;
+  color:#94a3b8;
+  margin-bottom:12px;
+}
+.bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.price{
+  font-weight:900;
+  font-size:15px;
+  color:#a7f3d0;
+}
+.price span{
+  font-size:12px;
+  color:#94a3b8;
+}
+.btn{
+  border:none;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:900;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+}
+
+/* ===== SIDE MENU ===== */
 .menu-overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.6);
@@ -138,7 +190,6 @@ const API_KEY="SBTH-SECURE-2026";
 const userId   = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
 const password = localStorage.getItem('password');
-
 if(!userId || !username || !password){
   location.href='login.html';
 }
@@ -148,7 +199,6 @@ const creditEl = document.getElementById('credit');
 const box = document.getElementById('services');
 const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
-
 document.getElementById('username').textContent = username;
 
 /* ===== MENU ===== */
@@ -162,13 +212,10 @@ function reloadAll(){
   loadServices();
 }
 
-/* ===== CREDIT (เสถียร + ของจริง) ===== */
+/* ===== CREDIT ===== */
 function loadCredit(){
-
   const cache = localStorage.getItem('credit');
-  if(cache){
-    creditEl.textContent = Number(cache).toFixed(2);
-  }
+  if(cache) creditEl.textContent = Number(cache).toFixed(2);
 
   fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
     .then(r=>r.json())
@@ -178,8 +225,7 @@ function loadCredit(){
         creditEl.textContent = real;
         localStorage.setItem('credit', real);
       }
-    })
-    .catch(()=>{});
+    });
 }
 
 /* ===== SERVICES ===== */
@@ -189,7 +235,7 @@ function loadServices(){
     .then(r=>r.json())
     .then(res=>{
       if(!res.services) return;
-      res.services.forEach((s)=>{
+      res.services.forEach(s=>{
         box.insertAdjacentHTML('beforeend',`
           <div class="service">
             <div class="service-name">${s.display_name}</div>
