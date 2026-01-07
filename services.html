@@ -25,7 +25,7 @@ body{
   color:#f1f5f9;
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:grid;
@@ -42,7 +42,6 @@ body{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-.logo{height:32px}
 .menu-btn,.refresh-btn{
   border:none;padding:6px 14px;border-radius:999px;
   background:rgba(255,255,255,.08);
@@ -57,22 +56,7 @@ body{
   border:1px solid transparent;
 }
 
-/* MENU */
-.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:998}
-.side-menu{
-  position:fixed;left:-260px;top:0;
-  width:260px;height:100%;
-  background:#05070f;
-  padding:22px 20px;
-  z-index:999;
-  transition:.3s;
-}
-.side-menu.open{left:0}
-.side-menu .user{font-weight:900;margin-bottom:16px}
-.side-menu a{display:block;padding:14px 0;color:#e5e7eb;text-decoration:none;font-weight:900}
-.side-menu a.logout{color:#fb7185}
-
-/* CONTENT */
+/* ===== LAYOUT ===== */
 .container{max-width:720px;margin:auto;padding:26px 18px 140px}
 .title{font-size:28px;font-weight:900}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:14px}
@@ -82,39 +66,69 @@ body{
   background:#020617;color:#fff;
 }
 .section-title{
+  margin:26px 0 12px;
   font-size:16px;font-weight:900;
   color:var(--gold);
-  margin:22px 0 10px;
 }
 
-/* CARD */
+/* ===== CARD ===== */
 .service{
   background:#020617;
   border:1px solid rgba(148,163,184,.15);
   border-radius:18px;
   padding:18px;margin-bottom:16px;
 }
+.service-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
 .service-name{font-weight:900;font-size:18px}
+.badge{
+  font-size:11px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.bestseller{background:var(--red)}
+.recommended{background:var(--blue)}
+.premium{background:var(--green)}
+.boost{background:#a78bfa}
+
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
+
 .recommend{
   margin-top:8px;
   font-size:13px;
   color:var(--gold);
-  font-weight:900;
+  font-weight:800;
 }
-.bottom{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-.price{font-weight:900;color:#a5b4fc}
+
+.bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:10px;
+}
+.price{
+  font-size:16px;
+  font-weight:900;
+  color:#e0e7ff;
+}
+.price small{
+  font-size:12px;
+  opacity:.7;
+}
 .btn{
-  border:none;padding:10px 16px;border-radius:999px;
-  font-weight:900;color:#fff;
+  border:none;padding:10px 18px;
+  border-radius:999px;
+  font-weight:900;
+  color:#fff;
   background:linear-gradient(135deg,var(--blue),var(--purple));
 }
-.badge{font-size:11px;padding:4px 10px;border-radius:999px;margin-left:6px;font-weight:900}
-.badge.bestseller{background:var(--red)}
-.badge.recommended{background:var(--blue)}
-.badge.premium{background:var(--green)}
-.badge.boost{background:#a78bfa}
 </style>
 </head>
 
@@ -122,13 +136,12 @@ body{
 
 <header class="header">
   <div class="left">
-    <button class="menu-btn" onclick="openMenu()">☰</button>
+    <button class="menu-btn">☰</button>
     <button class="refresh-btn" onclick="loadServices()">⟳</button>
   </div>
   <div class="center">SocialBoostTH</div>
   <div class="right">
     <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
-    <img src="logo.png" class="logo">
   </div>
 </header>
 
@@ -144,42 +157,23 @@ body{
   <div id="services"></div>
 </div>
 
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
-<div class="side-menu" id="sideMenu">
-  <div class="user">👤 <span id="username"></span></div>
-  <a href="services.html">📦 บริการ</a>
-  <a href="orders.html">🧾 คำสั่งซื้อ</a>
-  <a href="topup.html">💰 เติมเงิน</a>
-  <a class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
-</div>
-
 <script>
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* AUTH */
-const userId = localStorage.getItem('user_id');
-const username = localStorage.getItem('username');
-if(!userId || !username) location.replace('login.html');
-document.getElementById('username').textContent = username;
-
-/* MENU */
-const sideMenu=document.getElementById('sideMenu');
-const menuOverlay=document.getElementById('menuOverlay');
-function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.replace('login.html')}
+const userId=localStorage.getItem('user_id');
+if(!userId) location.replace('login.html');
 
 /* CREDIT */
 function loadCredit(){
   const cache=localStorage.getItem('credit');
-  if(cache) document.getElementById('credit').textContent=Number(cache).toFixed(2);
+  if(cache) credit.textContent=Number(cache).toFixed(2);
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
       if(res.success){
         localStorage.setItem('credit',res.credit);
-        document.getElementById('credit').textContent=Number(res.credit).toFixed(2);
+        credit.textContent=Number(res.credit).toFixed(2);
       }
     });
 }
@@ -187,25 +181,11 @@ setInterval(loadCredit,20000); loadCredit();
 
 /* SERVICES */
 let allServices=[];
-function normalizeBadge(b){
-  if(!b) return '';
-  b=b.toLowerCase();
-  if(b==='bestseller') return 'bestseller';
-  if(b==='recommended') return 'recommended';
-  if(b==='premium') return 'premium';
-  if(b==='boost') return 'boost';
-  return '';
-}
-
 function loadServices(){
   fetch(`${API}?action=getServices&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(res=>{
-      allServices=(res.services||[]).map(s=>({
-        ...s,
-        badge: normalizeBadge(s.badge_type),
-        badgeText: s.badge_text || ''
-      }));
+      allServices=res.services||[];
       renderServices();
     });
 }
@@ -213,39 +193,39 @@ function loadServices(){
 function card(s){
 return `
 <div class="service">
-  <div class="service-name">
-    ${s.display_name}
-    ${s.badge?`<span class="badge ${s.badge}">${s.badge}</span>`:''}
+  <div class="service-head">
+    <div class="service-name">${s.display_name}</div>
+    ${s.badge_type?`<span class="badge ${s.badge_type}">${s.badge_type}</span>`:''}
   </div>
+
   <div class="service-desc">${s.short_desc||''}</div>
   <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
 
-  ${['bestseller','recommended'].includes(s.badge)?`
-    <div class="recommend">
-      ${s.badgeText || '⭐ บริการยอดนิยม'}<br>
-      ⭐ แนะนำซื้อ <b>1,000 ${s.unit}</b> เพื่อผลลัพธ์ที่ดีที่สุด
-    </div>`:''}
+  ${s.badge_text?`<div class="recommend">${s.badge_text}<br>⭐ แนะนำซื้อ <b>1,000 ${s.unit}</b></div>`:''}
 
   <div class="bottom">
-    <div class="price">${Number(s.price_per_100).toLocaleString()} บาท / 100 ${s.unit}</div>
+    <div class="price">
+      ${Number(s.price_per_100).toLocaleString()}
+      <small>บาท / 100 ${s.unit}</small>
+    </div>
     <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
   </div>
 </div>`;
 }
 
 function renderServices(){
-  const q=document.getElementById('search').value.toLowerCase();
-  const best=document.getElementById('bestsellerBox');
-  const box=document.getElementById('services');
-  best.innerHTML=''; box.innerHTML='';
+  const q=search.value.toLowerCase();
+  bestsellerBox.innerHTML='';
+  services.innerHTML='';
 
   const filtered=allServices.filter(s=>s.display_name.toLowerCase().includes(q));
-  const bestseller=filtered.filter(s=>s.badge==='bestseller');
+  const best=filtered.filter(s=>s.badge_type==='bestseller');
 
-  if(bestseller.length){
-    best.innerHTML='<div class="section-title">🔥 บริการขายดี</div>'+bestseller.map(card).join('');
+  if(best.length){
+    bestsellerBox.innerHTML='<div class="section-title">🔥 บริการขายดี</div>'+best.map(card).join('');
   }
-  filtered.filter(s=>s.badge!=='bestseller').forEach(s=>box.insertAdjacentHTML('beforeend',card(s)));
+  filtered.filter(s=>s.badge_type!=='bestseller')
+    .forEach(s=>services.insertAdjacentHTML('beforeend',card(s)));
 }
 
 function selectService(id){
