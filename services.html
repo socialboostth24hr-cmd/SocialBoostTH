@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* ===== CSS เดิมทั้งหมด (ไม่แตะโทน) ===== */
+/* ===== CSS เดิมทั้งหมด ไม่แตะ ===== */
 :root{
   --black:#0b0f1a;
   --navy:#0f172a;
@@ -16,7 +16,6 @@
   --green:#22c55e;
 }
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui,-apple-system;
@@ -26,8 +25,6 @@ body{
   color:#f1f5f9;
   overflow-x:hidden;
 }
-
-/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:grid;
@@ -50,7 +47,6 @@ body{
   -webkit-text-fill-color:transparent;
 }
 .logo{height:32px}
-
 .menu-btn,.refresh-btn{
   border:none;
   padding:6px 14px;
@@ -60,7 +56,6 @@ body{
   color:#e5e7eb;
   cursor:pointer;
 }
-
 .wallet{
   font-size:13px;
   padding:6px 14px;
@@ -71,8 +66,6 @@ body{
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
-
-/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:auto;
@@ -80,37 +73,6 @@ body{
 }
 .title{font-size:28px;font-weight:900;margin:10px 0 6px}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:22px}
-
-/* ===== SERVICE CARD ===== */
-.service{
-  background:linear-gradient(180deg,#0f172a,#020617);
-  border-radius:18px;
-  padding:18px;
-  margin-bottom:14px;
-  border:1px solid rgba(139,92,246,.25);
-}
-.service-name{font-weight:900;font-size:16px}
-.service-desc{font-size:13px;color:#cbd5f5;margin:6px 0}
-.value-hint{font-size:13px;color:#94a3b8}
-.bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:12px;
-}
-.price{font-weight:900}
-.price span{font-size:12px;color:#94a3b8}
-.btn{
-  border:none;
-  padding:10px 16px;
-  border-radius:999px;
-  font-weight:900;
-  color:#fff;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  cursor:pointer;
-}
-
-/* ===== SIDE MENU ===== */
 .menu-overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.6);
@@ -137,6 +99,27 @@ body{
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 .side-menu a.logout{color:#fb7185}
+.service{
+  background:#020617;
+  border:1px solid rgba(148,163,184,.15);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+}
+.service-name{font-weight:900;font-size:18px}
+.service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
+.value-hint{font-size:12px;color:#e5e7eb;margin-bottom:10px}
+.bottom{display:flex;justify-content:space-between;align-items:center}
+.price{font-weight:900;color:#a5b4fc}
+.btn{
+  border:none;
+  padding:10px 16px;
+  border-radius:999px;
+  font-weight:900;
+  color:#fff;
+  cursor:pointer;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+}
 </style>
 </head>
 
@@ -150,7 +133,7 @@ body{
   <div class="center">SocialBoostTH</div>
   <div class="right">
     <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
-    <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+    <img src="logo.png" class="logo">
   </div>
 </header>
 
@@ -170,21 +153,19 @@ body{
 </div>
 
 <script>
-/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* ===== AUTH (แก้แล้ว ไม่ใช้ password) ===== */
-const userId   = localStorage.getItem('user_id');
+/* ===== AUTH (FIX แล้ว) ===== */
+const userId = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
 
 if(!userId || !username){
-  location.href='login.html';
+  location.replace('login.html');
 }
 
-document.getElementById('username').textContent = username;
-
 /* ===== ELEMENT ===== */
+document.getElementById('username').textContent = username;
 const creditEl = document.getElementById('credit');
 const box = document.getElementById('services');
 const sideMenu = document.getElementById('sideMenu');
@@ -193,23 +174,21 @@ const menuOverlay = document.getElementById('menuOverlay');
 /* ===== MENU ===== */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
 function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){
-  localStorage.clear();
-  location.href='login.html';
-}
+function logout(){localStorage.clear();location.replace('login.html')}
 
-/* ===== LOAD ===== */
-function reloadAll(){
-  loadCredit();
-  loadServices();
-}
-
-/* ===== CREDIT (เสถียรที่สุด) ===== */
+/* ===== CREDIT ===== */
 function loadCredit(){
   const cache = localStorage.getItem('credit');
-  if(cache){
-    creditEl.textContent = Number(cache).toFixed(2);
-  }
+  if(cache) creditEl.textContent = Number(cache).toFixed(2);
+
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(res.success){
+        creditEl.textContent = Number(res.credit).toFixed(2);
+        localStorage.setItem('credit', res.credit);
+      }
+    });
 }
 
 /* ===== SERVICES ===== */
@@ -218,21 +197,18 @@ function loadServices(){
   fetch(`${API}?action=getServices&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(res=>{
-      if(!res.services) return;
       res.services.forEach(s=>{
         box.insertAdjacentHTML('beforeend',`
           <div class="service">
             <div class="service-name">${s.display_name}</div>
             <div class="service-desc">${s.short_desc||''}</div>
-            <div class="value-hint">ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit}</div>
+            <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
             <div class="bottom">
-              <div class="price">${s.price_per_100} บาท <span>/100 ${s.unit}</span></div>
-              <button class="btn" onclick="selectService('${s.service_id}')">
-                เลือกแพ็กเกจ
-              </button>
+              <div class="price">${s.price_per_100} /100 ${s.unit}</div>
+              <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
             </div>
           </div>
-        `);
+        `)
       });
     });
 }
@@ -240,6 +216,11 @@ function loadServices(){
 function selectService(id){
   localStorage.setItem('service_id',id);
   location.href='order.html';
+}
+
+function reloadAll(){
+  loadCredit();
+  loadServices();
 }
 
 reloadAll();
