@@ -256,11 +256,27 @@ function reloadAll(force=false){
   loadServices(force);
 }
 
-/* เครดิต: ไม่ fetch → เร็วทันที */
+/* ================= CREDIT ================= */
 function loadCredit(){
-  creditEl.textContent = Number(
-    localStorage.getItem('credit') || 0
-  ).toFixed(2);
+  const cached = localStorage.getItem('credit');
+  if(cached !== null){
+    creditEl.textContent = Number(cached).toFixed(2);
+    return;
+  }
+
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(res?.user?.credit !== undefined){
+        localStorage.setItem('credit', res.user.credit);
+        creditEl.textContent = Number(res.user.credit).toFixed(2);
+      }else{
+        creditEl.textContent = '0.00';
+      }
+    })
+    .catch(()=>{
+      creditEl.textContent = '0.00';
+    });
 }
 
 /* ================= SERVICES ================= */
@@ -278,7 +294,11 @@ function loadServices(force=false){
   fetch(`${API}?action=getServices&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(res=>{
-      serviceCache = res.services || [];
+      if(!res.success || !Array.isArray(res.services)){
+        box.innerHTML = '<div class="error">❌ โหลดบริการไม่สำเร็จ</div>';
+        return;
+      }
+      serviceCache = res.services;
       renderServices(serviceCache);
     })
     .catch(()=>{
@@ -299,20 +319,16 @@ function renderServices(list){
   let html = '';
   for(const s of list){
     const suggest = Number(s.min_qty||0) * 2;
-
     html += `
       <div class="service">
         ${s.badge_status==='on'
           ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`:''}
-
         <div class="service-name">${s.display_name||''}</div>
         <div class="service-desc">${s.short_desc||''}</div>
-
         <div class="value-hint">
           💡 ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit} |
           แนะนำ <b>${suggest}</b> ${s.unit}
         </div>
-
         <div class="bottom">
           <div class="price">
             ${s.price_per_100} บาท
@@ -325,7 +341,6 @@ function renderServices(list){
       </div>
     `;
   }
-
   box.innerHTML = html;
 }
 
