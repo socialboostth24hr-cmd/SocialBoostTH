@@ -25,8 +25,6 @@ body{
   color:#f1f5f9;
   overflow-x:hidden;
 }
-
-/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:grid;
@@ -68,25 +66,13 @@ body{
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
-
-/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:auto;
   padding:26px 18px 140px;
 }
-.title{
-  font-size:28px;
-  font-weight:900;
-  margin:10px 0 6px;
-}
-.subtitle{
-  font-size:14px;
-  color:#94a3b8;
-  margin-bottom:22px;
-}
-
-/* ===== SERVICE CARD ===== */
+.title{font-size:28px;font-weight:900;margin:10px 0 6px}
+.subtitle{font-size:14px;color:#94a3b8;margin-bottom:22px}
 .service{
   background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:26px;
@@ -139,8 +125,6 @@ body{
   font-weight:900;
   cursor:pointer;
 }
-
-/* ===== MENU ===== */
 .menu-overlay{
   position:fixed; inset:0;
   background:rgba(0,0,0,.6);
@@ -212,11 +196,9 @@ body{
 </div>
 
 <script>
-/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* ===== AUTH ===== */
 const userId=localStorage.getItem('user_id');
 const username=localStorage.getItem('username')||'ลูกค้า';
 if(!userId)location.href='login.html';
@@ -228,43 +210,40 @@ const box=document.getElementById('services');
 const sideMenu=document.getElementById('sideMenu');
 const menuOverlay=document.getElementById('menuOverlay');
 
-/* ===== MENU ===== */
-function openMenu(){
-  sideMenu.classList.add('open');
-  menuOverlay.style.display='block';
-}
-function closeMenu(){
-  sideMenu.classList.remove('open');
-  menuOverlay.style.display='none';
-}
-function logout(){
-  localStorage.clear();
-  location.href='login.html';
-}
+function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
+function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
+function logout(){localStorage.clear();location.href='login.html'}
 
-/* ===== LOAD ===== */
 function reloadAll(){
   loadCredit();
   loadServices();
 }
 
-/* ===== CREDIT (FIXED) ===== */
+/* ===== CREDIT (รองรับทุก JSON + real-time) ===== */
 function loadCredit(){
-  const cache=localStorage.getItem('credit');
-  if(cache) creditEl.textContent=Number(cache).toFixed(2);
+
+  const cache = localStorage.getItem('credit');
+  if(cache !== null){
+    creditEl.textContent = Number(cache).toFixed(2);
+  }
 
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
-      if(res?.user?.credit!==undefined){
-        creditEl.textContent=Number(res.user.credit).toFixed(2);
-        localStorage.setItem('credit',res.user.credit);
+      let credit = null;
+
+      if(res?.user?.credit !== undefined) credit = res.user.credit;
+      else if(res?.credit !== undefined) credit = res.credit;
+      else if(res?.data?.credit !== undefined) credit = res.data.credit;
+
+      if(credit !== null){
+        creditEl.textContent = Number(credit).toFixed(2);
+        localStorage.setItem('credit', credit);
       }
     })
     .catch(()=>{});
 }
 
-/* ===== SERVICES ===== */
 function loadServices(){
   box.innerHTML='';
   fetch(`${API}?action=getServices&api_key=${API_KEY}`)
@@ -294,7 +273,6 @@ function selectService(id){
   location.href='order.html';
 }
 
-/* INIT */
 reloadAll();
 </script>
 
