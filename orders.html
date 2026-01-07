@@ -158,12 +158,17 @@ if(!userId)location.href='login.html';
 const box=document.getElementById('orders');
 const updateText=document.getElementById('updateText');
 
-function statusText(s){
+/* ===== STATUS TEXT (DEFAULT = pending) ===== */
+function statusText(status){
+  const s = status || 'pending';
   if(s==='pending')return'⏳ รอดำเนินการ (ร้านได้รับออเดอร์แล้ว)';
   if(s==='processing')return'🚀 กำลังดำเนินการ';
   if(s==='success')return'✅ สำเร็จ';
   if(s==='cancel')return'❌ ยกเลิก';
-  return'-';
+  return'⏳ รอดำเนินการ';
+}
+function statusClass(status){
+  return status || 'pending';
 }
 
 async function loadOrders(){
@@ -172,13 +177,15 @@ async function loadOrders(){
   const res=await fetch(`${API}?action=orders&api_key=${API_KEY}&user_id=${userId}`);
   const list=await res.json();
 
-  if(!list.length){
+  if(!Array.isArray(list) || !list.length){
     box.innerHTML='<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
     updateText.textContent='—';
     return;
   }
 
   list.reverse().forEach(o=>{
+    const status = o.status || 'pending';
+
     box.insertAdjacentHTML('beforeend',`
       <div class="order">
         <div class="row">
@@ -194,7 +201,9 @@ async function loadOrders(){
           <button class="copy-btn" onclick="copyLink('${o.link||''}')">คัดลอก</button>
         </div>
 
-        <div class="status ${o.status}">${statusText(o.status)}</div>
+        <div class="status ${statusClass(status)}">
+          ${statusText(status)}
+        </div>
       </div>
     `);
   });
