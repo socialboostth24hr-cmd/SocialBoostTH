@@ -72,7 +72,6 @@ body{
 }
 .title{font-size:28px;font-weight:900;margin:10px 0 6px}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:22px}
-/* --- service card / menu css เดิมทั้งหมด --- */
 </style>
 </head>
 
@@ -109,52 +108,44 @@ body{
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId = localStorage.getItem('user_id');
+/* ===== AUTH ===== */
+const userId   = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
-const password = localStorage.getItem('password');
+const creditLS = localStorage.getItem('credit');
 
-if(!userId || !username || !password){
-  location.href='login.html';
+if(!userId || !username){
+  location.href = 'login.html';
 }
 
 document.getElementById('username').textContent = username;
 
-const creditEl=document.getElementById('credit');
-const box=document.getElementById('services');
-const sideMenu=document.getElementById('sideMenu');
-const menuOverlay=document.getElementById('menuOverlay');
+/* ===== ELEMENT ===== */
+const creditEl  = document.getElementById('credit');
+const box       = document.getElementById('services');
+const sideMenu  = document.getElementById('sideMenu');
+const menuOverlay = document.getElementById('menuOverlay');
 
+/* ===== MENU ===== */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
 function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
 function logout(){localStorage.clear();location.href='login.html'}
 
+/* ===== LOAD ===== */
 function reloadAll(){
   loadCredit();
   loadServices();
 }
 
-/* ===== CREDIT (แก้ตรงนี้อย่างเดียว) ===== */
+/* ===== CREDIT (ถูกต้อง + นิ่ง + โปร) ===== */
 function loadCredit(){
-
-  // ใช้ cache ก่อน กัน flash 0.00
-  const cache = localStorage.getItem('credit');
-  if(cache !== null){
-    creditEl.textContent = Number(cache).toFixed(2);
+  if(creditLS !== null){
+    creditEl.textContent = Number(creditLS).toFixed(2);
+  }else{
+    creditEl.textContent = '0.00';
   }
-
-  // ดึงของจริงจาก login
-  fetch(`${API}?action=login&api_key=${API_KEY}&username=${username}&password=${password}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if(res.success && res.user){
-        const c = Number(res.user.credit).toFixed(2);
-        creditEl.textContent = c;
-        localStorage.setItem('credit', c);
-      }
-    })
-    .catch(()=>{});
 }
 
+/* ===== SERVICES ===== */
 function loadServices(){
   box.innerHTML='';
   fetch(`${API}?action=getServices&api_key=${API_KEY}`)
@@ -165,7 +156,8 @@ function loadServices(){
         box.insertAdjacentHTML('beforeend',`
           <div class="service" style="animation-delay:${i*0.05}s">
             ${s.badge_status==='on'
-              ? `<div class="badge ${s.badge_type}">${s.badge_text}</div>`:''}
+              ? `<div class="badge ${s.badge_type}">${s.badge_text}</div>`:''
+            }
             <div class="service-name">${s.display_name}</div>
             <div class="service-desc">${s.short_desc||''}</div>
             <div class="value-hint">ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit}</div>
