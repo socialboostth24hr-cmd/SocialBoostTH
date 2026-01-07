@@ -7,69 +7,109 @@
 
 <style>
 :root{
-  --pink:#ec4899;
-  --purple:#8b5cf6;
+  --black:#0b0f1a;
   --blue:#38bdf8;
-  --soft:#f8fafc;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --muted:#94a3b8;
+  --line:#1f2a44;
+  --success:#22c55e;
+  --warn:#f59e0b;
+  --danger:#ef4444;
 }
 *{box-sizing:border-box}
+
 body{
-  margin:0;font-family:system-ui,-apple-system;
+  margin:0;
+  font-family:system-ui,-apple-system;
   background:
-    radial-gradient(900px 360px at top,#fde7f3,transparent),
-    linear-gradient(180deg,#eef6ff,#ffffff);
-  color:#111827;
+    radial-gradient(900px 420px at top,#1e293b,transparent),
+    linear-gradient(180deg,var(--black),#060913);
+  color:#f1f5f9;
 }
+
+/* HEADER */
 .header{
-  padding:12px 16px;display:flex;justify-content:space-between;align-items:center;
-  background:#fff;position:sticky;top:0;z-index:50;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  padding:12px 16px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:12px;
+  background:rgba(2,6,23,.8);
+  backdrop-filter:blur(10px);
+  position:sticky;
+  top:0;
+  z-index:50;
 }
-.left{display:flex;gap:8px;align-items:center}
-.logo{height:32px}
-.back-btn,.menu-btn{
-  border:none;padding:6px 14px;border-radius:999px;
-  background:#f1f5f9;font-weight:800;cursor:pointer;
+.back{
+  border:none;
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+.center{
+  text-align:center;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
-/* MENU */
-.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:99}
-.side-menu{
-  position:fixed;right:-260px;top:0;width:260px;height:100%;
-  background:#fff;padding:20px;z-index:100;transition:.3s;
-  box-shadow:-10px 0 30px rgba(0,0,0,.2);
+/* CONTAINER */
+.container{
+  max-width:720px;
+  margin:auto;
+  padding:18px 18px 140px;
 }
-.side-menu.open{right:0}
-.side-menu a{
-  display:block;padding:12px 0;font-weight:800;
-  color:#111827;text-decoration:none;border-bottom:1px solid #e5e7eb;
-}
-.side-menu a.logout{color:#ef4444;border:none}
 
-.container{max-width:720px;margin:0 auto;padding:16px 18px 140px}
 .card{
-  background:#fff;border-radius:22px;padding:20px;margin-bottom:16px;
-  box-shadow:0 20px 45px rgba(139,92,246,.18);
+  background:linear-gradient(180deg,#111827,#0b1020);
+  border-radius:26px;
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:
+    0 25px 70px rgba(0,0,0,.7),
+    0 0 0 1px rgba(139,92,246,.25);
 }
-.row{display:flex;justify-content:space-between;margin-top:10px;font-size:14px}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  font-size:14px;
+}
+.row:first-child{margin-top:0}
 .row b{font-weight:900}
 
 .status{
-  display:inline-block;padding:6px 14px;border-radius:999px;
-  font-size:13px;font-weight:900;margin-top:14px
+  display:inline-block;
+  margin-top:14px;
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:900;
 }
 .pending{background:#fef3c7;color:#92400e}
-.processing{background:#dbeafe;color:#1e40af}
+.processing{background:#e0f2fe;color:#075985}
 .success{background:#dcfce7;color:#166534}
 .cancel{background:#fee2e2;color:#991b1b}
 
-.link{word-break:break-all;color:#2563eb;font-size:14px}
-.update-text{font-size:13px;color:#64748b;margin-bottom:10px}
+.link{
+  word-break:break-all;
+  background:#020617;
+  padding:14px;
+  border-radius:16px;
+  margin-top:10px;
+  font-size:14px;
+}
 
-/* ===== VALUE / UPSELL ===== */
+/* VALUE */
 .value-box{
-  background:linear-gradient(135deg,#ecfeff,#f0f9ff);
-  border:1px solid #bae6fd;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#0b1224,#070b18);
 }
 .badge{
   display:inline-block;
@@ -78,59 +118,39 @@ body{
   font-size:11px;
   font-weight:900;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;
   margin-bottom:10px;
-}
-.value-title{
-  font-weight:900;
-  font-size:16px;
-  color:#075985;
-}
-.value-desc{
-  margin-top:6px;
-  font-size:14px;
-  color:#0c4a6e;
 }
 .value-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:10px;
+  gap:12px;
   margin-top:14px;
 }
 .value-item{
-  background:#fff;
+  background:#020617;
   border-radius:16px;
   padding:12px;
-  box-shadow:0 8px 18px rgba(0,0,0,.08);
   text-align:center;
 }
-.value-item b{
-  display:block;
-  font-size:16px;
-}
-.value-item span{
-  font-size:12px;
-  color:#64748b;
-}
+.value-item b{font-size:16px}
+.value-item span{font-size:12px;color:var(--muted)}
 
-/* CTA */
 .buy-again{
-  display:block;
-  text-align:center;
+  position:fixed;
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+  width:calc(100% - 32px);
+  max-width:480px;
   padding:16px;
   border-radius:999px;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
   color:#fff;
   font-weight:900;
   font-size:16px;
+  text-align:center;
   text-decoration:none;
-  box-shadow:0 20px 50px rgba(139,92,246,.6);
-}
-.buy-again small{
-  display:block;
-  opacity:.9;
-  font-size:12px;
-  font-weight:700;
+  box-shadow:0 18px 45px rgba(139,92,246,.6);
 }
 </style>
 </head>
@@ -138,17 +158,14 @@ body{
 <body>
 
 <header class="header">
-  <div class="left">
-    <button class="back-btn" onclick="goBack()">← กลับ</button>
-  </div>
-  <button class="menu-btn" onclick="openMenu()">☰</button>
-  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+  <button class="back" onclick="goBack()">←</button>
+  <div class="center">SocialBoostTH</div>
+  <div></div>
 </header>
 
 <div class="container">
-  <div class="update-text" id="updateText">กำลังโหลด…</div>
+  <div id="updateText" style="font-size:12px;color:#94a3b8;margin-bottom:10px">กำลังโหลด…</div>
 
-  <!-- ORDER DETAIL -->
   <div class="card">
     <div class="row"><b>รหัสคำสั่งซื้อ</b><span id="oid">-</span></div>
     <div class="row"><b>บริการ</b><span id="service">-</span></div>
@@ -158,12 +175,9 @@ body{
     <div class="status" id="status"></div>
   </div>
 
-  <!-- 🔥 VALUE / UPSELL -->
-  <div class="card value-box" id="valueBox" style="display:none">
-    <div class="badge">💎 คุ้มกว่านี้ได้อีก</div>
-    <div class="value-title">เพิ่มอีกนิด เห็นผลชัดกว่า</div>
-    <div class="value-desc" id="valueText"></div>
-
+  <div class="card value-box hide" id="valueBox">
+    <div class="badge">🔥 คุ้มกว่านี้ได้อีก</div>
+    <div id="valueText"></div>
     <div class="value-grid" id="valueGrid"></div>
   </div>
 
@@ -171,20 +185,9 @@ body{
     <b>ลิงก์ที่สั่ง</b>
     <div class="link" id="link">-</div>
   </div>
-
-  <a class="buy-again" href="services.html">
-    🔁 ซื้อบริการนี้อีกครั้ง
-    <small>ลูกค้าส่วนใหญ่ซื้อซ้ำเพื่อผลลัพธ์ที่ดีกว่า</small>
-  </a>
 </div>
 
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
-<div class="side-menu" id="sideMenu">
-  <a href="services.html">📦 บริการ</a>
-  <a href="orders.html">🧾 คำสั่งซื้อ</a>
-  <a href="topup.html">💰 เติมเงิน</a>
-  <a href="#" class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
-</div>
+<a class="buy-again" href="services.html">🔁 ซื้อบริการนี้อีกครั้ง</a>
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbxnG0FDeXxrWOFIhPCtREMcUKq5-uBCqi_BagqlD6OPWDXBnQn1Dt-8BKMaOv4ZstnQSg/exec";
@@ -192,25 +195,23 @@ const API_KEY="SBTH-SECURE-2026";
 
 const orderId=localStorage.getItem('order_id');
 const userId=localStorage.getItem('user_id');
-if(!orderId||!userId)location.href='orders.html';
+if(!orderId||!userId) location.href='orders.html';
 
 /* DOM */
-const oidEl=document.getElementById('oid');
-const serviceEl=document.getElementById('service');
-const qtyEl=document.getElementById('qty');
-const totalEl=document.getElementById('total');
-const dateEl=document.getElementById('date');
-const linkEl=document.getElementById('link');
-const statusEl=document.getElementById('status');
-const valueBox=document.getElementById('valueBox');
-const valueText=document.getElementById('valueText');
-const valueGrid=document.getElementById('valueGrid');
-const updateText=document.getElementById('updateText');
+const oidEl=oid;
+const serviceEl=service;
+const qtyEl=qty;
+const totalEl=total;
+const dateEl=date;
+const linkEl=link;
+const statusEl=status;
+const valueBox=valueBox;
+const valueText=valueText;
+const valueGrid=valueGrid;
+const updateText=updateText;
 
-/* MENU */
-function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.href='login.html'}
+let servicesCache={};
+
 function goBack(){history.length>1?history.back():location.href='orders.html'}
 
 function statusText(s){
@@ -221,49 +222,49 @@ function statusText(s){
   return'-';
 }
 
+async function loadServices(){
+  if(Object.keys(servicesCache).length) return;
+  const r=await fetch(`${API}?action=services&api_key=${API_KEY}`);
+  const list=await r.json();
+  if(Array.isArray(list)){
+    list.forEach(s=>servicesCache[s.service_id]=s.display_name);
+  }
+}
+
+function safeDate(d){
+  const t=Date.parse(d);
+  return isNaN(t)?'-':new Date(t).toLocaleString();
+}
+
 async function loadDetail(){
-  updateText.innerText='กำลังอัปเดต...';
-  const res=await fetch(`${API}?action=order_detail&api_key=${API_KEY}&order_id=${orderId}&user_id=${userId}&_=${Date.now()}`);
-  const o=await res.json();
-  if(!o||o.error)return;
+  updateText.textContent='กำลังอัปเดต...';
+  await loadServices();
 
-  oidEl.innerText=o.order_id;
-  serviceEl.innerText=o.service_name||'-';
-  qtyEl.innerText=o.qty;
-  totalEl.innerText=Number(o.final_total||0).toFixed(2)+' บาท';
-  dateEl.innerText=new Date(o.datetime).toLocaleString();
-  linkEl.innerText=o.link||'-';
+  const r=await fetch(`${API}?action=order_detail&api_key=${API_KEY}&order_id=${orderId}&user_id=${userId}`);
+  const o=await r.json();
+  if(!o||o.error) return;
+
+  oidEl.textContent=o.order_id;
+  serviceEl.textContent=servicesCache[o.service_id]||o.service_id;
+  qtyEl.textContent=o.qty;
+  totalEl.textContent=Number(o.final_total||0).toFixed(2)+' บาท';
+  dateEl.textContent=safeDate(o.datetime);
+  linkEl.textContent=o.link||'-';
   statusEl.className='status '+o.status;
-  statusEl.innerText=statusText(o.status);
+  statusEl.textContent=statusText(o.status);
 
-  // ===== UPSELL (อ่านอย่างเดียว) =====
   if(o.qty && o.qty<1000){
-    const unit=(o.final_total/o.qty).toFixed(3);
+    valueBox.classList.remove('hide');
     const next=o.qty*2;
-    const nextUnit=(o.final_total*0.85/next).toFixed(3); // แค่เปรียบเทียบภาพรวม
-
-    valueBox.style.display='block';
-    valueText.innerText=
-      `ตอนนี้คุณได้ราคาเฉลี่ย ${unit} บาท / หน่วย  
-      ถ้าเพิ่มเป็น ${next} หน่วย ราคาต่อหน่วยจะยิ่งคุ้มและเห็นผลชัดขึ้น`;
-
+    valueText.textContent=`เพิ่มจำนวนเพื่อผลลัพธ์ที่ชัดขึ้น และราคาต่อหน่วยคุ้มกว่า`;
     valueGrid.innerHTML=`
-      <div class="value-item">
-        <b>${o.qty}</b>
-        <span>เริ่มต้น</span>
-      </div>
-      <div class="value-item">
-        <b>${next}</b>
-        <span>คุ้มกว่า</span>
-      </div>
-      <div class="value-item">
-        <b>${next*2}</b>
-        <span>คุ้มที่สุด</span>
-      </div>
+      <div class="value-item"><b>${o.qty}</b><span>เริ่มต้น</span></div>
+      <div class="value-item"><b>${next}</b><span>แนะนำ</span></div>
+      <div class="value-item"><b>${next*2}</b><span>คุ้มสุด</span></div>
     `;
   }
 
-  updateText.innerText='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
+  updateText.textContent='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
 }
 
 loadDetail();
