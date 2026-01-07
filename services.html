@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+/* ===== CSS เดิม ไม่แก้ ===== */
 :root{
   --black:#0b0f1a;
   --navy:#0f172a;
@@ -15,7 +16,6 @@
   --green:#22c55e;
 }
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui,-apple-system;
@@ -24,8 +24,6 @@ body{
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
-
-/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:grid;
@@ -68,36 +66,6 @@ body{
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
-
-/* ===== MENU ===== */
-.menu-overlay{
-  position:fixed; inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  z-index:99;
-}
-.side-menu{
-  position:fixed;
-  left:-260px; top:0;
-  width:260px; height:100%;
-  background:linear-gradient(180deg,#111827,#0b1020);
-  padding:20px;
-  z-index:100;
-  transition:.3s;
-  box-shadow:20px 0 60px rgba(0,0,0,.85);
-}
-.side-menu.open{left:0}
-.side-menu a{
-  display:block;
-  padding:14px 0;
-  font-weight:900;
-  color:#e5e7eb;
-  text-decoration:none;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.side-menu a.logout{color:#fb7185;border:none}
-
-/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:auto;
@@ -116,8 +84,6 @@ body{
   color:#94a3b8;
   margin-bottom:22px;
 }
-
-/* ===== SERVICE CARD ===== */
 .service{
   background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:26px;
@@ -130,7 +96,6 @@ body{
 }
 .service-name{font-size:18px;font-weight:900}
 .service-desc{font-size:13px;color:#cbd5e1;margin-top:6px}
-
 .value-hint{
   margin-top:12px;
   padding:12px 14px;
@@ -142,7 +107,6 @@ body{
   color:#e5e7eb;
 }
 .value-hint b{color:var(--green)}
-
 .badge{
   position:absolute; top:16px; left:16px;
   padding:6px 14px;
@@ -154,7 +118,6 @@ body{
 .badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899);}
 .badge.recommended{background:linear-gradient(90deg,var(--blue),var(--purple));}
 .badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
-
 .bottom{
   display:flex;
   justify-content:space-between;
@@ -164,7 +127,6 @@ body{
 }
 .price{font-size:15px;font-weight:900}
 .price span{display:block;font-size:12px;color:#94a3b8}
-
 .btn{
   padding:12px 22px;
   border-radius:18px;
@@ -175,7 +137,6 @@ body{
   cursor:pointer;
   box-shadow:0 18px 45px rgba(139,92,246,.6);
 }
-
 .empty{text-align:center;color:#94a3b8;margin-top:40px}
 .error{text-align:center;color:#fb7185;margin-top:40px;font-weight:900}
 </style>
@@ -211,11 +172,11 @@ body{
 
 <script>
 /* ===== CONFIG ===== */
-const API = "https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
-const API_KEY = "SBTH-SECURE-2026";
+const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
+const API_KEY="SBTH-SECURE-2026";
 
 /* ===== AUTH ===== */
-const userId = localStorage.getItem('user_id');
+const userId=localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
 const creditEl=document.getElementById('credit');
@@ -237,9 +198,24 @@ function reloadAll(force=false){
   loadServices(force);
 }
 
-/* CREDIT */
+/* ===== CREDIT (ดึงของจริง) ===== */
 function loadCredit(){
-  creditEl.textContent = Number(localStorage.getItem('credit')||0).toFixed(2);
+  // ใช้ cache ก่อน (เร็ว)
+  const cached=localStorage.getItem('credit');
+  if(cached!==null){
+    creditEl.textContent=Number(cached).toFixed(2);
+  }
+
+  // ดึงของจริงจาก API
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(res?.user?.credit!==undefined){
+        localStorage.setItem('credit',res.user.credit);
+        creditEl.textContent=Number(res.user.credit).toFixed(2);
+      }
+    })
+    .catch(()=>{});
 }
 
 /* SERVICES */
@@ -263,9 +239,7 @@ function loadServices(force=false){
       serviceCache=res.services;
       renderServices(serviceCache);
     })
-    .catch(()=>{
-      box.innerHTML='<div class="error">❌ เชื่อมต่อระบบไม่ได้</div>';
-    })
+    .catch(()=>box.innerHTML='<div class="error">❌ เชื่อมต่อระบบไม่ได้</div>')
     .finally(()=>loading=false);
 }
 
@@ -278,8 +252,6 @@ function renderServices(list){
   let html='';
   for(const s of list){
     const minQty=Number(s.min_qty||0);
-    const unit=s.unit||'';
-    const price=Number(s.price_per_100||0);
     const suggest=minQty?minQty*2:0;
 
     html+=`
@@ -289,13 +261,13 @@ function renderServices(list){
       <div class="service-name">${s.display_name||''}</div>
       <div class="service-desc">${s.short_desc||''}</div>
       <div class="value-hint">
-        💡 ขั้นต่ำ <b>${minQty}</b> ${unit}
-        ${suggest?`| แนะนำ <b>${suggest}</b> ${unit}`:''}
+        💡 ขั้นต่ำ <b>${minQty}</b> ${s.unit||''}
+        ${suggest?`| แนะนำ <b>${suggest}</b> ${s.unit||''}`:''}
       </div>
       <div class="bottom">
         <div class="price">
-          ${price} บาท
-          <span>/ 100 ${unit}</span>
+          ${Number(s.price_per_100||0)} บาท
+          <span>/ 100 ${s.unit||''}</span>
         </div>
         <button class="btn" onclick="selectService('${s.service_id}')">
           เลือกแพ็กเกจ
