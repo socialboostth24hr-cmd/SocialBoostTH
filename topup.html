@@ -26,6 +26,7 @@ body{
   border:none;padding:6px 14px;border-radius:999px;
   background:#f1f5f9;font-weight:800;cursor:pointer;
 }
+
 .menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:99}
 .side-menu{
   position:fixed;right:-260px;top:0;width:260px;height:100%;
@@ -44,6 +45,7 @@ body{
   background:#fff;border-radius:22px;padding:20px;margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
 }
+
 h2{margin:0 0 14px;font-size:22px;font-weight:900}
 
 input{
@@ -53,61 +55,44 @@ input{
 .error{margin-top:8px;font-size:13px;font-weight:900;color:#dc2626;display:none}
 
 /* PACKAGE */
-.pkg-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-bottom:16px;
-}
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .pkg{
-  background:#fff;
-  border-radius:18px;
-  padding:14px 10px;
-  text-align:center;
-  cursor:pointer;
-  box-shadow:0 12px 30px rgba(0,0,0,.08);
+  background:#fff;border-radius:18px;padding:14px 10px;text-align:center;
+  cursor:pointer;box-shadow:0 12px 30px rgba(0,0,0,.08)
 }
-.pkg.highlight{
-  border:2px solid var(--purple);
-  box-shadow:0 18px 40px rgba(139,92,246,.35);
-}
+.pkg.highlight{border:2px solid var(--purple);box-shadow:0 18px 40px rgba(139,92,246,.35)}
 .pkg-price{font-size:24px;font-weight:900}
 .pkg-desc{font-size:12px;color:#64748b}
 .pkg-badge{
-  display:inline-block;background:#e5e7eb;
-  font-size:11px;font-weight:900;
-  padding:4px 10px;border-radius:999px;margin-bottom:6px;
+  display:inline-block;background:#e5e7eb;font-size:11px;
+  font-weight:900;padding:4px 10px;border-radius:999px;margin-bottom:6px
 }
-.pkg-badge.best{
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;
-}
+.pkg-badge.best{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
 
 .calc-box{
   margin-top:14px;padding:18px;border-radius:18px;
   background:linear-gradient(135deg,#dcfce7,#bbf7d0);
-  color:#14532d;font-weight:900;font-size:18px;
-  text-align:center;display:none;
+  color:#14532d;font-weight:900;font-size:18px;text-align:center;display:none
 }
 .calc-box span{font-size:28px}
 .qr-box{display:none;text-align:center;margin-top:16px}
 .qr-box img{
   width:220px;border-radius:16px;
-  box-shadow:0 12px 30px rgba(0,0,0,.15);
+  box-shadow:0 12px 30px rgba(0,0,0,.15)
 }
 .qr-note{margin-top:8px;font-size:14px;font-weight:900}
 
 .btn-row{display:flex;gap:10px;margin-top:16px}
 .line-btn,.confirm-btn{
   flex:1;padding:16px;border:none;border-radius:999px;
-  font-size:16px;font-weight:900;cursor:pointer;
+  font-size:16px;font-weight:900;cursor:pointer
 }
 .line-btn{background:#22c55e;color:#fff}
 .confirm-btn{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
 
 .confirmed{
   margin-top:14px;background:#e0f2fe;color:#0369a1;
-  padding:14px;border-radius:14px;font-weight:900;display:none;
+  padding:14px;border-radius:14px;font-weight:900;display:none
 }
 
 .table{width:100%;border-collapse:collapse;font-size:14px}
@@ -168,27 +153,22 @@ input{
     </div>
 
     <div class="btn-row">
-      <button class="line-btn"
-        onclick="window.open('https://line.me/R/ti/p/@geg4960w','_blank')">
+      <button class="line-btn" onclick="window.open('https://line.me/R/ti/p/@geg4960w','_blank')">
         📤 แจ้งสลิปทาง LINE
       </button>
-      <button class="confirm-btn" id="confirmBtn">
-        ✅ ยืนยันว่าแจ้งแล้ว
-      </button>
+      <button class="confirm-btn" id="confirmBtn">✅ ยืนยันว่าแจ้งแล้ว</button>
     </div>
 
     <div class="confirmed" id="confirmedBox">
-      📤 บันทึกรายการเติมเงินแล้ว<br>
-      ⏳ รอแอดมินตรวจสอบเครดิต (ปกติไม่เกิน 5–10 นาที)
+      📤 บันทึกรายการเติมเงินเรียบร้อย<br>
+      ⏳ สถานะ: รอแอดมินตรวจสอบ
     </div>
   </div>
 
   <div class="card">
     <h2>💰 ประวัติการเติมเงิน</h2>
     <table class="table">
-      <thead>
-        <tr><th>วันที่</th><th>จำนวน</th><th>สถานะ</th></tr>
-      </thead>
+      <thead><tr><th>วันที่</th><th>จำนวน</th><th>สถานะ</th></tr></thead>
       <tbody id="wallet"></tbody>
     </table>
   </div>
@@ -206,7 +186,7 @@ input{
 const API="https://script.google.com/macros/s/AKfycbxYsr-_034IOwPw_gn_D015dguhTYKtPdmCO_svW-rudeBjs0Vg1zY1jesobt3saYJO-A/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId = localStorage.getItem('user_id');
+const userId=localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
 
 const amountEl=document.getElementById('amount');
@@ -217,6 +197,7 @@ const qrImg=document.getElementById('qrImg');
 const confirmedBox=document.getElementById('confirmedBox');
 const walletBox=document.getElementById('wallet');
 const confirmBtn=document.getElementById('confirmBtn');
+
 let lockedAmount=null;
 
 function pickAmount(v){
@@ -247,25 +228,39 @@ amountEl.oninput=()=>{
   confirmedBox.style.display='none';
 };
 
-/* ✅ CONFIRM เวอร์ชันเสถียร */
-confirmBtn.onclick=()=>{
-  if(!lockedAmount){alert('กรุณากรอกยอดก่อน');return;}
-  confirmBtn.disabled=true;
+/* ✅ CONFIRM — เช็กผลจริง */
+confirmBtn.onclick = async () => {
+  if(!lockedAmount) return alert('กรุณากรอกยอดก่อน');
 
-  fetch(
-    `${API}?action=request_topup&api_key=${API_KEY}`+
-    `&user_id=${encodeURIComponent(userId)}`+
-    `&amount=${encodeURIComponent(lockedAmount)}`+
-    `&_=${Date.now()}`
-  )
-  .catch(()=>({}))
-  .then(()=>{
+  confirmBtn.disabled = true;
+
+  try{
+    const res = await fetch(
+      `${API}?action=request_topup` +
+      `&api_key=${API_KEY}` +
+      `&user_id=${encodeURIComponent(userId)}` +
+      `&amount=${encodeURIComponent(lockedAmount)}` +
+      `&method=promptpay` +
+      `&_=${Date.now()}`
+    );
+
+    const data = await res.json();
+    if(!data || data.success !== true){
+      alert('❌ ระบบยังไม่บันทึกรายการ กรุณาลองใหม่');
+      confirmBtn.disabled = false;
+      return;
+    }
+
     confirmedBox.style.display='block';
     amountEl.value='';
     lockedAmount=null;
     loadWallet();
-  })
-  .finally(()=>confirmBtn.disabled=false);
+
+  }catch(err){
+    alert('❌ เชื่อมต่อระบบไม่ได้');
+  }finally{
+    confirmBtn.disabled=false;
+  }
 };
 
 function loadWallet(){
@@ -274,7 +269,7 @@ function loadWallet(){
     .then(r=>r.json())
     .then(list=>{
       walletBox.innerHTML='';
-      if(!list.length){
+      if(!Array.isArray(list)||!list.length){
         walletBox.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
         return;
       }
@@ -283,11 +278,7 @@ function loadWallet(){
           <tr>
             <td>${new Date(w.datetime).toLocaleString()}</td>
             <td>${Number(w.amount).toFixed(2)}</td>
-            <td>
-              <span class="status ${w.amount>0?'pending':'use'}">
-                ${w.amount>0?'รอตรวจสอบ':'ใช้เครดิต'}
-              </span>
-            </td>
+            <td><span class="status pending">รอตรวจสอบ</span></td>
           </tr>`;
       });
     });
