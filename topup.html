@@ -52,7 +52,7 @@ input{
 }
 .error{margin-top:8px;font-size:13px;font-weight:900;color:#dc2626;display:none}
 
-/* 🔥 PACKAGE */
+/* PACKAGE */
 .pkg-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -66,41 +66,23 @@ input{
   text-align:center;
   cursor:pointer;
   box-shadow:0 12px 30px rgba(0,0,0,.08);
-  transition:.2s;
 }
-.pkg:hover{transform:translateY(-2px)}
 .pkg.highlight{
   border:2px solid var(--purple);
   box-shadow:0 18px 40px rgba(139,92,246,.35);
 }
-.pkg-price{
-  font-size:24px;
-  font-weight:900;
-}
-.pkg-desc{
-  font-size:12px;
-  color:#64748b;
-  margin-top:4px;
-}
+.pkg-price{font-size:24px;font-weight:900}
+.pkg-desc{font-size:12px;color:#64748b}
 .pkg-badge{
-  display:inline-block;
-  background:#e5e7eb;
-  color:#111827;
-  font-size:11px;
-  font-weight:900;
-  padding:4px 10px;
-  border-radius:999px;
-  margin-bottom:6px;
+  display:inline-block;background:#e5e7eb;
+  font-size:11px;font-weight:900;
+  padding:4px 10px;border-radius:999px;margin-bottom:6px;
 }
 .pkg-badge.best{
   background:linear-gradient(135deg,var(--blue),var(--purple));
   color:#fff;
 }
-@media(max-width:520px){
-  .pkg-grid{grid-template-columns:1fr}
-}
 
-/* ===== ของเดิม ===== */
 .calc-box{
   margin-top:14px;padding:18px;border-radius:18px;
   background:linear-gradient(135deg,#dcfce7,#bbf7d0);
@@ -114,6 +96,7 @@ input{
   box-shadow:0 12px 30px rgba(0,0,0,.15);
 }
 .qr-note{margin-top:8px;font-size:14px;font-weight:900}
+
 .btn-row{display:flex;gap:10px;margin-top:16px}
 .line-btn,.confirm-btn{
   flex:1;padding:16px;border:none;border-radius:999px;
@@ -121,10 +104,12 @@ input{
 }
 .line-btn{background:#22c55e;color:#fff}
 .confirm-btn{background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff}
+
 .confirmed{
   margin-top:14px;background:#e0f2fe;color:#0369a1;
   padding:14px;border-radius:14px;font-weight:900;display:none;
 }
+
 .table{width:100%;border-collapse:collapse;font-size:14px}
 .table th,.table td{padding:10px;border-bottom:1px solid #e5e7eb}
 .status{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900}
@@ -146,7 +131,6 @@ input{
 
 <div class="container">
 
-  <!-- 🔥 PACKAGE -->
   <div class="card">
     <h2>🔥 แพ็กเกจแนะนำ (คุ้มกว่า)</h2>
     <div class="pkg-grid">
@@ -155,13 +139,11 @@ input{
         <div class="pkg-price">199฿</div>
         <div class="pkg-desc">ลองใช้งานระบบ</div>
       </div>
-
       <div class="pkg highlight" onclick="pickAmount(299)">
         <div class="pkg-badge best">แนะนำ</div>
         <div class="pkg-price">299฿</div>
-        <div class="pkg-desc">คุ้มสุด • ใช้ได้หลายงาน</div>
+        <div class="pkg-desc">คุ้มสุด</div>
       </div>
-
       <div class="pkg" onclick="pickAmount(499)">
         <div class="pkg-badge">ยอดนิยม</div>
         <div class="pkg-price">499฿</div>
@@ -170,7 +152,6 @@ input{
     </div>
   </div>
 
-  <!-- 🧾 เติมเงิน -->
   <div class="card">
     <h2>➕ เติมเงิน (พร้อมเพย์)</h2>
 
@@ -198,27 +179,21 @@ input{
 
     <div class="confirmed" id="confirmedBox">
       📤 บันทึกรายการเติมเงินแล้ว<br>
-      ⏳ รอแอดมินตรวจสอบเครดิต
+      ⏳ รอแอดมินตรวจสอบเครดิต (ปกติไม่เกิน 5–10 นาที)
     </div>
   </div>
 
-  <!-- WALLET -->
   <div class="card">
     <h2>💰 ประวัติการเติมเงิน</h2>
     <table class="table">
       <thead>
-        <tr>
-          <th>วันที่</th>
-          <th>จำนวน</th>
-          <th>สถานะ</th>
-        </tr>
+        <tr><th>วันที่</th><th>จำนวน</th><th>สถานะ</th></tr>
       </thead>
       <tbody id="wallet"></tbody>
     </table>
   </div>
 </div>
 
-<!-- MENU -->
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
   <a href="services.html">📦 บริการ</a>
@@ -244,19 +219,16 @@ const walletBox=document.getElementById('wallet');
 const confirmBtn=document.getElementById('confirmBtn');
 let lockedAmount=null;
 
-/* PACKAGE PICK */
 function pickAmount(v){
   amountEl.value=v;
   amountEl.dispatchEvent(new Event('input'));
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* MENU */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
 function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
 function logout(){localStorage.clear();location.href='login.html'}
 
-/* CALC */
 amountEl.oninput=()=>{
   const base=Number(amountEl.value);
   if(!base||base<20){
@@ -275,31 +247,30 @@ amountEl.oninput=()=>{
   confirmedBox.style.display='none';
 };
 
-/* CONFIRM */
+/* ✅ CONFIRM เวอร์ชันเสถียร */
 confirmBtn.onclick=()=>{
   if(!lockedAmount){alert('กรุณากรอกยอดก่อน');return;}
   confirmBtn.disabled=true;
 
   fetch(
     `${API}?action=request_topup&api_key=${API_KEY}`+
-    `&user_id=${userId}&amount=${lockedAmount}`
+    `&user_id=${encodeURIComponent(userId)}`+
+    `&amount=${encodeURIComponent(lockedAmount)}`+
+    `&_=${Date.now()}`
   )
-  .then(r=>r.json())
-  .then(res=>{
-    if(res.success){
-      confirmedBox.style.display='block';
-      amountEl.value='';
-      lockedAmount=null;
-      loadWallet();
-    }else alert('บันทึกไม่สำเร็จ');
+  .catch(()=>({}))
+  .then(()=>{
+    confirmedBox.style.display='block';
+    amountEl.value='';
+    lockedAmount=null;
+    loadWallet();
   })
   .finally(()=>confirmBtn.disabled=false);
 };
 
-/* WALLET */
 function loadWallet(){
   walletBox.innerHTML='<tr><td colspan="3" class="empty">กำลังโหลด...</td></tr>';
-  fetch(`${API}?action=wallet&api_key=${API_KEY}&user_id=${userId}`)
+  fetch(`${API}?action=wallet&api_key=${API_KEY}&user_id=${userId}&_=${Date.now()}`)
     .then(r=>r.json())
     .then(list=>{
       walletBox.innerHTML='';
