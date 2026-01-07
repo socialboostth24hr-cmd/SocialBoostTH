@@ -72,6 +72,32 @@ body{
 }
 .title{font-size:28px;font-weight:900;margin:10px 0 6px}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:22px}
+.menu-overlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.6);
+  z-index:999;
+  display:none;
+}
+.side-menu{
+  position:fixed;
+  left:-260px; top:0;
+  width:260px;height:100%;
+  background:#05070f;
+  padding:22px 20px;
+  z-index:1000;
+  transition:.3s;
+}
+.side-menu.open{left:0}
+.side-menu .user{font-weight:900;margin-bottom:20px}
+.side-menu a{
+  display:block;
+  padding:14px 0;
+  color:#e5e7eb;
+  text-decoration:none;
+  font-weight:900;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.side-menu a.logout{color:#fb7185}
 </style>
 </head>
 
@@ -97,7 +123,7 @@ body{
 
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
-  <div class="user">👤 <span id="username">ผู้ใช้งาน</span></div>
+  <div class="user">👤 <span id="username"></span></div>
   <a href="services.html">📦 บริการ</a>
   <a href="orders.html">🧾 คำสั่งซื้อ</a>
   <a href="topup.html">💰 เติมเงิน</a>
@@ -111,19 +137,19 @@ const API_KEY="SBTH-SECURE-2026";
 /* ===== AUTH ===== */
 const userId   = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
-const creditLS = localStorage.getItem('credit');
+const password = localStorage.getItem('password');
 
-if(!userId || !username){
-  location.href = 'login.html';
+if(!userId || !username || !password){
+  location.href='login.html';
 }
 
-document.getElementById('username').textContent = username;
-
 /* ===== ELEMENT ===== */
-const creditEl  = document.getElementById('credit');
-const box       = document.getElementById('services');
-const sideMenu  = document.getElementById('sideMenu');
+const creditEl = document.getElementById('credit');
+const box = document.getElementById('services');
+const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
+
+document.getElementById('username').textContent = username;
 
 /* ===== MENU ===== */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
@@ -136,13 +162,24 @@ function reloadAll(){
   loadServices();
 }
 
-/* ===== CREDIT (ถูกต้อง + นิ่ง + โปร) ===== */
+/* ===== CREDIT (เสถียร + ของจริง) ===== */
 function loadCredit(){
-  if(creditLS !== null){
-    creditEl.textContent = Number(creditLS).toFixed(2);
-  }else{
-    creditEl.textContent = '0.00';
+
+  const cache = localStorage.getItem('credit');
+  if(cache){
+    creditEl.textContent = Number(cache).toFixed(2);
   }
+
+  fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(res.success && res.user){
+        const real = Number(res.user.credit).toFixed(2);
+        creditEl.textContent = real;
+        localStorage.setItem('credit', real);
+      }
+    })
+    .catch(()=>{});
 }
 
 /* ===== SERVICES ===== */
@@ -152,20 +189,15 @@ function loadServices(){
     .then(r=>r.json())
     .then(res=>{
       if(!res.services) return;
-      res.services.forEach((s,i)=>{
+      res.services.forEach((s)=>{
         box.insertAdjacentHTML('beforeend',`
-          <div class="service" style="animation-delay:${i*0.05}s">
-            ${s.badge_status==='on'
-              ? `<div class="badge ${s.badge_type}">${s.badge_text}</div>`:''
-            }
+          <div class="service">
             <div class="service-name">${s.display_name}</div>
             <div class="service-desc">${s.short_desc||''}</div>
             <div class="value-hint">ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit}</div>
             <div class="bottom">
               <div class="price">${s.price_per_100} บาท <span>/100 ${s.unit}</span></div>
-              <button class="btn" onclick="selectService('${s.service_id}')">
-                เลือกแพ็กเกจ
-              </button>
+              <button class="btn" onclick="selectService('${s.service_id}')">เลือกแพ็กเกจ</button>
             </div>
           </div>
         `);
