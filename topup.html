@@ -145,13 +145,13 @@ const confirmBtn=document.getElementById('confirmBtn');
 
 let lockedAmount=null;
 
-/* 🔐 RESTORE LOCKED AMOUNT */
-(function restore(){
-  const base=sessionStorage.getItem('topup_base');
-  const lock=sessionStorage.getItem('topup_locked');
-  if(base && lock){
-    amountEl.value=base;
-    lockedAmount=lock;
+/* restore */
+(function(){
+  const b=sessionStorage.getItem('topup_base');
+  const l=sessionStorage.getItem('topup_locked');
+  if(b&&l){
+    amountEl.value=b;
+    lockedAmount=l;
     renderLocked();
   }
 })();
@@ -165,11 +165,10 @@ function renderLocked(){
 
 amountEl.oninput=()=>{
   const base=Number(amountEl.value);
-  if(!base || base<20){
+  if(!base||base<20){
     errorText.style.display='block';
     calcBox.style.display=qrBox.style.display='none';
-    sessionStorage.removeItem('topup_base');
-    sessionStorage.removeItem('topup_locked');
+    sessionStorage.clear();
     lockedAmount=null;
     return;
   }
@@ -177,8 +176,7 @@ amountEl.oninput=()=>{
 
   const lastBase=sessionStorage.getItem('topup_base');
   const lastLock=sessionStorage.getItem('topup_locked');
-
-  if(lastBase==base && lastLock){
+  if(lastBase==base&&lastLock){
     lockedAmount=lastLock;
   }else{
     const s=Math.floor(Math.random()*99)+1;
@@ -190,29 +188,23 @@ amountEl.oninput=()=>{
   confirmedBox.style.display='none';
 };
 
-/* CONFIRM */
 confirmBtn.onclick=async()=>{
   if(!lockedAmount) return alert('กรุณากรอกยอดก่อน');
   confirmBtn.disabled=true;
 
   try{
-    const res=await fetch(
-      `${API}?action=request_topup&api_key=${API_KEY}&user_id=${userId}&amount=${lockedAmount}`
-    );
-    const data=await res.json();
-    if(!data || data.success!==true){
-      alert('❌ ระบบยังไม่บันทึกรายการ');
+    const r=await fetch(`${API}?action=requestTopup&api_key=${API_KEY}&user_id=${userId}&amount=${lockedAmount}`);
+    const d=await r.json();
+    if(!d.success){
+      alert('❌ บันทึกไม่สำเร็จ');
       confirmBtn.disabled=false;
       return;
     }
-
     confirmedBox.style.display='block';
-    amountEl.value='';
+    sessionStorage.clear();
     lockedAmount=null;
-    sessionStorage.removeItem('topup_base');
-    sessionStorage.removeItem('topup_locked');
+    amountEl.value='';
     loadWallet();
-
   }catch{
     alert('❌ เชื่อมต่อระบบไม่ได้');
   }finally{
@@ -222,21 +214,22 @@ confirmBtn.onclick=async()=>{
 
 function loadWallet(){
   walletBox.innerHTML='<tr><td colspan="3" class="empty">กำลังโหลด...</td></tr>';
-  fetch(`${API}?action=wallet&api_key=${API_KEY}&user_id=${userId}`)
+  fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
-    .then(list=>{
-      walletBox.innerHTML='';
-      if(!Array.isArray(list)||!list.length){
+    .then(res=>{
+      const list=(res.logs||[]).filter(w=>w.type==='TOPUP');
+      if(!list.length){
         walletBox.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
         return;
       }
+      walletBox.innerHTML='';
       list.reverse().forEach(w=>{
         walletBox.innerHTML+=`
-          <tr>
-            <td>${new Date(w.datetime).toLocaleString()}</td>
-            <td>${Number(w.amount).toFixed(2)}</td>
-            <td><span class="status pending">รอตรวจสอบ</span></td>
-          </tr>`;
+        <tr>
+          <td>${new Date(w.datetime).toLocaleString()}</td>
+          <td>${Number(w.amount).toFixed(2)}</td>
+          <td><span class="status pending">รอตรวจสอบ</span></td>
+        </tr>`;
       });
     });
 }
