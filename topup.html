@@ -35,6 +35,7 @@ body{
   margin-bottom:16px;
   box-shadow:0 20px 45px rgba(139,92,246,.18);
 }
+h2{margin:0 0 14px;font-size:22px;font-weight:900}
 input{
   width:100%;
   padding:14px;
@@ -64,9 +65,11 @@ input{
   font-weight:900;
   display:none;
 }
-.table{width:100%;border-collapse:collapse}
+.table{width:100%;border-collapse:collapse;font-size:14px}
 .table td,.table th{padding:10px;border-bottom:1px solid #e5e7eb}
 .empty{text-align:center;color:#94a3b8}
+.status{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900}
+.pending{background:#fef3c7;color:#92400e}
 </style>
 </head>
 
@@ -88,19 +91,36 @@ input{
 
     <div class="qr-box" id="qrBox">
       <img id="qrImg">
-      <div>พร้อมเพย์ 099-130-1221</div>
+      <div style="margin-top:8px;font-weight:900">
+        พร้อมเพย์ 099-130-1221<br>สรวงสุดา ศรีสุวรรณ์
+      </div>
     </div>
 
-    <button id="confirmBtn">✅ ยืนยันว่าแจ้งแล้ว</button>
+    <button id="confirmBtn" style="
+      margin-top:14px;
+      width:100%;
+      padding:16px;
+      border:none;
+      border-radius:999px;
+      font-size:16px;
+      font-weight:900;
+      background:linear-gradient(135deg,var(--blue),var(--purple));
+      color:#fff;
+      cursor:pointer
+    ">✅ ยืนยันว่าแจ้งแล้ว</button>
 
     <div class="confirmed" id="confirmedBox">
-      ⏳ รอแอดมินตรวจสอบ
+      📤 บันทึกรายการเติมเงินเรียบร้อย<br>
+      ⏳ สถานะ: รอแอดมินตรวจสอบ
     </div>
   </div>
 
   <div class="card">
     <h2>💰 ประวัติการเติมเงิน</h2>
     <table class="table">
+      <thead>
+        <tr><th>วันที่</th><th>จำนวน</th><th>สถานะ</th></tr>
+      </thead>
       <tbody id="wallet"></tbody>
     </table>
   </div>
@@ -126,27 +146,30 @@ const confirmBtn=document.getElementById('confirmBtn');
 let lockedAmount=null;
 
 /* 🔐 RESTORE LOCKED AMOUNT */
-(function(){
-  if(!amountEl) return;
-
+(function restore(){
   const base=sessionStorage.getItem('topup_base');
   const lock=sessionStorage.getItem('topup_locked');
   if(base && lock){
     amountEl.value=base;
     lockedAmount=lock;
-    calcBox.style.display='block';
-    calcBox.innerHTML=`🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
-    qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
-    qrBox.style.display='block';
+    renderLocked();
   }
 })();
+
+function renderLocked(){
+  calcBox.style.display='block';
+  calcBox.innerHTML=`🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
+  qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
+  qrBox.style.display='block';
+}
 
 amountEl.oninput=()=>{
   const base=Number(amountEl.value);
   if(!base || base<20){
     errorText.style.display='block';
     calcBox.style.display=qrBox.style.display='none';
-    sessionStorage.clear();
+    sessionStorage.removeItem('topup_base');
+    sessionStorage.removeItem('topup_locked');
     lockedAmount=null;
     return;
   }
@@ -163,35 +186,48 @@ amountEl.oninput=()=>{
     sessionStorage.setItem('topup_base',base);
     sessionStorage.setItem('topup_locked',lockedAmount);
   }
-
-  calcBox.style.display='block';
-  calcBox.innerHTML=`🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
-  qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
-  qrBox.style.display='block';
+  renderLocked();
+  confirmedBox.style.display='none';
 };
 
+/* CONFIRM */
 confirmBtn.onclick=async()=>{
   if(!lockedAmount) return alert('กรุณากรอกยอดก่อน');
+  confirmBtn.disabled=true;
 
-  const res=await fetch(`${API}?action=request_topup&api_key=${API_KEY}&user_id=${userId}&amount=${lockedAmount}`);
-  const data=await res.json();
-  if(data && data.success){
+  try{
+    const res=await fetch(
+      `${API}?action=request_topup&api_key=${API_KEY}&user_id=${userId}&amount=${lockedAmount}`
+    );
+    const data=await res.json();
+    if(!data || data.success!==true){
+      alert('❌ ระบบยังไม่บันทึกรายการ');
+      confirmBtn.disabled=false;
+      return;
+    }
+
     confirmedBox.style.display='block';
     amountEl.value='';
-    sessionStorage.clear();
     lockedAmount=null;
+    sessionStorage.removeItem('topup_base');
+    sessionStorage.removeItem('topup_locked');
     loadWallet();
+
+  }catch{
+    alert('❌ เชื่อมต่อระบบไม่ได้');
+  }finally{
+    confirmBtn.disabled=false;
   }
 };
 
 function loadWallet(){
-  walletBox.innerHTML='<tr><td class="empty">กำลังโหลด...</td></tr>';
+  walletBox.innerHTML='<tr><td colspan="3" class="empty">กำลังโหลด...</td></tr>';
   fetch(`${API}?action=wallet&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(list=>{
       walletBox.innerHTML='';
-      if(!list.length){
-        walletBox.innerHTML='<tr><td class="empty">ยังไม่มีข้อมูล</td></tr>';
+      if(!Array.isArray(list)||!list.length){
+        walletBox.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
         return;
       }
       list.reverse().forEach(w=>{
@@ -199,6 +235,7 @@ function loadWallet(){
           <tr>
             <td>${new Date(w.datetime).toLocaleString()}</td>
             <td>${Number(w.amount).toFixed(2)}</td>
+            <td><span class="status pending">รอตรวจสอบ</span></td>
           </tr>`;
       });
     });
