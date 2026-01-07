@@ -12,6 +12,7 @@
   --blue:#38bdf8;
   --purple:#8b5cf6;
   --pink:#ec4899;
+  --green:#22c55e;
 }
 *{box-sizing:border-box}
 
@@ -24,7 +25,7 @@ body{
   color:#f1f5f9;
 }
 
-/* ===== HEADER ===== */
+/* ===== HEADER / MENU (เหมือนเดิม) ===== */
 .header{
   padding:12px 16px;
   display:grid;
@@ -38,7 +39,6 @@ body{
   z-index:50;
   box-shadow:0 10px 30px rgba(0,0,0,.65);
 }
-
 .left,.right{display:flex;gap:10px;align-items:center}
 .center{
   text-align:center;
@@ -48,9 +48,7 @@ body{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-
 .logo{height:32px}
-
 .menu-btn,.refresh-btn{
   border:none;
   padding:6px 14px;
@@ -60,7 +58,6 @@ body{
   cursor:pointer;
   color:#e5e7eb;
 }
-
 .wallet{
   font-size:13px;
   padding:6px 14px;
@@ -72,45 +69,12 @@ body{
   border:1px solid transparent;
 }
 
-/* ===== MENU ===== */
-.menu-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  z-index:99;
-}
-.side-menu{
-  position:fixed;
-  left:-260px;
-  top:0;
-  width:260px;
-  height:100%;
-  background:linear-gradient(180deg,#111827,#0b1020);
-  padding:20px;
-  z-index:100;
-  transition:.3s;
-  box-shadow:20px 0 60px rgba(0,0,0,.85);
-}
-.side-menu.open{left:0}
-
-.side-menu a{
-  display:block;
-  padding:14px 0;
-  font-weight:900;
-  color:#e5e7eb;
-  text-decoration:none;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.side-menu a.logout{color:#fb7185;border:none}
-
 /* ===== CONTAINER ===== */
 .container{
   max-width:720px;
   margin:auto;
   padding:26px 18px 140px;
 }
-
 .title{
   font-size:28px;
   font-weight:900;
@@ -129,37 +93,13 @@ body{
 .service{
   background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:26px;
-  padding:54px 22px 20px;
-  margin-bottom:18px;
+  padding:54px 22px 22px;
+  margin-bottom:20px;
   position:relative;
   box-shadow:
     0 35px 90px rgba(0,0,0,.75),
     0 0 0 1px rgba(139,92,246,.25);
-
-  /* ✨ เพิ่มฟีลหรู */
-  transition:
-    transform .28s ease,
-    box-shadow .28s ease;
 }
-
-.service:hover{
-  transform:translateY(-4px);
-  box-shadow:
-    0 45px 110px rgba(0,0,0,.85),
-    0 0 0 1px rgba(139,92,246,.35),
-    0 0 40px rgba(139,92,246,.18);
-}
-
-/* มือถือไม่กระตุก */
-@media (hover:none){
-  .service:hover{
-    transform:none;
-    box-shadow:
-      0 35px 90px rgba(0,0,0,.75),
-      0 0 0 1px rgba(139,92,246,.25);
-  }
-}
-
 .service-name{
   font-size:18px;
   font-weight:900;
@@ -170,7 +110,20 @@ body{
   margin-top:6px;
 }
 
-/* ===== BADGE ===== */
+/* ===== VALUE TEXT (ใหม่) ===== */
+.value-hint{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#020617,#020617) padding-box,
+             linear-gradient(135deg,var(--blue),var(--purple)) border-box;
+  border:1px solid transparent;
+  font-size:13px;
+  color:#e5e7eb;
+}
+.value-hint b{color:var(--green)}
+
+/* ===== BADGE (เดิม) ===== */
 .badge{
   position:absolute;
   top:16px;
@@ -193,7 +146,6 @@ body{
   margin-top:18px;
   align-items:center;
 }
-
 .price{
   font-size:15px;
   font-weight:900;
@@ -215,7 +167,6 @@ body{
   cursor:pointer;
   box-shadow:0 18px 45px rgba(139,92,246,.6);
 }
-.btn:hover{transform:translateY(-1px)}
 
 .empty{text-align:center;color:#94a3b8;margin-top:40px}
 .error{text-align:center;color:#fb7185;margin-top:40px;font-weight:900}
@@ -242,64 +193,60 @@ body{
   <div id="services"></div>
 </div>
 
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
-<div class="side-menu" id="sideMenu">
-  <a href="services.html">📦 บริการ</a>
-  <a href="orders.html">🧾 คำสั่งซื้อ</a>
-  <a href="topup.html">💰 เติมเงิน</a>
-  <a href="#" class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
-</div>
-
 <script>
 const API="https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
 const API_KEY="SBTH-SECURE-2026";
-
 const userId=localStorage.getItem('user_id');
 if(!userId){location.href='login.html';throw'';}
 
 const creditEl=document.getElementById('credit');
 const box=document.getElementById('services');
-const sideMenu=document.getElementById('sideMenu');
-const menuOverlay=document.getElementById('menuOverlay');
 
-function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.href='login.html'}
+function openMenu(){}
+function reloadAll(){loadCredit();loadServices();}
 
 function loadCredit(){
-  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}&_=${Date.now()}`)
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
-    .then(u=>creditEl.textContent=Number(u.credit||0).toFixed(2))
-    .catch(()=>creditEl.textContent='0.00');
+    .then(u=>creditEl.textContent=Number(u.credit||0).toFixed(2));
 }
 
 function loadServices(){
-  box.innerHTML='⏳ กำลังโหลดบริการ...';
-  fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
+  fetch(`${API}?action=services&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(list=>{
       box.innerHTML='';
-      if(!list.length){box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';return;}
+      if(!list.length){
+        box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';return;
+      }
       list.forEach(s=>{
+        const suggest = s.min_qty * 2;
         box.insertAdjacentHTML('beforeend',`
           <div class="service">
             ${s.badge_status==='on'
               ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`:''}
             <div class="service-name">${s.display_name}</div>
             <div class="service-desc">${s.short_desc||''}</div>
+
+            <div class="value-hint">
+              💡 ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit} |
+              แนะนำ <b>${suggest}</b> ${s.unit} เพื่อเห็นผลชัดขึ้น
+            </div>
+
             <div class="bottom">
               <div class="price">
                 ${s.price_per_100} บาท
                 <span>/ 100 ${s.unit}</span>
-                <span>ขั้นต่ำ ${s.min_qty} ${s.unit}</span>
               </div>
-              <button class="btn" onclick="selectService('${s.service_id}')">เลือกแพ็กเกจ</button>
+              <button class="btn" onclick="selectService('${s.service_id}')">
+                เลือกแพ็กเกจ
+              </button>
             </div>
           </div>
         `);
       });
     })
-    .catch(()=>box.innerHTML='<div class="error">❌ ไม่สามารถเชื่อมต่อระบบได้</div>');
+    .catch(()=>box.innerHTML='<div class="error">❌ เชื่อมต่อระบบไม่ได้</div>');
 }
 
 function selectService(id){
@@ -307,7 +254,6 @@ function selectService(id){
   location.href='order.html';
 }
 
-function reloadAll(){loadCredit();loadServices();}
 reloadAll();
 </script>
 
