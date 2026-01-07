@@ -219,13 +219,16 @@ body{
 const API="https://script.google.com/macros/s/AKfycbxnG0FDeXxrWOFIhPCtREMcUKq5-uBCqi_BagqlD6OPWDXBnQn1Dt-8BKMaOv4ZstnQSg/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId=localStorage.getItem('user_id');
-if(!userId){location.href='login.html';throw'';}
+const userId = localStorage.getItem('user_id');
+if(!userId){
+  location.href='login.html';
+  throw '';
+}
 
-const creditEl=document.getElementById('credit');
-const box=document.getElementById('services');
-const sideMenu=document.getElementById('sideMenu');
-const menuOverlay=document.getElementById('menuOverlay');
+const creditEl = document.getElementById('credit');
+const box = document.getElementById('services');
+const sideMenu = document.getElementById('sideMenu');
+const menuOverlay = document.getElementById('menuOverlay');
 
 /* MENU */
 function openMenu(){
@@ -242,37 +245,51 @@ function logout(){
 }
 
 /* LOAD */
-function reloadAll(){loadCredit();loadServices();}
-
-function loadCredit(){
-  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}&_=${Date.now()}`)
-    .then(r=>r.json())
-    .then(u=>creditEl.textContent=Number(u?.credit||0).toFixed(2))
-    .catch(()=>creditEl.textContent='0.00');
+function reloadAll(){
+  loadCredit();
+  loadServices();
 }
 
+/* credit จาก localStorage */
+function loadCredit(){
+  creditEl.textContent = Number(
+    localStorage.getItem('credit') || 0
+  ).toFixed(2);
+}
+
+/* load services */
 function loadServices(){
   box.innerHTML='<div class="empty">กำลังโหลดบริการ…</div>';
-  fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
+
+  fetch(${API}?action=getServices&api_key=${API_KEY}&_=${Date.now()})
     .then(r=>r.json())
-    .then(list=>{
+    .then(res=>{
+      const list = (res.services || []).filter(s => s.status === 'on');
       box.innerHTML='';
-      if(!Array.isArray(list)||!list.length){
+
+      if(!list.length){
         box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';
         return;
       }
+
       list.forEach(s=>{
-        const suggest = Number(s.min_qty||0)*2;
+        const suggest = Number(s.min_qty || 0) * 2;
+
+        const badgeHTML = (s.badge_status === 'on')
+          ? <div class="badge ${s.badge_type}">${s.badge_text || ''}</div>
+          : '';
+
         box.insertAdjacentHTML('beforeend',`
           <div class="service">
-            ${s.badge_status==='on'
-              ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`:''}
-            <div class="service-name">${s.display_name||''}</div>
-            <div class="service-desc">${s.short_desc||''}</div>
+            ${badgeHTML}
+            <div class="service-name">${s.display_name || ''}</div>
+            <div class="service-desc">${s.short_desc || ''}</div>
+
             <div class="value-hint">
               💡 ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit} |
               แนะนำ <b>${suggest}</b> ${s.unit}
             </div>
+
             <div class="bottom">
               <div class="price">
                 ${s.price_per_100} บาท
@@ -292,12 +309,12 @@ function loadServices(){
 }
 
 function selectService(id){
-  localStorage.setItem('service_id',id);
+  localStorage.setItem('service_id', id);
   location.href='order.html';
 }
 
 reloadAll();
 </script>
-
+  
 </body>
 </html>
