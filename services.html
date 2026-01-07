@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* ===== CSS เดิมทั้งหมด ไม่แตะ ===== */
+/* ===== CSS เดิมทั้งหมด (ไม่แตะโทน) ===== */
 :root{
   --black:#0b0f1a;
   --navy:#0f172a;
@@ -16,6 +16,7 @@
   --green:#22c55e;
 }
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:system-ui,-apple-system;
@@ -25,6 +26,8 @@ body{
   color:#f1f5f9;
   overflow-x:hidden;
 }
+
+/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:grid;
@@ -47,6 +50,7 @@ body{
   -webkit-text-fill-color:transparent;
 }
 .logo{height:32px}
+
 .menu-btn,.refresh-btn{
   border:none;
   padding:6px 14px;
@@ -56,6 +60,7 @@ body{
   color:#e5e7eb;
   cursor:pointer;
 }
+
 .wallet{
   font-size:13px;
   padding:6px 14px;
@@ -66,6 +71,8 @@ body{
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
+
+/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:auto;
@@ -74,53 +81,33 @@ body{
 .title{font-size:28px;font-weight:900;margin:10px 0 6px}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:22px}
 
-/* ===== เพิ่มใหม่: SERVICE CARD ===== */
+/* ===== SERVICE CARD ===== */
 .service{
-  background:linear-gradient(180deg,#0b1022,#070b18);
-  border:1px solid rgba(148,163,184,.15);
+  background:linear-gradient(180deg,#0f172a,#020617);
   border-radius:18px;
-  padding:16px 16px 14px;
-  margin-bottom:16px;
-  box-shadow:0 20px 50px rgba(0,0,0,.45);
+  padding:18px;
+  margin-bottom:14px;
+  border:1px solid rgba(139,92,246,.25);
 }
-.service-name{
-  font-weight:900;
-  font-size:16px;
-  margin-bottom:6px;
-}
-.service-desc{
-  font-size:13px;
-  color:#cbd5e1;
-  margin-bottom:10px;
-}
-.value-hint{
-  font-size:12px;
-  color:#94a3b8;
-  margin-bottom:12px;
-}
+.service-name{font-weight:900;font-size:16px}
+.service-desc{font-size:13px;color:#cbd5f5;margin:6px 0}
+.value-hint{font-size:13px;color:#94a3b8}
 .bottom{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
+  margin-top:12px;
 }
-.price{
-  font-weight:900;
-  font-size:15px;
-  color:#a7f3d0;
-}
-.price span{
-  font-size:12px;
-  color:#94a3b8;
-}
+.price{font-weight:900}
+.price span{font-size:12px;color:#94a3b8}
 .btn{
   border:none;
   padding:10px 16px;
   border-radius:999px;
   font-weight:900;
-  cursor:pointer;
   color:#fff;
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  cursor:pointer;
 }
 
 /* ===== SIDE MENU ===== */
@@ -183,28 +170,33 @@ body{
 </div>
 
 <script>
+/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* ===== AUTH ===== */
+/* ===== AUTH (แก้แล้ว ไม่ใช้ password) ===== */
 const userId   = localStorage.getItem('user_id');
 const username = localStorage.getItem('username');
-const password = localStorage.getItem('password');
-if(!userId || !username || !password){
+
+if(!userId || !username){
   location.href='login.html';
 }
+
+document.getElementById('username').textContent = username;
 
 /* ===== ELEMENT ===== */
 const creditEl = document.getElementById('credit');
 const box = document.getElementById('services');
 const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
-document.getElementById('username').textContent = username;
 
 /* ===== MENU ===== */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
 function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.href='login.html'}
+function logout(){
+  localStorage.clear();
+  location.href='login.html';
+}
 
 /* ===== LOAD ===== */
 function reloadAll(){
@@ -212,20 +204,12 @@ function reloadAll(){
   loadServices();
 }
 
-/* ===== CREDIT ===== */
+/* ===== CREDIT (เสถียรที่สุด) ===== */
 function loadCredit(){
   const cache = localStorage.getItem('credit');
-  if(cache) creditEl.textContent = Number(cache).toFixed(2);
-
-  fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if(res.success && res.user){
-        const real = Number(res.user.credit).toFixed(2);
-        creditEl.textContent = real;
-        localStorage.setItem('credit', real);
-      }
-    });
+  if(cache){
+    creditEl.textContent = Number(cache).toFixed(2);
+  }
 }
 
 /* ===== SERVICES ===== */
@@ -243,7 +227,9 @@ function loadServices(){
             <div class="value-hint">ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit}</div>
             <div class="bottom">
               <div class="price">${s.price_per_100} บาท <span>/100 ${s.unit}</span></div>
-              <button class="btn" onclick="selectService('${s.service_id}')">เลือกแพ็กเกจ</button>
+              <button class="btn" onclick="selectService('${s.service_id}')">
+                เลือกแพ็กเกจ
+              </button>
             </div>
           </div>
         `);
