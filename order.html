@@ -85,6 +85,18 @@ body{
 .title{font-size:22px;font-weight:900}
 .desc{font-size:13px;color:var(--muted);margin-top:6px}
 
+.detail h3{
+  margin-top:16px;
+  font-size:16px;
+  font-weight:900;
+}
+.detail p{
+  white-space:pre-line;
+  font-size:14px;
+  color:#cbd5e1;
+  margin-top:6px;
+}
+
 label{
   display:block;
   font-weight:900;
@@ -132,7 +144,6 @@ textarea{min-height:120px}
   font-size:18px;
   font-weight:900;
   cursor:pointer;
-  box-shadow:0 18px 45px rgba(139,92,246,.6);
 }
 .buy:disabled{opacity:.55;cursor:not-allowed}
 .hide{display:none}
@@ -142,18 +153,25 @@ textarea{min-height:120px}
 <body>
 
 <header class="header">
-  <button class="back" onclick="goBack()">←</button>
+  <button class="back" onclick="history.back()">←</button>
   <div class="center">SocialBoostTH</div>
   <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
 </header>
 
 <div class="container">
 
+  <!-- SERVICE INFO -->
   <div class="card">
     <div class="title" id="serviceName">กำลังโหลด…</div>
     <div class="desc" id="serviceDesc"></div>
   </div>
 
+  <!-- SERVICE DETAILS -->
+  <div class="card detail hide" id="detailCard">
+    <div id="serviceDetails"></div>
+  </div>
+
+  <!-- ORDER -->
   <div class="card">
 
     <div id="qtyBox">
@@ -163,15 +181,12 @@ textarea{min-height:120px}
 
     <div id="commentBox" class="hide">
       <label>ข้อความคอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
-      <textarea id="commentText"
-        placeholder="เช่น\nน่ารักมาก\nชอบคลิปนี้"></textarea>
-      <div class="hint">
-        จำนวนคอมเมนต์: <b><span id="commentCount">0</span></b>
-      </div>
+      <textarea id="commentText"></textarea>
+      <div class="hint">จำนวนคอมเมนต์: <b id="commentCount">0</b></div>
     </div>
 
     <label>ลิงก์ TikTok</label>
-    <textarea id="link" placeholder="https://www.tiktok.com/..."></textarea>
+    <textarea id="link"></textarea>
 
     <div class="total">รวม: <span id="total">0.00</span> บาท</div>
     <div class="error" id="error"></div>
@@ -182,135 +197,101 @@ textarea{min-height:120px}
 <button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
 
 <script>
-/* CONFIG */
-const API="https://script.google.com/macros/s/AKfycbxnG0FDeXxrWOFIhPCtREMcUKq5-uBCqi_BagqlD6OPWDXBnQn1Dt-8BKMaOv4ZstnQSg/exec";
+const API="https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* AUTH GUARD */
 const userId=localStorage.getItem('user_id');
 const serviceId=localStorage.getItem('service_id');
-if(!userId||!serviceId){
-  alert('กรุณาเลือกบริการก่อน');
-  location.href='services.html';
-}
+if(!userId||!serviceId) location.href='services.html';
 
-/* DOM */
-const creditEl=credit;
-const serviceName=serviceName;
-const serviceDesc=serviceDesc;
-const qtyEl=qty;
-const qtyBox=qtyBox;
-const commentBox=commentBox;
-const commentText=commentText;
-const commentCount=commentCount;
-const linkEl=link;
-const totalEl=total;
-const errorEl=error;
-const buyBtn=buyBtn;
+const creditEl=document.getElementById('credit');
+const serviceName=document.getElementById('serviceName');
+const serviceDesc=document.getElementById('serviceDesc');
+const detailCard=document.getElementById('detailCard');
+const detailBox=document.getElementById('serviceDetails');
 
-let service=null;
-let discounts=[];
-let credit=0;
-let finalQty=0;
-let finalTotal=0;
+const qty=document.getElementById('qty');
+const qtyBox=document.getElementById('qtyBox');
+const commentBox=document.getElementById('commentBox');
+const commentText=document.getElementById('commentText');
+const commentCount=document.getElementById('commentCount');
+const link=document.getElementById('link');
+const totalEl=document.getElementById('total');
+const errorEl=document.getElementById('error');
+const buyBtn=document.getElementById('buyBtn');
 
-/* LOAD CREDIT */
+let service, discounts=[], credit=0, finalQty=0, finalTotal=0;
+
+/* CREDIT */
 fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
-.then(r=>r.json())
-.then(u=>{
-  credit=Number(u.credit||0);
+.then(r=>r.json()).then(u=>{
+  credit=u.credit||0;
   creditEl.textContent=credit.toFixed(2);
 });
 
-/* LOAD SERVICE */
+/* LOAD SERVICE + DETAILS */
 Promise.all([
   fetch(`${API}?action=services&api_key=${API_KEY}`).then(r=>r.json()),
-  fetch(`${API}?action=discounts&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json())
+  fetch(`${API}?action=discounts&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json()),
+  fetch(`${API}?action=service_details&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json())
 ])
-.then(([services,disc])=>{
+.then(([services,disc,details])=>{
   service=services.find(s=>String(s.service_id)===String(serviceId));
-  discounts=Array.isArray(disc)?disc:[];
-
-  if(!service){
-    alert('ไม่พบบริการ');
-    location.href='services.html';
-    return;
-  }
+  discounts=disc||[];
 
   serviceName.textContent=service.display_name;
   serviceDesc.textContent=service.short_desc||'';
 
+  if(Array.isArray(details)&&details.length){
+    detailCard.classList.remove('hide');
+    details.forEach(d=>{
+      detailBox.innerHTML+=`<h3>${d.title}</h3><p>${d.content}</p>`;
+    });
+  }
+
   if(service.service_type==='comment'){
     qtyBox.classList.add('hide');
     commentBox.classList.remove('hide');
-    commentText.addEventListener('input',calcComment);
+    commentText.oninput=calcComment;
   }else{
-    qtyEl.value=service.min_qty;
-    qtyEl.addEventListener('input',calcNormal);
+    qty.value=service.min_qty;
+    qty.oninput=calcNormal;
     calcNormal();
   }
 });
 
 /* CALC */
 function calcNormal(){
-  finalQty=Number(qtyEl.value||0);
+  finalQty=Number(qty.value||0);
   calcTotal();
 }
-
 function calcComment(){
-  const lines=commentText.value.split('\n').map(x=>x.trim()).filter(Boolean);
-  finalQty=lines.length;
+  finalQty=commentText.value.split('\n').filter(l=>l.trim()).length;
   commentCount.textContent=finalQty;
   calcTotal();
 }
-
 function calcTotal(){
   buyBtn.disabled=true;
   errorEl.textContent='';
-  totalEl.textContent='0.00';
-
-  if(finalQty < service.min_qty){
-    errorEl.textContent=`ขั้นต่ำ ${service.min_qty}`;
-    return;
-  }
-
-  const base=(finalQty*Number(service.price_per_100))/100;
-  const d=discounts.find(x=>finalQty>=x.min_qty && finalQty<=x.max_qty);
-  finalTotal=d ? finalQty*Number(d.price) : base;
-
+  if(finalQty<service.min_qty){errorEl.textContent=`ขั้นต่ำ ${service.min_qty}`;return;}
+  const base=(finalQty*service.price_per_100)/100;
+  const d=discounts.find(x=>finalQty>=x.min_qty&&finalQty<=x.max_qty);
+  finalTotal=d?finalQty*d.price:base;
   totalEl.textContent=finalTotal.toFixed(2);
-
-  if(finalTotal>credit){
-    errorEl.textContent='เครดิตไม่เพียงพอ';
-    return;
-  }
-
+  if(finalTotal>credit){errorEl.textContent='เครดิตไม่เพียงพอ';return;}
   buyBtn.disabled=false;
 }
 
 /* ORDER */
 buyBtn.onclick=()=>{
-  const link=linkEl.value.trim();
-  if(!link){
-    errorEl.textContent='กรุณาใส่ลิงก์ TikTok';
-    return;
-  }
-
-  let sendLink=link;
+  if(!link.value.trim()){errorEl.textContent='กรุณาใส่ลิงก์ TikTok';return;}
+  let send=link.value.trim();
   if(service.service_type==='comment'){
-    const lines=commentText.value.split('\n').map(x=>x.trim()).filter(Boolean);
-    if(!lines.length){
-      errorEl.textContent='กรุณาใส่ข้อความคอมเมนต์';
-      return;
-    }
-    sendLink=link+'\n-----\n'+lines.join('\n');
+    send+='\n-----\n'+commentText.value.trim();
   }
-
   buyBtn.disabled=true;
-
-  fetch(`${API}?action=create_order&api_key=${API_KEY}&user_id=${userId}&service_id=${serviceId}&qty=${finalQty}&link=${encodeURIComponent(sendLink)}`)
-  .then(r=>r.json())
-  .then(res=>{
+  fetch(`${API}?action=create_order&api_key=${API_KEY}&user_id=${userId}&service_id=${serviceId}&qty=${finalQty}&link=${encodeURIComponent(send)}`)
+  .then(r=>r.json()).then(res=>{
     if(res.success){
       localStorage.removeItem('service_id');
       location.href='orders.html';
@@ -318,15 +299,8 @@ buyBtn.onclick=()=>{
       errorEl.textContent='สั่งซื้อไม่สำเร็จ';
       buyBtn.disabled=false;
     }
-  })
-  .catch(()=>{
-    errorEl.textContent='เชื่อมต่อระบบไม่ได้';
-    buyBtn.disabled=false;
   });
 };
-
-function goBack(){history.back();}
 </script>
-
 </body>
 </html>
