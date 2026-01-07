@@ -25,7 +25,7 @@ body{
   color:#f1f5f9;
 }
 
-/* ===== HEADER / MENU (เหมือนเดิม) ===== */
+/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:grid;
@@ -69,7 +69,38 @@ body{
   border:1px solid transparent;
 }
 
-/* ===== CONTAINER ===== */
+/* ===== MENU ===== */
+.menu-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  z-index:99;
+}
+.side-menu{
+  position:fixed;
+  left:-260px;
+  top:0;
+  width:260px;
+  height:100%;
+  background:linear-gradient(180deg,#111827,#0b1020);
+  padding:20px;
+  z-index:100;
+  transition:.3s;
+  box-shadow:20px 0 60px rgba(0,0,0,.85);
+}
+.side-menu.open{left:0}
+.side-menu a{
+  display:block;
+  padding:14px 0;
+  font-weight:900;
+  color:#e5e7eb;
+  text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.side-menu a.logout{color:#fb7185;border:none}
+
+/* ===== CONTENT ===== */
 .container{
   max-width:720px;
   margin:auto;
@@ -100,17 +131,9 @@ body{
     0 35px 90px rgba(0,0,0,.75),
     0 0 0 1px rgba(139,92,246,.25);
 }
-.service-name{
-  font-size:18px;
-  font-weight:900;
-}
-.service-desc{
-  font-size:13px;
-  color:#cbd5e1;
-  margin-top:6px;
-}
+.service-name{font-size:18px;font-weight:900}
+.service-desc{font-size:13px;color:#cbd5e1;margin-top:6px}
 
-/* ===== VALUE TEXT (ใหม่) ===== */
 .value-hint{
   margin-top:12px;
   padding:12px 14px;
@@ -123,7 +146,6 @@ body{
 }
 .value-hint b{color:var(--green)}
 
-/* ===== BADGE (เดิม) ===== */
 .badge{
   position:absolute;
   top:16px;
@@ -138,7 +160,6 @@ body{
 .badge.recommended{background:linear-gradient(90deg,var(--blue),var(--purple));}
 .badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a);}
 
-/* ===== BOTTOM ===== */
 .bottom{
   display:flex;
   justify-content:space-between;
@@ -146,17 +167,9 @@ body{
   margin-top:18px;
   align-items:center;
 }
-.price{
-  font-size:15px;
-  font-weight:900;
-}
-.price span{
-  display:block;
-  font-size:12px;
-  color:#94a3b8;
-}
+.price{font-size:15px;font-weight:900}
+.price span{display:block;font-size:12px;color:#94a3b8}
 
-/* BUTTON */
 .btn{
   padding:12px 22px;
   border-radius:18px;
@@ -193,46 +206,73 @@ body{
   <div id="services"></div>
 </div>
 
+<!-- MENU -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<div class="side-menu" id="sideMenu">
+  <a href="services.html">📦 บริการ</a>
+  <a href="orders.html">🧾 คำสั่งซื้อ</a>
+  <a href="topup.html">💰 เติมเงิน</a>
+  <a href="#" class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
+</div>
+
 <script>
 const API="https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
 const API_KEY="SBTH-SECURE-2026";
+
 const userId=localStorage.getItem('user_id');
 if(!userId){location.href='login.html';throw'';}
 
 const creditEl=document.getElementById('credit');
 const box=document.getElementById('services');
+const sideMenu=document.getElementById('sideMenu');
+const menuOverlay=document.getElementById('menuOverlay');
 
-function openMenu(){}
+/* MENU */
+function openMenu(){
+  sideMenu.classList.add('open');
+  menuOverlay.style.display='block';
+}
+function closeMenu(){
+  sideMenu.classList.remove('open');
+  menuOverlay.style.display='none';
+}
+function logout(){
+  localStorage.clear();
+  location.href='login.html';
+}
+
+/* LOAD */
 function reloadAll(){loadCredit();loadServices();}
 
 function loadCredit(){
-  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}&_=${Date.now()}`)
     .then(r=>r.json())
-    .then(u=>creditEl.textContent=Number(u.credit||0).toFixed(2));
+    .then(u=>creditEl.textContent=Number(u?.credit||0).toFixed(2))
+    .catch(()=>creditEl.textContent='0.00');
 }
 
 function loadServices(){
-  fetch(`${API}?action=services&api_key=${API_KEY}`)
+  box.innerHTML='<div class="empty">กำลังโหลดบริการ…</div>';
+  fetch(`${API}?action=services&api_key=${API_KEY}&_=${Date.now()}`)
     .then(r=>r.json())
     .then(list=>{
       box.innerHTML='';
-      if(!list.length){
-        box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';return;
+      if(!Array.isArray(list)||!list.length){
+        box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';
+        return;
       }
       list.forEach(s=>{
-        const suggest = s.min_qty * 2;
+        const suggest = Number(s.min_qty||0)*2;
         box.insertAdjacentHTML('beforeend',`
           <div class="service">
             ${s.badge_status==='on'
               ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`:''}
-            <div class="service-name">${s.display_name}</div>
+            <div class="service-name">${s.display_name||''}</div>
             <div class="service-desc">${s.short_desc||''}</div>
-
             <div class="value-hint">
               💡 ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit} |
-              แนะนำ <b>${suggest}</b> ${s.unit} เพื่อเห็นผลชัดขึ้น
+              แนะนำ <b>${suggest}</b> ${s.unit}
             </div>
-
             <div class="bottom">
               <div class="price">
                 ${s.price_per_100} บาท
@@ -246,7 +286,9 @@ function loadServices(){
         `);
       });
     })
-    .catch(()=>box.innerHTML='<div class="error">❌ เชื่อมต่อระบบไม่ได้</div>');
+    .catch(()=>{
+      box.innerHTML='<div class="error">❌ ไม่สามารถเชื่อมต่อระบบได้</div>';
+    });
 }
 
 function selectService(id){
