@@ -7,7 +7,6 @@
 <style>
 :root{
   --black:#0b0f1a;
-  --navy:#0f172a;
   --blue:#38bdf8;
   --purple:#8b5cf6;
   --pink:#ec4899;
@@ -68,6 +67,7 @@ body{
   transition:.3s;
 }
 .side-menu.open{left:0}
+.side-menu .user{font-weight:900;margin-bottom:16px}
 .side-menu a{display:block;padding:14px 0;color:#e5e7eb;text-decoration:none;font-weight:900}
 .side-menu a.logout{color:#fb7185}
 
@@ -75,13 +75,11 @@ body{
 .container{max-width:720px;margin:auto;padding:26px 18px 140px}
 .title{font-size:28px;font-weight:900}
 .subtitle{font-size:14px;color:#94a3b8}
-
 .search input{
   width:100%;padding:14px;border-radius:14px;
   border:1px solid rgba(148,163,184,.2);
   background:#020617;color:#fff;
 }
-
 .section-title{
   font-size:16px;font-weight:900;
   color:var(--gold);
@@ -98,6 +96,7 @@ body{
 .service-name{font-weight:900;font-size:18px}
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
+.recommend{margin-top:8px;font-size:13px;color:var(--gold);font-weight:900}
 .bottom{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 .price{font-weight:900;color:#a5b4fc}
 .btn{
@@ -110,13 +109,6 @@ body{
 .badge.recommended{background:var(--blue)}
 .badge.premium{background:var(--green)}
 .badge.boost{background:#a78bfa}
-
-.recommend{
-  margin-top:10px;
-  font-size:13px;
-  color:var(--gold);
-  font-weight:900;
-}
 </style>
 </head>
 
@@ -140,13 +132,13 @@ body{
   <div class="search">
     <input id="search" placeholder="🔍 ค้นหาบริการ" oninput="renderServices()">
   </div>
-
   <div id="bestsellerBox"></div>
   <div id="services"></div>
 </div>
 
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
+  <div class="user">👤 <span id="username"></span></div>
   <a href="services.html">📦 บริการ</a>
   <a href="orders.html">🧾 คำสั่งซื้อ</a>
   <a href="topup.html">💰 เติมเงิน</a>
@@ -157,20 +149,35 @@ body{
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId=localStorage.getItem('user_id');
-if(!userId) location.replace('login.html');
+/* AUTH */
+const userId = localStorage.getItem('user_id');
+const username = localStorage.getItem('username');
+if(!userId || !username) location.replace('login.html');
+document.getElementById('username').textContent = username;
 
+/* MENU */
+const sideMenu=document.getElementById('sideMenu');
+const menuOverlay=document.getElementById('menuOverlay');
+function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
+function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
+function logout(){localStorage.clear();location.replace('login.html')}
+
+/* CREDIT */
 function loadCredit(){
+  const cache = localStorage.getItem('credit');
+  if(cache) document.getElementById('credit').textContent = Number(cache).toFixed(2);
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
       if(res.success){
-        document.getElementById('credit').textContent=Number(res.credit).toFixed(2);
+        localStorage.setItem('credit',res.credit);
+        document.getElementById('credit').textContent = Number(res.credit).toFixed(2);
       }
     });
 }
 setInterval(loadCredit,20000); loadCredit();
 
+/* SERVICES */
 let allServices=[];
 function normalizeBadge(b){
   if(!b) return '';
@@ -192,21 +199,21 @@ function loadServices(){
 }
 
 function card(s){
-return `
-<div class="service">
-  <div class="service-name">
-    ${s.display_name}
-    ${s.badge?`<span class="badge ${s.badge}">${s.badge}</span>`:''}
-  </div>
-  <div class="service-desc">${s.short_desc||''}</div>
-  <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
-  ${['bestseller','recommended'].includes(s.badge)?`
-    <div class="recommend">⭐ แนะนำซื้อ <b>1,000 ${s.unit}</b> เพื่อผลลัพธ์ที่ดีที่สุด</div>`:''}
-  <div class="bottom">
-    <div class="price">${Number(s.price_per_100).toLocaleString()} บาท / 100 ${s.unit}</div>
-    <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
-  </div>
-</div>`;
+  return `
+  <div class="service">
+    <div class="service-name">
+      ${s.display_name}
+      ${s.badge?`<span class="badge ${s.badge}">${s.badge}</span>`:''}
+    </div>
+    <div class="service-desc">${s.short_desc||''}</div>
+    <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
+    ${['bestseller','recommended'].includes(s.badge)?`
+      <div class="recommend">⭐ แนะนำซื้อ <b>1,000 ${s.unit}</b> เพื่อผลลัพธ์ที่ดีที่สุด</div>`:''}
+    <div class="bottom">
+      <div class="price">${Number(s.price_per_100).toLocaleString()} บาท / 100 ${s.unit}</div>
+      <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
+    </div>
+  </div>`;
 }
 
 function renderServices(){
@@ -214,14 +221,11 @@ function renderServices(){
   const best=document.getElementById('bestsellerBox');
   const box=document.getElementById('services');
   best.innerHTML=''; box.innerHTML='';
-
   const filtered=allServices.filter(s=>s.display_name.toLowerCase().includes(q));
   const bestseller=filtered.filter(s=>s.badge==='bestseller');
-
   if(bestseller.length){
     best.innerHTML='<div class="section-title">🔥 บริการขายดี</div>'+bestseller.map(card).join('');
   }
-
   filtered.filter(s=>s.badge!=='bestseller').forEach(s=>box.insertAdjacentHTML('beforeend',card(s)));
 }
 
@@ -229,9 +233,6 @@ function selectService(id){
   localStorage.setItem('service_id',id);
   location.href='order.html';
 }
-function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
-function logout(){localStorage.clear();location.replace('login.html')}
 
 loadServices();
 </script>
