@@ -6,7 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root{--pink:#ec4899;--purple:#8b5cf6;--blue:#38bdf8}
+:root{
+  --pink:#ec4899;
+  --purple:#8b5cf6;
+  --blue:#38bdf8;
+  --soft:#f8fafc;
+}
 *{box-sizing:border-box}
 body{
   margin:0;font-family:system-ui,-apple-system;
@@ -26,6 +31,8 @@ body{
   border:none;padding:6px 14px;border-radius:999px;
   background:#f1f5f9;font-weight:800;cursor:pointer;
 }
+
+/* MENU */
 .menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:99}
 .side-menu{
   position:fixed;right:-260px;top:0;width:260px;height:100%;
@@ -46,6 +53,7 @@ body{
 }
 .row{display:flex;justify-content:space-between;margin-top:10px;font-size:14px}
 .row b{font-weight:900}
+
 .status{
   display:inline-block;padding:6px 14px;border-radius:999px;
   font-size:13px;font-weight:900;margin-top:14px
@@ -54,46 +62,75 @@ body{
 .processing{background:#dbeafe;color:#1e40af}
 .success{background:#dcfce7;color:#166534}
 .cancel{background:#fee2e2;color:#991b1b}
+
 .link{word-break:break-all;color:#2563eb;font-size:14px}
 .update-text{font-size:13px;color:#64748b;margin-bottom:10px}
-.error{text-align:center;color:#ef4444;font-weight:900;margin-top:20px}
 
-/* 🔥 VALUE BOX */
+/* ===== VALUE / UPSELL ===== */
 .value-box{
   background:linear-gradient(135deg,#ecfeff,#f0f9ff);
   border:1px solid #bae6fd;
 }
-.value-title{
-  font-weight:900;
-  margin-bottom:8px;
-  color:#0369a1;
-}
-.value-badge{
+.badge{
   display:inline-block;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;
+  padding:4px 12px;
+  border-radius:999px;
   font-size:11px;
   font-weight:900;
-  padding:4px 10px;
-  border-radius:999px;
-  margin-bottom:8px;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+  color:#fff;
+  margin-bottom:10px;
 }
-.value-text{
-  font-size:14px;
+.value-title{
+  font-weight:900;
+  font-size:16px;
   color:#075985;
+}
+.value-desc{
+  margin-top:6px;
+  font-size:14px;
+  color:#0c4a6e;
+}
+.value-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+.value-item{
+  background:#fff;
+  border-radius:16px;
+  padding:12px;
+  box-shadow:0 8px 18px rgba(0,0,0,.08);
+  text-align:center;
+}
+.value-item b{
+  display:block;
+  font-size:16px;
+}
+.value-item span{
+  font-size:12px;
+  color:#64748b;
 }
 
 /* CTA */
 .buy-again{
   display:block;
   text-align:center;
-  padding:14px;
+  padding:16px;
   border-radius:999px;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
   color:#fff;
   font-weight:900;
+  font-size:16px;
   text-decoration:none;
-  box-shadow:0 16px 40px rgba(139,92,246,.5);
+  box-shadow:0 20px 50px rgba(139,92,246,.6);
+}
+.buy-again small{
+  display:block;
+  opacity:.9;
+  font-size:12px;
+  font-weight:700;
 }
 </style>
 </head>
@@ -121,11 +158,13 @@ body{
     <div class="status" id="status"></div>
   </div>
 
-  <!-- 🔥 VALUE SUGGEST -->
+  <!-- 🔥 VALUE / UPSELL -->
   <div class="card value-box" id="valueBox" style="display:none">
-    <div class="value-badge">💎 คำแนะนำ</div>
-    <div class="value-title">สั่งเพิ่มจะคุ้มกว่า</div>
-    <div class="value-text" id="valueText"></div>
+    <div class="badge">💎 คุ้มกว่านี้ได้อีก</div>
+    <div class="value-title">เพิ่มอีกนิด เห็นผลชัดกว่า</div>
+    <div class="value-desc" id="valueText"></div>
+
+    <div class="value-grid" id="valueGrid"></div>
   </div>
 
   <div class="card">
@@ -133,8 +172,9 @@ body{
     <div class="link" id="link">-</div>
   </div>
 
-  <a class="buy-again" id="buyAgainBtn" href="services.html">
+  <a class="buy-again" href="services.html">
     🔁 ซื้อบริการนี้อีกครั้ง
+    <small>ลูกค้าส่วนใหญ่ซื้อซ้ำเพื่อผลลัพธ์ที่ดีกว่า</small>
   </a>
 </div>
 
@@ -154,7 +194,8 @@ const orderId=localStorage.getItem('order_id');
 const userId=localStorage.getItem('user_id');
 if(!orderId||!userId)location.href='orders.html';
 
-const oidEl=oid=document.getElementById('oid');
+/* DOM */
+const oidEl=document.getElementById('oid');
 const serviceEl=document.getElementById('service');
 const qtyEl=document.getElementById('qty');
 const totalEl=document.getElementById('total');
@@ -163,8 +204,10 @@ const linkEl=document.getElementById('link');
 const statusEl=document.getElementById('status');
 const valueBox=document.getElementById('valueBox');
 const valueText=document.getElementById('valueText');
+const valueGrid=document.getElementById('valueGrid');
 const updateText=document.getElementById('updateText');
 
+/* MENU */
 function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
 function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
 function logout(){localStorage.clear();location.href='login.html'}
@@ -193,10 +236,31 @@ async function loadDetail(){
   statusEl.className='status '+o.status;
   statusEl.innerText=statusText(o.status);
 
-  // 🔥 VALUE LOGIC (ไม่แตะ backend)
-  if(o.qty && o.qty<500){
+  // ===== UPSELL (อ่านอย่างเดียว) =====
+  if(o.qty && o.qty<1000){
+    const unit=(o.final_total/o.qty).toFixed(3);
+    const next=o.qty*2;
+    const nextUnit=(o.final_total*0.85/next).toFixed(3); // แค่เปรียบเทียบภาพรวม
+
     valueBox.style.display='block';
-    valueText.innerText=`ถ้าสั่งเพิ่มเป็น ${o.qty*2} จะช่วยลดราคาต่อหน่วย และเห็นผลชัดเจนขึ้น 🔥`;
+    valueText.innerText=
+      `ตอนนี้คุณได้ราคาเฉลี่ย ${unit} บาท / หน่วย  
+      ถ้าเพิ่มเป็น ${next} หน่วย ราคาต่อหน่วยจะยิ่งคุ้มและเห็นผลชัดขึ้น`;
+
+    valueGrid.innerHTML=`
+      <div class="value-item">
+        <b>${o.qty}</b>
+        <span>เริ่มต้น</span>
+      </div>
+      <div class="value-item">
+        <b>${next}</b>
+        <span>คุ้มกว่า</span>
+      </div>
+      <div class="value-item">
+        <b>${next*2}</b>
+        <span>คุ้มที่สุด</span>
+      </div>
+    `;
   }
 
   updateText.innerText='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
