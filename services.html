@@ -191,7 +191,7 @@ body{
 <header class="header">
   <div class="left">
     <button class="menu-btn" onclick="openMenu()">☰</button>
-    <button class="refresh-btn" onclick="reloadAll()">⟳</button>
+    <button class="refresh-btn" onclick="reloadAll(true)">⟳</button>
   </div>
   <div class="center">SocialBoostTH</div>
   <div class="right">
@@ -206,7 +206,6 @@ body{
   <div id="services"></div>
 </div>
 
-<!-- MENU -->
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
   <a href="services.html">📦 บริการ</a>
@@ -216,105 +215,128 @@ body{
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxnG0FDeXxrWOFIhPCtREMcUKq5-uBCqi_BagqlD6OPWDXBnQn1Dt-8BKMaOv4ZstnQSg/exec";
-const API_KEY="SBTH-SECURE-2026";
+/* ================= CONFIG ================= */
+const API = "https://script.google.com/macros/s/AKfycbxnG0FDeXxrWOFIhPCtREMcUKq5-uBCqi_BagqlD6OPWDXBnQn1Dt-8BKMaOv4ZstnQSg/exec";
+const API_KEY = "SBTH-SECURE-2026";
 
+/* ================= AUTH ================= */
 const userId = localStorage.getItem('user_id');
 if(!userId){
-  location.href='login.html';
+  location.href = 'login.html';
   throw '';
 }
 
+/* ================= STATE ================= */
+let serviceCache = null;
+let loading = false;
+
+/* ================= ELEMENT ================= */
 const creditEl = document.getElementById('credit');
 const box = document.getElementById('services');
 const sideMenu = document.getElementById('sideMenu');
 const menuOverlay = document.getElementById('menuOverlay');
 
-/* MENU */
+/* ================= MENU ================= */
 function openMenu(){
   sideMenu.classList.add('open');
-  menuOverlay.style.display='block';
+  menuOverlay.style.display = 'block';
 }
 function closeMenu(){
   sideMenu.classList.remove('open');
-  menuOverlay.style.display='none';
+  menuOverlay.style.display = 'none';
 }
 function logout(){
   localStorage.clear();
-  location.href='login.html';
+  location.href = 'login.html';
 }
 
-/* LOAD */
-function reloadAll(){
+/* ================= LOAD ================= */
+function reloadAll(force=false){
   loadCredit();
-  loadServices();
+  loadServices(force);
 }
 
-/* credit จาก localStorage */
+/* เครดิต: ไม่ fetch → เร็วทันที */
 function loadCredit(){
   creditEl.textContent = Number(
     localStorage.getItem('credit') || 0
   ).toFixed(2);
 }
 
-/* load services */
-function loadServices(){
-  box.innerHTML='<div class="empty">กำลังโหลดบริการ…</div>';
+/* ================= SERVICES ================= */
+function loadServices(force=false){
+  if(loading) return;
 
-  fetch(${API}?action=getServices&api_key=${API_KEY}&_=${Date.now()})
+  if(serviceCache && !force){
+    renderServices(serviceCache);
+    return;
+  }
+
+  loading = true;
+  box.innerHTML = '<div class="empty">กำลังโหลดบริการ…</div>';
+
+  fetch(`${API}?action=getServices&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(res=>{
-      const list = (res.services || []).filter(s => s.status === 'on');
-      box.innerHTML='';
-
-      if(!list.length){
-        box.innerHTML='<div class="empty">ยังไม่มีบริการ</div>';
-        return;
-      }
-
-      list.forEach(s=>{
-        const suggest = Number(s.min_qty || 0) * 2;
-
-        const badgeHTML = (s.badge_status === 'on')
-          ? <div class="badge ${s.badge_type}">${s.badge_text || ''}</div>
-          : '';
-
-        box.insertAdjacentHTML('beforeend',`
-          <div class="service">
-            ${badgeHTML}
-            <div class="service-name">${s.display_name || ''}</div>
-            <div class="service-desc">${s.short_desc || ''}</div>
-
-            <div class="value-hint">
-              💡 ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit} |
-              แนะนำ <b>${suggest}</b> ${s.unit}
-            </div>
-
-            <div class="bottom">
-              <div class="price">
-                ${s.price_per_100} บาท
-                <span>/ 100 ${s.unit}</span>
-              </div>
-              <button class="btn" onclick="selectService('${s.service_id}')">
-                เลือกแพ็กเกจ
-              </button>
-            </div>
-          </div>
-        `);
-      });
+      serviceCache = res.services || [];
+      renderServices(serviceCache);
     })
     .catch(()=>{
       box.innerHTML='<div class="error">❌ ไม่สามารถเชื่อมต่อระบบได้</div>';
+    })
+    .finally(()=>{
+      loading = false;
     });
+}
+
+/* ================= RENDER ================= */
+function renderServices(list){
+  if(!list.length){
+    box.innerHTML = '<div class="empty">ยังไม่มีบริการ</div>';
+    return;
+  }
+
+  let html = '';
+  for(const s of list){
+    const suggest = Number(s.min_qty||0) * 2;
+
+    html += `
+      <div class="service">
+        ${s.badge_status==='on'
+          ? `<div class="badge ${s.badge_type}">${s.badge_text||''}</div>`:''}
+
+        <div class="service-name">${s.display_name||''}</div>
+        <div class="service-desc">${s.short_desc||''}</div>
+
+        <div class="value-hint">
+          💡 ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit} |
+          แนะนำ <b>${suggest}</b> ${s.unit}
+        </div>
+
+        <div class="bottom">
+          <div class="price">
+            ${s.price_per_100} บาท
+            <span>/ 100 ${s.unit}</span>
+          </div>
+          <button class="btn" onclick="selectService('${s.service_id}')">
+            เลือกแพ็กเกจ
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  box.innerHTML = html;
 }
 
 function selectService(id){
   localStorage.setItem('service_id', id);
-  location.href='order.html';
+  location.href = 'order.html';
 }
 
+/* ================= INIT ================= */
 reloadAll();
 </script>
-  
+
 </body>
 </html>
