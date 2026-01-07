@@ -100,6 +100,12 @@ body{
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
 
+.start-time{
+  font-size:12px;
+  color:#c7d2fe;
+  margin-top:4px;
+}
+
 .recommend{
   margin-top:8px;
   font-size:13px;
@@ -114,13 +120,14 @@ body{
   margin-top:10px;
 }
 .price{
-  font-size:16px;
+  font-size:18px;
   font-weight:900;
   color:#e0e7ff;
 }
 .price small{
+  display:block;
   font-size:12px;
-  opacity:.7;
+  opacity:.65;
 }
 .btn{
   border:none;padding:10px 18px;
@@ -160,6 +167,14 @@ body{
 <script>
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
+const START_TIME_TEXT="⏱ ปกติเริ่มภายใน 1–24 ชั่วโมง";
+
+const badgeMap={
+  bestseller:"ขายดี",
+  recommended:"แนะนำ",
+  premium:"พรีเมียม",
+  boost:"เร่งยอด"
+};
 
 const userId=localStorage.getItem('user_id');
 if(!userId) location.replace('login.html');
@@ -191,22 +206,24 @@ function loadServices(){
 }
 
 function card(s){
+  const perUnit=(s.price_per_100/100).toFixed(2);
 return `
 <div class="service">
   <div class="service-head">
     <div class="service-name">${s.display_name}</div>
-    ${s.badge_type?`<span class="badge ${s.badge_type}">${s.badge_type}</span>`:''}
+    ${s.badge_type?`<span class="badge ${s.badge_type}">${badgeMap[s.badge_type]||s.badge_type}</span>`:''}
   </div>
 
   <div class="service-desc">${s.short_desc||''}</div>
   <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
+  <div class="start-time">${START_TIME_TEXT}</div>
 
   ${s.badge_text?`<div class="recommend">${s.badge_text}<br>⭐ แนะนำซื้อ <b>1,000 ${s.unit}</b></div>`:''}
 
   <div class="bottom">
     <div class="price">
-      ${Number(s.price_per_100).toLocaleString()}
-      <small>บาท / 100 ${s.unit}</small>
+      ${Number(s.price_per_100).toLocaleString()} บาท / 100 ${s.unit}
+      <small>(เฉลี่ย ${perUnit} บาท/คน)</small>
     </div>
     <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
   </div>
