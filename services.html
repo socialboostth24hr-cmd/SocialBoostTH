@@ -96,7 +96,12 @@ body{
 .service-name{font-weight:900;font-size:18px}
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
-.recommend{margin-top:8px;font-size:13px;color:var(--gold);font-weight:900}
+.recommend{
+  margin-top:8px;
+  font-size:13px;
+  color:var(--gold);
+  font-weight:900;
+}
 .bottom{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 .price{font-weight:900;color:#a5b4fc}
 .btn{
@@ -129,9 +134,11 @@ body{
 <div class="container">
   <div class="title">เลือกบริการ</div>
   <div class="subtitle">ระบบอัตโนมัติ • ปลอดภัย • 24 ชั่วโมง</div>
+
   <div class="search">
     <input id="search" placeholder="🔍 ค้นหาบริการ" oninput="renderServices()">
   </div>
+
   <div id="bestsellerBox"></div>
   <div id="services"></div>
 </div>
@@ -150,10 +157,10 @@ const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYh
 const API_KEY="SBTH-SECURE-2026";
 
 /* AUTH */
-const userId = localStorage.getItem('user_id');
-const username = localStorage.getItem('username');
-if(!userId || !username) location.replace('login.html');
-document.getElementById('username').textContent = username;
+const userId=localStorage.getItem('user_id');
+const username=localStorage.getItem('username');
+if(!userId||!username) location.replace('login.html');
+document.getElementById('username').textContent=username;
 
 /* MENU */
 const sideMenu=document.getElementById('sideMenu');
@@ -164,14 +171,14 @@ function logout(){localStorage.clear();location.replace('login.html')}
 
 /* CREDIT */
 function loadCredit(){
-  const cache = localStorage.getItem('credit');
-  if(cache) document.getElementById('credit').textContent = Number(cache).toFixed(2);
+  const cache=localStorage.getItem('credit');
+  if(cache) document.getElementById('credit').textContent=Number(cache).toFixed(2);
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
       if(res.success){
         localStorage.setItem('credit',res.credit);
-        document.getElementById('credit').textContent = Number(res.credit).toFixed(2);
+        document.getElementById('credit').textContent=Number(res.credit).toFixed(2);
       }
     });
 }
@@ -179,13 +186,14 @@ setInterval(loadCredit,20000); loadCredit();
 
 /* SERVICES */
 let allServices=[];
-function normalizeBadge(b){
-  if(!b) return '';
-  b=b.toLowerCase().trim();
-  if(b.includes('best')) return 'bestseller';
-  if(b.includes('recommend')) return 'recommended';
-  if(b.includes('premium')) return 'premium';
-  if(b.includes('boost')) return 'boost';
+
+/* 🔥 จุดสำคัญ */
+function detectBadge(s){
+  const raw = (s.badge || s.tag || s.label || s.type || '').toString().toLowerCase();
+  if(raw.includes('best')) return 'bestseller';
+  if(raw.includes('recommend')) return 'recommended';
+  if(raw.includes('premium')) return 'premium';
+  if(raw.includes('boost')) return 'boost';
   return '';
 }
 
@@ -193,7 +201,10 @@ function loadServices(){
   fetch(`${API}?action=getServices&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(res=>{
-      allServices=(res.services||[]).map(s=>({...s,badge:normalizeBadge(s.badge)}));
+      allServices=(res.services||[]).map(s=>({
+        ...s,
+        badge: detectBadge(s)
+      }));
       renderServices();
     });
 }
@@ -221,11 +232,14 @@ function renderServices(){
   const best=document.getElementById('bestsellerBox');
   const box=document.getElementById('services');
   best.innerHTML=''; box.innerHTML='';
+
   const filtered=allServices.filter(s=>s.display_name.toLowerCase().includes(q));
   const bestseller=filtered.filter(s=>s.badge==='bestseller');
+
   if(bestseller.length){
     best.innerHTML='<div class="section-title">🔥 บริการขายดี</div>'+bestseller.map(card).join('');
   }
+
   filtered.filter(s=>s.badge!=='bestseller').forEach(s=>box.insertAdjacentHTML('beforeend',card(s)));
 }
 
