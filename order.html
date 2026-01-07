@@ -8,11 +8,11 @@
 <style>
 :root{
   --black:#0b0f1a;
-  --navy:#0f172a;
   --blue:#38bdf8;
   --purple:#8b5cf6;
   --pink:#ec4899;
-  --red:#fb7185;
+  --danger:#fb7185;
+  --muted:#94a3b8;
 }
 *{box-sizing:border-box}
 
@@ -20,41 +20,40 @@ body{
   margin:0;
   font-family:system-ui,-apple-system;
   background:
-    radial-gradient(1000px 420px at top,#1e293b,transparent),
+    radial-gradient(900px 420px at top,#1e293b,transparent),
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
   padding:12px 16px;
   display:grid;
   grid-template-columns:auto 1fr auto;
   align-items:center;
+  gap:12px;
   background:rgba(2,6,23,.75);
   backdrop-filter:blur(10px);
   position:sticky;
   top:0;
   z-index:50;
-  box-shadow:0 10px 30px rgba(0,0,0,.65);
 }
-.left,.right{display:flex;gap:10px;align-items:center}
-.center{
-  font-weight:900;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.back-btn{
+.back{
   border:none;
   padding:6px 14px;
   border-radius:999px;
   background:rgba(255,255,255,.08);
   color:#e5e7eb;
-  font-weight:800;
+  font-weight:900;
   cursor:pointer;
 }
-.logo{height:32px}
+.center{
+  text-align:center;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
 .wallet{
   font-size:13px;
   padding:6px 14px;
@@ -66,85 +65,59 @@ body{
   border:1px solid transparent;
 }
 
-/* ===== CONTAINER ===== */
+/* CONTAINER */
 .container{
   max-width:720px;
   margin:auto;
-  padding:22px 18px 160px;
+  padding:20px 18px 140px;
 }
+
 .card{
   background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:26px;
   padding:22px;
   margin-bottom:18px;
   box-shadow:
-    0 35px 90px rgba(0,0,0,.75),
+    0 25px 70px rgba(0,0,0,.7),
     0 0 0 1px rgba(139,92,246,.25);
 }
+
 .title{font-size:22px;font-weight:900}
-.desc{font-size:14px;color:#cbd5f5;margin-top:6px}
+.desc{font-size:13px;color:var(--muted);margin-top:6px}
 
 label{
-  font-weight:900;
-  margin-top:16px;
   display:block;
+  font-weight:900;
+  margin:16px 0 6px;
 }
 
 input,textarea{
   width:100%;
   padding:14px;
   border-radius:16px;
-  margin-top:6px;
-  border:1px solid rgba(255,255,255,.1);
+  border:none;
   background:#020617;
-  color:#f8fafc;
+  color:#fff;
   font-size:15px;
 }
-textarea{min-height:140px}
+textarea{min-height:120px}
+
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
 
 .total{
   font-size:22px;
   font-weight:900;
-  margin-top:18px;
+  margin-top:20px;
 }
 
 .error{
-  color:var(--red);
-  margin-top:10px;
-  font-weight:900;
-}
-
-.hide{display:none}
-
-/* ===== VALUE BOX ===== */
-.value-box{
-  margin-top:16px;
-  padding:16px;
-  border-radius:18px;
-  background:
-    linear-gradient(180deg,#020617,#020617) padding-box,
-    linear-gradient(135deg,var(--blue),var(--purple)) border-box;
-  border:1px solid transparent;
-}
-.value-box b{color:#38bdf8}
-.value-btns{
-  display:flex;
-  gap:8px;
   margin-top:12px;
-}
-.value-btn{
-  flex:1;
-  padding:10px 0;
-  border:none;
-  border-radius:999px;
   font-weight:900;
-  cursor:pointer;
-  background:rgba(255,255,255,.08);
-  color:#e5e7eb;
+  color:var(--danger);
 }
 
-/* ===== BUY BTN ===== */
-.buy-btn{
+/* BUTTON */
+.buy{
   position:fixed;
   bottom:16px;
   left:50%;
@@ -154,28 +127,24 @@ textarea{min-height:140px}
   padding:16px;
   border-radius:999px;
   border:none;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+  color:#fff;
   font-size:18px;
   font-weight:900;
-  color:#fff;
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  box-shadow:0 18px 45px rgba(139,92,246,.6);
   cursor:pointer;
+  box-shadow:0 18px 45px rgba(139,92,246,.6);
 }
-.buy-btn:disabled{opacity:.6;cursor:not-allowed}
+.buy:disabled{opacity:.55;cursor:not-allowed}
+.hide{display:none}
 </style>
 </head>
 
 <body>
 
 <header class="header">
-  <div class="left">
-    <button class="back-btn" onclick="history.back()">←</button>
-  </div>
+  <button class="back" onclick="goBack()">←</button>
   <div class="center">SocialBoostTH</div>
-  <div class="right">
-    <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
-    <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
-  </div>
+  <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
 </header>
 
 <div class="container">
@@ -194,21 +163,15 @@ textarea{min-height:140px}
 
     <div id="commentBox" class="hide">
       <label>ข้อความคอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
-      <textarea id="commentText"></textarea>
-      <div class="desc">จำนวนคอมเมนต์: <b><span id="commentCount">0</span></b></div>
-    </div>
-
-    <div class="value-box hide" id="valueBox">
-      💎 <b>แนะนำเพื่อผลลัพธ์ที่ชัดขึ้น</b>
-      <div class="value-btns">
-        <button class="value-btn" onclick="setQty(mult1)">x1</button>
-        <button class="value-btn" onclick="setQty(mult2)">x2 คุ้ม</button>
-        <button class="value-btn" onclick="setQty(mult3)">x3 เร็ว</button>
+      <textarea id="commentText"
+        placeholder="เช่น\nน่ารักมาก\nชอบคลิปนี้"></textarea>
+      <div class="hint">
+        จำนวนคอมเมนต์: <b><span id="commentCount">0</span></b>
       </div>
     </div>
 
     <label>ลิงก์ TikTok</label>
-    <textarea id="link"></textarea>
+    <textarea id="link" placeholder="https://www.tiktok.com/..."></textarea>
 
     <div class="total">รวม: <span id="total">0.00</span> บาท</div>
     <div class="error" id="error"></div>
@@ -216,18 +179,153 @@ textarea{min-height:140px}
   </div>
 </div>
 
-<button class="buy-btn" id="buyBtn">ยืนยันสั่งซื้อ</button>
+<button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
 
 <script>
-/* ==== CONFIG / LOGIC เดิมทั้งหมด ==== */
+/* CONFIG */
 const API="https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
 const API_KEY="SBTH-SECURE-2026";
 
+/* AUTH GUARD */
 const userId=localStorage.getItem('user_id');
 const serviceId=localStorage.getItem('service_id');
-if(!userId||!serviceId)location.href='services.html';
+if(!userId||!serviceId){
+  alert('กรุณาเลือกบริการก่อน');
+  location.href='services.html';
+}
 
-/* === DOM & logic เหมือนเดิม (ย่อเพื่อไม่ยาวเกิน) === */
+/* DOM */
+const creditEl=credit;
+const serviceName=serviceName;
+const serviceDesc=serviceDesc;
+const qtyEl=qty;
+const qtyBox=qtyBox;
+const commentBox=commentBox;
+const commentText=commentText;
+const commentCount=commentCount;
+const linkEl=link;
+const totalEl=total;
+const errorEl=error;
+const buyBtn=buyBtn;
+
+let service=null;
+let discounts=[];
+let credit=0;
+let finalQty=0;
+let finalTotal=0;
+
+/* LOAD CREDIT */
+fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+.then(r=>r.json())
+.then(u=>{
+  credit=Number(u.credit||0);
+  creditEl.textContent=credit.toFixed(2);
+});
+
+/* LOAD SERVICE */
+Promise.all([
+  fetch(`${API}?action=services&api_key=${API_KEY}`).then(r=>r.json()),
+  fetch(`${API}?action=discounts&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json())
+])
+.then(([services,disc])=>{
+  service=services.find(s=>String(s.service_id)===String(serviceId));
+  discounts=Array.isArray(disc)?disc:[];
+
+  if(!service){
+    alert('ไม่พบบริการ');
+    location.href='services.html';
+    return;
+  }
+
+  serviceName.textContent=service.display_name;
+  serviceDesc.textContent=service.short_desc||'';
+
+  if(service.service_type==='comment'){
+    qtyBox.classList.add('hide');
+    commentBox.classList.remove('hide');
+    commentText.addEventListener('input',calcComment);
+  }else{
+    qtyEl.value=service.min_qty;
+    qtyEl.addEventListener('input',calcNormal);
+    calcNormal();
+  }
+});
+
+/* CALC */
+function calcNormal(){
+  finalQty=Number(qtyEl.value||0);
+  calcTotal();
+}
+
+function calcComment(){
+  const lines=commentText.value.split('\n').map(x=>x.trim()).filter(Boolean);
+  finalQty=lines.length;
+  commentCount.textContent=finalQty;
+  calcTotal();
+}
+
+function calcTotal(){
+  buyBtn.disabled=true;
+  errorEl.textContent='';
+  totalEl.textContent='0.00';
+
+  if(finalQty < service.min_qty){
+    errorEl.textContent=`ขั้นต่ำ ${service.min_qty}`;
+    return;
+  }
+
+  const base=(finalQty*Number(service.price_per_100))/100;
+  const d=discounts.find(x=>finalQty>=x.min_qty && finalQty<=x.max_qty);
+  finalTotal=d ? finalQty*Number(d.price) : base;
+
+  totalEl.textContent=finalTotal.toFixed(2);
+
+  if(finalTotal>credit){
+    errorEl.textContent='เครดิตไม่เพียงพอ';
+    return;
+  }
+
+  buyBtn.disabled=false;
+}
+
+/* ORDER */
+buyBtn.onclick=()=>{
+  const link=linkEl.value.trim();
+  if(!link){
+    errorEl.textContent='กรุณาใส่ลิงก์ TikTok';
+    return;
+  }
+
+  let sendLink=link;
+  if(service.service_type==='comment'){
+    const lines=commentText.value.split('\n').map(x=>x.trim()).filter(Boolean);
+    if(!lines.length){
+      errorEl.textContent='กรุณาใส่ข้อความคอมเมนต์';
+      return;
+    }
+    sendLink=link+'\n-----\n'+lines.join('\n');
+  }
+
+  buyBtn.disabled=true;
+
+  fetch(`${API}?action=create_order&api_key=${API_KEY}&user_id=${userId}&service_id=${serviceId}&qty=${finalQty}&link=${encodeURIComponent(sendLink)}`)
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.success){
+      localStorage.removeItem('service_id');
+      location.href='orders.html';
+    }else{
+      errorEl.textContent='สั่งซื้อไม่สำเร็จ';
+      buyBtn.disabled=false;
+    }
+  })
+  .catch(()=>{
+    errorEl.textContent='เชื่อมต่อระบบไม่ได้';
+    buyBtn.disabled=false;
+  });
+};
+
+function goBack(){history.back();}
 </script>
 
 </body>
