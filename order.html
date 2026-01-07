@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* ===== CSS เดิมทั้งหมด ไม่เปลี่ยน ===== */
 :root{
   --black:#0b0f1a;
   --blue:#38bdf8;
@@ -113,11 +112,18 @@ textarea{min-height:120px}
   </div>
 
   <div class="card">
-    <label>จำนวน</label>
-    <input type="number" id="qty" min="0">
 
     <label>ลิงก์ TikTok</label>
-    <textarea id="link"></textarea>
+    <textarea id="link" placeholder="https://www.tiktok.com/@username/video/..."></textarea>
+
+    <label>คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
+    <textarea id="comments" placeholder="คอมเมนต์ที่ 1&#10;คอมเมนต์ที่ 2"></textarea>
+    <div class="hint">
+      จำนวนคอมเมนต์: <b><span id="commentCount">0</span></b>
+    </div>
+
+    <label>จำนวน</label>
+    <input type="number" id="qty" readonly>
 
     <div class="total">รวม: <span id="total">0.00</span> บาท</div>
     <div class="error" id="error"></div>
@@ -127,134 +133,116 @@ textarea{min-height:120px}
 <button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
 
 <script>
-/* ================= CONFIG ================= */
-const API = "https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
-const API_KEY = "SBTH-SECURE-2026";
+const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
+const API_KEY="SBTH-SECURE-2026";
 
-/* ================= AUTH ================= */
-const userId = localStorage.getItem('user_id');
-const serviceId = localStorage.getItem('service_id');
-if(!userId || !serviceId){
-  location.href = 'services.html';
-}
+const userId=localStorage.getItem('user_id');
+const serviceId=localStorage.getItem('service_id');
+if(!userId||!serviceId) location.href='services.html';
 
-/* ================= ELEMENT ================= */
-const creditEl = document.getElementById('credit');
-const serviceNameEl = document.getElementById('serviceName');
-const serviceDescEl = document.getElementById('serviceDesc');
-const serviceInfoEl = document.getElementById('serviceInfo');
-const qtyEl = document.getElementById('qty');
-const linkEl = document.getElementById('link');
-const totalEl = document.getElementById('total');
-const errorEl = document.getElementById('error');
-const buyBtn = document.getElementById('buyBtn');
+const creditEl=document.getElementById('credit');
+const serviceNameEl=document.getElementById('serviceName');
+const serviceDescEl=document.getElementById('serviceDesc');
+const serviceInfoEl=document.getElementById('serviceInfo');
+const qtyEl=document.getElementById('qty');
+const linkEl=document.getElementById('link');
+const commentsEl=document.getElementById('comments');
+const commentCountEl=document.getElementById('commentCount');
+const totalEl=document.getElementById('total');
+const errorEl=document.getElementById('error');
+const buyBtn=document.getElementById('buyBtn');
 
-/* ================= STATE ================= */
-let service = null;
-let discounts = [];
-let credit = Number(localStorage.getItem('credit') || 0);
+let service=null;
+let discounts=[];
+let credit=Number(localStorage.getItem('credit')||0);
+creditEl.textContent=credit.toFixed(2);
 
-/* ================= INIT ================= */
-creditEl.textContent = credit.toFixed(2);
-
-/* โหลดบริการ */
+/* load service */
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
-  .then(r=>r.json())
-  .then(res=>{
-    service = (res.services||[]).find(s=>String(s.service_id)===String(serviceId));
-    if(!service){
-      errorEl.textContent = 'ไม่พบบริการ';
-      return;
-    }
+.then(r=>r.json())
+.then(res=>{
+  service=(res.services||[]).find(s=>s.service_id===serviceId);
+  if(!service) return;
 
-    serviceNameEl.textContent = service.display_name;
-    serviceDescEl.textContent = service.short_desc || '';
-    serviceInfoEl.textContent =
-      `ขั้นต่ำ ${service.min_qty} ${service.unit} • ราคา ${service.price_per_100} บาท / 100`;
+  serviceNameEl.textContent=service.display_name;
+  serviceDescEl.textContent=service.short_desc||'';
+  serviceInfoEl.textContent=
+    `ขั้นต่ำ ${service.min_qty} ${service.unit} • ราคา ${service.price_per_100} บาท / 100`;
 
-    loadDiscounts();
-  });
-
-/* โหลดส่วนลด */
-function loadDiscounts(){
   fetch(`${API}?action=getDiscounts&api_key=${API_KEY}&service_id=${serviceId}`)
     .then(r=>r.json())
-    .then(res=>{ discounts = res.discounts || []; });
+    .then(d=>discounts=d.discounts||[]);
+});
+
+/* count comments */
+function updateFromComments(){
+  const lines=commentsEl.value.split('\n')
+    .map(l=>l.trim())
+    .filter(l=>l);
+
+  const qty=lines.length;
+  commentCountEl.textContent=qty;
+  qtyEl.value=qty;
+  calcTotal();
 }
 
-/* คำนวณราคา */
+commentsEl.addEventListener('input',updateFromComments);
+linkEl.addEventListener('input',calcTotal);
+
 function calcTotal(){
   errorEl.textContent='';
-  const qty = Number(qtyEl.value||0);
+  const qty=Number(qtyEl.value||0);
   if(!qty){
     totalEl.textContent='0.00';
-    buyBtn.disabled = true;
+    buyBtn.disabled=true;
     return;
   }
 
   if(qty < service.min_qty){
-    errorEl.textContent = `ขั้นต่ำ ${service.min_qty}`;
-    buyBtn.disabled = true;
+    errorEl.textContent=`ขั้นต่ำ ${service.min_qty}`;
+    buyBtn.disabled=true;
     return;
   }
 
-  let total = qty * service.price_per_100 / 100;
-
-  const valid = discounts.filter(d =>
-    qty >= d.min_qty && qty <= d.max_qty
-  );
+  let total=qty*service.price_per_100/100;
+  const valid=discounts.filter(d=>qty>=d.min_qty&&qty<=d.max_qty);
   if(valid.length){
-    const best = valid.sort((a,b)=>b.min_qty-a.min_qty)[0];
-    if(best.price){
-      total = qty * best.price;
-    }else if(best.discount_percent){
-      total = total * (100-best.discount_percent)/100;
-    }
+    const best=valid.sort((a,b)=>b.min_qty-a.min_qty)[0];
+    if(best.price) total=qty*best.price;
+    else if(best.discount_percent)
+      total=total*(100-best.discount_percent)/100;
   }
 
-  total = Number(total.toFixed(2));
-  totalEl.textContent = total.toFixed(2);
+  total=Number(total.toFixed(2));
+  totalEl.textContent=total.toFixed(2);
 
-  if(total > credit){
+  if(total>credit){
     errorEl.textContent='เครดิตไม่เพียงพอ';
-    buyBtn.disabled = true;
+    buyBtn.disabled=true;
     return;
   }
 
-  buyBtn.disabled = !linkEl.value.trim();
+  buyBtn.disabled=!linkEl.value.trim();
 }
 
-qtyEl.addEventListener('input',calcTotal);
-linkEl.addEventListener('input',calcTotal);
-
-/* สั่งซื้อ */
-buyBtn.onclick = ()=>{
-  buyBtn.disabled = true;
-  errorEl.textContent='';
-
-  const p = new URLSearchParams({
+buyBtn.onclick=()=>{
+  buyBtn.disabled=true;
+  fetch(`${API}?`+new URLSearchParams({
     action:'createOrder',
     api_key:API_KEY,
     user_id:userId,
     service_id:serviceId,
     qty:qtyEl.value,
-    link:linkEl.value
+    link:linkEl.value + "\n" + commentsEl.value
+  }))
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.success) location.href='orders.html';
+    else{
+      errorEl.textContent=res.error||'สั่งซื้อไม่สำเร็จ';
+      buyBtn.disabled=false;
+    }
   });
-
-  fetch(`${API}?${p.toString()}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if(!res.success){
-        errorEl.textContent = res.error || 'สั่งซื้อไม่สำเร็จ';
-        buyBtn.disabled = false;
-        return;
-      }
-      location.href='orders.html';
-    })
-    .catch(()=>{
-      errorEl.textContent='เชื่อมต่อไม่สำเร็จ';
-      buyBtn.disabled = false;
-    });
 };
 </script>
 
