@@ -113,14 +113,8 @@ h1{
   display:inline-block;
   transition:.35s ease;
 }
-.live-users.up .num{
-  color:#22c55e;
-  transform:translateY(-2px);
-}
-.live-users.down .num{
-  color:#fb7185;
-  transform:translateY(2px);
-}
+.live-users.up .num{color:#22c55e;transform:translateY(-2px)}
+.live-users.down .num{color:#fb7185;transform:translateY(2px)}
 
 /* ===== INPUT ===== */
 .field{margin-bottom:18px}
@@ -140,6 +134,14 @@ label{font-size:13px;font-weight:700;margin-bottom:6px;display:block}
   padding:6px 14px;border-radius:999px;
   font-size:12px;font-weight:800;color:#e5e7eb;cursor:pointer
 }
+
+/* ===== REMEMBER ME ===== */
+.remember{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:#cbd5e1;
+  margin:-6px 0 16px;
+}
+.remember input{accent-color:#8b5cf6}
 
 /* ===== BUTTON ===== */
 .login-btn{
@@ -212,6 +214,12 @@ label{font-size:13px;font-weight:700;margin-bottom:6px;display:block}
     </div>
   </div>
 
+  <!-- REMEMBER ME -->
+  <div class="remember">
+    <input type="checkbox" id="remember">
+    <label for="remember">จำการเข้าสู่ระบบ</label>
+  </div>
+
   <button class="login-btn" onclick="login()">เข้าสู่ระบบ</button>
 
   <div class="or">ยังไม่มีบัญชี?</div>
@@ -231,22 +239,30 @@ label{font-size:13px;font-weight:700;margin-bottom:6px;display:block}
 const API="https://script.google.com/macros/s/AKfycbxnG0FDeXxrWOFIhPCtREMcUKq5-uBCqi_BagqlD6OPWDXBnQn1Dt-8BKMaOv4ZstnQSg/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* ===== ELEMENTS (สำคัญมาก) ===== */
-const elUsername = document.getElementById('username');
-const elPassword = document.getElementById('password');
-const elError    = document.getElementById('error');
-const liveBox    = document.getElementById('liveBox');
-const liveCount  = document.getElementById('liveCount');
+/* ===== ELEMENTS ===== */
+const elUsername=document.getElementById('username');
+const elPassword=document.getElementById('password');
+const elError=document.getElementById('error');
+const rememberEl=document.getElementById('remember');
+const liveBox=document.getElementById('liveBox');
+const liveCount=document.getElementById('liveCount');
+
+/* ===== RESTORE REMEMBER ===== */
+const remembered = localStorage.getItem('remember_username');
+if(remembered){
+  elUsername.value = remembered;
+  rememberEl.checked = true;
+}
 
 /* ===== PASSWORD ===== */
 function togglePass(){
-  elPassword.type = elPassword.type === 'password' ? 'text' : 'password';
+  elPassword.type = elPassword.type==='password'?'text':'password';
 }
 
-/* ===== LOGIN (ใช้ได้จริงทุก browser) ===== */
+/* ===== LOGIN ===== */
 function login(){
   elError.textContent='';
-  if(!elUsername.value || !elPassword.value){
+  if(!elUsername.value||!elPassword.value){
     elError.textContent='กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
     return;
   }
@@ -255,9 +271,19 @@ function login(){
     .then(r=>r.json())
     .then(res=>{
       if(!res.success) throw 0;
+
       localStorage.setItem('user_id',res.user.user_id);
       localStorage.setItem('username',res.user.username);
       localStorage.setItem('credit',res.user.credit);
+      localStorage.setItem('login_at',Date.now()); // ✅ สำคัญ
+      localStorage.setItem('remember',rememberEl.checked?'1':'0');
+
+      if(rememberEl.checked){
+        localStorage.setItem('remember_username',res.user.username);
+      }else{
+        localStorage.removeItem('remember_username');
+      }
+
       location.href='services.html';
     })
     .catch(()=>{
@@ -265,7 +291,7 @@ function login(){
     });
 }
 
-/* ===== LIVE USERS COLOR EFFECT ===== */
+/* ===== LIVE USERS EFFECT ===== */
 let current=Number(liveCount.textContent);
 function range(){
   const h=new Date().getHours();
