@@ -268,17 +268,31 @@ function reloadAll(){
   loadServices();
 }
 
-/* ===== CREDIT (REAL-TIME) ===== */
+<script>
+/* ===== CREDIT (REAL-TIME + CACHE SAFE) ===== */
 function loadCredit(){
+
+  // 1) ใช้ cache ก่อน กันขึ้น 0.00
+  const cacheCredit = localStorage.getItem('credit');
+  if(cacheCredit !== null){
+    creditEl.textContent = Number(cacheCredit).toFixed(2);
+  }
+
+  // 2) ดึงของจริงจาก API
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
       if(res && res.user && res.user.credit !== undefined){
-        creditEl.textContent=Number(res.user.credit).toFixed(2);
+        const realCredit = Number(res.user.credit).toFixed(2);
+
+        // อัปเดตทั้งหน้าจอ + cache
+        creditEl.textContent = realCredit;
+        localStorage.setItem('credit', realCredit);
       }
     })
-    .catch(()=>{});
+    .catch(()=>{ /* เงียบ ไม่ทำให้หน้าแตก */ });
 }
+</script>
 
 /* ===== SERVICES ===== */
 function loadServices(){
