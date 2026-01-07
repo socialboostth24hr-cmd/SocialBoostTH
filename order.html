@@ -5,6 +5,9 @@
 <title>สั่งซื้อบริการ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- PRELOAD ORDER DETAIL -->
+<link rel="prefetch" href="order-detail.html">
+
 <style>
 :root{
   --black:#0b0f1a;
@@ -14,6 +17,8 @@
   --danger:#fb7185;
   --muted:#94a3b8;
   --line:#1f2a44;
+  --green:#22c55e;
+  --orange:#f97316;
 }
 *{box-sizing:border-box}
 
@@ -46,7 +51,6 @@ body{
   background:rgba(255,255,255,.08);
   color:#e5e7eb;
   font-weight:900;
-  cursor:pointer;
 }
 .center{
   text-align:center;
@@ -67,40 +71,21 @@ body{
 }
 
 /* CONTAINER */
-.container{
-  max-width:720px;
-  margin:auto;
-  padding:20px 18px 140px;
-}
-
+.container{max-width:720px;margin:auto;padding:20px 18px 160px}
 .card{
   background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:26px;
   padding:22px;
   margin-bottom:18px;
-  box-shadow:
-    0 25px 70px rgba(0,0,0,.7),
-    0 0 0 1px rgba(139,92,246,.25);
+  box-shadow:0 25px 70px rgba(0,0,0,.7),0 0 0 1px rgba(139,92,246,.25);
 }
-
 .title{font-size:22px;font-weight:900}
 .desc{font-size:13px;color:var(--muted);margin-top:6px}
 
 /* DETAILS */
-.detail-card{
-  border:1px solid var(--line);
-  background:linear-gradient(180deg,#0b1224,#070b18);
-}
-.detail-card .head{
-  font-size:18px;
-  font-weight:900;
-  margin-bottom:6px;
-}
-.detail-section{
-  margin-top:18px;
-  padding-top:14px;
-  border-top:1px dashed var(--line);
-}
+.detail-card{border:1px solid var(--line);background:linear-gradient(180deg,#0b1224,#070b18)}
+.detail-card .head{font-size:18px;font-weight:900;margin-bottom:6px}
+.detail-section{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line)}
 .detail-section:first-child{border-top:none;padding-top:0}
 .detail-section h3{font-size:15px;font-weight:900}
 .detail-section p{white-space:pre-line;font-size:14px;color:#cbd5e1;line-height:1.6}
@@ -112,16 +97,52 @@ input,textarea{
   border:none;background:#020617;color:#fff;font-size:15px
 }
 textarea{min-height:120px}
-
 .hint{font-size:13px;color:var(--muted);margin-top:6px}
 .total{font-size:22px;font-weight:900;margin-top:20px}
 .error{margin-top:12px;font-weight:900;color:var(--danger)}
 
+/* PRICE BOX */
+.price-box{
+  margin-top:14px;
+  padding:14px 16px;
+  border-radius:16px;
+  background:#020617;
+  border:1px dashed var(--line);
+}
+.price-row{display:flex;justify-content:space-between;font-size:14px;margin-top:6px}
+.price-row:first-child{margin-top:0}
+.price-old{text-decoration:line-through;color:#94a3b8}
+.price-save{color:var(--green);font-weight:900}
+.badge-save{
+  display:inline-block;
+  margin-top:10px;
+  padding:6px 14px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--orange),var(--pink));
+  font-size:13px;
+  font-weight:900;
+}
+.scarcity{
+  margin-top:10px;
+  font-size:13px;
+  color:#facc15;
+}
+.ai-box{
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  background:linear-gradient(135deg,#020617,#020617);
+  border:1px solid var(--purple);
+  font-size:14px;
+}
+
+/* BUY */
 .buy{
   position:fixed;bottom:16px;left:50%;
   transform:translateX(-50%);
   width:calc(100% - 32px);max-width:480px;
-  padding:16px;border-radius:999px;border:none;
+  padding:16px;border-radius:999px;
+  border:none;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
   color:#fff;font-size:18px;font-weight:900;
 }
@@ -166,6 +187,22 @@ textarea{min-height:120px}
     <textarea id="link"></textarea>
 
     <div class="total">รวม: <span id="total">0.00</span> บาท</div>
+
+    <!-- PRICE UI -->
+    <div class="price-box hide" id="priceBox">
+      <div class="price-row">
+        <span>ราคาปกติ</span>
+        <span class="price-old" id="priceOld"></span>
+      </div>
+      <div class="price-row">
+        <span>คุณประหยัด</span>
+        <span class="price-save" id="priceSave"></span>
+      </div>
+      <div class="badge-save hide" id="badgeSave"></div>
+      <div class="scarcity hide" id="scarcityText">⏱️ โปรพิเศษ จำนวนจำกัด</div>
+    </div>
+
+    <div class="ai-box hide" id="aiBox"></div>
     <div class="error" id="error"></div>
   </div>
 </div>
@@ -180,13 +217,9 @@ const userId=localStorage.getItem('user_id');
 const serviceId=localStorage.getItem('service_id');
 if(!userId||!serviceId) location.href='services.html';
 
-/* DOM */
 const creditEl=document.getElementById('credit');
 const serviceNameEl=document.getElementById('serviceName');
 const serviceDescEl=document.getElementById('serviceDesc');
-const detailCardEl=document.getElementById('detailCard');
-const detailBox=document.getElementById('serviceDetails');
-
 const qty=document.getElementById('qty');
 const qtyBox=document.getElementById('qtyBox');
 const commentBox=document.getElementById('commentBox');
@@ -197,6 +230,13 @@ const totalEl=document.getElementById('total');
 const errorEl=document.getElementById('error');
 const buyBtn=document.getElementById('buyBtn');
 
+const priceBox=document.getElementById('priceBox');
+const priceOld=document.getElementById('priceOld');
+const priceSave=document.getElementById('priceSave');
+const badgeSave=document.getElementById('badgeSave');
+const scarcityText=document.getElementById('scarcityText');
+const aiBox=document.getElementById('aiBox');
+
 let service=null, discounts=[], credit=0, finalQty=0, finalTotal=0;
 
 /* CREDIT */
@@ -206,25 +246,15 @@ fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
   creditEl.textContent=credit.toFixed(2);
 });
 
-/* LOAD DATA */
+/* LOAD */
 Promise.all([
   fetch(`${API}?action=services&api_key=${API_KEY}`).then(r=>r.json()),
-  fetch(`${API}?action=discounts&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json()),
-  fetch(`${API}?action=service_details&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json())
-]).then(([services,disc,details])=>{
+  fetch(`${API}?action=discounts&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json())
+]).then(([services,disc])=>{
   service=services.find(s=>String(s.service_id)===String(serviceId));
-  if(!service) return alert('ไม่พบบริการ');
-
   discounts=Array.isArray(disc)?disc:[];
   serviceNameEl.textContent=service.display_name;
   serviceDescEl.textContent=service.short_desc||'';
-
-  if(Array.isArray(details)&&details.length){
-    detailCardEl.classList.remove('hide');
-    details.forEach(d=>{
-      detailBox.innerHTML+=`<div class="detail-section"><h3>${d.section}</h3><p>${d.content}</p></div>`;
-    });
-  }
 
   if(service.service_type==='comment'){
     qtyBox.classList.add('hide');
@@ -247,11 +277,31 @@ function calcComment(){
 function calcTotal(){
   buyBtn.disabled=true;
   errorEl.textContent='';
+  priceBox.classList.add('hide');
+  badgeSave.classList.add('hide');
+  scarcityText.classList.add('hide');
+  aiBox.classList.add('hide');
+
   if(finalQty<service.min_qty){errorEl.textContent=`ขั้นต่ำ ${service.min_qty}`;return;}
-  const base=(finalQty*service.price_per_100)/100;
+
+  const normal=(finalQty*service.price_per_100)/100;
   const d=discounts.find(x=>finalQty>=x.min_qty&&finalQty<=x.max_qty);
-  finalTotal=d?finalQty*d.price:base;
+  finalTotal=d?finalQty*d.price:normal;
   totalEl.textContent=finalTotal.toFixed(2);
+
+  if(d && finalTotal<normal){
+    const save=normal-finalTotal;
+    const percent=Math.round((save/normal)*100);
+    priceOld.textContent=normal.toFixed(2)+' บาท';
+    priceSave.textContent='-'+save.toFixed(2)+' บาท';
+    badgeSave.textContent='🔥 ประหยัด '+percent+'%';
+    priceBox.classList.remove('hide');
+    badgeSave.classList.remove('hide');
+    scarcityText.classList.remove('hide');
+    aiBox.innerHTML=`🧠 แนะนำ: เพิ่มเป็น <b>${d.max_qty}</b> จะได้ราคาถูกที่สุด`;
+    aiBox.classList.remove('hide');
+  }
+
   if(finalTotal>credit){errorEl.textContent='เครดิตไม่เพียงพอ';return;}
   buyBtn.disabled=false;
 }
