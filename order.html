@@ -13,6 +13,7 @@
   --pink:#ec4899;
   --danger:#fb7185;
   --muted:#94a3b8;
+  --line:#1f2a44;
 }
 *{box-sizing:border-box}
 
@@ -85,24 +86,44 @@ body{
 .title{font-size:22px;font-weight:900}
 .desc{font-size:13px;color:var(--muted);margin-top:6px}
 
-.detail h3{
-  margin-top:16px;
-  font-size:16px;
-  font-weight:900;
+/* ===== DETAILS ===== */
+.detail-card{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#0b1224,#070b18);
 }
-.detail p{
+.detail-card .head{
+  font-size:18px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+.detail-section{
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px dashed var(--line);
+}
+.detail-section:first-child{
+  border-top:none;
+  padding-top:0;
+}
+.detail-section h3{
+  font-size:15px;
+  font-weight:900;
+  margin-bottom:6px;
+  color:#e5e7eb;
+}
+.detail-section p{
   white-space:pre-line;
   font-size:14px;
   color:#cbd5e1;
-  margin-top:6px;
+  line-height:1.6;
 }
 
+/* FORM */
 label{
   display:block;
   font-weight:900;
   margin:16px 0 6px;
 }
-
 input,textarea{
   width:100%;
   padding:14px;
@@ -121,7 +142,6 @@ textarea{min-height:120px}
   font-weight:900;
   margin-top:20px;
 }
-
 .error{
   margin-top:12px;
   font-weight:900;
@@ -167,7 +187,8 @@ textarea{min-height:120px}
   </div>
 
   <!-- SERVICE DETAILS -->
-  <div class="card detail hide" id="detailCard">
+  <div class="card detail-card hide" id="detailCard">
+    <div class="head">📋 รายละเอียดบริการ</div>
     <div id="serviceDetails"></div>
   </div>
 
@@ -204,21 +225,21 @@ const userId=localStorage.getItem('user_id');
 const serviceId=localStorage.getItem('service_id');
 if(!userId||!serviceId) location.href='services.html';
 
-const creditEl=document.getElementById('credit');
-const serviceName=document.getElementById('serviceName');
-const serviceDesc=document.getElementById('serviceDesc');
-const detailCard=document.getElementById('detailCard');
-const detailBox=document.getElementById('serviceDetails');
+const creditEl=credit;
+const serviceName=serviceName;
+const serviceDesc=serviceDesc;
+const detailCard=detailCard;
+const detailBox=serviceDetails;
 
-const qty=document.getElementById('qty');
-const qtyBox=document.getElementById('qtyBox');
-const commentBox=document.getElementById('commentBox');
-const commentText=document.getElementById('commentText');
-const commentCount=document.getElementById('commentCount');
-const link=document.getElementById('link');
-const totalEl=document.getElementById('total');
-const errorEl=document.getElementById('error');
-const buyBtn=document.getElementById('buyBtn');
+const qty=qty;
+const qtyBox=qtyBox;
+const commentBox=commentBox;
+const commentText=commentText;
+const commentCount=commentCount;
+const link=link;
+const totalEl=total;
+const errorEl=error;
+const buyBtn=buyBtn;
 
 let service, discounts=[], credit=0, finalQty=0, finalTotal=0;
 
@@ -244,8 +265,21 @@ Promise.all([
 
   if(Array.isArray(details)&&details.length){
     detailCard.classList.remove('hide');
-    details.forEach(d=>{
-      detailBox.innerHTML+=`<h3>${d.title}</h3><p>${d.content}</p>`;
+
+    const group={};
+    details
+      .sort((a,b)=>a.order-b.order)
+      .forEach(d=>{
+        if(!group[d.section]) group[d.section]=[];
+        group[d.section].push(d);
+      });
+
+    Object.keys(group).forEach(sec=>{
+      detailBox.innerHTML+=`
+        <div class="detail-section">
+          <h3>${sec}</h3>
+          ${group[sec].map(x=>`<p>${x.content}</p>`).join('')}
+        </div>`;
     });
   }
 
