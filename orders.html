@@ -129,6 +129,22 @@ body{
 .status.success{background:rgba(34,197,94,.18);color:var(--success)}
 .status.cancel{background:rgba(239,68,68,.18);color:var(--danger)}
 
+/* ACTION */
+.actions{
+  margin-top:14px;
+  display:flex;
+  justify-content:flex-end;
+}
+.line-btn{
+  padding:8px 16px;
+  border-radius:999px;
+  background:#22c55e;
+  color:#062e16;
+  font-weight:900;
+  font-size:13px;
+  text-decoration:none;
+}
+
 .empty,.error{text-align:center;padding:40px;font-weight:900}
 .empty{color:var(--muted)}
 .error{color:var(--danger)}
@@ -151,73 +167,92 @@ body{
 <script>
 const API="https://script.google.com/macros/s/AKfycbxnG0FDeXxrWOFIhPCtREMcUKq5-uBCqi_BagqlD6OPWDXBnQn1Dt-8BKMaOv4ZstnQSg/exec";
 const API_KEY="SBTH-SECURE-2026";
+const LINE_URL="https://line.me/R/ti/p/@YOUR_LINE_ID"; // 🔔 เปลี่ยนเป็นไลน์ร้าน
 
 const userId=localStorage.getItem('user_id');
-if(!userId)location.href='login.html';
+if(!userId) location.href='login.html';
 
 const box=document.getElementById('orders');
 const updateText=document.getElementById('updateText');
 
-/* ===== STATUS TEXT (DEFAULT = pending) ===== */
-function statusText(status){
-  const s = status || 'pending';
-  if(s==='pending')return'⏳ รอดำเนินการ (ร้านได้รับออเดอร์แล้ว)';
+/* STATUS */
+function statusText(s){
   if(s==='processing')return'🚀 กำลังดำเนินการ';
   if(s==='success')return'✅ สำเร็จ';
   if(s==='cancel')return'❌ ยกเลิก';
   return'⏳ รอดำเนินการ';
 }
-function statusClass(status){
-  return status || 'pending';
+function statusClass(s){
+  return s||'pending';
 }
 
 async function loadOrders(){
-  updateText.textContent='กำลังอัปเดต...';
+  updateText.textContent='กำลังอัปเดต…';
   box.innerHTML='';
-  const res=await fetch(`${API}?action=orders&api_key=${API_KEY}&user_id=${userId}`);
-  const list=await res.json();
 
-  if(!Array.isArray(list) || !list.length){
-    box.innerHTML='<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
-    updateText.textContent='—';
-    return;
+  try{
+    const res=await fetch(
+      `${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`
+    );
+    const data=await res.json();
+    const list=data.orders||[];
+
+    if(!list.length){
+      box.innerHTML='<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
+      updateText.textContent='—';
+      return;
+    }
+
+    list.reverse().forEach(o=>{
+      box.insertAdjacentHTML('beforeend',`
+        <div class="order">
+          <div class="row">
+            <div><b>${o.order_id}</b></div>
+            <div class="amount">${Number(o.final_total||0).toFixed(2)} บาท</div>
+          </div>
+
+          <div class="row"><div>จำนวน</div><div>${o.qty}</div></div>
+          <div class="row"><div>วันที่</div><div>${new Date(o.datetime).toLocaleString()}</div></div>
+
+          <div class="link-box">
+            <div class="link-text">${o.link||'-'}</div>
+            <button class="copy-btn" onclick="copyLink('${o.link||''}')">คัดลอก</button>
+          </div>
+
+          <div class="status ${statusClass(o.status)}">
+            ${statusText(o.status)}
+          </div>
+
+          <div class="actions">
+            <a class="line-btn" href="${LINE_URL}" target="_blank">
+              💬 เติมยอด / ติดต่อแอดมิน
+            </a>
+          </div>
+        </div>
+      `);
+    });
+
+    updateText.textContent='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
+  }catch{
+    box.innerHTML='<div class="error">โหลดข้อมูลไม่สำเร็จ</div>';
   }
-
-  list.reverse().forEach(o=>{
-    const status = o.status || 'pending';
-
-    box.insertAdjacentHTML('beforeend',`
-      <div class="order">
-        <div class="row">
-          <div><b>${o.order_id}</b></div>
-          <div class="amount">${Number(o.final_total||0).toFixed(2)} บาท</div>
-        </div>
-
-        <div class="row"><div>จำนวน</div><div>${o.qty}</div></div>
-        <div class="row"><div>วันที่</div><div>${new Date(o.datetime).toLocaleString()}</div></div>
-
-        <div class="link-box">
-          <div class="link-text">${o.link||'-'}</div>
-          <button class="copy-btn" onclick="copyLink('${o.link||''}')">คัดลอก</button>
-        </div>
-
-        <div class="status ${statusClass(status)}">
-          ${statusText(status)}
-        </div>
-      </div>
-    `);
-  });
-
-  updateText.textContent='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
 }
 
 function copyLink(txt){
-  if(!txt)return;
+  if(!txt) return;
   navigator.clipboard.writeText(txt);
   alert('คัดลอกลิงก์เรียบร้อยแล้ว');
 }
 
+/* โหลดครั้งแรก */
 loadOrders();
+
+/* โหลดใหม่เมื่อกลับมาหน้านี้ (ไม่ถี่ ไม่หนัก) */
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){
+    loadOrders();
+  }
+});
 </script>
 
 </body>
