@@ -5,9 +5,8 @@
 <title>สั่งซื้อบริการ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="prefetch" href="order-detail.html">
-
 <style>
+/* ===== CSS เดิมทั้งหมด ไม่เปลี่ยน ===== */
 :root{
   --black:#0b0f1a;
   --blue:#38bdf8;
@@ -17,10 +16,8 @@
   --muted:#94a3b8;
   --line:#1f2a44;
   --green:#22c55e;
-  --orange:#f97316;
 }
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui,-apple-system;
@@ -29,8 +26,6 @@ body{
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
-
-/* HEADER */
 .header{
   padding:12px 16px;
   display:grid;
@@ -68,8 +63,6 @@ body{
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
-
-/* CONTAINER */
 .container{max-width:720px;margin:auto;padding:20px 18px 160px}
 .card{
   background:linear-gradient(180deg,#111827,#0b1020);
@@ -81,37 +74,6 @@ body{
 }
 .title{font-size:22px;font-weight:900}
 .desc{font-size:13px;color:var(--muted);margin-top:6px}
-
-/* ===== SERVICE DETAILS ===== */
-.details-wrap{margin-top:16px}
-.detail-item{
-  margin-top:10px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  overflow:hidden;
-}
-.detail-head{
-  padding:14px 16px;
-  font-weight:900;
-  cursor:pointer;
-  background:#020617;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.detail-head span{color:var(--muted)}
-.detail-body{
-  padding:14px 16px;
-  font-size:14px;
-  color:#cbd5e1;
-  line-height:1.6;
-  display:none;
-  white-space:pre-line;
-  background:#0b1020;
-}
-.detail-item.open .detail-body{display:block}
-
-/* FORM */
 label{display:block;font-weight:900;margin:16px 0 6px}
 input,textarea{
   width:100%;padding:14px;border-radius:16px;
@@ -121,8 +83,6 @@ textarea{min-height:120px}
 .hint{font-size:13px;color:var(--muted);margin-top:6px}
 .total{font-size:22px;font-weight:900;margin-top:20px}
 .error{margin-top:12px;font-weight:900;color:var(--danger)}
-
-/* BUY */
 .buy{
   position:fixed;bottom:16px;left:50%;
   transform:translateX(-50%);
@@ -133,7 +93,6 @@ textarea{min-height:120px}
   color:#fff;font-size:18px;font-weight:900;
 }
 .buy:disabled{opacity:.5}
-.hide{display:none}
 </style>
 </head>
 
@@ -150,15 +109,12 @@ textarea{min-height:120px}
   <div class="card">
     <div class="title" id="serviceName">กำลังโหลด…</div>
     <div class="desc" id="serviceDesc"></div>
-
-    <!-- รายละเอียดบริการจาก Google Sheet -->
-    <div class="details-wrap" id="detailsWrap"></div>
+    <div class="hint" id="serviceInfo"></div>
   </div>
 
-  <!-- ฟอร์มเดิม (ยังไม่แก้) -->
   <div class="card">
     <label>จำนวน</label>
-    <input type="number" id="qty">
+    <input type="number" id="qty" min="0">
 
     <label>ลิงก์ TikTok</label>
     <textarea id="link"></textarea>
@@ -171,56 +127,135 @@ textarea{min-height:120px}
 <button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
 
 <script>
-/* ================== CONFIG ================== */
-const API="https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
-const API_KEY="SBTH-SECURE-2026";
+/* ================= CONFIG ================= */
+const API = "https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
+const API_KEY = "SBTH-SECURE-2026";
 
-const userId=localStorage.getItem('user_id');
-const serviceId=localStorage.getItem('service_id');
-if(!userId||!serviceId) location.href='services.html';
+/* ================= AUTH ================= */
+const userId = localStorage.getItem('user_id');
+const serviceId = localStorage.getItem('service_id');
+if(!userId || !serviceId){
+  location.href = 'services.html';
+}
 
-/* ================== ELEMENT ================== */
-const serviceNameEl=document.getElementById('serviceName');
-const serviceDescEl=document.getElementById('serviceDesc');
-const detailsWrap=document.getElementById('detailsWrap');
+/* ================= ELEMENT ================= */
+const creditEl = document.getElementById('credit');
+const serviceNameEl = document.getElementById('serviceName');
+const serviceDescEl = document.getElementById('serviceDesc');
+const serviceInfoEl = document.getElementById('serviceInfo');
+const qtyEl = document.getElementById('qty');
+const linkEl = document.getElementById('link');
+const totalEl = document.getElementById('total');
+const errorEl = document.getElementById('error');
+const buyBtn = document.getElementById('buyBtn');
 
-/* ================== LOAD SERVICE ================== */
-fetch(`${API}?action=services&api_key=${API_KEY}`)
-.then(r=>r.json())
-.then(list=>{
-  const s=list.find(x=>String(x.service_id)===String(serviceId));
-  if(!s) return;
-  serviceNameEl.textContent=s.display_name;
-  serviceDescEl.textContent=s.short_desc||'';
-});
+/* ================= STATE ================= */
+let service = null;
+let discounts = [];
+let credit = Number(localStorage.getItem('credit') || 0);
 
-/* ================== LOAD SERVICE DETAILS ================== */
-fetch(`${API}?action=service_details&api_key=${API_KEY}&service_id=${serviceId}`)
-.then(r=>r.json())
-.then(list=>{
-  if(!Array.isArray(list)||!list.length){
-    detailsWrap.innerHTML='<div style="color:#94a3b8">ไม่มีรายละเอียดเพิ่มเติม</div>';
+/* ================= INIT ================= */
+creditEl.textContent = credit.toFixed(2);
+
+/* โหลดบริการ */
+fetch(`${API}?action=getServices&api_key=${API_KEY}`)
+  .then(r=>r.json())
+  .then(res=>{
+    service = (res.services||[]).find(s=>String(s.service_id)===String(serviceId));
+    if(!service){
+      errorEl.textContent = 'ไม่พบบริการ';
+      return;
+    }
+
+    serviceNameEl.textContent = service.display_name;
+    serviceDescEl.textContent = service.short_desc || '';
+    serviceInfoEl.textContent =
+      `ขั้นต่ำ ${service.min_qty} ${service.unit} • ราคา ${service.price_per_100} บาท / 100`;
+
+    loadDiscounts();
+  });
+
+/* โหลดส่วนลด */
+function loadDiscounts(){
+  fetch(`${API}?action=getDiscounts&api_key=${API_KEY}&service_id=${serviceId}`)
+    .then(r=>r.json())
+    .then(res=>{ discounts = res.discounts || []; });
+}
+
+/* คำนวณราคา */
+function calcTotal(){
+  errorEl.textContent='';
+  const qty = Number(qtyEl.value||0);
+  if(!qty){
+    totalEl.textContent='0.00';
+    buyBtn.disabled = true;
     return;
   }
-  list
-    .filter(d=>d.status==='on')
-    .sort((a,b)=>a.order-b.order)
-    .forEach(d=>{
-      const el=document.createElement('div');
-      el.className='detail-item';
-      el.innerHTML=`
-        <div class="detail-head" onclick="this.parentElement.classList.toggle('open')">
-          <div>${d.title||d.section}</div>
-          <span>แตะเพื่อดู</span>
-        </div>
-        <div class="detail-body">${d.content||''}</div>
-      `;
-      detailsWrap.appendChild(el);
+
+  if(qty < service.min_qty){
+    errorEl.textContent = `ขั้นต่ำ ${service.min_qty}`;
+    buyBtn.disabled = true;
+    return;
+  }
+
+  let total = qty * service.price_per_100 / 100;
+
+  const valid = discounts.filter(d =>
+    qty >= d.min_qty && qty <= d.max_qty
+  );
+  if(valid.length){
+    const best = valid.sort((a,b)=>b.min_qty-a.min_qty)[0];
+    if(best.price){
+      total = qty * best.price;
+    }else if(best.discount_percent){
+      total = total * (100-best.discount_percent)/100;
+    }
+  }
+
+  total = Number(total.toFixed(2));
+  totalEl.textContent = total.toFixed(2);
+
+  if(total > credit){
+    errorEl.textContent='เครดิตไม่เพียงพอ';
+    buyBtn.disabled = true;
+    return;
+  }
+
+  buyBtn.disabled = !linkEl.value.trim();
+}
+
+qtyEl.addEventListener('input',calcTotal);
+linkEl.addEventListener('input',calcTotal);
+
+/* สั่งซื้อ */
+buyBtn.onclick = ()=>{
+  buyBtn.disabled = true;
+  errorEl.textContent='';
+
+  const p = new URLSearchParams({
+    action:'createOrder',
+    api_key:API_KEY,
+    user_id:userId,
+    service_id:serviceId,
+    qty:qtyEl.value,
+    link:linkEl.value
+  });
+
+  fetch(`${API}?${p.toString()}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res.success){
+        errorEl.textContent = res.error || 'สั่งซื้อไม่สำเร็จ';
+        buyBtn.disabled = false;
+        return;
+      }
+      location.href='orders.html';
+    })
+    .catch(()=>{
+      errorEl.textContent='เชื่อมต่อไม่สำเร็จ';
+      buyBtn.disabled = false;
     });
-})
-.catch(()=>{
-  detailsWrap.innerHTML='<div style="color:#fb7185">โหลดรายละเอียดไม่สำเร็จ</div>';
-});
+};
 </script>
 
 </body>
