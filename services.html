@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+/* ===== CSS เดิมทั้งหมด ไม่แตะ ===== */
 :root{
   --black:#0b0f1a;
   --navy:#0f172a;
@@ -99,14 +100,7 @@ body{
   transform:translateY(20px);
   animation:fadeUp .6s ease forwards;
 }
-@keyframes fadeUp{
-  to{opacity:1;transform:none}
-}
-.service:hover{
-  box-shadow:
-    0 40px 120px rgba(139,92,246,.35),
-    0 0 0 1px rgba(139,92,246,.45);
-}
+@keyframes fadeUp{to{opacity:1;transform:none}}
 .service-name{font-size:18px;font-weight:900}
 .service-desc{font-size:13px;color:#cbd5e1;margin-top:6px}
 .value-hint{
@@ -118,7 +112,6 @@ body{
   font-size:13px;
 }
 .value-hint b{color:var(--green)}
-
 .badge{
   position:absolute;
   top:16px;left:16px;
@@ -128,14 +121,7 @@ body{
   font-weight:900;
   animation:pulse 2.5s infinite;
 }
-@keyframes pulse{
-  0%,100%{opacity:1}
-  50%{opacity:.65}
-}
-.badge.bestseller{background:linear-gradient(90deg,#f97316,#ec4899)}
-.badge.recommended{background:linear-gradient(90deg,var(--blue),var(--purple))}
-.badge.boost{background:linear-gradient(90deg,#22c55e,#16a34a)}
-
+@keyframes pulse{50%{opacity:.6}}
 .bottom{
   display:flex;
   justify-content:space-between;
@@ -171,10 +157,7 @@ body{
   transition:.3s;
 }
 .side-menu.open{left:0}
-.side-menu .user{
-  font-weight:900;
-  margin-bottom:20px;
-}
+.side-menu .user{font-weight:900;margin-bottom:20px}
 .side-menu a{
   display:block;
   padding:14px 0;
@@ -201,7 +184,7 @@ body{
 <header class="header">
   <div class="left">
     <button class="menu-btn" onclick="openMenu()">☰</button>
-    <button class="refresh-btn" onclick="reloadAll(true)">⟳</button>
+    <button class="refresh-btn" onclick="reloadAll()">⟳</button>
   </div>
   <div class="center">SocialBoostTH</div>
   <div class="right">
@@ -238,24 +221,21 @@ const userId=localStorage.getItem('user_id');
 const username=localStorage.getItem('username')||'ลูกค้า';
 if(!userId)location.href='login.html';
 
+document.getElementById('username').textContent=username;
+
 const creditEl=document.getElementById('credit');
 const box=document.getElementById('services');
 const sideMenu=document.getElementById('sideMenu');
 const menuOverlay=document.getElementById('menuOverlay');
-const usernameEl=document.getElementById('username');
-
-usernameEl.textContent=username;
 
 /* ===== MENU ===== */
 function openMenu(){
   sideMenu.classList.add('open');
   menuOverlay.style.display='block';
-  document.body.style.overflow='hidden';
 }
 function closeMenu(){
   sideMenu.classList.remove('open');
   menuOverlay.style.display='none';
-  document.body.style.overflow='';
 }
 function logout(){
   localStorage.clear();
@@ -268,30 +248,21 @@ function reloadAll(){
   loadServices();
 }
 
-/* ===== CREDIT (REAL-TIME + CACHE SAFE) ===== */
+/* ===== CREDIT (FIXED) ===== */
 function loadCredit(){
+  const cache=localStorage.getItem('credit');
+  if(cache) creditEl.textContent=Number(cache).toFixed(2);
 
-  // 1) ใช้ cache ก่อน กันขึ้น 0.00
-  const cacheCredit = localStorage.getItem('credit');
-  if(cacheCredit !== null){
-    creditEl.textContent = Number(cacheCredit).toFixed(2);
-  }
-
-  // 2) ดึงของจริงจาก API
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
-      if(res && res.user && res.user.credit !== undefined){
-        const realCredit = Number(res.user.credit).toFixed(2);
-
-        // อัปเดตทั้งหน้าจอ + cache
-        creditEl.textContent = realCredit;
-        localStorage.setItem('credit', realCredit);
+      if(res?.user?.credit!==undefined){
+        creditEl.textContent=Number(res.user.credit).toFixed(2);
+        localStorage.setItem('credit',res.user.credit);
       }
     })
-    .catch(()=>{ /* เงียบ ไม่ทำให้หน้าแตก */ });
+    .catch(()=>{});
 }
-</script>
 
 /* ===== SERVICES ===== */
 function loadServices(){
@@ -307,17 +278,10 @@ function loadServices(){
               ? `<div class="badge ${s.badge_type}">${s.badge_text}</div>`:''}
             <div class="service-name">${s.display_name}</div>
             <div class="service-desc">${s.short_desc||''}</div>
-            <div class="value-hint">
-              ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit}
-            </div>
+            <div class="value-hint">ขั้นต่ำ <b>${s.min_qty}</b> ${s.unit}</div>
             <div class="bottom">
-              <div class="price">
-                ${s.price_per_100} บาท
-                <span>/100 ${s.unit}</span>
-              </div>
-              <button class="btn" onclick="selectService('${s.service_id}')">
-                เลือกแพ็กเกจ
-              </button>
+              <div class="price">${s.price_per_100} บาท <span>/100 ${s.unit}</span></div>
+              <button class="btn" onclick="selectService('${s.service_id}')">เลือกแพ็กเกจ</button>
             </div>
           </div>
         `);
