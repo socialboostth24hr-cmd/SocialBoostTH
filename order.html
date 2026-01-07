@@ -88,6 +88,7 @@ textarea{min-height:140px}
 </header>
 
 <div class="container">
+
   <div class="card">
     <div class="title" id="serviceName">กำลังโหลด…</div>
     <div class="desc" id="serviceDesc"></div>
@@ -95,7 +96,7 @@ textarea{min-height:140px}
 
   <div class="card">
 
-    <!-- จำนวน (ปกติ) -->
+    <!-- จำนวนปกติ -->
     <div id="qtyBox">
       <label>จำนวน</label>
       <input type="number" id="qty">
@@ -104,8 +105,11 @@ textarea{min-height:140px}
     <!-- คอมเมนต์ -->
     <div id="commentBox" class="hide">
       <label>ข้อความคอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
-      <textarea id="commentText" placeholder="พิมพ์ 1 บรรทัด ต่อ 1 คอมเมนต์&#10;เช่น&#10;น่ารักมาก&#10;ชอบคลิปนี้"></textarea>
-      <div class="desc">จำนวนคอมเมนต์: <b><span id="commentCount">0</span></b></div>
+      <textarea id="commentText"
+        placeholder="พิมพ์ 1 บรรทัด ต่อ 1 คอมเมนต์&#10;เช่น&#10;น่ารักมาก&#10;ชอบคลิปนี้"></textarea>
+      <div class="desc">
+        จำนวนคอมเมนต์: <b><span id="commentCount">0</span></b>
+      </div>
     </div>
 
     <label>ลิงก์ TikTok</label>
@@ -113,20 +117,24 @@ textarea{min-height:140px}
 
     <div class="total">รวม: <span id="total">0.00</span> บาท</div>
     <div class="error" id="error"></div>
+
   </div>
 </div>
 
 <button class="buy-btn" id="buyBtn">ยืนยันสั่งซื้อ</button>
 
 <script>
-/* ===== CONFIG (ตัวล่าสุด) ===== */
+/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbz8Nzxgyvf04CmoKCmYd8WnCm5Ecp539a7viDfo8MtqHREBcSZXapZc7_PvvcvSxUVO8A/exec";
 const API_KEY="SBTH-SECURE-2026";
 
 /* ===== AUTH ===== */
-const userId=localStorage.getItem('user_id');
-const serviceId=localStorage.getItem('service_id');
-if(!userId||!serviceId){location.href='services.html';throw'';}
+const userId = localStorage.getItem('user_id');
+const serviceId = localStorage.getItem('service_id');
+if(!userId || !serviceId){
+  location.href='services.html';
+  throw '';
+}
 
 /* ===== DOM ===== */
 const creditEl=document.getElementById('credit');
@@ -148,8 +156,8 @@ let service=null, discounts=[], credit=0, finalQty=0, finalTotal=0;
 fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
 .then(r=>r.json())
 .then(u=>{
-  credit=Number(u?.credit||0);
-  creditEl.innerText=credit.toFixed(2);
+  credit = Number(u?.credit||0);
+  creditEl.innerText = credit.toFixed(2);
 });
 
 /* ===== LOAD SERVICE ===== */
@@ -157,81 +165,98 @@ Promise.all([
   fetch(`${API}?action=services&api_key=${API_KEY}`).then(r=>r.json()),
   fetch(`${API}?action=discounts&api_key=${API_KEY}&service_id=${serviceId}`).then(r=>r.json())
 ]).then(([services,disc])=>{
-  service=services.find(s=>String(s.service_id)===String(serviceId));
-  discounts=Array.isArray(disc)?disc:[];
-  serviceName.innerText=service.display_name;
-  serviceDesc.innerText=service.short_desc||'';
+  service = services.find(s=>String(s.service_id)===String(serviceId));
+  discounts = Array.isArray(disc)?disc:[];
+  serviceName.innerText = service.display_name;
+  serviceDesc.innerText = service.short_desc||'';
 
   if(service.service_type==='comment'){
     qtyBox.classList.add('hide');
     commentBox.classList.remove('hide');
-    commentText.oninput=calcComment;
+    commentText.oninput = calcComment;
   }else{
-    qtyEl.value=service.min_qty;
-    qtyEl.oninput=calcNormal;
+    qtyEl.value = service.min_qty;
+    qtyEl.oninput = calcNormal;
     calcNormal();
   }
 });
 
-/* ===== CALC NORMAL ===== */
+/* ===== CALC ===== */
 function calcNormal(){
-  const q=Number(qtyEl.value||0);
-  finalQty=q;
-  calcTotal(q);
-}
-
-/* ===== CALC COMMENT ===== */
-function calcComment(){
-  const lines=commentText.value
-    .split('\n')
-    .map(x=>x.trim())
-    .filter(x=>x!=='');
-
-  finalQty=lines.length;
-  commentCountEl.innerText=finalQty;
+  finalQty = Number(qtyEl.value||0);
   calcTotal(finalQty);
 }
 
-/* ===== CALC TOTAL ===== */
+function calcComment(){
+  const lines = commentText.value
+    .split('\n')
+    .map(x=>x.trim())
+    .filter(Boolean);
+
+  finalQty = lines.length;
+  commentCountEl.innerText = finalQty;
+  calcTotal(finalQty);
+}
+
 function calcTotal(q){
-  buyBtn.disabled=true;
-  errorEl.innerText='';
+  buyBtn.disabled = true;
+  errorEl.innerText = '';
 
-  if(q<Number(service.min_qty)){
-    errorEl.innerText=`ขั้นต่ำ ${service.min_qty}`;
-    totalEl.innerText='0.00';
+  if(q < Number(service.min_qty)){
+    errorEl.innerText = `ขั้นต่ำ ${service.min_qty}`;
+    totalEl.innerText = '0.00';
     return;
   }
 
-  const base=(q*Number(service.price_per_100))/100;
-  const d=discounts.find(x=>q>=Number(x.min_qty)&&q<=Number(x.max_qty));
-  finalTotal=d? q*Number(d.price):base;
+  const base = (q * Number(service.price_per_100)) / 100;
+  const d = discounts.find(x=>q>=Number(x.min_qty)&&q<=Number(x.max_qty));
+  finalTotal = d ? q * Number(d.price) : base;
 
-  if(finalTotal>credit){
-    errorEl.innerText='เครดิตไม่เพียงพอ';
-    totalEl.innerText=finalTotal.toFixed(2);
+  if(finalTotal > credit){
+    errorEl.innerText = 'เครดิตไม่เพียงพอ';
+    totalEl.innerText = finalTotal.toFixed(2);
     return;
   }
 
-  totalEl.innerText=finalTotal.toFixed(2);
-  buyBtn.disabled=false;
+  totalEl.innerText = finalTotal.toFixed(2);
+  buyBtn.disabled = false;
 }
 
 /* ===== CREATE ORDER ===== */
-buyBtn.onclick=()=>{
-  if(!linkEl.value.trim()){
-    errorEl.innerText='กรุณาใส่ลิงก์';
+buyBtn.onclick = () => {
+  errorEl.innerText = '';
+
+  const link = linkEl.value.trim();
+  if(!link){
+    errorEl.innerText = 'กรุณาใส่ลิงก์ TikTok';
     return;
   }
 
-  buyBtn.disabled=true;
+  let sendLink = link;
+
+  if(service.service_type === 'comment'){
+    const comments = commentText.value
+      .split('\n')
+      .map(x=>x.trim())
+      .filter(Boolean);
+
+    if(comments.length === 0){
+      errorEl.innerText = 'กรุณาใส่ข้อความคอมเมนต์';
+      return;
+    }
+
+    // ⭐ แนบคอมเมนต์ไปใน link (backend เดิมอ่านได้)
+    sendLink = link + '\n-----\n' + comments.join('\n');
+  }
+
+  buyBtn.disabled = true;
 
   fetch(
-    `${API}?action=create_order&api_key=${API_KEY}`+
-    `&user_id=${userId}&service_id=${serviceId}`+
-    `&qty=${finalQty}`+
-    `&link=${encodeURIComponent(linkEl.value.trim())}`+
-    `&comment_text=${encodeURIComponent(commentText.value||'')}`
+    `${API}?action=create_order&api_key=${API_KEY}` +
+    `&user_id=${userId}` +
+    `&service_id=${serviceId}` +
+    `&qty=${finalQty}` +
+    `&link=${encodeURIComponent(sendLink)}`
   )
   .then(r=>r.json())
   .then(res=>{
