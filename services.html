@@ -45,27 +45,11 @@ body{
   color:#fff;font-weight:900;cursor:pointer;
 }
 .wallet{
-  font-size:13px;
-  padding:6px 14px;
-  border-radius:999px;
+  font-size:13px;padding:6px 14px;border-radius:999px;
   font-weight:900;
-  background:
-    linear-gradient(#020617,#020617) padding-box,
-    linear-gradient(135deg,var(--blue),var(--purple)) border-box;
+  background:linear-gradient(#020617,#020617) padding-box,
+             linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
-  display:flex;
-  gap:6px;
-  align-items:center;
-}
-
-/* CREDIT ANIM EFFECT */
-.wallet.updating{
-  box-shadow:0 0 0 0 rgba(56,189,248,.45);
-  animation:creditPulse .9s ease;
-}
-@keyframes creditPulse{
-  0%{box-shadow:0 0 0 0 rgba(56,189,248,.45)}
-  100%{box-shadow:0 0 0 16px rgba(56,189,248,0)}
 }
 
 /* SIDE MENU */
@@ -96,7 +80,7 @@ body{
   background:#020617;color:#fff;
 }
 
-/* SERVICE */
+/* SERVICE CARD */
 .service{
   position:relative;
   background:#020617;
@@ -108,34 +92,56 @@ body{
 .service-name{font-size:18px;font-weight:900}
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
-.start-time{margin-top:6px;font-size:12px;color:#86efac;font-weight:900}
+
+/* TIME */
+.start-time{
+  margin-top:6px;
+  font-size:12px;
+  color:#86efac;
+  font-weight:900;
+}
+
+/* SOCIAL PROOF */
 .proof-row{
-  display:flex;justify-content:space-between;
-  gap:10px;margin-top:6px;flex-wrap:wrap
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:6px;
+  flex-wrap:wrap;
 }
 .viewer{font-size:12px;color:#fde047;font-weight:900}
 .sold{font-size:12px;color:#38bdf8;font-weight:900}
-.bottom{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+
+/* BADGE */
+.badge{
+  position:absolute;
+  top:12px;right:12px;
+  padding:5px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+}
+.badge.gold{
+  background:linear-gradient(135deg,#fde047,#f59e0b);
+  color:#000;
+  box-shadow:0 0 22px rgba(253,224,71,.65);
+}
+.badge.hot{
+  background:linear-gradient(135deg,#fb7185,#ef4444);
+  color:#fff;
+  box-shadow:0 0 16px rgba(239,68,68,.55);
+}
+
+/* PRICE */
+.bottom{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-top:12px;
+}
 .price{font-size:20px;font-weight:900;color:#e0e7ff}
 .btn{
   border:none;padding:12px 22px;border-radius:999px;
   background:linear-gradient(135deg,var(--blue),var(--purple));
   color:#fff;font-weight:900;cursor:pointer;
-}
-
-/* BADGE */
-.badge{
-  position:absolute;top:12px;right:12px;
-  padding:5px 12px;border-radius:999px;
-  font-size:11px;font-weight:900
-}
-.badge.gold{
-  background:linear-gradient(135deg,#fde047,#f59e0b);
-  color:#000;box-shadow:0 0 22px rgba(253,224,71,.65)
-}
-.badge.hot{
-  background:linear-gradient(135deg,#fb7185,#ef4444);
-  color:#fff;box-shadow:0 0 16px rgba(239,68,68,.55)
 }
 </style>
 </head>
@@ -145,17 +151,14 @@ body{
 <header class="header">
   <button class="menu-btn" onclick="openMenu()">☰</button>
   <div class="center">SocialBoostTH</div>
-  <div class="wallet" id="walletBox">
-    เครดิต:
-    <span id="credit">0.00</span>
-  </div>
+  <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
 </header>
 
 <div class="container">
   <div class="title">เลือกบริการ</div>
   <div class="subtitle">ระบบอัตโนมัติ • ปลอดภัย • 24 ชั่วโมง</div>
   <div class="search">
-    <input placeholder="🔍 ค้นหาบริการ">
+    <input id="search" placeholder="🔍 ค้นหาบริการ">
   </div>
   <div id="services"></div>
 </div>
@@ -170,9 +173,10 @@ body{
 </div>
 
 <script>
-/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
+const servicesEl=document.getElementById('services');
+const creditEl=document.getElementById('credit');
 
 /* AUTH */
 const userId=localStorage.getItem('user_id');
@@ -181,77 +185,101 @@ if(!userId||!username){location.replace('login.html')}
 document.getElementById('username').textContent=username;
 
 /* MENU */
-const sideMenu=document.getElementById('sideMenu');
-const overlay=document.getElementById('menuOverlay');
-function openMenu(){sideMenu.classList.add('open');overlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');overlay.style.display='none'}
+function openMenu(){sideMenu.classList.add('open');menuOverlay.style.display='block'}
+function closeMenu(){sideMenu.classList.remove('open');menuOverlay.style.display='none'}
 function logout(){localStorage.clear();location.replace('login.html')}
 
-/* ===============================
-   CREDIT REALTIME PRO ENGINE
-================================ */
-const creditEl=document.getElementById('credit');
-const walletBox=document.getElementById('walletBox');
-let currentCredit=0;
-
-/* SHOW CACHE FIRST */
-const cached=localStorage.getItem('credit');
-if(cached && !isNaN(cached)){
-  currentCredit=Number(cached);
-  creditEl.textContent=currentCredit.toFixed(2);
-}
-
-/* SMOOTH COUNT ANIM */
-function animateCredit(to){
-  const from=currentCredit;
+/* CREDIT realtime smooth */
+let lastCredit=null;
+function animateCredit(from,to){
   const start=performance.now();
   const dur=600;
-  walletBox.classList.add('updating');
-
   function step(t){
     const p=Math.min((t-start)/dur,1);
     const val=from+(to-from)*p;
     creditEl.textContent=val.toFixed(2);
     if(p<1) requestAnimationFrame(step);
-    else{
-      currentCredit=to;
-      walletBox.classList.remove('updating');
-    }
   }
   requestAnimationFrame(step);
 }
-
-/* SYNC CREDIT */
-function syncCredit(){
+function loadCredit(){
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if(res && res.success && !isNaN(res.credit)){
-        const next=Number(res.credit);
-        if(next!==currentCredit){
-          localStorage.setItem('credit',next);
-          animateCredit(next);
-        }
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.success){
+      const next=Number(res.credit);
+      if(lastCredit===null){
+        creditEl.textContent=next.toFixed(2);
+      }else{
+        animateCredit(lastCredit,next);
       }
-    })
-    .catch(()=>{});
+      lastCredit=next;
+    }
+  });
+}
+loadCredit();
+setInterval(loadCredit,15000);
+
+/* SERVICES */
+const today=new Date().toISOString().slice(0,10);
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+
+function getDaily(key,gen){
+  const k=`${key}_${today}`;
+  if(!localStorage.getItem(k)) localStorage.setItem(k,gen());
+  return localStorage.getItem(k);
 }
 
-/* POLLING FALLBACK (SAFE) */
-syncCredit();
-setInterval(syncCredit,25000);
+fetch(`${API}?action=getServices&api_key=${API_KEY}`)
+.then(r=>r.json())
+.then(res=>{
+  const list=res.services||[];
+  const top1=getDaily('top1',()=>list[rand(0,list.length-1)].service_id);
+  const top5=getDaily('top5',()=>JSON.stringify(list.sort(()=>.5-Math.random()).slice(0,3).map(s=>s.service_id)));
+  const top5Arr=JSON.parse(top5);
 
-/* OPTIONAL: WEBSOCKET READY (AUTO FALLBACK) */
-/*
-const ws=new WebSocket("wss://your-realtime-endpoint");
-ws.onmessage=e=>{
-  const data=JSON.parse(e.data);
-  if(data.type==="credit"){
-    localStorage.setItem('credit',data.amount);
-    animateCredit(Number(data.amount));
-  }
-};
-*/
+  list.forEach(s=>{
+    const view=getDaily('view_'+s.service_id,()=>rand(40,260));
+    const sold=getDaily('sold_'+s.service_id,()=>rand(80,1200));
+
+    let badge='';
+    if(s.service_id===top1) badge=`<div class="badge gold">🏆 อันดับยอดนิยม #1 วันนี้</div>`;
+    else if(top5Arr.includes(s.service_id)) badge=`<div class="badge hot">🔥 ติด Top 5 ขายดี</div>`;
+
+    servicesEl.insertAdjacentHTML('beforeend',`
+      <div class="service" data-view="${view}">
+        ${badge}
+        <div class="service-name">${s.display_name}</div>
+        <div class="service-desc">${s.short_desc||''}</div>
+        <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
+        <div class="start-time">⏱ เริ่ม 1–3 ชม. โดยประมาณ</div>
+        <div class="proof-row">
+          <div class="viewer">👀 ดูอยู่ ${view}</div>
+          <div class="sold">📦 ขายแล้ววันนี้ ${sold>=1000?'1000+':sold}</div>
+        </div>
+        <div class="bottom">
+          <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
+          <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
+        </div>
+      </div>
+    `);
+  });
+});
+
+/* VIEW WAVE */
+setInterval(()=>{
+  document.querySelectorAll('.service').forEach(el=>{
+    let v=Number(el.dataset.view);
+    v=Math.max(20,Math.min(360,v+rand(-8,10)));
+    el.dataset.view=v;
+    el.querySelector('.viewer').textContent=`👀 ดูอยู่ ${v}`;
+  });
+},7000+Math.random()*6000);
+
+function selectService(id){
+  localStorage.setItem('service_id',id);
+  location.href='order.html';
+}
 </script>
 
 </body>
