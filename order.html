@@ -24,8 +24,6 @@ body{
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
-
-/* HEADER */
 .header{
   padding:12px 16px;
   display:flex;
@@ -80,9 +78,35 @@ input,textarea{
 }
 textarea{min-height:120px}
 
-.total{font-size:22px;font-weight:900;margin-top:10px}
-.after{font-size:14px;color:var(--green);margin-top:4px}
-.suggest{font-size:13px;color:var(--green);margin-top:6px}
+/* PRICE ZONE */
+.price-box{
+  margin-top:16px;
+}
+.normal{
+  font-size:14px;
+  color:#94a3b8;
+  text-decoration:line-through;
+}
+.save{
+  font-size:14px;
+  color:var(--green);
+  margin-top:4px;
+}
+.total{
+  font-size:24px;
+  font-weight:900;
+  margin-top:6px;
+}
+.after{
+  font-size:14px;
+  color:var(--green);
+  margin-top:4px;
+}
+.suggest{
+  margin-top:6px;
+  font-size:13px;
+  color:var(--green);
+}
 
 /* BUY */
 .buy{
@@ -174,20 +198,24 @@ textarea{min-height:120px}
       <div class="hint">จำนวนคอมเมนต์: <b id="commentCount">0</b></div>
     </div>
 
-    <!-- QTY -->
     <label>จำนวน</label>
     <input type="number" id="qty">
 
-    <div class="total">รวม: <span id="total">0.00</span> บาท</div>
-    <div class="after">เครดิตหลังซื้อ: <span id="after">0.00</span> บาท</div>
-    <div class="suggest" id="suggest"></div>
+    <!-- PRICE -->
+    <div class="price-box">
+      <div class="normal" id="normalPrice" style="display:none"></div>
+      <div class="total">รวม: <span id="total">0.00</span> บาท</div>
+      <div class="save" id="savePrice"></div>
+      <div class="after">เครดิตหลังซื้อ: <span id="after">0.00</span> บาท</div>
+      <div class="suggest" id="suggest"></div>
+    </div>
 
   </div>
 </div>
 
 <button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
 
-<!-- CONDITION POPUP -->
+<!-- POPUP -->
 <div class="overlay" id="overlay">
   <div class="popup">
     <div class="close" onclick="closePopup()">✕</div>
@@ -218,10 +246,9 @@ if(!userId||!serviceId) location.href='services.html';
 
 let service=null, discounts=[], credit=0;
 
-/* WALLET (REAL CREDIT) */
+/* WALLET */
 fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
-.then(r=>r.json())
-.then(r=>{
+.then(r=>r.json()).then(r=>{
   const logs=r.logs||[];
   if(logs.length) credit=Number(logs.at(-1).credit_after);
   el('credit').textContent=credit.toFixed(2);
@@ -230,8 +257,7 @@ fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
 
 /* SERVICE */
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
-.then(r=>r.json())
-.then(r=>{
+.then(r=>r.json()).then(r=>{
   service=r.services.find(s=>s.service_id===serviceId);
   if(!service) return;
 
@@ -239,17 +265,16 @@ fetch(`${API}?action=getServices&api_key=${API_KEY}`)
   el('serviceDesc').textContent=service.short_desc||'';
   el('priceHint').textContent=`${service.price_per_100} บาท / 100 ${service.unit}`;
 
-  if(service.detail_group === 'comment'){
+  if(service.detail_group==='comment'){
     el('commentBox').style.display='block';
     el('qty').readOnly=true;
   }
 
   fetch(`${API}?action=getDiscounts&api_key=${API_KEY}&service_id=${serviceId}`)
-  .then(r=>r.json())
-  .then(d=>discounts=d.discounts||[]);
+  .then(r=>r.json()).then(d=>discounts=d.discounts||[]);
 });
 
-/* COMMENT → QTY */
+/* COMMENT */
 if(el('comments')){
   el('comments').addEventListener('input',()=>{
     const lines=el('comments').value.split('\n').filter(l=>l.trim());
@@ -258,46 +283,35 @@ if(el('comments')){
     calc();
   });
 }
+['qty','link'].forEach(id=>el(id).addEventListener('input',calc));
 
-/* INPUT */
-['qty','link'].forEach(id=>{
-  el(id).addEventListener('input',calc);
-});
-
-/* CALC PRICE */
 function calc(){
   const q=Number(el('qty').value||0);
-  if(!q||!service){reset();return;}
-  if(q < service.min_qty){reset();return;}
+  if(!q||!service||q<service.min_qty){reset();return;}
 
-  const base = q * service.price_per_100 / 100;
-  let total = base;
+  const normal = q * service.price_per_100 / 100;
 
-  const best = discounts
-    .filter(d=>q>=d.min_qty)
-    .sort((a,b)=>b.min_qty-a.min_qty)[0];
+  let total = normal;
+  const best = discounts.filter(d=>q>=d.min_qty).sort((a,b)=>b.min_qty-a.min_qty)[0];
 
   if(best){
-    if(best.price) total = q * best.price;
-    else if(best.discount_percent)
-      total = base * (100-best.discount_percent)/100;
+    if(best.price) total = q*best.price;
+    else if(best.discount_percent) total = normal*(100-best.discount_percent)/100;
   }
 
-  total = +total.toFixed(2);
-  el('total').textContent = total.toFixed(2);
-  el('after').textContent = (credit-total).toFixed(2);
+  total=+total.toFixed(2);
+  el('total').textContent=total.toFixed(2);
+  el('after').textContent=(credit-total).toFixed(2);
 
-  /* UPSALE */
-  const next = discounts
-    .filter(d=>d.min_qty>q)
-    .sort((a,b)=>a.min_qty-b.min_qty)[0];
+  el('normalPrice').style.display = total<normal ? 'block':'none';
+  el('normalPrice').textContent = `ราคาปกติ ${normal.toFixed(2)} บาท`;
+  el('savePrice').textContent =
+    total<normal ? `💸 ประหยัดไป ${(normal-total).toFixed(2)} บาท` : '';
 
-  if(next){
-    el('suggest').textContent =
-      `🔥 ซื้อเพิ่มอีก ${next.min_qty-q} จะได้ราคาถูกลงมากขึ้น`;
-  }else{
-    el('suggest').textContent = '';
-  }
+  const next = discounts.filter(d=>d.min_qty>q).sort((a,b)=>a.min_qty-b.min_qty)[0];
+  el('suggest').textContent = next
+    ? `🔥 เพิ่มอีก ${next.min_qty-q} จะได้ราคาต่อหน่วยถูกลง`
+    : '';
 
   el('buyBtn').disabled = total>credit || !el('link').value.trim();
 }
@@ -305,15 +319,15 @@ function calc(){
 function reset(){
   el('total').textContent='0.00';
   el('after').textContent=credit.toFixed(2);
+  el('normalPrice').style.display='none';
+  el('savePrice').textContent='';
   el('suggest').textContent='';
   el('buyBtn').disabled=true;
 }
 
-/* POPUP */
 el('buyBtn').onclick=()=>el('overlay').style.display='block';
 function closePopup(){el('overlay').style.display='none'}
 
-/* FINAL BUY */
 function finalBuy(){
   if(!el('accept').checked) return;
   fetch(`${API}?`+new URLSearchParams({
@@ -323,9 +337,7 @@ function finalBuy(){
     service_id:serviceId,
     qty:el('qty').value,
     link: el('link').value + '\n' + (el('comments')?.value||'')
-  }))
-  .then(r=>r.json())
-  .then(r=>{
+  })).then(r=>r.json()).then(r=>{
     if(r.success) location.href='orders.html';
   });
 }
