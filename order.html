@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>สั่งซื้อบริการ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 :root{
   --black:#0b0f1a;
@@ -11,6 +12,7 @@
   --purple:#8b5cf6;
   --pink:#ec4899;
   --green:#22c55e;
+  --red:#fb7185;
   --muted:#94a3b8;
 }
 *{box-sizing:border-box}
@@ -22,15 +24,25 @@ body{
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
+
+/* HEADER */
 .header{
   padding:12px 16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  position:sticky;
-  top:0;
+  position:sticky;top:0;
   background:rgba(2,6,23,.85);
-  backdrop-filter:blur(12px);
+  backdrop-filter:blur(14px);
+  z-index:10;
+}
+.back{
+  border:none;
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-weight:900;
 }
 .wallet{
   font-size:13px;
@@ -42,11 +54,9 @@ body{
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
-.container{
-  max-width:720px;
-  margin:auto;
-  padding:20px 18px 160px;
-}
+
+/* LAYOUT */
+.container{max-width:720px;margin:auto;padding:20px 18px 160px}
 .card{
   background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:24px;
@@ -54,7 +64,9 @@ body{
   margin-bottom:18px;
 }
 .title{font-size:22px;font-weight:900}
-.desc{font-size:13px;color:var(--muted)}
+.desc{font-size:13px;color:var(--muted);margin-top:6px}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+
 label{display:block;font-weight:900;margin:18px 0 6px}
 input,textarea{
   width:100%;
@@ -65,22 +77,15 @@ input,textarea{
   color:#fff;
   font-size:15px;
 }
-textarea{min-height:110px}
-.total{font-size:22px;font-weight:900;margin-top:12px}
+textarea{min-height:120px}
+
+.total{font-size:22px;font-weight:900;margin-top:10px}
 .after{font-size:14px;color:var(--green);margin-top:4px}
-.suggest{
-  margin-top:10px;
-  padding:12px;
-  border-radius:14px;
-  background:rgba(34,197,94,.12);
-  font-size:13px;
-  color:#86efac;
-  display:none;
-}
+.suggest{font-size:13px;color:var(--green);margin-top:6px}
+
+/* BUY */
 .buy{
-  position:fixed;
-  bottom:16px;
-  left:50%;
+  position:fixed;bottom:16px;left:50%;
   transform:translateX(-50%);
   width:calc(100% - 32px);
   max-width:480px;
@@ -93,49 +98,107 @@ textarea{min-height:110px}
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
 }
 .buy:disabled{opacity:.5}
+
+/* POPUP */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;z-index:50;
+}
+.popup{
+  position:fixed;
+  inset:auto 0 0 0;
+  background:linear-gradient(180deg,#111827,#020617);
+  border-radius:26px 26px 0 0;
+  padding:24px;
+}
+.popup h3{margin:0 0 10px}
+.close{
+  position:absolute;right:18px;top:18px;
+  font-size:20px;cursor:pointer;
+}
+.check{
+  display:flex;gap:10px;margin-top:14px;font-size:14px;
+}
+.confirm{
+  margin-top:16px;width:100%;
+  padding:14px;border-radius:999px;
+  border:none;font-weight:900;font-size:16px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;
+}
 </style>
 </head>
 
 <body>
+
 <header class="header">
-  <div class="title">SocialBoostTH</div>
+  <button class="back" onclick="history.back()">←</button>
   <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
 </header>
 
 <div class="container">
+
+  <!-- SERVICE INFO -->
   <div class="card">
     <div class="title" id="serviceName">กำลังโหลด…</div>
     <div class="desc" id="serviceDesc"></div>
-    <div class="desc" id="priceHint"></div>
+    <div class="hint" id="priceHint"></div>
   </div>
 
+  <!-- ORDER -->
   <div class="card">
     <label>ลิงก์ TikTok</label>
     <textarea id="link" placeholder="https://www.tiktok.com/@username"></textarea>
 
+    <label>คอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
+    <textarea id="comments" placeholder="พิมพ์คอมเมนท์ทีละบรรทัด"></textarea>
+    <div class="hint">จำนวนคอมเมนท์: <b id="commentCount">0</b></div>
+
     <label>จำนวน</label>
-    <input type="number" id="qty">
+    <input type="number" id="qty" readonly>
 
     <div class="total">รวม: <span id="total">0.00</span> บาท</div>
     <div class="after">เครดิตหลังซื้อ: <span id="after">0.00</span> บาท</div>
-
     <div class="suggest" id="suggest"></div>
   </div>
+
 </div>
 
 <button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
+
+<!-- POPUP -->
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <div class="close" onclick="closePopup()">✕</div>
+    <h3>เงื่อนไขการให้บริการ SocialBoostTH24HR</h3>
+    <p>
+      TikTok มีการอัปเดตระบบอย่างต่อเนื่อง อาจทำให้ยอดลดลงผิดปกติ<br><br>
+      ทางร้านรับประกันทุกออเดอร์ ภายใต้เงื่อนไขดังนี้<br>
+      1) ห้ามเปลี่ยนชื่อช่องระหว่างระยะประกัน<br>
+      2) หากสั่งออเดอร์ซ้ำ ประกันครอบคลุมเฉพาะออเดอร์ใหม่<br>
+      3) การเคลมยอดลด ติดต่อทาง LINE ร้านเท่านั้น
+    </p>
+    <div class="check">
+      <input type="checkbox" id="accept">
+      <label for="accept">เข้าใจและยอมรับเงื่อนไขทั้งหมด</label>
+    </div>
+    <button class="confirm" onclick="finalBuy()">ยืนยันสั่งซื้อ</button>
+  </div>
+</div>
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
+const el=id=>document.getElementById(id);
 const userId=localStorage.getItem('user_id');
 const serviceId=localStorage.getItem('service_id');
 if(!userId||!serviceId) location.href='services.html';
 
-const el=id=>document.getElementById(id);
 let service=null, discounts=[], credit=0;
 
+/* WALLET */
 fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
 .then(r=>r.json()).then(r=>{
   const l=r.logs||[];
@@ -144,81 +207,85 @@ fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
   el('after').textContent=credit.toFixed(2);
 });
 
+/* SERVICE */
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
 .then(r=>r.json()).then(r=>{
   service=r.services.find(s=>s.service_id===serviceId);
   if(!service) return;
   el('serviceName').textContent=service.display_name;
   el('serviceDesc').textContent=service.short_desc||'';
-  el('priceHint').textContent=`${service.price_per_100} บาท / 100 ${service.unit}`;
+  el('priceHint').textContent=
+    `${service.price_per_100} บาท / 100 ${service.unit}`;
 
   fetch(`${API}?action=getDiscounts&api_key=${API_KEY}&service_id=${serviceId}`)
   .then(r=>r.json()).then(d=>discounts=d.discounts||[]);
 });
 
-['qty','link'].forEach(id=>el(id).addEventListener('input',calc));
+/* COMMENT → QTY */
+el('comments').addEventListener('input',()=>{
+  const lines=el('comments').value.split('\n').filter(l=>l.trim());
+  el('qty').value=lines.length;
+  el('commentCount').textContent=lines.length;
+  calc();
+});
+el('link').addEventListener('input',calc);
 
+/* CALC */
 function calc(){
   const q=Number(el('qty').value||0);
-  if(!q||!service) return reset();
+  if(!q||!service){reset();return;}
+  if(q<service.min_qty){reset();return;}
 
-  let baseTotal=q*service.price_per_100/100;
-  let usedPrice=baseTotal;
+  let base=q*service.price_per_100/100;
+  let best=discounts.filter(d=>q>=d.min_qty).sort((a,b)=>b.min_qty-a.min_qty)[0];
+  let total=base;
 
-  const current=discounts.filter(d=>q>=d.min_qty&&q<=d.max_qty)
-     .sort((a,b)=>b.min_qty-a.min_qty)[0];
-
-  if(current){
-    if(current.price) usedPrice=q*current.price;
-    if(current.discount_percent) usedPrice*= (100-current.discount_percent)/100;
+  if(best){
+    if(best.price) total=q*best.price;
+    if(best.discount_percent) total=base*(100-best.discount_percent)/100;
   }
 
-  usedPrice=+usedPrice.toFixed(2);
-  el('total').textContent=usedPrice.toFixed(2);
-  el('after').textContent=(credit-usedPrice).toFixed(2);
-  el('buyBtn').disabled=usedPrice>credit||!el('link').value.trim();
+  total=+total.toFixed(2);
+  el('total').textContent=total.toFixed(2);
+  el('after').textContent=(credit-total).toFixed(2);
 
-  // ===== AI UPSALE =====
-  const higher=discounts
-    .filter(d=>d.min_qty>q)
-    .sort((a,b)=>a.min_qty-b.min_qty)[0];
-
-  if(higher){
-    const target=higher.min_qty;
-    let targetTotal=target*service.price_per_100/100;
-    if(higher.price) targetTotal=target*higher.price;
-    if(higher.discount_percent) targetTotal*= (100-higher.discount_percent)/100;
-
-    const save=(baseTotal-targetTotal).toFixed(2);
-    if(save>0){
-      el('suggest').style.display='block';
-      el('suggest').innerHTML=
-        `🔥 <b>ซื้อเพิ่มอีก ${target-q}</b> ${service.unit}<br>
-        ราคาต่อหน่วยถูกลงทันที<br>
-        👉 ประหยัดเพิ่มประมาณ <b>${save} บาท</b>`;
-    }
+  /* UPSALE */
+  const next=discounts.filter(d=>d.min_qty>q).sort((a,b)=>a.min_qty-b.min_qty)[0];
+  if(next){
+    const save = base - (next.price? next.min_qty*next.price : base*(100-next.discount_percent)/100);
+    el('suggest').textContent=
+      `💡 ซื้อเพิ่มอีก ${next.min_qty-q} คอมเมนท์ จะประหยัดประมาณ ${Math.abs(save).toFixed(2)} บาท`;
+  }else{
+    el('suggest').textContent='';
   }
+
+  el('buyBtn').disabled = total>credit || !el('link').value.trim();
 }
-
 function reset(){
   el('total').textContent='0.00';
   el('after').textContent=credit.toFixed(2);
+  el('suggest').textContent='';
   el('buyBtn').disabled=true;
-  el('suggest').style.display='none';
 }
 
-el('buyBtn').onclick=()=>{
+/* POPUP */
+el('buyBtn').onclick=()=>el('overlay').style.display='block';
+function closePopup(){el('overlay').style.display='none'}
+
+function finalBuy(){
+  if(!el('accept').checked) return;
   fetch(`${API}?`+new URLSearchParams({
     action:'createOrder',
     api_key:API_KEY,
     user_id:userId,
     service_id:serviceId,
     qty:el('qty').value,
-    link:el('link').value
+    link: el('link').value + '\n' + el('comments').value
   })).then(r=>r.json()).then(r=>{
     if(r.success) location.href='orders.html';
   });
-};
+}
 </script>
+
 </body>
 </html>
