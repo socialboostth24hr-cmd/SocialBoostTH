@@ -7,84 +7,77 @@
 
 <style>
 :root{
-  --black:#0b0f1a;
+  --bg:#050914;
+  --card:#0b1022;
+  --line:#1f2a44;
   --blue:#38bdf8;
   --purple:#8b5cf6;
   --pink:#ec4899;
+  --green:#22c55e;
   --danger:#fb7185;
   --muted:#94a3b8;
-  --green:#22c55e;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui,-apple-system;
-  background:
-    radial-gradient(900px 420px at top,#1e293b,transparent),
-    linear-gradient(180deg,var(--black),#060913);
+  background:linear-gradient(180deg,#020617,var(--bg));
   color:#f1f5f9;
 }
-
-/* HEADER */
-.header{
-  padding:12px 16px;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
+header{
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
   align-items:center;
-  background:rgba(2,6,23,.8);
+  background:#020617cc;
   backdrop-filter:blur(10px);
 }
 .back{
-  border:none;padding:6px 14px;border-radius:999px;
-  background:rgba(255,255,255,.08);color:#fff;font-weight:900
-}
-.center{
-  text-align:center;font-weight:900;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent
+  border:none;border-radius:999px;
+  padding:6px 12px;
+  background:#ffffff14;color:#fff;
+  font-weight:900;
 }
 .wallet{
-  font-size:13px;padding:6px 14px;border-radius:999px;font-weight:900;
+  font-size:13px;
+  padding:6px 14px;
+  border-radius:999px;
+  font-weight:900;
   background:linear-gradient(#020617,#020617) padding-box,
              linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
-
-/* LAYOUT */
-.container{max-width:720px;margin:auto;padding:20px 18px 180px}
+.container{max-width:720px;margin:auto;padding:20px 16px 160px}
 .card{
-  background:linear-gradient(180deg,#111827,#0b1020);
-  border-radius:26px;
-  padding:22px;
+  background:linear-gradient(180deg,#0b1022,#070b18);
+  border-radius:22px;
+  padding:20px;
   margin-bottom:18px;
 }
-.title{font-size:22px;font-weight:900}
+h1{font-size:22px;font-weight:900;margin:0}
 .desc{font-size:13px;color:var(--muted);margin-top:6px}
-.price-info{
-  margin-top:12px;
-  font-size:14px;
-  font-weight:900;
-  color:#c7d2fe;
-}
 
-label{display:block;font-weight:900;margin:16px 0 6px}
+label{display:block;margin-top:16px;font-weight:900}
 input,textarea{
-  width:100%;padding:14px;border-radius:16px;
-  border:none;background:#020617;color:#fff;font-size:15px
-}
-textarea{min-height:120px}
-.hint{font-size:13px;color:var(--muted);margin-top:6px}
-
-.summary{
+  width:100%;
   background:#020617;
+  border:none;
   border-radius:16px;
   padding:14px;
+  color:#fff;
+  font-size:15px;
+}
+textarea{min-height:120px}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+
+.summary{
+  border-top:1px dashed var(--line);
   margin-top:16px;
+  padding-top:14px;
   font-size:14px;
 }
-.summary b{font-size:18px}
-
-.error{margin-top:10px;font-weight:900;color:var(--danger)}
+.summary b{font-size:16px}
+.save{color:var(--green);margin-top:6px}
 
 .buy{
   position:fixed;bottom:16px;left:50%;
@@ -95,44 +88,52 @@ textarea{min-height:120px}
   border-radius:999px;
   border:none;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;font-size:18px;font-weight:900;
+  color:#fff;
+  font-size:18px;
+  font-weight:900;
 }
-.buy:disabled{opacity:.5}
+.buy:disabled{opacity:.4}
 
-/* MODAL */
-.modal{
+/* POPUP */
+.overlay{
   position:fixed;inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;align-items:center;justify-content:center;
-  z-index:100;
+  background:#000a;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99;
 }
-.modal-card{
-  background:#020617;
-  border-radius:20px;
+.popup{
+  background:#0b1022;
+  border-radius:22px;
   padding:22px;
-  width:90%;max-width:420px;
+  max-width:480px;
+  width:90%;
 }
-.modal h3{margin:0 0 10px}
-.modal p{font-size:13px;color:var(--muted)}
-.modal label{margin-top:14px;font-size:14px}
-.modal button{margin-top:16px}
+.popup h3{margin:0 0 10px}
+.popup p{font-size:14px;color:var(--muted)}
+.popup label{display:flex;gap:10px;margin-top:14px;font-weight:900}
+.popup input{width:auto}
+.close{
+  position:absolute;top:14px;right:18px;
+  color:#fff;font-size:22px;
+  cursor:pointer;
+}
 </style>
 </head>
 
 <body>
 
-<header class="header">
+<header>
   <button class="back" onclick="history.back()">←</button>
-  <div class="center">SocialBoostTH</div>
-  <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
+  <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
 </header>
 
 <div class="container">
 
   <div class="card">
-    <div class="title" id="serviceName">กำลังโหลด…</div>
-    <div class="desc" id="serviceDesc"></div>
-    <div class="price-info" id="priceInfo"></div>
+    <h1 id="name">กำลังโหลด…</h1>
+    <div class="desc" id="priceInfo"></div>
   </div>
 
   <div class="card">
@@ -140,142 +141,124 @@ textarea{min-height:120px}
     <textarea id="link" placeholder="https://www.tiktok.com/@username"></textarea>
 
     <div id="commentBox" style="display:none">
-      <label>คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
+      <label>คอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
       <textarea id="comments"></textarea>
-      <div class="hint">จำนวนคอมเมนต์: <b id="commentCount">0</b></div>
+      <div class="hint">จำนวนคอมเมนท์: <b id="lineCount">0</b></div>
     </div>
 
-    <div id="qtyBox">
-      <label>จำนวน</label>
-      <input type="number" id="qty">
-    </div>
+    <label>จำนวน</label>
+    <input id="qty" type="number">
 
     <div class="summary">
-      <div>ยอดชำระ: <b id="total">0.00</b> บาท</div>
-      <div id="afterCredit"></div>
-      <div id="discountHint" style="color:var(--green);margin-top:6px"></div>
+      รวม: <b id="total">0.00</b> บาท<br>
+      เครดิตหลังซื้อ: <b id="remain">0.00</b> บาท
+      <div class="save" id="saveHint"></div>
     </div>
-
-    <div class="error" id="error"></div>
   </div>
+
 </div>
 
 <button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
 
-<!-- CONDITIONS MODAL -->
-<div class="modal" id="modal">
-  <div class="modal-card">
+<!-- POPUP -->
+<div class="overlay" id="overlay">
+  <div class="popup">
+    <span class="close" onclick="togglePopup(false)">×</span>
     <h3>เงื่อนไขการให้บริการ SocialBoostTH24HR</h3>
     <p>
-      ทางร้านขอแจ้งให้ทราบว่า TikTok มีการอัปเดตระบบอย่างต่อเนื่อง
-      อาจทำให้ยอดลดลงแบบผิดปกติ ทางร้านรับประกันทุกออเดอร์
+    เนื่องจาก TikTok มีการอัปเดตระบบอย่างต่อเนื่อง อาจทำให้ยอดลดลงผิดปกติ  
+    ทางร้านรับประกันทุกออเดอร์ ภายใต้เงื่อนไขดังต่อไปนี้:
+    <br><br>
+    1) ห้ามเปลี่ยนชื่อช่องหรือ URL ระหว่างประกัน  
+    <br>2) หากสั่งซ้ำ ประกันครอบคลุมเฉพาะออเดอร์ใหม่  
+    <br>3) การเคลมเติมยอด ต้องติดต่อ LINE ร้านเท่านั้น
     </p>
-    <p>
-      1) ห้ามเปลี่ยนชื่อช่องระหว่างประกัน<br>
-      2) สั่งซ้ำ ประกันครอบคลุมเฉพาะออเดอร์ใหม่<br>
-      3) การเคลมติดต่อทาง LINE ร้านเท่านั้น
-    </p>
-
     <label>
       <input type="checkbox" id="accept">
       ข้าพเจ้าเข้าใจและยอมรับเงื่อนไขทั้งหมด
     </label>
-
-    <button class="buy" id="confirmBtn" disabled>ยืนยันสั่งซื้อ</button>
+    <button class="buy" id="confirmBuy" disabled>ยืนยันสั่งซื้อ</button>
   </div>
 </div>
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
-const API_KEY="SBTH-SECURE-2026";
-
+const KEY="SBTH-SECURE-2026";
 const userId=localStorage.getItem('user_id');
 const serviceId=localStorage.getItem('service_id');
-if(!userId||!serviceId) location.href='services.html';
 
-let service=null, discounts=[], credit=0;
+let service, discounts=[], credit=0;
 
-const el={
-  credit:creditSpan,
-};
-
-fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+/* CREDIT */
+fetch(`${API}?action=getWallet&api_key=${KEY}&user_id=${userId}`)
 .then(r=>r.json())
 .then(r=>{
-  credit=Number(r.credit||0);
-  creditSpan.textContent=credit.toFixed(2);
+  if(r.logs?.length) credit=+r.logs.at(-1).credit_after||0;
+  document.getElementById('credit').textContent=credit.toFixed(2);
 });
 
-fetch(`${API}?action=getServices&api_key=${API_KEY}`)
+/* LOAD SERVICE */
+fetch(`${API}?action=getServices&api_key=${KEY}`)
 .then(r=>r.json())
 .then(r=>{
   service=r.services.find(s=>s.service_id===serviceId);
-  serviceName.textContent=service.display_name;
-  serviceDesc.textContent=service.short_desc||'';
-  priceInfo.textContent=`ราคาเริ่มต้น ${service.price_per_100} บาท / 100 ${service.unit}`;
+  document.getElementById('name').textContent=service.display_name;
+  document.getElementById('priceInfo').textContent=
+    `${service.price_per_100} บาท / 100 ${service.unit}`;
+  document.getElementById('qty').value=service.min_qty;
+  if(service.detail_group==='comment')
+    document.getElementById('commentBox').style.display='block';
 
-  if(service.detail_group==='comment'){
-    commentBox.style.display='block';
-    qtyBox.style.display='none';
-  }
-
-  fetch(`${API}?action=getDiscounts&api_key=${API_KEY}&service_id=${serviceId}`)
-  .then(r=>r.json()).then(d=>discounts=d.discounts||[]);
+  fetch(`${API}?action=getDiscounts&api_key=${KEY}&service_id=${serviceId}`)
+    .then(r=>r.json()).then(d=>discounts=d.discounts||[]);
 });
 
+/* COMMENT COUNT */
 comments?.addEventListener('input',()=>{
-  const n=comments.value.split('\n').filter(l=>l.trim()).length;
-  qty.value=n;
-  commentCount.textContent=n;
+  const c=comments.value.split('\n').filter(x=>x.trim());
+  qty.value=c.length;
+  lineCount.textContent=c.length;
   calc();
 });
-qty?.addEventListener('input',calc);
+
+qty.addEventListener('input',calc);
 link.addEventListener('input',calc);
 
 function calc(){
-  error.textContent='';
-  const q=Number(qty.value||0);
-  if(!q){buyBtn.disabled=true;return}
-
+  const q=+qty.value||0;
+  if(q<service.min_qty) return;
   let total=q*service.price_per_100/100;
-  let best=null;
-  discounts.forEach(d=>{
-    if(q>=d.min_qty&&q<=d.max_qty) best=d;
-  });
+  let best=discounts.filter(d=>q>=d.min_qty&&q<=d.max_qty)
+                     .sort((a,b)=>b.min_qty-a.min_qty)[0];
   if(best){
+    if(best.price) total=q*best.price;
     if(best.discount_percent)
-      total=total*(100-best.discount_percent)/100;
-  }
-
+      total*= (100-best.discount_percent)/100;
+    saveHint.textContent=
+      `ซื้อเพิ่มอีก ${best.max_qty-q} จะประหยัดเพิ่ม`;
+  }else saveHint.textContent='';
   total=+total.toFixed(2);
-  totalSpan.textContent=total.toFixed(2);
-  afterCredit.textContent=`เครดิตคงเหลือหลังซื้อ ${(credit-total).toFixed(2)} บาท`;
-
-  if(best){
-    discountHint.textContent=`ซื้อเพิ่มอีก ${best.max_qty-q} จะได้ราคาถูกลง`;
-  }
-
-  buyBtn.disabled=total>credit||!link.value.trim();
+  totalEl.textContent=total.toFixed(2);
+  remain.textContent=(credit-total).toFixed(2);
+  buyBtn.disabled=!link.value.trim()||total>credit;
 }
 
-buyBtn.onclick=()=>modal.style.display='flex';
-accept.onchange=()=>confirmBtn.disabled=!accept.checked;
+buyBtn.onclick=()=>togglePopup(true);
+function togglePopup(s){overlay.style.display=s?'flex':'none'}
 
-confirmBtn.onclick=()=>{
+accept.onchange=()=>confirmBuy.disabled=!accept.checked;
+
+confirmBuy.onclick=()=>{
   fetch(`${API}?`+new URLSearchParams({
     action:'createOrder',
-    api_key:API_KEY,
+    api_key:KEY,
     user_id:userId,
     service_id:serviceId,
     qty:qty.value,
-    link:service.detail_group==='comment'
-      ? link.value+"\n"+comments.value
-      : link.value
-  }))
-  .then(r=>r.json())
-  .then(res=>res.success?location.href='orders.html':error.textContent=res.error);
+    link:link.value+(comments?'\n'+comments.value:'')
+  })).then(r=>r.json())
+    .then(r=>r.success?location.href='orders.html':alert(r.error));
 };
 </script>
-
 </body>
 </html>
