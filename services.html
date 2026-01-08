@@ -11,6 +11,7 @@
   --blue:#38bdf8;
   --purple:#8b5cf6;
   --gold:#fde047;
+  --hot:#fb7185;
 }
 *{box-sizing:border-box}
 body{
@@ -22,7 +23,7 @@ body{
   color:#f1f5f9;
 }
 
-/* HEADER (เดิม) */
+/* HEADER */
 .header{
   padding:12px 16px;
   display:grid;
@@ -46,9 +47,8 @@ body{
 .wallet{
   font-size:13px;padding:6px 14px;border-radius:999px;
   font-weight:900;
-  background:
-    linear-gradient(#020617,#020617) padding-box,
-    linear-gradient(135deg,var(--blue),var(--purple)) border-box;
+  background:linear-gradient(#020617,#020617) padding-box,
+             linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
 
@@ -88,31 +88,35 @@ body{
   border-radius:20px;
   padding:18px;
   margin-bottom:18px;
-  transition:.35s ease;
 }
 .service-name{font-size:18px;font-weight:900}
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
-.trust{margin-top:6px;font-size:12px;color:#86efac;font-weight:900}
+
+/* TIME */
+.start-time{
+  margin-top:6px;
+  font-size:12px;
+  color:#86efac;
+  font-weight:900;
+}
 
 /* SOCIAL PROOF */
-.viewer{font-size:12px;color:#fde047;font-weight:900}
-.sold{font-size:12px;color:#38bdf8;font-weight:900;margin-top:2px}
-
 .proof-row{
   display:flex;
   justify-content:space-between;
-  align-items:center;
+  gap:10px;
   margin-top:6px;
-  gap:8px;
   flex-wrap:wrap;
 }
+.viewer{font-size:12px;color:#fde047;font-weight:900}
+.sold{font-size:12px;color:#38bdf8;font-weight:900}
 
 /* BADGE */
 .badge{
   position:absolute;
   top:12px;right:12px;
-  padding:4px 10px;
+  padding:5px 12px;
   border-radius:999px;
   font-size:11px;
   font-weight:900;
@@ -121,15 +125,15 @@ body{
 .badge.gold{
   background:linear-gradient(135deg,#fde047,#f59e0b);
   color:#000;
-  box-shadow:0 0 20px rgba(253,224,71,.6);
+  box-shadow:0 0 22px rgba(253,224,71,.65);
 }
 .badge.hot{
-  background:rgba(239,68,68,.15);
-  color:#f87171;
-  border:1px solid rgba(239,68,68,.4);
+  background:linear-gradient(135deg,#fb7185,#ef4444);
+  color:#fff;
+  box-shadow:0 0 16px rgba(239,68,68,.55);
 }
 
-/* PRICE + BTN */
+/* PRICE */
 .bottom{
   display:flex;justify-content:space-between;
   align-items:center;margin-top:12px;
@@ -180,20 +184,20 @@ const services=document.getElementById('services');
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* AUTH (เดิม) */
+/* AUTH */
 const userId=localStorage.getItem('user_id');
 const username=localStorage.getItem('username');
 if(!userId||!username){localStorage.clear();location.replace('login.html')}
 document.getElementById('username').textContent=username;
 
-/* MENU (เดิม) */
+/* MENU */
 const sideMenu=document.getElementById('sideMenu');
 const overlay=document.getElementById('menuOverlay');
 function openMenu(){sideMenu.classList.add('open');overlay.style.display='block'}
 function closeMenu(){sideMenu.classList.remove('open');overlay.style.display='none'}
 function logout(){localStorage.clear();location.replace('login.html')}
 
-/* CREDIT (เดิม) */
+/* CREDIT */
 const creditEl=document.getElementById('credit');
 fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
 .then(r=>r.json()).then(res=>{
@@ -203,44 +207,37 @@ fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
   }
 });
 
-/* ===== SOCIAL PROOF LOGIC ===== */
+/* HELPERS */
 const today=new Date().toISOString().slice(0,10);
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
-function rand(min,max){return Math.floor(Math.random()*(max-min+1))+min}
-
-function viewerBase(id){
+/* SOCIAL PROOF BASE */
+const viewerBase=id=>{
   const k=`viewer_${id}_${today}`;
-  if(!localStorage.getItem(k)){
-    localStorage.setItem(k,rand(15,366));
-  }
+  if(!localStorage.getItem(k)) localStorage.setItem(k,rand(20,300));
   return Number(localStorage.getItem(k));
-}
-
-function soldToday(id){
+};
+const soldToday=id=>{
   const k=`sold_${id}_${today}`;
-  if(!localStorage.getItem(k)){
-    localStorage.setItem(k,rand(1,1000));
-  }
+  if(!localStorage.getItem(k)) localStorage.setItem(k,rand(1,1000));
   return Number(localStorage.getItem(k));
-}
+};
 
-/* BADGE DAILY */
-function getDailyTop(all){
+/* BADGE LOGIC */
+const getTop1=all=>{
   const k=`top1_${today}`;
-  if(!localStorage.getItem(k)){
+  if(!localStorage.getItem(k))
     localStorage.setItem(k,all[rand(0,all.length-1)].service_id);
-  }
   return localStorage.getItem(k);
-}
-
-function getTop5(all){
+};
+const getTop5=all=>{
   const k=`top5_${today}`;
   if(!localStorage.getItem(k)){
-    const shuffled=[...all].sort(()=>.5-Math.random());
-    localStorage.setItem(k,JSON.stringify(shuffled.slice(0,rand(2,3)).map(s=>s.service_id)));
+    const pick=[...all].sort(()=>.5-Math.random()).slice(0,rand(2,3));
+    localStorage.setItem(k,JSON.stringify(pick.map(s=>s.service_id)));
   }
   return JSON.parse(localStorage.getItem(k));
-}
+};
 
 /* LOAD SERVICES */
 let allServices=[];
@@ -255,7 +252,7 @@ function loadServices(){
 
 function renderServices(){
   services.innerHTML='';
-  const top1=getDailyTop(allServices);
+  const top1=getTop1(allServices);
   const top5=getTop5(allServices);
 
   allServices.forEach(s=>{
@@ -263,11 +260,10 @@ function renderServices(){
     const sold=soldToday(s.service_id);
 
     let badge='';
-    if(s.service_id===top1){
+    if(s.service_id===top1)
       badge=`<div class="badge gold">🏆 อันดับยอดนิยม #1 วันนี้</div>`;
-    }else if(top5.includes(s.service_id)){
+    else if(top5.includes(s.service_id))
       badge=`<div class="badge hot">🔥 ติด Top 5 ขายดี</div>`;
-    }
 
     services.insertAdjacentHTML('beforeend',`
       <div class="service" data-view="${v}">
@@ -275,7 +271,8 @@ function renderServices(){
         <div class="service-name">${s.display_name}</div>
         <div class="service-desc">${s.short_desc||''}</div>
         <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
-        <div class="trust">🔥 บริการกำลังได้รับความสนใจ</div>
+
+        <div class="start-time">⏱ เริ่ม 1–3 ชม. โดยประมาณ</div>
 
         <div class="proof-row">
           <div class="viewer">👀 ดูอยู่ ${v}</div>
@@ -295,12 +292,11 @@ function renderServices(){
 setInterval(()=>{
   document.querySelectorAll('.service').forEach(el=>{
     let v=Number(el.dataset.view);
-    let delta=rand(1,20)*(Math.random()<.5?-1:1);
-    v=Math.max(15,Math.min(366,v+delta));
+    v=Math.max(15,Math.min(366,v+rand(-20,20)));
     el.dataset.view=v;
     el.querySelector('.viewer').textContent=`👀 ดูอยู่ ${v}`;
   });
-},8000+Math.random()*8000);
+},6000+Math.random()*9000);
 
 function selectService(id){
   localStorage.setItem('service_id',id);
