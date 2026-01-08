@@ -29,32 +29,30 @@ body{
 
 /* HEADER */
 .header{
-  position:sticky;top:0;z-index:50;
-  background:rgba(2,6,23,.75);
-  backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:20;
+  background:rgba(2,6,23,.8);
+  backdrop-filter:blur(14px);
   padding:12px 16px;
   display:grid;
   grid-template-columns:auto 1fr auto;
   align-items:center;
-  gap:12px;
 }
 .back-btn{
   border:none;
   padding:6px 14px;
   border-radius:999px;
   background:rgba(255,255,255,.08);
-  color:#e5e7eb;
+  color:#fff;
   font-weight:900;
-  cursor:pointer;
 }
 .center{
   text-align:center;
   font-weight:900;
+  font-size:17px;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-.logo{height:32px}
 
 /* CONTAINER */
 .container{
@@ -62,11 +60,11 @@ body{
   margin:auto;
   padding:20px 18px 120px;
 }
-
 .update{
   font-size:12px;
   color:var(--muted);
-  margin-bottom:12px;
+  margin-bottom:14px;
+  text-align:center;
 }
 
 /* ORDER CARD */
@@ -75,28 +73,59 @@ body{
   border-radius:26px;
   padding:20px;
   margin-bottom:18px;
-  box-shadow:0 25px 70px rgba(0,0,0,.6);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
 }
 
-.row{
+/* TOP */
+.order-top{
   display:flex;
   justify-content:space-between;
-  font-size:14px;
-  margin-top:8px;
+  align-items:center;
 }
-.row:first-child{font-weight:900}
+.order-id{
+  font-weight:900;
+  font-size:15px;
+}
+.price{
+  font-weight:900;
+  font-size:18px;
+  color:var(--purple);
+}
 
-.amount{font-weight:900;color:var(--purple)}
+/* INFO */
+.info{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px 14px;
+  font-size:13px;
+}
+.info span{color:var(--muted)}
+
+/* STATUS */
+.status{
+  margin-top:14px;
+  display:inline-block;
+  padding:6px 16px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+}
+.pending{background:rgba(245,158,11,.15);color:var(--warning)}
+.processing{background:rgba(56,189,248,.15);color:var(--blue)}
+.success{background:rgba(34,197,94,.18);color:var(--success)}
+.cancel{background:rgba(239,68,68,.18);color:var(--danger)}
 
 /* LINK BOX */
 .link-box{
-  margin-top:10px;
+  margin-top:12px;
   background:#020617;
   border-radius:14px;
-  padding:10px;
+  padding:10px 12px;
   display:flex;
+  gap:10px;
   align-items:center;
-  gap:8px;
 }
 .link-text{
   flex:1;
@@ -106,46 +135,37 @@ body{
 }
 .copy-btn{
   border:none;
-  padding:6px 10px;
+  padding:6px 12px;
   border-radius:999px;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;
-  font-weight:900;
   font-size:12px;
+  font-weight:900;
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
   cursor:pointer;
 }
 
-/* STATUS */
-.status{
-  margin-top:12px;
-  display:inline-block;
-  padding:6px 16px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-}
-.status.pending{background:rgba(245,158,11,.15);color:var(--warning)}
-.status.processing{background:rgba(56,189,248,.15);color:var(--blue)}
-.status.success{background:rgba(34,197,94,.18);color:var(--success)}
-.status.cancel{background:rgba(239,68,68,.18);color:var(--danger)}
-
-/* ACTION */
+/* ACTIONS */
 .actions{
   margin-top:14px;
   display:flex;
-  justify-content:flex-end;
+  gap:10px;
+  flex-wrap:wrap;
 }
 .line-btn{
   padding:8px 16px;
   border-radius:999px;
   background:#22c55e;
-  color:#062e16;
+  color:#052e16;
   font-weight:900;
   font-size:13px;
   text-decoration:none;
 }
 
-.empty,.error{text-align:center;padding:40px;font-weight:900}
+.empty,.error{
+  text-align:center;
+  padding:40px;
+  font-weight:900;
+}
 .empty{color:var(--muted)}
 .error{color:var(--danger)}
 </style>
@@ -156,7 +176,7 @@ body{
 <header class="header">
   <button class="back-btn" onclick="history.back()">←</button>
   <div class="center">คำสั่งซื้อของฉัน</div>
-  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+  <div></div>
 </header>
 
 <div class="container">
@@ -167,7 +187,7 @@ body{
 <script>
 const API="https://script.google.com/macros/s/AKfycbxnG0FDeXxrWOFIhPCtREMcUKq5-uBCqi_BagqlD6OPWDXBnQn1Dt-8BKMaOv4ZstnQSg/exec";
 const API_KEY="SBTH-SECURE-2026";
-const LINE_URL="https://line.me/R/ti/p/@YOUR_LINE_ID"; // 🔔 เปลี่ยนเป็นไลน์ร้าน
+const LINE_URL="https://line.me/R/ti/p/~geg4960w"; // ✅ Line : geg4960w
 
 const userId=localStorage.getItem('user_id');
 if(!userId) location.href='login.html';
@@ -175,15 +195,17 @@ if(!userId) location.href='login.html';
 const box=document.getElementById('orders');
 const updateText=document.getElementById('updateText');
 
-/* STATUS */
 function statusText(s){
   if(s==='processing')return'🚀 กำลังดำเนินการ';
   if(s==='success')return'✅ สำเร็จ';
   if(s==='cancel')return'❌ ยกเลิก';
   return'⏳ รอดำเนินการ';
 }
-function statusClass(s){
-  return s||'pending';
+
+function copyText(txt,msg){
+  if(!txt) return;
+  navigator.clipboard.writeText(txt);
+  alert(msg);
 }
 
 async function loadOrders(){
@@ -191,9 +213,7 @@ async function loadOrders(){
   box.innerHTML='';
 
   try{
-    const res=await fetch(
-      `${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`
-    );
+    const res=await fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`);
     const data=await res.json();
     const list=data.orders||[];
 
@@ -206,26 +226,36 @@ async function loadOrders(){
     list.reverse().forEach(o=>{
       box.insertAdjacentHTML('beforeend',`
         <div class="order">
-          <div class="row">
-            <div><b>${o.order_id}</b></div>
-            <div class="amount">${Number(o.final_total||0).toFixed(2)} บาท</div>
+          <div class="order-top">
+            <div class="order-id">#${o.order_id}</div>
+            <div class="price">${Number(o.final_total||0).toFixed(2)} บาท</div>
           </div>
 
-          <div class="row"><div>จำนวน</div><div>${o.qty}</div></div>
-          <div class="row"><div>วันที่</div><div>${new Date(o.datetime).toLocaleString()}</div></div>
-
-          <div class="link-box">
-            <div class="link-text">${o.link||'-'}</div>
-            <button class="copy-btn" onclick="copyLink('${o.link||''}')">คัดลอก</button>
+          <div class="info">
+            <div><span>จำนวน:</span> ${o.qty}</div>
+            <div><span>วันที่:</span> ${new Date(o.datetime).toLocaleString()}</div>
           </div>
 
-          <div class="status ${statusClass(o.status)}">
+          <div class="status ${o.status||'pending'}">
             ${statusText(o.status)}
           </div>
 
+          <div class="link-box">
+            <div class="link-text">${o.link || '-'}</div>
+            <button class="copy-btn"
+              onclick="copyText('${o.link||''}','คัดลอกลิงก์เรียบร้อยแล้ว')">
+              คัดลอกลิงก์
+            </button>
+          </div>
+
           <div class="actions">
+            <button class="copy-btn"
+              onclick="copyText('${o.order_id}','คัดลอกเลขคำสั่งซื้อแล้ว')">
+              📋 คัดลอกเลขคำสั่ง
+            </button>
+
             <a class="line-btn" href="${LINE_URL}" target="_blank">
-              💬 เติมยอด / ติดต่อแอดมิน
+              💬 ติดต่อแอดมิน (LINE)
             </a>
           </div>
         </div>
@@ -238,16 +268,10 @@ async function loadOrders(){
   }
 }
 
-function copyLink(txt){
-  if(!txt) return;
-  navigator.clipboard.writeText(txt);
-  alert('คัดลอกลิงก์เรียบร้อยแล้ว');
-}
-
-/* โหลดครั้งแรก */
+/* INIT */
 loadOrders();
 
-/* โหลดใหม่เมื่อกลับมาหน้านี้ (ไม่ถี่ ไม่หนัก) */
+/* REFRESH WHEN BACK */
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){
     loadOrders();
