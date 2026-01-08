@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* ===== STYLE เดิมทั้งหมด (ไม่แตะ) ===== */
 :root{
   --black:#0b0f1a;
   --blue:#38bdf8;
@@ -21,30 +20,112 @@ body{
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
-.header{padding:12px 16px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;background:rgba(2,6,23,.85);backdrop-filter:blur(14px);position:sticky;top:0;z-index:50}
-.center{font-weight:900;font-size:17px;background:linear-gradient(90deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.menu-btn{border:none;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-weight:900;cursor:pointer}
-.wallet{font-size:13px;padding:6px 14px;border-radius:999px;font-weight:900;background:linear-gradient(#020617,#020617) padding-box,linear-gradient(135deg,var(--blue),var(--purple)) border-box;border:1px solid transparent}
-.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:90}
-.side-menu{position:fixed;left:-260px;top:0;width:260px;height:100%;background:#020617;padding:22px 18px;z-index:100;transition:.3s}
+
+/* HEADER */
+.header{
+  padding:12px 16px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  background:rgba(2,6,23,.85);
+  backdrop-filter:blur(14px);
+  position:sticky;top:0;z-index:50;
+}
+.center{
+  font-weight:900;font-size:17px;
+  background:linear-gradient(90deg,var(--blue),var(--purple));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.menu-btn{
+  border:none;padding:6px 14px;border-radius:999px;
+  background:rgba(255,255,255,.08);
+  color:#fff;font-weight:900;cursor:pointer
+}
+.wallet{
+  font-size:13px;padding:6px 14px;border-radius:999px;
+  font-weight:900;
+  background:linear-gradient(#020617,#020617) padding-box,
+             linear-gradient(135deg,var(--blue),var(--purple)) border-box;
+  border:1px solid transparent;
+}
+
+/* SIDE MENU */
+.menu-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;z-index:90;
+}
+.side-menu{
+  position:fixed;left:-260px;top:0;
+  width:260px;height:100%;
+  background:#020617;
+  padding:22px 18px;
+  z-index:100;
+  transition:.3s;
+}
 .side-menu.open{left:0}
 .side-menu .user{font-weight:900;margin-bottom:14px}
-.side-menu a{display:block;padding:12px 0;color:#e5e7eb;text-decoration:none;font-weight:900;border-bottom:1px solid rgba(255,255,255,.08)}
+.side-menu a{
+  display:block;padding:12px 0;
+  color:#e5e7eb;text-decoration:none;
+  font-weight:900;border-bottom:1px solid rgba(255,255,255,.08)
+}
 .side-menu a.logout{color:#fb7185}
+
+/* LAYOUT */
 .container{max-width:720px;margin:auto;padding:26px 18px 140px}
 .title{font-size:28px;font-weight:900}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:14px}
-.search input{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(148,163,184,.2);background:#020617;color:#fff}
-.service{background:#020617;border:1px solid rgba(148,163,184,.14);border-radius:20px;padding:18px;margin-bottom:18px}
+.search input{
+  width:100%;padding:14px;border-radius:14px;
+  border:1px solid rgba(148,163,184,.2);
+  background:#020617;color:#fff;
+}
+
+/* SERVICE CARD */
+.service{
+  background:#020617;
+  border:1px solid rgba(148,163,184,.14);
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:18px;
+  transition:.45s ease;
+}
 .service-name{font-size:18px;font-weight:900}
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
 .trust{margin-top:6px;font-size:12px;color:#86efac;font-weight:900}
 .urgency{margin-top:6px;font-size:12px;color:#fde047;font-weight:900}
-.bottom{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+
+.bottom{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-top:12px
+}
 .price{font-size:20px;font-weight:900;color:#e0e7ff}
-.btn{border:none;padding:12px 22px;border-radius:999px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;font-weight:900;cursor:pointer;animation:pulse 2.4s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(139,92,246,.45)}70%{box-shadow:0 0 0 14px rgba(139,92,246,0)}100%{box-shadow:0 0 0 0 rgba(139,92,246,0)}}
+.btn{
+  border:none;padding:12px 22px;border-radius:999px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;font-weight:900;cursor:pointer;
+  animation:pulse 2.4s infinite
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(139,92,246,.45)}
+  70%{box-shadow:0 0 0 14px rgba(139,92,246,0)}
+  100%{box-shadow:0 0 0 0 rgba(139,92,246,0)}
+}
+
+/* HEAT MAP */
+.service.heat-low{border-color:rgba(56,189,248,.2)}
+.service.heat-mid{
+  border-color:rgba(253,224,71,.35);
+  box-shadow:0 12px 30px rgba(253,224,71,.15)
+}
+.service.heat-high{
+  border-color:#fde047;
+  box-shadow:0 20px 50px rgba(253,224,71,.28);
+  transform:translateY(-4px) scale(1.01)
+}
 </style>
 </head>
 
@@ -65,6 +146,7 @@ body{
   <div id="services"></div>
 </div>
 
+<!-- SIDE MENU -->
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
   <div class="user">👤 <span id="username"></span></div>
@@ -75,31 +157,10 @@ body{
 </div>
 
 <script>
-/* ===== animateNumber (เดิม) ===== */
-function animateNumber(el, from, to){
-  if(from === to) return;
-  const diff = to - from;
-  const step = Math.max(1, Math.min(10, Math.abs(diff)));
-  const dir = diff > 0 ? 1 : -1;
-  let current = from;
-
-  function tick(){
-    current += dir * step;
-    if((dir > 0 && current >= to) || (dir < 0 && current <= to)){
-      current = to;
-    }
-    el.textContent = `⏳ มี ${current} คนกำลังสั่งซื้อบริการนี้`;
-    if(current !== to){
-      setTimeout(tick, 180 + Math.random()*260);
-    }
-  }
-  tick();
-}
-</script>
-
-<script>
-/* ===== API + AUTH (เดิม) ===== */
+/* API */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
+
+/* AUTH */
 const userId=localStorage.getItem('user_id');
 const username=localStorage.getItem('username');
 if(!userId||!username){localStorage.clear();location.replace('login.html')}
@@ -114,7 +175,9 @@ function logout(){localStorage.clear();location.replace('login.html')}
 
 /* CREDIT */
 const creditEl=document.getElementById('credit');
-if(localStorage.getItem('credit')) creditEl.textContent=Number(localStorage.getItem('credit')).toFixed(2);
+if(localStorage.getItem('credit')){
+  creditEl.textContent=Number(localStorage.getItem('credit')).toFixed(2);
+}
 function loadCredit(){
   fetch(`${API}?action=getUser&user_id=${userId}`)
     .then(r=>r.json())
@@ -127,11 +190,7 @@ function loadCredit(){
 }
 loadCredit();setInterval(loadCredit,20000);
 
-/* ===== URGENCY WAVE (เนียน) ===== */
-function isNight(){
-  const h=new Date().getHours();
-  return h>=0 && h<=7;
-}
+/* URGENCY */
 function baseUrgency(id){
   const d=new Date().toISOString().slice(0,10);
   const k=`urg_${id}_${d}`;
@@ -140,21 +199,8 @@ function baseUrgency(id){
   }
   return Number(localStorage.getItem(k));
 }
-function nextUrgency(service){
-  const key=`wave_${service.service_id}`;
-  let current=Number(sessionStorage.getItem(key) || baseUrgency(service.service_id));
 
-  let delta=Math.floor(Math.random()*6)+1; // 1–6
-  if(isNight()) delta*=-1;
-  if(service.price_per_100 < 100 && Math.random() < .65) delta*=1;
-  else if(Math.random() < .5) delta*=-1;
-
-  let next=Math.max(1,Math.min(534,current+delta));
-  sessionStorage.setItem(key,next);
-  return {from:current,to:next};
-}
-
-/* SERVICES */
+/* LOAD SERVICES */
 let allServices=[];
 function loadServices(){
   fetch(`${API}?action=getServices`)
@@ -162,24 +208,22 @@ function loadServices(){
     .then(res=>{
       allServices=res.services||[];
       renderServices();
-      startWave();
+      initHeatMap();
+      startRanking();
     });
 }
 
 function renderServices(){
   services.innerHTML='';
   allServices.forEach(s=>{
-    const base=baseUrgency(s.service_id);
-    sessionStorage.setItem(`wave_${s.service_id}`,base);
+    const u=baseUrgency(s.service_id);
     services.insertAdjacentHTML('beforeend',`
-      <div class="service">
+      <div class="service" data-id="${s.service_id}" data-urgency="${u}">
         <div class="service-name">${s.display_name}</div>
         <div class="service-desc">${s.short_desc||''}</div>
         <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
         <div class="trust">🔥 มีการสั่งซื้ออย่างต่อเนื่องตลอด 24 ชม.</div>
-        <div class="urgency" data-u="${s.service_id}">
-          ⏳ มี ${base} คนกำลังสั่งซื้อบริการนี้
-        </div>
+        <div class="urgency">⏳ มี ${u} คนกำลังสั่งซื้อบริการนี้</div>
         <div class="bottom">
           <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
           <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
@@ -189,16 +233,27 @@ function renderServices(){
   });
 }
 
-/* WAVE ช้า เนียน */
-function startWave(){
-  setInterval(()=>{
-    allServices.forEach(s=>{
-      const el=document.querySelector(`[data-u="${s.service_id}"]`);
-      if(!el) return;
-      const {from,to}=nextUrgency(s);
-      animateNumber(el,from,to);
+/* HEAT MAP */
+function initHeatMap(){
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      const el=e.target;
+      el.classList.remove('heat-low','heat-mid','heat-high');
+      if(e.intersectionRatio>.65) el.classList.add('heat-high');
+      else if(e.intersectionRatio>.35) el.classList.add('heat-mid');
+      else if(e.intersectionRatio>.15) el.classList.add('heat-low');
     });
-  }, 45000 + Math.random()*75000); // 45–120 วินาที
+  },{threshold:[0.15,0.35,0.65]});
+  document.querySelectorAll('.service').forEach(el=>io.observe(el));
+}
+
+/* HOT RANKING */
+function startRanking(){
+  setInterval(()=>{
+    [...services.children]
+      .sort((a,b)=>b.dataset.urgency-a.dataset.urgency)
+      .forEach(el=>services.appendChild(el));
+  },90000);
 }
 
 function selectService(id){
