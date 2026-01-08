@@ -10,22 +10,18 @@
   --black:#0b0f1a;
   --blue:#38bdf8;
   --purple:#8b5cf6;
-  --pink:#ec4899;
-  --green:#22c55e;
-  --red:#fb7185;
-  --gold:#fde047;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui,-apple-system;
   background:
-    radial-gradient(1000px 420px at top,#1e293b,transparent),
+    radial-gradient(900px 420px at top,#1e293b,transparent),
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
   padding:12px 16px;
   display:grid;
@@ -35,195 +31,131 @@ body{
   backdrop-filter:blur(14px);
   position:sticky;top:0;z-index:50;
 }
-.left,.right{display:flex;gap:10px;align-items:center}
 .center{
-  font-weight:900;font-size:17px;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  font-weight:900;
+  font-size:17px;
+  background:linear-gradient(90deg,var(--blue),var(--purple));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 .menu-btn,.refresh-btn{
-  border:none;padding:6px 14px;border-radius:999px;
+  border:none;
+  padding:6px 14px;
+  border-radius:999px;
   background:rgba(255,255,255,.08);
-  font-weight:900;color:#e5e7eb;cursor:pointer;
+  color:#fff;
+  font-weight:900;
 }
 .wallet{
-  font-size:13px;padding:6px 14px;border-radius:999px;
+  font-size:13px;
+  padding:6px 14px;
+  border-radius:999px;
   font-weight:900;
   background:
-    linear-gradient(180deg,#020617,#020617) padding-box,
+    linear-gradient(#020617,#020617) padding-box,
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
 
-/* ===== LAYOUT ===== */
+/* LAYOUT */
 .container{max-width:720px;margin:auto;padding:26px 18px 140px}
 .title{font-size:28px;font-weight:900}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:14px}
 .search input{
-  width:100%;padding:14px;border-radius:14px;
+  width:100%;
+  padding:14px;
+  border-radius:14px;
   border:1px solid rgba(148,163,184,.2);
-  background:#020617;color:#fff;
-}
-.section-title{
-  margin:26px 0 12px;
-  font-size:16px;font-weight:900;
-  color:var(--gold);
+  background:#020617;
+  color:#fff;
 }
 
-/* ===== CARD ===== */
+/* SERVICE CARD */
 .service{
   background:#020617;
-  border:1px solid rgba(148,163,184,.15);
-  border-radius:18px;
-  padding:18px;margin-bottom:16px;
+  border:1px solid rgba(148,163,184,.14);
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:18px;
+  transition:.35s;
+  position:relative;
+  overflow:hidden;
 }
-.service-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
+.service::before{
+  content:'';
+  position:absolute;
+  inset:-1px;
+  border-radius:20px;
+  background:linear-gradient(120deg,transparent,rgba(139,92,246,.25),transparent);
+  opacity:0;
+  transition:.4s;
 }
-.service-name{font-weight:900;font-size:18px}
-.badge{
-  font-size:11px;
-  padding:4px 10px;
-  border-radius:999px;
-  font-weight:900;
-  white-space:nowrap;
+.service:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 40px rgba(0,0,0,.6);
 }
-.bestseller{background:var(--red)}
-.recommended{background:var(--blue)}
-.premium{background:var(--green)}
-.boost{background:#a78bfa}
+.service:hover::before{opacity:1}
 
+.service-name{font-size:18px;font-weight:900}
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
 
-.start-time{
-  font-size:12px;
-  color:#c7d2fe;
-  margin-top:4px;
-}
-
-.progress{
+/* trust */
+.trust{
   margin-top:6px;
-  font-size:11px;
-  color:#94a3b8;
-}
-.progress span{color:var(--green);font-weight:900}
-
-.recommend{
-  margin-top:8px;
-  font-size:13px;
-  color:var(--gold);
+  font-size:12px;
+  color:#86efac;
   font-weight:800;
 }
 
+/* price */
 .bottom{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-top:10px;
+  margin-top:12px;
 }
 .price{
-  font-size:18px;
+  font-size:20px;
   font-weight:900;
-  color:#e0e7ff;
+  background:linear-gradient(90deg,#c7d2fe,#e0e7ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 .price small{
   display:block;
   font-size:12px;
-  opacity:.65;
+  color:#94a3b8;
 }
 .btn{
-  border:none;padding:10px 18px;
+  border:none;
+  padding:10px 18px;
   border-radius:999px;
-  font-weight:900;
-  color:#fff;
   background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;
+  font-weight:900;
   cursor:pointer;
 }
 
-/* ===== SKELETON ===== */
-.skeleton{
-  animation:pulse 1.3s infinite ease-in-out;
-}
-@keyframes pulse{
-  0%{opacity:.45}
-  50%{opacity:.75}
-  100%{opacity:.45}
-}
+/* SKELETON */
+@keyframes pulse{0%{opacity:.45}50%{opacity:.75}100%{opacity:.45}}
 .skeleton-box{
   background:#020617;
-  border:1px solid rgba(148,163,184,.12);
-  border-radius:18px;
+  border-radius:20px;
   padding:18px;
   margin-bottom:16px;
+  animation:pulse 1.2s infinite;
 }
-.sk-line{
-  height:14px;
-  background:#1e293b;
-  border-radius:6px;
-  margin-bottom:10px;
-}
-
-/* ===== TOAST ===== */
-.toast{
-  position:fixed;
-  bottom:-80px;
-  left:20px;
-  padding:14px 18px;
-  background:rgba(2,6,23,.95);
-  border:1px solid rgba(139,92,246,.35);
-  border-radius:14px;
-  font-size:13px;
-  font-weight:900;
-  color:#e5e7eb;
-  box-shadow:0 20px 50px rgba(0,0,0,.6);
-  transition:.4s;
-  z-index:9999;
-}
-.toast.show{bottom:24px}
-
-/* ===== RECOMMEND BAR ===== */
-.next-recommend{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#020617;
-  border:1px solid rgba(148,163,184,.2);
-  border-radius:16px;
-  padding:14px 16px;
-  font-size:13px;
-  font-weight:900;
-  display:none;
-  z-index:9998;
-}
-.next-recommend button{
-  margin-top:8px;
-  width:100%;
-  border:none;
-  padding:8px;
-  border-radius:999px;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;
-  font-weight:900;
-}
+.sk{height:14px;background:#1e293b;border-radius:6px;margin-bottom:10px}
 </style>
 </head>
 
 <body>
 
 <header class="header">
-  <div class="left">
-    <button class="menu-btn">☰</button>
-    <button class="refresh-btn" onclick="loadServices()">⟳</button>
-  </div>
+  <button class="menu-btn">☰</button>
   <div class="center">SocialBoostTH</div>
-  <div class="right">
-    <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
-  </div>
+  <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
 </header>
 
 <div class="container">
@@ -234,63 +166,41 @@ body{
     <input id="search" placeholder="🔍 ค้นหาบริการ" oninput="renderServices()">
   </div>
 
-  <div id="bestsellerBox"></div>
   <div id="services"></div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<div class="next-recommend" id="nextRecommend">
-  🔁 ลูกค้ามักเลือกเพิ่ม
-  <div id="nextName"></div>
-  <button onclick="goNext()">ดูบริการนี้</button>
 </div>
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
-const START_TIME_TEXT="⏱ ปกติเริ่มภายใน 1–24 ชั่วโมง";
-
-const badgeMap={
-  bestseller:"ขายดี",
-  recommended:"แนะนำ",
-  premium:"พรีเมียม",
-  boost:"เร่งยอด"
-};
 
 const userId=localStorage.getItem('user_id');
 if(!userId) location.replace('login.html');
 
 /* CREDIT */
 function loadCredit(){
-  const cache=localStorage.getItem('credit');
-  if(cache) credit.textContent=Number(cache).toFixed(2);
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
       if(res.success){
-        localStorage.setItem('credit',res.credit);
         credit.textContent=Number(res.credit).toFixed(2);
       }
     });
 }
-setInterval(loadCredit,20000); loadCredit();
+loadCredit(); setInterval(loadCredit,20000);
 
 /* SKELETON */
 function showSkeleton(){
   services.innerHTML='';
   for(let i=0;i<4;i++){
-    services.insertAdjacentHTML('beforeend',`
-      <div class="skeleton-box skeleton">
-        <div class="sk-line" style="width:70%"></div>
-        <div class="sk-line" style="width:40%"></div>
-        <div class="sk-line" style="width:60%"></div>
-      </div>
-    `);
+    services.innerHTML+=`
+      <div class="skeleton-box">
+        <div class="sk" style="width:60%"></div>
+        <div class="sk" style="width:40%"></div>
+        <div class="sk" style="width:70%"></div>
+      </div>`;
   }
 }
 
-/* SERVICES */
 let allServices=[];
 function loadServices(){
   showSkeleton();
@@ -303,75 +213,37 @@ function loadServices(){
 }
 
 function card(s){
-  const perUnit=(s.price_per_100/100).toFixed(2);
-return `
-<div class="service">
-  <div class="service-head">
+  const per=(s.price_per_100/100).toFixed(2);
+  return `
+  <div class="service">
     <div class="service-name">${s.display_name}</div>
-    ${s.badge_type?`<span class="badge ${s.badge_type}">${badgeMap[s.badge_type]}</span>`:''}
-  </div>
-  <div class="service-desc">${s.short_desc||''}</div>
-  <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
-  <div class="start-time">${START_TIME_TEXT}</div>
-  <div class="progress">สถานะ: <span>กำลังรอคิวระบบ</span></div>
-  ${s.badge_text?`<div class="recommend">${s.badge_text}<br>⭐ แนะนำซื้อ <b>1,000 ${s.unit}</b></div>`:''}
-  <div class="bottom">
-    <div class="price">
-      ${Number(s.price_per_100).toLocaleString()} บาท / 100 ${s.unit}
-      <small>(เฉลี่ย ${perUnit} บาท/คน)</small>
+    <div class="service-desc">${s.short_desc||''}</div>
+    <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
+    <div class="trust">🔥 มีการสั่งซื้ออย่างต่อเนื่องตลอด 24 ชม.</div>
+    <div class="bottom">
+      <div class="price">
+        ${Number(s.price_per_100).toLocaleString()} บาท / 100 ${s.unit}
+        <small>(เฉลี่ย ${per} บาท/คน)</small>
+      </div>
+      <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
     </div>
-    <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
-  </div>
-</div>`;
+  </div>`;
 }
 
 function renderServices(){
   const q=search.value.toLowerCase();
-  bestsellerBox.innerHTML='';
   services.innerHTML='';
-  const filtered=allServices.filter(s=>s.display_name.toLowerCase().includes(q));
-  const best=filtered.filter(s=>s.badge_type==='bestseller');
-  if(best.length){
-    bestsellerBox.innerHTML='<div class="section-title">🔥 บริการขายดี</div>'+best.map(card).join('');
-  }
-  filtered.filter(s=>s.badge_type!=='bestseller')
+  allServices
+    .filter(s=>s.display_name.toLowerCase().includes(q))
     .forEach(s=>services.insertAdjacentHTML('beforeend',card(s)));
 }
 
-/* TOAST */
-const toast=document.getElementById('toast');
-const toastServices=['Followers','Likes','Views','Shares'];
-setInterval(()=>{
-  const s=toastServices[Math.floor(Math.random()*toastServices.length)];
-  const n=10+Math.floor(Math.random()*40);
-  toast.innerHTML=`🔥 มีคำสั่งซื้อ ${s} เมื่อ ${n} วินาทีที่แล้ว`;
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),4000);
-},9000);
-
-/* NEXT RECOMMEND */
-let nextId=null;
 function selectService(id){
   localStorage.setItem('service_id',id);
-  const others=allServices.filter(s=>s.service_id!==id);
-  const pick=others[Math.floor(Math.random()*others.length)];
-  if(pick){
-    nextId=pick.service_id;
-    nextName.textContent=pick.display_name;
-    nextRecommend.style.display='block';
-    setTimeout(()=>nextRecommend.style.display='none',8000);
-  }
   location.href='order.html';
-}
-function goNext(){
-  if(nextId){
-    localStorage.setItem('service_id',nextId);
-    location.href='order.html';
-  }
 }
 
 loadServices();
 </script>
-
 </body>
 </html>
