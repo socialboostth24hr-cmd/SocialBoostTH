@@ -21,7 +21,7 @@ body{
   color:#f1f5f9;
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .header{
   padding:12px 16px;
   display:grid;
@@ -45,6 +45,7 @@ body{
   background:rgba(255,255,255,.08);
   color:#fff;
   font-weight:900;
+  cursor:pointer;
 }
 .wallet{
   font-size:13px;
@@ -57,7 +58,34 @@ body{
   border:1px solid transparent;
 }
 
-/* LAYOUT */
+/* ===== SIDE MENU ===== */
+.menu-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  z-index:90;
+}
+.side-menu{
+  position:fixed;
+  left:-260px;top:0;
+  width:260px;height:100%;
+  background:#020617;
+  padding:22px 18px;
+  z-index:100;
+  transition:.3s;
+}
+.side-menu.open{left:0}
+.side-menu a{
+  display:block;
+  padding:12px 0;
+  color:#e5e7eb;
+  text-decoration:none;
+  font-weight:900;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.side-menu a.logout{color:#fb7185}
+
+/* ===== LAYOUT ===== */
 .container{max-width:720px;margin:auto;padding:26px 18px 140px}
 .title{font-size:28px;font-weight:900}
 .subtitle{font-size:14px;color:#94a3b8;margin-bottom:14px}
@@ -70,7 +98,7 @@ body{
   color:#fff;
 }
 
-/* SERVICE CARD */
+/* ===== CARD ===== */
 .service{
   background:#020617;
   border:1px solid rgba(148,163,184,.14);
@@ -105,7 +133,7 @@ body{
   margin-top:6px;
   font-size:12px;
   color:#86efac;
-  font-weight:800;
+  font-weight:900;
 }
 
 /* price */
@@ -137,7 +165,7 @@ body{
   cursor:pointer;
 }
 
-/* SKELETON */
+/* ===== SKELETON ===== */
 @keyframes pulse{0%{opacity:.45}50%{opacity:.75}100%{opacity:.45}}
 .skeleton-box{
   background:#020617;
@@ -153,7 +181,7 @@ body{
 <body>
 
 <header class="header">
-  <button class="menu-btn">☰</button>
+  <button class="menu-btn" onclick="openMenu()">☰</button>
   <div class="center">SocialBoostTH</div>
   <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
 </header>
@@ -169,26 +197,62 @@ body{
   <div id="services"></div>
 </div>
 
+<!-- SIDE MENU -->
+<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+<div class="side-menu" id="sideMenu">
+  <a href="services.html">📦 บริการ</a>
+  <a href="orders.html">🧾 คำสั่งซื้อ</a>
+  <a href="topup.html">💰 เติมเงิน</a>
+  <a class="logout" href="login.html" onclick="localStorage.clear()">🚪 ออกจากระบบ</a>
+</div>
+
 <script>
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
+const creditEl=document.getElementById('credit');
+const services=document.getElementById('services');
+
+/* ===== AUTH ===== */
 const userId=localStorage.getItem('user_id');
 if(!userId) location.replace('login.html');
 
-/* CREDIT */
+/* ===== MENU ===== */
+const sideMenu=document.getElementById('sideMenu');
+const overlay=document.getElementById('menuOverlay');
+function openMenu(){sideMenu.classList.add('open');overlay.style.display='block'}
+function closeMenu(){sideMenu.classList.remove('open');overlay.style.display='none'}
+
+/* ===== CREDIT ===== */
 function loadCredit(){
   fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
       if(res.success){
-        credit.textContent=Number(res.credit).toFixed(2);
+        creditEl.textContent=Number(res.credit).toFixed(2);
       }
     });
 }
 loadCredit(); setInterval(loadCredit,20000);
 
-/* SKELETON */
+/* ===== TRUST TEXT (สุ่ม ไม่ซ้ำติด) ===== */
+const trustTexts=[
+  "🔥 มีการสั่งซื้ออย่างต่อเนื่องตลอด 24 ชม.",
+  "⚡ ลูกค้าหลายคนเลือกใช้บริการนี้",
+  "💎 ระบบทำงานอัตโนมัติทั้งวัน",
+  "🚀 บริการยอดนิยมในตอนนี้"
+];
+let lastTrust='';
+function getTrust(){
+  let t;
+  do{
+    t=trustTexts[Math.floor(Math.random()*trustTexts.length)];
+  }while(t===lastTrust);
+  lastTrust=t;
+  return t;
+}
+
+/* ===== SKELETON ===== */
 function showSkeleton(){
   services.innerHTML='';
   for(let i=0;i<4;i++){
@@ -201,6 +265,7 @@ function showSkeleton(){
   }
 }
 
+/* ===== SERVICES ===== */
 let allServices=[];
 function loadServices(){
   showSkeleton();
@@ -219,7 +284,7 @@ function card(s){
     <div class="service-name">${s.display_name}</div>
     <div class="service-desc">${s.short_desc||''}</div>
     <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
-    <div class="trust">🔥 มีการสั่งซื้ออย่างต่อเนื่องตลอด 24 ชม.</div>
+    <div class="trust">${getTrust()}</div>
     <div class="bottom">
       <div class="price">
         ${Number(s.price_per_100).toLocaleString()} บาท / 100 ${s.unit}
