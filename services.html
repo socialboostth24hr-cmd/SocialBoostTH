@@ -40,7 +40,7 @@ body{
 .menu-btn{
   border:none;padding:6px 14px;border-radius:999px;
   background:rgba(255,255,255,.08);
-  color:#fff;font-weight:900;cursor:pointer
+  color:#fff;font-weight:900;cursor:pointer;
 }
 .wallet{
   font-size:13px;padding:6px 14px;border-radius:999px;
@@ -52,8 +52,7 @@ body{
 
 /* SIDE MENU */
 .menu-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
   display:none;z-index:90;
 }
 .side-menu{
@@ -61,8 +60,7 @@ body{
   width:260px;height:100%;
   background:#020617;
   padding:22px 18px;
-  z-index:100;
-  transition:.3s;
+  z-index:100;transition:.3s;
 }
 .side-menu.open{left:0}
 .side-menu .user{font-weight:900;margin-bottom:14px}
@@ -83,7 +81,7 @@ body{
   background:#020617;color:#fff;
 }
 
-/* SERVICE CARD */
+/* SERVICE */
 .service{
   background:#020617;
   border:1px solid rgba(148,163,184,.14);
@@ -96,18 +94,18 @@ body{
 .service-desc{font-size:13px;color:#94a3b8;margin:6px 0}
 .value-hint{font-size:12px}
 .trust{margin-top:6px;font-size:12px;color:#86efac;font-weight:900}
-.urgency{margin-top:6px;font-size:12px;color:#fde047;font-weight:900}
+.viewer{margin-top:6px;font-size:12px;color:#fde047;font-weight:900}
 
 .bottom{
   display:flex;justify-content:space-between;
-  align-items:center;margin-top:12px
+  align-items:center;margin-top:12px;
 }
 .price{font-size:20px;font-weight:900;color:#e0e7ff}
 .btn{
   border:none;padding:12px 22px;border-radius:999px;
   background:linear-gradient(135deg,var(--blue),var(--purple));
   color:#fff;font-weight:900;cursor:pointer;
-  animation:pulse 2.4s infinite
+  animation:pulse 2.4s infinite;
 }
 @keyframes pulse{
   0%{box-shadow:0 0 0 0 rgba(139,92,246,.45)}
@@ -119,12 +117,12 @@ body{
 .service.heat-low{border-color:rgba(56,189,248,.2)}
 .service.heat-mid{
   border-color:rgba(253,224,71,.35);
-  box-shadow:0 12px 30px rgba(253,224,71,.15)
+  box-shadow:0 12px 30px rgba(253,224,71,.15);
 }
 .service.heat-high{
   border-color:#fde047;
   box-shadow:0 20px 50px rgba(253,224,71,.28);
-  transform:translateY(-4px) scale(1.01)
+  transform:translateY(-4px) scale(1.01);
 }
 </style>
 </head>
@@ -146,7 +144,6 @@ body{
   <div id="services"></div>
 </div>
 
-<!-- SIDE MENU -->
 <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
 <div class="side-menu" id="sideMenu">
   <div class="user">👤 <span id="username"></span></div>
@@ -157,7 +154,6 @@ body{
 </div>
 
 <script>
-/* API */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 
 /* AUTH */
@@ -190,14 +186,20 @@ function loadCredit(){
 }
 loadCredit();setInterval(loadCredit,20000);
 
-/* URGENCY */
-function baseUrgency(id){
+/* VIEWER BASE */
+function baseViewer(id){
   const d=new Date().toISOString().slice(0,10);
-  const k=`urg_${id}_${d}`;
+  const k=`view_${id}_${d}`;
   if(!localStorage.getItem(k)){
-    localStorage.setItem(k,Math.floor(Math.random()*534)+1);
+    localStorage.setItem(k,15+Math.floor(Math.random()*352));
   }
   return Number(localStorage.getItem(k));
+}
+
+/* DAY / NIGHT */
+function isDay(){
+  const h=new Date().getHours();
+  return h>=8 && h<=22;
 }
 
 /* LOAD SERVICES */
@@ -209,6 +211,7 @@ function loadServices(){
       allServices=res.services||[];
       renderServices();
       initHeatMap();
+      startViewerWave();
       startRanking();
     });
 }
@@ -216,14 +219,16 @@ function loadServices(){
 function renderServices(){
   services.innerHTML='';
   allServices.forEach(s=>{
-    const u=baseUrgency(s.service_id);
+    const v=baseViewer(s.service_id);
     services.insertAdjacentHTML('beforeend',`
-      <div class="service" data-id="${s.service_id}" data-urgency="${u}">
+      <div class="service" data-id="${s.service_id}" data-view="${v}">
         <div class="service-name">${s.display_name}</div>
         <div class="service-desc">${s.short_desc||''}</div>
         <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
-        <div class="trust">🔥 มีการสั่งซื้ออย่างต่อเนื่องตลอด 24 ชม.</div>
-        <div class="urgency">⏳ มี ${u} คนกำลังสั่งซื้อบริการนี้</div>
+        <div class="trust">🔥 บริการกำลังได้รับความสนใจ</div>
+        <div class="viewer" data-viewer="${s.service_id}">
+          👀 ลูกค้ากำลังดูอยู่ ${v}
+        </div>
         <div class="bottom">
           <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
           <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
@@ -231,6 +236,23 @@ function renderServices(){
       </div>
     `);
   });
+}
+
+/* VIEWER WAVE */
+function startViewerWave(){
+  setInterval(()=>{
+    allServices.forEach(s=>{
+      const el=document.querySelector(`[data-viewer="${s.service_id}"]`);
+      if(!el) return;
+      let cur=Number(el.parentElement.dataset.view);
+      let delta=3+Math.floor(Math.random()*16);
+      if(Math.random()<0.45) delta*=-1;
+      if(isDay()) delta*=1.4;
+      let next=Math.max(15,Math.min(366,Math.round(cur+delta)));
+      el.parentElement.dataset.view=next;
+      el.textContent=`👀 ลูกค้ากำลังดูอยู่ ${next}`;
+    });
+  }, isDay()? (10000+Math.random()*8000) : (35000+Math.random()*25000));
 }
 
 /* HEAT MAP */
@@ -247,11 +269,11 @@ function initHeatMap(){
   document.querySelectorAll('.service').forEach(el=>io.observe(el));
 }
 
-/* HOT RANKING */
+/* RANKING */
 function startRanking(){
   setInterval(()=>{
     [...services.children]
-      .sort((a,b)=>b.dataset.urgency-a.dataset.urgency)
+      .sort((a,b)=>b.dataset.view-a.dataset.view)
       .forEach(el=>services.appendChild(el));
   },90000);
 }
