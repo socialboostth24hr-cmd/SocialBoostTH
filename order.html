@@ -4,55 +4,66 @@
 <meta charset="UTF-8">
 <title>สั่งซื้อบริการ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
 :root{
-  --blue:#38bdf8;--purple:#8b5cf6;--pink:#ec4899;
-  --bg:#0b0f1a;--card:#0b1020;--muted:#94a3b8;
-  --green:#22c55e;--danger:#fb7185;
+  --bg:#0b0f1a;--card:#0f172a;--line:#1f2937;
+  --blue:#38bdf8;--purple:#8b5cf6;--green:#22c55e;
+  --muted:#94a3b8;--danger:#fb7185;
 }
 *{box-sizing:border-box}
 body{
-  margin:0;font-family:system-ui,-apple-system;
-  background:linear-gradient(180deg,#0b0f1a,#060913);
+  margin:0;font-family:system-ui;
+  background:radial-gradient(800px 400px at top,#1e293b,transparent),
+             linear-gradient(180deg,var(--bg),#020617);
   color:#f1f5f9;
 }
 .header{
-  padding:12px 16px;
-  display:grid;grid-template-columns:auto 1fr auto;
-  align-items:center;
+  padding:12px 16px;display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;gap:10px;
+  position:sticky;top:0;
+  background:rgba(2,6,23,.8);backdrop-filter:blur(10px);
 }
-.back{background:none;border:none;color:#fff;font-size:20px}
+.back{border:none;background:rgba(255,255,255,.08);color:#fff;
+  padding:6px 14px;border-radius:999px}
+.center{
+  font-weight:900;
+  background:linear-gradient(90deg,var(--blue),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
 .wallet{
-  padding:6px 14px;border-radius:999px;
+  padding:6px 14px;border-radius:999px;font-weight:900;
   background:linear-gradient(#020617,#020617) padding-box,
              linear-gradient(135deg,var(--blue),var(--purple)) border-box;
-  border:1px solid transparent;font-weight:900;
+  border:1px solid transparent;
+  font-size:13px
 }
-.container{max-width:720px;margin:auto;padding:18px 18px 160px}
+.container{max-width:720px;margin:auto;padding:20px 18px 160px}
 .card{
-  background:linear-gradient(180deg,#111827,#0b1020);
-  border-radius:22px;padding:20px;margin-bottom:16px
+  background:linear-gradient(180deg,#111827,#020617);
+  border-radius:22px;padding:22px;margin-bottom:18px
 }
-h1{font-size:22px;margin:0}
-.small{color:var(--muted);font-size:13px;margin-top:6px}
-label{display:block;margin:14px 0 6px;font-weight:900}
+.title{font-size:22px;font-weight:900}
+.desc{color:var(--muted);font-size:13px;margin-top:6px}
+label{display:block;font-weight:900;margin:16px 0 6px}
 input,textarea{
-  width:100%;padding:14px;border-radius:14px;
-  background:#020617;border:none;color:#fff;font-size:15px;
+  width:100%;padding:14px;border-radius:16px;
+  background:#020617;border:1px solid var(--line);color:#fff
 }
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.summary{margin-top:16px;font-size:15px}
+.summary div{margin-top:6px}
+.green{color:var(--green);font-weight:900}
 .total{font-size:22px;font-weight:900;margin-top:14px}
-.green{color:var(--green)}
-.error{color:var(--danger);font-weight:900;margin-top:8px}
+.error{color:var(--danger);font-weight:900;margin-top:10px}
 .buy{
-  position:fixed;bottom:16px;left:50%;
-  transform:translateX(-50%);
-  width:calc(100% - 32px);max-width:420px;
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 32px);max-width:480px;
   padding:16px;border:none;border-radius:999px;
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;font-size:18px;font-weight:900;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  font-size:18px;font-weight:900;color:#fff
 }
-.buy:disabled{opacity:.5}
+.buy:disabled{opacity:.45}
 </style>
 </head>
 
@@ -60,15 +71,15 @@ input,textarea{
 
 <header class="header">
   <button class="back" onclick="history.back()">←</button>
-  <div></div>
+  <div class="center">SocialBoostTH</div>
   <div class="wallet">เครดิต: <span id="credit">0.00</span> บาท</div>
 </header>
 
 <div class="container">
-
   <div class="card">
-    <h1 id="serviceName">กำลังโหลด…</h1>
-    <div class="small" id="servicePrice"></div>
+    <div class="title" id="serviceName">กำลังโหลด...</div>
+    <div class="desc" id="serviceDesc"></div>
+    <div class="hint" id="servicePrice"></div>
   </div>
 
   <div class="card">
@@ -76,121 +87,94 @@ input,textarea{
     <textarea id="link" placeholder="https://www.tiktok.com/@username"></textarea>
 
     <label>จำนวน</label>
-    <input type="number" id="qty">
+    <input type="number" id="qty" min="0">
+    <div class="hint" id="minHint"></div>
 
-    <div class="small" id="priceExplain"></div>
-
-    <div class="total">
-      รวม: <span id="total">0.00</span> บาท
+    <div class="summary">
+      <div>ราคาปกติ: <b id="normalPrice">0.00</b> บาท</div>
+      <div class="green" id="discountHint"></div>
+      <div class="total">รวม: <span id="total">0.00</span> บาท</div>
+      <div class="hint">เครดิตหลังซื้อ: <b id="afterCredit">0.00</b> บาท</div>
     </div>
-    <div class="small green" id="afterCredit"></div>
-    <div class="small green" id="upsell"></div>
 
     <div class="error" id="error"></div>
   </div>
-
 </div>
 
 <button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
-const API_KEY="SBTH-SECURE-2026";
-
+const KEY="SBTH-SECURE-2026";
 const userId=localStorage.getItem('user_id');
 const serviceId=localStorage.getItem('service_id');
+if(!userId||!serviceId) location.href='services.html';
 
-const creditEl=credit= document.getElementById('credit');
-const serviceNameEl=document.getElementById('serviceName');
-const servicePriceEl=document.getElementById('servicePrice');
-const qtyEl=document.getElementById('qty');
-const linkEl=document.getElementById('link');
-const totalEl=document.getElementById('total');
-const afterCreditEl=document.getElementById('afterCredit');
-const upsellEl=document.getElementById('upsell');
-const errorEl=document.getElementById('error');
-const buyBtn=document.getElementById('buyBtn');
+let credit=0, service=null, discounts=[];
+const $=id=>document.getElementById(id);
 
-let service=null,discounts=[],credit=0;
-
-/* เครดิต */
-fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
-.then(r=>r.json()).then(res=>{
-  if(res.logs?.length){
-    credit=Number(res.logs.at(-1).credit_after||0);
-    creditEl.textContent=credit.toFixed(2);
-  }
+fetch(`${API}?action=getWallet&api_key=${KEY}&user_id=${userId}`)
+.then(r=>r.json()).then(d=>{
+  const logs=d.logs||[];
+  if(logs.length) credit=+logs.at(-1).credit_after;
+  $('credit').textContent=credit.toFixed(2);
 });
 
-/* โหลด service */
-fetch(`${API}?action=getServices&api_key=${API_KEY}`)
-.then(r=>r.json()).then(res=>{
-  service=res.services.find(s=>s.service_id===serviceId);
-  if(!service) return;
-  serviceNameEl.textContent=service.display_name;
-  servicePriceEl.textContent=`${service.price_per_100} บาท / 100`;
-});
+fetch(`${API}?action=getServices&api_key=${KEY}`)
+.then(r=>r.json()).then(d=>{
+  service=d.services.find(s=>s.service_id===serviceId);
+  $('serviceName').textContent=service.display_name;
+  $('serviceDesc').textContent=service.short_desc||'';
+  $('servicePrice').textContent=`${service.price_per_100} บาท / 100 ${service.unit}`;
+  $('minHint').textContent=`ขั้นต่ำ ${service.min_qty} ${service.unit}`;
+  return fetch(`${API}?action=getDiscounts&api_key=${KEY}&service_id=${serviceId}`);
+}).then(r=>r.json()).then(d=>discounts=d.discounts||[]);
 
-/* โหลด discount */
-fetch(`${API}?action=getDiscounts&api_key=${API_KEY}&service_id=${serviceId}`)
-.then(r=>r.json()).then(r=>discounts=r.discounts||[]);
+$('qty').addEventListener('input',calc);
+$('link').addEventListener('input',calc);
 
-/* คำนวณ */
 function calc(){
-  errorEl.textContent='';
-  upsellEl.textContent='';
-  if(!service) return;
-
-  const qty=Number(qtyEl.value||0);
-  if(qty<service.min_qty){
-    totalEl.textContent='0.00';
-    buyBtn.disabled=true;
-    return;
+  $('error').textContent='';
+  const q=+$('qty').value||0;
+  if(!q){ reset(); return }
+  if(q<service.min_qty){
+    $('error').textContent=`ขั้นต่ำ ${service.min_qty}`;
+    reset(); return;
   }
 
-  let base=qty*service.price_per_100/100;
-  let total=base;
+  let normal=q*service.price_per_100/100;
+  let final=normal;
 
-  const valid=discounts.filter(d=>qty>=d.min_qty&&qty<=d.max_qty);
-  if(valid.length){
-    const b=valid.sort((a,b)=>b.min_qty-a.min_qty)[0];
-    if(b.price) total=b.price*qty;
-    if(b.discount_percent) total=base*(100-b.discount_percent)/100;
+  const d=discounts.filter(x=>q>=x.min_qty&&q<=x.max_qty)
+                   .sort((a,b)=>b.min_qty-a.min_qty)[0];
+  if(d){
+    if(d.discount_percent) final*= (100-d.discount_percent)/100;
+    if(d.price) final=q*d.price;
   }
 
-  total=+total.toFixed(2);
-  totalEl.textContent=total.toFixed(2);
-  afterCreditEl.textContent=`เครดิตหลังซื้อ: ${(credit-total).toFixed(2)} บาท`;
+  $('normalPrice').textContent=normal.toFixed(2);
+  $('total').textContent=final.toFixed(2);
+  $('afterCredit').textContent=(credit-final).toFixed(2);
+  $('discountHint').textContent =
+    final<normal ? `ประหยัด ${(normal-final).toFixed(2)} บาท` : '';
 
-  const next=discounts.find(d=>qty<d.min_qty);
-  if(next){
-    const diff=next.min_qty-qty;
-    upsellEl.textContent=`ซื้อเพิ่มอีก ${diff} จะประหยัดมากขึ้น`;
-  }
-
-  if(total>credit){
-    errorEl.textContent='เครดิตไม่เพียงพอ';
-    buyBtn.disabled=true;return;
-  }
-
-  buyBtn.disabled=!linkEl.value.trim();
+  $('buyBtn').disabled = final>credit || !$('link').value.trim();
 }
 
-qtyEl.addEventListener('input',calc);
-linkEl.addEventListener('input',calc);
+function reset(){
+  $('total').textContent='0.00';
+  $('afterCredit').textContent=credit.toFixed(2);
+  $('buyBtn').disabled=true;
+}
 
-buyBtn.onclick=()=>{
+$('buyBtn').onclick=()=>{
   fetch(`${API}?`+new URLSearchParams({
     action:'createOrder',
-    api_key:API_KEY,
-    user_id:userId,
-    service_id:serviceId,
-    qty:qtyEl.value,
-    link:linkEl.value
-  }))
-  .then(r=>r.json())
-  .then(res=>res.success?location.href='orders.html':errorEl.textContent=res.error);
+    api_key:KEY,user_id:userId,service_id:serviceId,
+    qty:$('qty').value,link:$('link').value
+  })).then(()=>location.href='orders.html');
 };
 </script>
+
 </body>
 </html>
