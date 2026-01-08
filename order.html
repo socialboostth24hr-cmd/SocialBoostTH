@@ -7,15 +7,13 @@
 
 <style>
 :root{
-  --bg:#0b0f1a;
-  --card:#020617;
-  --line:#1f2a44;
+  --black:#0b0f1a;
   --blue:#38bdf8;
   --purple:#8b5cf6;
   --pink:#ec4899;
-  --green:#22c55e;
-  --red:#fb7185;
+  --danger:#fb7185;
   --muted:#94a3b8;
+  --green:#22c55e;
 }
 *{box-sizing:border-box}
 body{
@@ -23,109 +21,77 @@ body{
   font-family:system-ui,-apple-system;
   background:
     radial-gradient(900px 420px at top,#1e293b,transparent),
-    linear-gradient(180deg,var(--bg),#060913);
+    linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
-
-/* HEADER */
 .header{
   padding:12px 16px;
   display:grid;
   grid-template-columns:auto 1fr auto;
   align-items:center;
-  background:rgba(2,6,23,.8);
-  backdrop-filter:blur(12px);
-  position:sticky;top:0;z-index:50;
+  background:rgba(2,6,23,.75);
+  backdrop-filter:blur(10px);
+  position:sticky;top:0;
 }
 .back{
   border:none;padding:6px 14px;border-radius:999px;
   background:rgba(255,255,255,.08);
-  color:#e5e7eb;font-weight:900;
+  color:#fff;font-weight:900
 }
 .center{
   font-weight:900;
   background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
 .wallet{
-  font-size:13px;
-  padding:6px 14px;
-  border-radius:999px;
-  font-weight:900;
+  padding:6px 14px;border-radius:999px;
+  font-size:13px;font-weight:900;
   background:
     linear-gradient(#020617,#020617) padding-box,
     linear-gradient(135deg,var(--blue),var(--purple)) border-box;
   border:1px solid transparent;
 }
-
-/* LAYOUT */
-.container{max-width:720px;margin:auto;padding:20px 18px 180px}
+.container{max-width:720px;margin:auto;padding:20px 18px 160px}
 .card{
   background:linear-gradient(180deg,#111827,#0b1020);
-  border:1px solid rgba(148,163,184,.12);
-  border-radius:26px;
-  padding:22px;
-  margin-bottom:18px;
+  border-radius:24px;padding:22px;margin-bottom:18px;
 }
-.title{font-size:22px;font-weight:900}
-.desc{font-size:13px;color:var(--muted);margin-top:6px}
-label{display:block;font-weight:900;margin:16px 0 6px}
+label{font-weight:900;margin:16px 0 6px;display:block}
 input,textarea{
   width:100%;padding:14px;border-radius:16px;
-  border:1px solid var(--line);
-  background:#020617;color:#fff;font-size:15px
+  border:none;background:#020617;color:#fff;font-size:15px
 }
-textarea{min-height:120px;resize:vertical}
+textarea{min-height:110px}
 .hint{font-size:13px;color:var(--muted);margin-top:6px}
-.error{margin-top:10px;color:var(--red);font-weight:900}
-
-/* PREVIEW */
-.preview{
-  border-top:1px dashed var(--line);
-  margin-top:20px;padding-top:14px;
-  font-size:14px;
-}
-.preview b{color:#fff}
-
-/* BUY */
+.total{font-size:22px;font-weight:900;margin-top:14px}
+.error{margin-top:10px;font-weight:900;color:var(--danger)}
 .buy{
-  position:fixed;
-  bottom:16px;left:50%;
-  transform:translateX(-50%);
-  width:calc(100% - 32px);
-  max-width:480px;
-  padding:16px;
-  border-radius:999px;
-  border:none;
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 32px);max-width:480px;
+  padding:16px;border-radius:999px;border:none;
   background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;font-size:18px;font-weight:900;
+  color:#fff;font-size:18px;font-weight:900
 }
-.buy:disabled{opacity:.45}
+.buy:disabled{opacity:.5}
 
-/* POPUP */
-.popup-bg{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;z-index:200;
+/* popup */
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  display:none;align-items:center;justify-content:center;z-index:99
 }
-.popup{
-  position:fixed;
-  left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  width:calc(100% - 40px);
-  max-width:520px;
-  background:#020617;
-  border-radius:22px;
-  padding:22px;
+.modal-box{
+  background:linear-gradient(180deg,#0b1020,#020617);
+  border-radius:20px;padding:22px;max-width:420px;width:92%;
 }
-.popup h3{margin:0 0 10px}
-.popup-content{
-  max-height:240px;overflow:auto;
-  font-size:14px;color:#cbd5f5;
+.modal h3{margin-top:0}
+.close{
+  position:absolute;right:20px;top:16px;
+  font-size:22px;font-weight:900;cursor:pointer
 }
-.popup label{font-size:14px;margin-top:12px}
-.popup button{margin-top:14px;width:100%}
+.checkbox{
+  display:flex;gap:10px;align-items:flex-start;margin-top:16px
+}
+.checkbox input{width:22px;height:22px}
 </style>
 </head>
 
@@ -140,13 +106,12 @@ textarea{min-height:120px;resize:vertical}
 <div class="container">
 
   <div class="card">
-    <div class="title" id="serviceName">กำลังโหลด…</div>
-    <div class="desc" id="serviceDesc"></div>
+    <h2 id="serviceName">กำลังโหลด…</h2>
     <div class="hint" id="serviceInfo"></div>
   </div>
 
   <div class="card">
-    <label>ลิงก์</label>
+    <label id="linkLabel">ลิงก์</label>
     <textarea id="link"></textarea>
 
     <div id="commentBox" style="display:none">
@@ -160,7 +125,12 @@ textarea{min-height:120px;resize:vertical}
       <input type="number" id="qty">
     </div>
 
-    <div class="preview" id="preview" style="display:none"></div>
+    <div class="hint" id="minHint"></div>
+
+    <div class="total">รวม: <span id="total">0.00</span> บาท</div>
+    <div class="hint" id="discountHint"></div>
+    <div class="hint" id="afterCredit"></div>
+
     <div class="error" id="error"></div>
   </div>
 
@@ -168,23 +138,28 @@ textarea{min-height:120px;resize:vertical}
 
 <button class="buy" id="buyBtn" disabled>ยืนยันสั่งซื้อ</button>
 
-<div class="popup-bg" id="popupBg">
-  <div class="popup">
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="close" onclick="closeModal()">×</div>
     <h3>เงื่อนไขการให้บริการ SocialBoostTH24HR</h3>
-    <div class="popup-content">
-      ทางร้านขอแจ้งให้ทราบว่า TikTok มีการอัปเดตระบบอย่างต่อเนื่อง
-      ซึ่งอาจทำให้ยอดมีการลดลงแบบผิดปกติ<br><br>
-      ทางร้านรับประกันทุกออเดอร์ โดยมีเงื่อนไขดังนี้:
-      <ol>
-        <li>ห้ามเปลี่ยนชื่อช่องระหว่างระยะประกัน</li>
-        <li>หากมีการสั่งซ้ำ ประกันครอบคลุมเฉพาะออเดอร์ใหม่</li>
-        <li>การเคลมเติมยอด กรุณาติดต่อทาง LINE ร้านเท่านั้น</li>
-      </ol>
+    <p style="font-size:14px;color:#cbd5f5">
+      ทางร้านขอแจ้งให้ทราบว่า TikTok มีการอัปเดทระบบอย่างต่อเนื่อง
+      ซึ่งอาจทำให้ยอดลดลงแบบผิดปกติ ทางร้านรับประกันทุกออเดอร์
+      โดยมีเงื่อนไขดังนี้:
+    </p>
+    <ol style="font-size:14px;color:#cbd5f5">
+      <li>ห้ามเปลี่ยนชื่อช่องระหว่างระยะประกัน</li>
+      <li>หากมีการสั่งซ้ำ ประกันครอบคลุมเฉพาะออเดอร์ใหม่</li>
+      <li>การเคลมเติมยอด ติดต่อ LINE ร้านเท่านั้น</li>
+    </ol>
+    <div class="checkbox">
+      <input type="checkbox" id="accept">
+      <label for="accept">ข้าพเจ้าเข้าใจและยอมรับเงื่อนไขทั้งหมด</label>
     </div>
-    <label>
-      <input type="checkbox" id="agree"> ข้าพเจ้าอ่านและยอมรับเงื่อนไข
-    </label>
-    <button class="buy" id="confirmBuy">ยืนยันสั่งซื้อ</button>
+    <button class="buy" style="margin-top:14px" id="confirmBtn" disabled>
+      ยืนยันสั่งซื้อ
+    </button>
   </div>
 </div>
 
@@ -196,16 +171,13 @@ const userId=localStorage.getItem('user_id');
 const serviceId=localStorage.getItem('service_id');
 if(!userId||!serviceId) location.href='services.html';
 
-let service, discounts=[], credit=0;
-
-/* ELEMENTS */
 const el=id=>document.getElementById(id);
+let service,discounts=[],credit=0;
 
 /* CREDIT */
-fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
-.then(r=>r.json()).then(res=>{
-  const logs=res.logs||[];
-  if(logs.length) credit=+logs.at(-1).credit_after;
+fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+.then(r=>r.json()).then(r=>{
+  credit=Number(r.credit||0);
   el('credit').textContent=credit.toFixed(2);
 });
 
@@ -213,78 +185,90 @@ fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
 .then(r=>r.json()).then(res=>{
   service=res.services.find(s=>s.service_id===serviceId);
-  if(!service) return;
-
   el('serviceName').textContent=service.display_name;
-  el('serviceDesc').textContent=service.short_desc||'';
-  el('serviceInfo').textContent=`ขั้นต่ำ ${service.min_qty} ${service.unit}`;
+  el('serviceInfo').textContent=
+    `ขั้นต่ำ ${service.min_qty} ${service.unit} • ${service.price_per_100} บาท / 100`;
+
+  el('minHint').textContent=`ขั้นต่ำ ${service.min_qty} ${service.unit}`;
 
   if(service.detail_group==='comment'){
     el('commentBox').style.display='block';
     el('qtyBox').style.display='none';
+  }
+});
+
+/* DISCOUNT */
+fetch(`${API}?action=getDiscounts&api_key=${API_KEY}&service_id=${serviceId}`)
+.then(r=>r.json()).then(d=>discounts=d.discounts||[]);
+
+/* INPUT */
+el('comments').addEventListener('input',calc);
+el('qty').addEventListener('input',calc);
+el('link').addEventListener('input',calc);
+
+function calc(){
+  el('error').textContent='';
+  let qty=0;
+
+  if(service.detail_group==='comment'){
+    qty=el('comments').value.split('\n').filter(l=>l.trim()).length;
+    el('commentCount').textContent=qty;
   }else{
-    el('commentBox').style.display='none';
-    el('qtyBox').style.display='block';
+    qty=Number(el('qty').value||0);
   }
 
-  fetch(`${API}?action=getDiscounts&api_key=${API_KEY}&service_id=${serviceId}`)
-  .then(r=>r.json()).then(d=>discounts=d.discounts||[]);
-});
+  if(qty<service.min_qty){
+    el('error').textContent=`ขั้นต่ำ ${service.min_qty}`;
+    el('buyBtn').disabled=true;
+    el('total').textContent='0.00';
+    return;
+  }
 
-/* INPUT LOGIC */
-el('comments')?.addEventListener('input',()=>{
-  const lines=el('comments').value.split('\n').filter(l=>l.trim());
-  el('commentCount').textContent=lines.length;
-  calc(lines.length);
-});
-el('qty')?.addEventListener('input',e=>calc(+e.target.value));
-el('link').addEventListener('input',()=>calc());
-
-function calc(qty=0){
-  let quantity=service.detail_group==='comment'?qty:+el('qty')?.value||0;
-  el('error').textContent='';
-  if(quantity<service.min_qty){ disable(); return; }
-
-  let total=quantity*service.price_per_100/100;
-  discounts.filter(d=>quantity>=d.min_qty&&quantity<=d.max_qty)
-    .sort((a,b)=>b.min_qty-a.min_qty)
-    .slice(0,1)
-    .forEach(d=>{
-      if(d.price) total=quantity*d.price;
-      if(d.discount_percent) total*= (100-d.discount_percent)/100;
-    });
+  let total=qty*service.price_per_100/100;
+  const d=discounts.filter(x=>qty>=x.min_qty).sort((a,b)=>b.min_qty-a.min_qty)[0];
+  if(d){
+    if(d.price) total=d.price*qty;
+    if(d.discount_percent){
+      const save=total*d.discount_percent/100;
+      el('discountHint').textContent=
+        `ซื้อเพิ่มอีก ${d.min_qty-qty} ได้ลด ${d.discount_percent}% ประหยัด ${save.toFixed(2)} บาท`;
+      total-=save;
+    }
+  }
   total=+total.toFixed(2);
+  el('total').textContent=total.toFixed(2);
+  el('afterCredit').textContent=
+    `เครดิตคงเหลือหลังซื้อ ${(credit-total).toFixed(2)} บาท`;
 
-  if(total>credit){ el('error').textContent='เครดิตไม่เพียงพอ'; disable(); return; }
-
-  el('preview').style.display='block';
-  el('preview').innerHTML=`
-    สรุปออเดอร์<br>
-    • จำนวน: <b>${quantity}</b><br>
-    • ยอดชำระ: <b>${total.toFixed(2)}</b> บาท<br>
-    • เครดิตคงเหลือ: <b>${(credit-total).toFixed(2)}</b> บาท
-  `;
-  el('buyBtn').disabled=!el('link').value.trim();
+  el('buyBtn').disabled=total>credit||!el('link').value.trim();
 }
 
-function disable(){
-  el('preview').style.display='none';
-  el('buyBtn').disabled=true;
-}
+/* MODAL */
+el('buyBtn').onclick=()=>el('modal').style.display='flex';
+el('accept').onchange=()=>el('confirmBtn').disabled=!el('accept').checked;
+function closeModal(){el('modal').style.display='none';}
 
-/* BUY */
-el('buyBtn').onclick=()=>el('popupBg').style.display='block';
-el('confirmBuy').onclick=()=>{
-  if(!el('agree').checked) return;
+/* CONFIRM */
+el('confirmBtn').onclick=()=>{
+  el('confirmBtn').disabled=true;
   fetch(`${API}?`+new URLSearchParams({
     action:'createOrder',
     api_key:API_KEY,
     user_id:userId,
     service_id:serviceId,
-    qty:service.detail_group==='comment'?el('commentCount').textContent:el('qty').value,
-    link:el('link').value+(el('comments')?`\n${el('comments').value}`:'')
-  })).then(()=>location.href='orders.html');
+    qty: service.detail_group==='comment'
+      ? el('comments').value.split('\n').filter(l=>l.trim()).length
+      : el('qty').value,
+    link: el('link').value + (service.detail_group==='comment'
+      ? '\n'+el('comments').value : '')
+  }))
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.success) location.href='orders.html';
+    else el('error').textContent=res.error||'เกิดข้อผิดพลาด';
+  });
 };
 </script>
+
 </body>
 </html>
