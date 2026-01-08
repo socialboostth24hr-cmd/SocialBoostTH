@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>คำสั่งซื้อของฉัน | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 :root{
   --black:#0b0f1a;
@@ -24,6 +25,8 @@ body{
     linear-gradient(180deg,var(--black),#060913);
   color:#f1f5f9;
 }
+
+/* HEADER */
 .header{
   position:sticky;top:0;z-index:20;
   background:rgba(2,6,23,.85);
@@ -49,6 +52,8 @@ body{
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
+
+/* CONTAINER */
 .container{
   max-width:720px;
   margin:auto;
@@ -60,30 +65,36 @@ body{
   margin-bottom:14px;
   text-align:center;
 }
+
+/* ORDER CARD */
 .order{
   background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:26px;
   padding:20px;
   margin-bottom:18px;
   border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 30px 80px rgba(0,0,0,.55);
 }
+
 .order-top{
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
+  gap:14px;
 }
 .order-id{font-weight:900}
 .service-name{
-  margin-top:4px;
   font-size:13px;
-  color:#c7d2fe;
-  font-weight:900;
+  color:var(--muted);
+  margin-top:2px;
 }
 .price{
   font-weight:900;
   font-size:18px;
   color:var(--purple);
 }
+
+/* INFO */
 .info{
   margin-top:12px;
   display:grid;
@@ -92,6 +103,8 @@ body{
   font-size:13px;
 }
 .info span{color:var(--muted)}
+
+/* STATUS */
 .status{
   margin-top:14px;
   display:inline-block;
@@ -104,6 +117,8 @@ body{
 .processing{background:rgba(56,189,248,.15);color:var(--blue)}
 .success{background:rgba(34,197,94,.18);color:var(--success)}
 .cancel{background:rgba(239,68,68,.18);color:var(--danger)}
+
+/* LINK */
 .link-box{
   margin-top:12px;
   background:#020617;
@@ -111,6 +126,7 @@ body{
   padding:10px 12px;
   display:flex;
   gap:10px;
+  align-items:center;
 }
 .link-text{
   flex:1;
@@ -126,11 +142,15 @@ body{
   font-weight:900;
   color:#fff;
   background:linear-gradient(135deg,var(--blue),var(--purple));
+  cursor:pointer;
 }
+
+/* ACTIONS */
 .actions{
   margin-top:14px;
   display:flex;
   gap:10px;
+  flex-wrap:wrap;
 }
 .line-btn{
   padding:8px 16px;
@@ -141,7 +161,12 @@ body{
   font-size:13px;
   text-decoration:none;
 }
-.empty,.error{text-align:center;padding:40px;font-weight:900}
+
+.empty,.error{
+  text-align:center;
+  padding:40px;
+  font-weight:900;
+}
 .empty{color:var(--muted)}
 .error{color:var(--danger)}
 </style>
@@ -161,15 +186,32 @@ body{
 </div>
 
 <script>
+/* ✅ API ตัวเดียวกับหน้า order */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
 const API_KEY="SBTH-SECURE-2026";
 const LINE_URL="https://line.me/R/ti/p/~geg4960w";
 
-const userId=localStorage.getItem('user_id');
-if(!userId) location.replace('login.html');
+const userId = localStorage.getItem('user_id');
+if(!userId){
+  location.replace('login.html');
+}
 
 const box=document.getElementById('orders');
 const updateText=document.getElementById('updateText');
+
+/* 🔥 MAP SERVICE_ID → DISPLAY_NAME */
+const serviceMap = {};
+
+/* LOAD SERVICES */
+async function loadServices(){
+  const res = await fetch(
+    `${API}?action=getServices&api_key=${API_KEY}`
+  );
+  const data = await res.json();
+  (data.services || []).forEach(s=>{
+    serviceMap[s.service_id] = s.display_name;
+  });
+}
 
 function statusText(s){
   if(s==='processing')return'🚀 กำลังดำเนินการ';
@@ -185,12 +227,17 @@ function copyText(txt,msg){
 }
 
 async function loadOrders(){
+  await loadServices(); // ✅ เพิ่มแค่นี้
+
   updateText.textContent='กำลังอัปเดต…';
   box.innerHTML='';
+
   try{
-    const res=await fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`);
-    const data=await res.json();
-    const list=data.orders||[];
+    const res = await fetch(
+      `${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`
+    );
+    const data = await res.json();
+    const list = data.orders || [];
 
     if(!list.length){
       box.innerHTML='<div class="empty">ยังไม่มีคำสั่งซื้อ</div>';
@@ -199,18 +246,14 @@ async function loadOrders(){
     }
 
     list.reverse().forEach(o=>{
-      const serviceName =
-        o.service_name ||
-        o.display_name ||
-        o.service_title ||
-        'บริการ TikTok';
-
       box.insertAdjacentHTML('beforeend',`
         <div class="order">
           <div class="order-top">
             <div>
               <div class="order-id">#${o.order_id}</div>
-              <div class="service-name">📦 ${serviceName}</div>
+              <div class="service-name">
+                ${serviceMap[o.service_id] || o.service_id}
+              </div>
             </div>
             <div class="price">${Number(o.final_total||0).toFixed(2)} บาท</div>
           </div>
@@ -220,11 +263,14 @@ async function loadOrders(){
             <div><span>วันที่:</span> ${new Date(o.datetime).toLocaleString()}</div>
           </div>
 
-          <div class="status ${o.status||'pending'}">${statusText(o.status)}</div>
+          <div class="status ${o.status||'pending'}">
+            ${statusText(o.status)}
+          </div>
 
           <div class="link-box">
             <div class="link-text">${o.link||'-'}</div>
-            <button class="copy-btn" onclick="copyText('${o.link||''}','คัดลอกลิงก์แล้ว')">
+            <button class="copy-btn"
+              onclick="copyText('${o.link||''}','คัดลอกลิงก์แล้ว')">
               คัดลอกลิงก์
             </button>
           </div>
@@ -234,6 +280,7 @@ async function loadOrders(){
               onclick="copyText('${o.order_id}','คัดลอกเลขคำสั่งซื้อแล้ว')">
               📋 คัดลอกเลขคำสั่ง
             </button>
+
             <a class="line-btn" href="${LINE_URL}" target="_blank">
               💬 ติดต่อแอดมิน (LINE)
             </a>
@@ -243,14 +290,20 @@ async function loadOrders(){
     });
 
     updateText.textContent='อัปเดตล่าสุด: '+new Date().toLocaleTimeString();
-  }catch(e){
+  }catch(err){
+    console.error(err);
     box.innerHTML='<div class="error">โหลดข้อมูลไม่สำเร็จ</div>';
   }
 }
 
+/* INIT */
 loadOrders();
+
+/* REFRESH WHEN BACK */
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible') loadOrders();
+  if(document.visibilityState==='visible'){
+    loadOrders();
+  }
 });
 </script>
 
