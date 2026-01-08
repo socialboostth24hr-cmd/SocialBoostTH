@@ -106,6 +106,13 @@ body{
   margin-top:4px;
 }
 
+.progress{
+  margin-top:6px;
+  font-size:11px;
+  color:#94a3b8;
+}
+.progress span{color:var(--green);font-weight:900}
+
 .recommend{
   margin-top:8px;
   font-size:13px;
@@ -135,6 +142,73 @@ body{
   font-weight:900;
   color:#fff;
   background:linear-gradient(135deg,var(--blue),var(--purple));
+  cursor:pointer;
+}
+
+/* ===== SKELETON ===== */
+.skeleton{
+  animation:pulse 1.3s infinite ease-in-out;
+}
+@keyframes pulse{
+  0%{opacity:.45}
+  50%{opacity:.75}
+  100%{opacity:.45}
+}
+.skeleton-box{
+  background:#020617;
+  border:1px solid rgba(148,163,184,.12);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+}
+.sk-line{
+  height:14px;
+  background:#1e293b;
+  border-radius:6px;
+  margin-bottom:10px;
+}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;
+  bottom:-80px;
+  left:20px;
+  padding:14px 18px;
+  background:rgba(2,6,23,.95);
+  border:1px solid rgba(139,92,246,.35);
+  border-radius:14px;
+  font-size:13px;
+  font-weight:900;
+  color:#e5e7eb;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
+  transition:.4s;
+  z-index:9999;
+}
+.toast.show{bottom:24px}
+
+/* ===== RECOMMEND BAR ===== */
+.next-recommend{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#020617;
+  border:1px solid rgba(148,163,184,.2);
+  border-radius:16px;
+  padding:14px 16px;
+  font-size:13px;
+  font-weight:900;
+  display:none;
+  z-index:9998;
+}
+.next-recommend button{
+  margin-top:8px;
+  width:100%;
+  border:none;
+  padding:8px;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;
+  font-weight:900;
 }
 </style>
 </head>
@@ -162,6 +236,14 @@ body{
 
   <div id="bestsellerBox"></div>
   <div id="services"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="next-recommend" id="nextRecommend">
+  🔁 ลูกค้ามักเลือกเพิ่ม
+  <div id="nextName"></div>
+  <button onclick="goNext()">ดูบริการนี้</button>
 </div>
 
 <script>
@@ -194,9 +276,24 @@ function loadCredit(){
 }
 setInterval(loadCredit,20000); loadCredit();
 
+/* SKELETON */
+function showSkeleton(){
+  services.innerHTML='';
+  for(let i=0;i<4;i++){
+    services.insertAdjacentHTML('beforeend',`
+      <div class="skeleton-box skeleton">
+        <div class="sk-line" style="width:70%"></div>
+        <div class="sk-line" style="width:40%"></div>
+        <div class="sk-line" style="width:60%"></div>
+      </div>
+    `);
+  }
+}
+
 /* SERVICES */
 let allServices=[];
 function loadServices(){
+  showSkeleton();
   fetch(`${API}?action=getServices&api_key=${API_KEY}`)
     .then(r=>r.json())
     .then(res=>{
@@ -211,15 +308,13 @@ return `
 <div class="service">
   <div class="service-head">
     <div class="service-name">${s.display_name}</div>
-    ${s.badge_type?`<span class="badge ${s.badge_type}">${badgeMap[s.badge_type]||s.badge_type}</span>`:''}
+    ${s.badge_type?`<span class="badge ${s.badge_type}">${badgeMap[s.badge_type]}</span>`:''}
   </div>
-
   <div class="service-desc">${s.short_desc||''}</div>
   <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
   <div class="start-time">${START_TIME_TEXT}</div>
-
+  <div class="progress">สถานะ: <span>กำลังรอคิวระบบ</span></div>
   ${s.badge_text?`<div class="recommend">${s.badge_text}<br>⭐ แนะนำซื้อ <b>1,000 ${s.unit}</b></div>`:''}
-
   <div class="bottom">
     <div class="price">
       ${Number(s.price_per_100).toLocaleString()} บาท / 100 ${s.unit}
@@ -234,10 +329,8 @@ function renderServices(){
   const q=search.value.toLowerCase();
   bestsellerBox.innerHTML='';
   services.innerHTML='';
-
   const filtered=allServices.filter(s=>s.display_name.toLowerCase().includes(q));
   const best=filtered.filter(s=>s.badge_type==='bestseller');
-
   if(best.length){
     bestsellerBox.innerHTML='<div class="section-title">🔥 บริการขายดี</div>'+best.map(card).join('');
   }
@@ -245,9 +338,36 @@ function renderServices(){
     .forEach(s=>services.insertAdjacentHTML('beforeend',card(s)));
 }
 
+/* TOAST */
+const toast=document.getElementById('toast');
+const toastServices=['Followers','Likes','Views','Shares'];
+setInterval(()=>{
+  const s=toastServices[Math.floor(Math.random()*toastServices.length)];
+  const n=10+Math.floor(Math.random()*40);
+  toast.innerHTML=`🔥 มีคำสั่งซื้อ ${s} เมื่อ ${n} วินาทีที่แล้ว`;
+  toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'),4000);
+},9000);
+
+/* NEXT RECOMMEND */
+let nextId=null;
 function selectService(id){
   localStorage.setItem('service_id',id);
+  const others=allServices.filter(s=>s.service_id!==id);
+  const pick=others[Math.floor(Math.random()*others.length)];
+  if(pick){
+    nextId=pick.service_id;
+    nextName.textContent=pick.display_name;
+    nextRecommend.style.display='block';
+    setTimeout(()=>nextRecommend.style.display='none',8000);
+  }
   location.href='order.html';
+}
+function goNext(){
+  if(nextId){
+    localStorage.setItem('service_id',nextId);
+    location.href='order.html';
+  }
 }
 
 loadServices();
