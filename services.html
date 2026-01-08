@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* (STYLE เหมือนเดิมทุกบรรทัด) */
+/* ===== STYLE เดิมทั้งหมด (ไม่แตะ) ===== */
 :root{
   --black:#0b0f1a;
   --blue:#38bdf8;
@@ -75,12 +75,14 @@ body{
 </div>
 
 <script>
-/* ===== animateNumber (ของเดิม) ===== */
+/* ===== animateNumber (เดิม) ===== */
 function animateNumber(el, from, to){
   if(from === to) return;
-  const step = Math.max(1, Math.min(10, Math.abs(to - from)));
-  const dir = to > from ? 1 : -1;
+  const diff = to - from;
+  const step = Math.max(1, Math.min(10, Math.abs(diff)));
+  const dir = diff > 0 ? 1 : -1;
   let current = from;
+
   function tick(){
     current += dir * step;
     if((dir > 0 && current >= to) || (dir < 0 && current <= to)){
@@ -88,7 +90,7 @@ function animateNumber(el, from, to){
     }
     el.textContent = `⏳ มี ${current} คนกำลังสั่งซื้อบริการนี้`;
     if(current !== to){
-      setTimeout(tick, 140 + Math.random()*220);
+      setTimeout(tick, 180 + Math.random()*260);
     }
   }
   tick();
@@ -96,9 +98,8 @@ function animateNumber(el, from, to){
 </script>
 
 <script>
-/* ===== API + AUTH (ของเดิม) ===== */
+/* ===== API + AUTH (เดิม) ===== */
 const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
-const API_KEY="SBTH-SECURE-2026";
 const userId=localStorage.getItem('user_id');
 const username=localStorage.getItem('username');
 if(!userId||!username){localStorage.clear();location.replace('login.html')}
@@ -115,7 +116,7 @@ function logout(){localStorage.clear();location.replace('login.html')}
 const creditEl=document.getElementById('credit');
 if(localStorage.getItem('credit')) creditEl.textContent=Number(localStorage.getItem('credit')).toFixed(2);
 function loadCredit(){
-  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+  fetch(`${API}?action=getUser&user_id=${userId}`)
     .then(r=>r.json())
     .then(res=>{
       if(res.success){
@@ -126,33 +127,37 @@ function loadCredit(){
 }
 loadCredit();setInterval(loadCredit,20000);
 
-/* ===== URGENCY LOGIC (เพิ่มใหม่) ===== */
+/* ===== URGENCY WAVE (เนียน) ===== */
 function isNight(){
   const h=new Date().getHours();
   return h>=0 && h<=7;
 }
-function baseUrgency(serviceId){
+function baseUrgency(id){
   const d=new Date().toISOString().slice(0,10);
-  const k=`urg_${serviceId}_${d}`;
-  let v=localStorage.getItem(k);
-  if(!v){v=Math.floor(Math.random()*534)+1;localStorage.setItem(k,v)}
-  return Number(v);
+  const k=`urg_${id}_${d}`;
+  if(!localStorage.getItem(k)){
+    localStorage.setItem(k,Math.floor(Math.random()*534)+1);
+  }
+  return Number(localStorage.getItem(k));
 }
-function waveUrgency(service){
-  const last=Number(sessionStorage.getItem(`wave_${service.service_id}`)||baseUrgency(service.service_id));
-  const hot=Math.max(1, 200 - service.price_per_100); // ถูก = ฮิต
-  let delta=Math.floor(Math.random()*10)+1;
+function nextUrgency(service){
+  const key=`wave_${service.service_id}`;
+  let current=Number(sessionStorage.getItem(key) || baseUrgency(service.service_id));
+
+  let delta=Math.floor(Math.random()*6)+1; // 1–6
   if(isNight()) delta*=-1;
-  if(Math.random() < hot/250) delta*=1; else delta*=-1;
-  let next=Math.max(1, Math.min(534,last+delta));
-  sessionStorage.setItem(`wave_${service.service_id}`,next);
-  return {from:last,to:next};
+  if(service.price_per_100 < 100 && Math.random() < .65) delta*=1;
+  else if(Math.random() < .5) delta*=-1;
+
+  let next=Math.max(1,Math.min(534,current+delta));
+  sessionStorage.setItem(key,next);
+  return {from:current,to:next};
 }
 
 /* SERVICES */
 let allServices=[];
 function loadServices(){
-  fetch(`${API}?action=getServices&api_key=${API_KEY}`)
+  fetch(`${API}?action=getServices`)
     .then(r=>r.json())
     .then(res=>{
       allServices=res.services||[];
@@ -172,7 +177,9 @@ function renderServices(){
         <div class="service-desc">${s.short_desc||''}</div>
         <div class="value-hint">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
         <div class="trust">🔥 มีการสั่งซื้ออย่างต่อเนื่องตลอด 24 ชม.</div>
-        <div class="urgency" data-u="${s.service_id}">⏳ มี ${base} คนกำลังสั่งซื้อบริการนี้</div>
+        <div class="urgency" data-u="${s.service_id}">
+          ⏳ มี ${base} คนกำลังสั่งซื้อบริการนี้
+        </div>
         <div class="bottom">
           <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
           <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
@@ -182,16 +189,16 @@ function renderServices(){
   });
 }
 
-/* REALTIME WAVE */
+/* WAVE ช้า เนียน */
 function startWave(){
   setInterval(()=>{
     allServices.forEach(s=>{
       const el=document.querySelector(`[data-u="${s.service_id}"]`);
       if(!el) return;
-      const {from,to}=waveUrgency(s);
+      const {from,to}=nextUrgency(s);
       animateNumber(el,from,to);
     });
-  }, 30000 + Math.random()*60000);
+  }, 45000 + Math.random()*75000); // 45–120 วินาที
 }
 
 function selectService(id){
