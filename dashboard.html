@@ -13,6 +13,7 @@
   --pink:#ec4899;
   --muted:#94a3b8;
   --success:#22c55e;
+  --warning:#f59e0b;
 }
 *{box-sizing:border-box}
 body{
@@ -27,8 +28,6 @@ body{
 /* HEADER */
 .header{
   position:sticky;top:0;z-index:20;
-  background:rgba(2,6,23,.85);
-  backdrop-filter:blur(14px);
   padding:14px 16px;
   text-align:center;
   font-weight:900;
@@ -61,10 +60,7 @@ body{
   font-weight:900;
   margin-top:6px;
 }
-.balance span{
-  font-size:14px;
-  color:var(--muted);
-}
+.balance span{font-size:14px;color:var(--muted)}
 
 /* LIVE */
 .live{
@@ -115,8 +111,18 @@ body{
   justify-content:space-between;
   margin-top:10px;
   font-size:14px;
+  cursor:pointer;
 }
 .order span{color:var(--muted)}
+.badge{
+  padding:4px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+}
+.pending{background:rgba(245,158,11,.15);color:var(--warning)}
+.processing{background:rgba(56,189,248,.15);color:var(--blue)}
+.success{background:rgba(34,197,94,.18);color:var(--success)}
 
 /* NOTE */
 .note{
@@ -151,10 +157,10 @@ body{
 
 <div class="container">
 
-  <!-- BALANCE -->
+  <!-- CREDIT -->
   <div class="card">
     <div>ยอดเครดิตของคุณ</div>
-    <div class="balance" id="credit">0.00 <span>บาท</span></div>
+    <div class="balance"><span id="credit">0.00</span> <span>บาท</span></div>
   </div>
 
   <!-- LIVE -->
@@ -174,21 +180,19 @@ body{
     </div>
   </div>
 
-  <!-- LAST ORDERS -->
+  <!-- ORDERS REAL -->
   <div class="card">
     <b>ออเดอร์ล่าสุด</b>
-    <div class="order"><span>#OD****1234</span><span>กำลังดำเนินการ</span></div>
-    <div class="order"><span>#OD****1189</span><span>สำเร็จ</span></div>
-    <div class="order"><span>#OD****1102</span><span>สำเร็จ</span></div>
+    <div id="orderList"></div>
   </div>
 
   <!-- NOTE -->
   <div class="card">
     <b>💚 ข้อความถึงลูกค้า</b>
     <div class="note">
-      ระบบของเราเป็นอัตโนมัติ 24 ชั่วโมง<br>
+      ระบบอัตโนมัติ 24 ชั่วโมง<br>
       ทุกคำสั่งซื้อมีประวัติตรวจสอบได้<br>
-      หากมีปัญหา สามารถติดต่อแอดมินได้ทันที
+      หากมีปัญหา ติดต่อแอดมินได้ทันที
     </div>
   </div>
 
@@ -197,26 +201,59 @@ body{
 <div class="toast" id="toast"></div>
 
 <script>
-/* CREDIT */
-const credit = localStorage.getItem('credit') || '0';
-document.getElementById('credit').textContent = Number(credit).toFixed(2);
+const API = "https://script.google.com/macros/s/AKfycbxsz0AEvBctJc9UrbenP4yYarsPfFZsdSsuUBFQ78xnQ3_fgHp7O9vJr6RaXlmlt8lv5w/exec";
+const API_KEY = "SBTH-SECURE-2026";
 
-/* LIVE USERS */
-let current = 300;
-const liveEl = document.getElementById('liveCount');
+const userId = localStorage.getItem('user_id');
+if(!userId) location.replace('login.html');
+
+/* CREDIT (REAL) */
+fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+.then(r=>r.json())
+.then(res=>{
+  if(res.success){
+    document.getElementById('credit').textContent = Number(res.user.credit||0).toFixed(2);
+    localStorage.setItem('credit',res.user.credit);
+  }
+});
+
+/* LIVE USERS (FAKE FOR TRUST) */
+const liveEl=document.getElementById('liveCount');
 setInterval(()=>{
-  const next = 200 + Math.floor(Math.random()*800);
-  current = next;
-  liveEl.textContent = current;
+  liveEl.textContent = 200 + Math.floor(Math.random()*1000);
 },5000);
 
+/* REAL ORDERS */
+const listEl=document.getElementById('orderList');
+fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
+.then(r=>r.json())
+.then(res=>{
+  const orders=(res.orders||[]).slice(-3).reverse();
+  if(!orders.length){
+    listEl.innerHTML='<div style="color:#94a3b8">ยังไม่มีคำสั่งซื้อ</div>';
+    return;
+  }
+  orders.forEach(o=>{
+    const cls=o.status||'pending';
+    listEl.insertAdjacentHTML('beforeend',`
+      <div class="order" onclick="goDetail('${o.order_id}')">
+        <span>#${o.order_id}</span>
+        <span class="badge ${cls}">
+          ${cls==='success'?'สำเร็จ':cls==='processing'?'กำลังดำเนินการ':'รอดำเนินการ'}
+        </span>
+      </div>
+    `);
+  });
+});
+
+function goDetail(id){
+  localStorage.setItem('order_id',id);
+  location.href='orderdetail.html';
+}
+
 /* TOAST */
-const services=[
-  'TikTok Followers',
-  'TikTok Likes',
-  'TikTok Views'
-];
 const toast=document.getElementById('toast');
+const services=['TikTok Followers','TikTok Likes','TikTok Views'];
 setInterval(()=>{
   const s=services[Math.floor(Math.random()*services.length)];
   const m=1+Math.floor(Math.random()*5);
