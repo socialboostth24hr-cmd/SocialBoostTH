@@ -6,234 +6,233 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root{--pink:#ec4899;--purple:#8b5cf6;--blue:#38bdf8}
+:root{
+  --black:#0b0f1a;
+  --blue:#38bdf8;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --muted:#94a3b8;
+  --success:#22c55e;
+  --danger:#ef4444;
+}
 *{box-sizing:border-box}
 body{
-  margin:0;font-family:system-ui,-apple-system;
+  margin:0;
+  font-family:system-ui,-apple-system;
   background:
-    radial-gradient(900px 360px at top,#fde7f3,transparent),
-    linear-gradient(180deg,#eef6ff,#ffffff);
-  color:#111827;
+    radial-gradient(900px 420px at top,#1e293b,transparent),
+    linear-gradient(180deg,var(--black),#060913);
+  color:#f1f5f9;
 }
+
+/* HEADER */
 .header{
-  padding:12px 16px;
-  display:flex;
-  justify-content:space-between;
+  position:sticky;top:0;z-index:20;
+  background:rgba(2,6,23,.85);
+  backdrop-filter:blur(14px);
+  padding:14px 16px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
   align-items:center;
-  background:#fff;
-  position:sticky;
-  top:0;
-  z-index:50;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
-.logo{height:32px}
-.container{max-width:720px;margin:0 auto;padding:16px 18px 120px}
+.back{
+  border:none;
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-weight:900;
+}
+.center{
+  text-align:center;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* CONTAINER */
+.container{
+  max-width:520px;
+  margin:auto;
+  padding:20px 18px 120px;
+}
+
+/* CARD */
 .card{
-  background:#fff;
-  border-radius:22px;
+  background:linear-gradient(180deg,#111827,#0b1020);
+  border-radius:24px;
   padding:20px;
   margin-bottom:16px;
-  box-shadow:0 20px 45px rgba(139,92,246,.18);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 25px 70px rgba(0,0,0,.6);
 }
-h2{margin:0 0 14px;font-size:22px;font-weight:900}
-input{
+
+/* INPUT */
+label{
+  font-size:13px;
+  font-weight:900;
+}
+.input{
+  margin-top:6px;
+  background:#020617;
+  border-radius:16px;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.input input{
   width:100%;
-  padding:14px;
-  border-radius:14px;
-  border:1px solid #e5e7eb;
-  font-size:15px;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:#fff;
+  font-size:16px;
 }
-.error{margin-top:8px;font-size:13px;font-weight:900;color:#dc2626;display:none}
-.calc-box{
-  margin-top:14px;
-  padding:18px;
-  border-radius:18px;
-  background:linear-gradient(135deg,#dcfce7,#bbf7d0);
+
+/* FILE */
+.file{
+  display:block;
+  margin-top:10px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+/* BUTTON */
+.btn{
+  position:fixed;
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+  width:calc(100% - 32px);
+  max-width:480px;
+  padding:16px;
+  border-radius:999px;
+  font-size:16px;
   font-weight:900;
-  text-align:center;
-  display:none;
+  border:none;
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
 }
-.calc-box span{font-size:28px}
-.qr-box{text-align:center;margin-top:16px;display:none}
-.qr-box img{width:220px;border-radius:16px}
-.confirmed{
-  margin-top:14px;
-  background:#e0f2fe;
-  color:#0369a1;
-  padding:14px;
-  border-radius:14px;
+
+/* NOTE */
+.note{
+  font-size:13px;
+  line-height:1.6;
+  color:#cbd5f5;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  left:16px;
+  bottom:-80px;
+  background:rgba(15,23,42,.95);
+  border:1px solid rgba(139,92,246,.35);
+  color:#fff;
+  padding:14px 18px;
+  border-radius:16px;
+  font-size:13px;
   font-weight:900;
-  display:none;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
+  transition:.4s;
+  z-index:50;
 }
-.table{width:100%;border-collapse:collapse;font-size:14px}
-.table td,.table th{padding:10px;border-bottom:1px solid #e5e7eb}
-.empty{text-align:center;color:#94a3b8}
-.status{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:900}
-.pending{background:#fef3c7;color:#92400e}
+.toast.show{bottom:22px}
 </style>
 </head>
 
 <body>
 
 <header class="header">
-  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
+  <button class="back" onclick="history.back()">←</button>
+  <div class="center">เติมเงิน</div>
+  <div></div>
 </header>
 
 <div class="container">
 
   <div class="card">
-    <h2>➕ เติมเงิน (พร้อมเพย์)</h2>
-
-    <input type="number" id="amount" placeholder="ขั้นต่ำ 20 บาท">
-    <div class="error" id="errorText">กรุณากรอกยอดตั้งแต่ 20 บาทขึ้นไป</div>
-
-    <div class="calc-box" id="calcBox"></div>
-
-    <div class="qr-box" id="qrBox">
-      <img id="qrImg">
-      <div style="margin-top:8px;font-weight:900">
-        พร้อมเพย์ 099-130-1221<br>สรวงสุดา ศรีสุวรรณ์
-      </div>
-    </div>
-
-    <button id="confirmBtn" style="
-      margin-top:14px;
-      width:100%;
-      padding:16px;
-      border:none;
-      border-radius:999px;
-      font-size:16px;
-      font-weight:900;
-      background:linear-gradient(135deg,var(--blue),var(--purple));
-      color:#fff;
-      cursor:pointer
-    ">✅ ยืนยันว่าแจ้งแล้ว</button>
-
-    <div class="confirmed" id="confirmedBox">
-      📤 บันทึกรายการเติมเงินเรียบร้อย<br>
-      ⏳ สถานะ: รอแอดมินตรวจสอบ
+    <label>จำนวนเงินที่ต้องการเติม (บาท)</label>
+    <div class="input">
+      <input type="number" id="amount" placeholder="เช่น 100, 500, 1000">
     </div>
   </div>
 
   <div class="card">
-    <h2>💰 ประวัติการเติมเงิน</h2>
-    <table class="table">
-      <thead>
-        <tr><th>วันที่</th><th>จำนวน</th><th>สถานะ</th></tr>
-      </thead>
-      <tbody id="wallet"></tbody>
-    </table>
+    <label>แนบสลิปโอนเงิน</label>
+    <div class="file">
+      ถ่ายหรืออัปโหลดสลิปที่โอนมา<br>
+      (รองรับ .jpg / .png)
+    </div>
+    <input type="file" id="slip" accept="image/*">
+  </div>
+
+  <div class="card">
+    <b>💚 ข้อความถึงลูกค้า</b>
+    <div class="note">
+      หลังแนบสลิป ระบบจะส่งคำขอให้แอดมินตรวจสอบ<br>
+      เมื่ออนุมัติ เครดิตจะเข้าอัตโนมัติ<br>
+      โดยปกติใช้เวลาไม่เกิน 5 นาที
+    </div>
   </div>
 
 </div>
 
+<button class="btn" onclick="submitTopup()">📤 ส่งคำขอเติมเงิน</button>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const API="https://script.google.com/macros/s/AKfycbxsz0AEvBctJc9UrbenP4yYarsPfFZsdSsuUBFQ78xnQ3_fgHp7O9vJr6RaXlmlt8lv5w/exec";
-const API_KEY="SBTH-SECURE-2026";
+const API = "https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
+const API_KEY = "SBTH-SECURE-2026";
 
-const userId=localStorage.getItem('user_id');
-if(!userId) location.href='login.html';
+const userId = localStorage.getItem("user_id");
+if(!userId) location.href="index.html";
 
-const amountEl=document.getElementById('amount');
-const errorText=document.getElementById('errorText');
-const calcBox=document.getElementById('calcBox');
-const qrBox=document.getElementById('qrBox');
-const qrImg=document.getElementById('qrImg');
-const confirmedBox=document.getElementById('confirmedBox');
-const walletBox=document.getElementById('wallet');
-const confirmBtn=document.getElementById('confirmBtn');
+const toast=document.getElementById("toast");
 
-let lockedAmount=null;
-
-/* restore */
-(function(){
-  const b=sessionStorage.getItem('topup_base');
-  const l=sessionStorage.getItem('topup_locked');
-  if(b&&l){
-    amountEl.value=b;
-    lockedAmount=l;
-    renderLocked();
-  }
-})();
-
-function renderLocked(){
-  calcBox.style.display='block';
-  calcBox.innerHTML=`🔔 กรุณาโอน<br><span>${lockedAmount}</span> บาท`;
-  qrImg.src=`https://promptpay.io/0991301221/${lockedAmount}.png`;
-  qrBox.style.display='block';
+function show(msg){
+  toast.textContent=msg;
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"),4000);
 }
 
-amountEl.oninput=()=>{
-  const base=Number(amountEl.value);
-  if(!base||base<20){
-    errorText.style.display='block';
-    calcBox.style.display=qrBox.style.display='none';
-    sessionStorage.clear();
-    lockedAmount=null;
+async function submitTopup(){
+  const amount=document.getElementById("amount").value;
+  const slip=document.getElementById("slip").files[0];
+
+  if(!amount || amount<=0){
+    show("❌ กรุณากรอกจำนวนเงิน");
     return;
   }
-  errorText.style.display='none';
-
-  const lastBase=sessionStorage.getItem('topup_base');
-  const lastLock=sessionStorage.getItem('topup_locked');
-  if(lastBase==base&&lastLock){
-    lockedAmount=lastLock;
-  }else{
-    const s=Math.floor(Math.random()*99)+1;
-    lockedAmount=(base+s/100).toFixed(2);
-    sessionStorage.setItem('topup_base',base);
-    sessionStorage.setItem('topup_locked',lockedAmount);
+  if(!slip){
+    show("❌ กรุณาแนบสลิป");
+    return;
   }
-  renderLocked();
-  confirmedBox.style.display='none';
-};
 
-confirmBtn.onclick=async()=>{
-  if(!lockedAmount) return alert('กรุณากรอกยอดก่อน');
-  confirmBtn.disabled=true;
+  const form=new FormData();
+  form.append("action","requestTopup");
+  form.append("api_key",API_KEY);
+  form.append("user_id",userId);
+  form.append("amount",amount);
+  form.append("slip",slip);
 
-  try{
-    const r=await fetch(`${API}?action=requestTopup&api_key=${API_KEY}&user_id=${userId}&amount=${lockedAmount}`);
-    const d=await r.json();
-    if(!d.success){
-      alert('❌ บันทึกไม่สำเร็จ');
-      confirmBtn.disabled=false;
-      return;
-    }
-    confirmedBox.style.display='block';
-    sessionStorage.clear();
-    lockedAmount=null;
-    amountEl.value='';
-    loadWallet();
-  }catch{
-    alert('❌ เชื่อมต่อระบบไม่ได้');
-  }finally{
-    confirmBtn.disabled=false;
-  }
-};
+  show("⏳ กำลังส่งคำขอเติมเงิน...");
 
-function loadWallet(){
-  walletBox.innerHTML='<tr><td colspan="3" class="empty">กำลังโหลด...</td></tr>';
-  fetch(`${API}?action=getWallet&api_key=${API_KEY}&user_id=${userId}`)
+  fetch(API,{method:"POST",body:form})
     .then(r=>r.json())
     .then(res=>{
-      const list=(res.logs||[]).filter(w=>w.type==='TOPUP');
-      if(!list.length){
-        walletBox.innerHTML='<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
-        return;
+      if(res.success){
+        show("✅ ส่งคำขอเติมเงินสำเร็จ");
+        setTimeout(()=>location.href="dashboard.html",1800);
+      }else{
+        show("❌ ส่งคำขอไม่สำเร็จ");
       }
-      walletBox.innerHTML='';
-      list.reverse().forEach(w=>{
-        walletBox.innerHTML+=`
-        <tr>
-          <td>${new Date(w.datetime).toLocaleString()}</td>
-          <td>${Number(w.amount).toFixed(2)}</td>
-          <td><span class="status pending">รอตรวจสอบ</span></td>
-        </tr>`;
-      });
+    })
+    .catch(()=>{
+      show("❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์");
     });
 }
-loadWallet();
 </script>
 
 </body>
