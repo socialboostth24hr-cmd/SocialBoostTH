@@ -10,9 +10,8 @@
   --black:#0b0f1a;
   --blue:#38bdf8;
   --purple:#8b5cf6;
-  --gold:#fde047;
-  --hot:#fb7185;
   --muted:#94a3b8;
+  --card:#020617;
 }
 *{box-sizing:border-box}
 body{
@@ -26,111 +25,88 @@ body{
 
 /* HEADER */
 .header{
-  padding:12px 16px;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
+  position:sticky;top:0;z-index:50;
+  display:grid;grid-template-columns:auto 1fr auto;
   align-items:center;
+  padding:12px 16px;
   background:rgba(2,6,23,.85);
   backdrop-filter:blur(14px);
-  position:sticky;top:0;z-index:50;
 }
 .center{
-  font-weight:900;font-size:17px;
+  font-weight:900;
   background:linear-gradient(90deg,var(--blue),var(--purple));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
-.menu-btn{
-  border:none;padding:6px 14px;border-radius:999px;
-  background:rgba(255,255,255,.08);
-  color:#fff;font-weight:900;cursor:pointer;
-}
 .wallet{
-  font-size:13px;padding:6px 14px;border-radius:999px;
-  font-weight:900;
-  background:#020617;
-  border:1px solid rgba(139,92,246,.6);
+  font-size:13px;font-weight:900;
+  padding:6px 14px;border-radius:999px;
+  background:#020617;border:1px solid rgba(255,255,255,.15);
 }
 
-/* MENU */
-.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:90}
-.side-menu{
-  position:fixed;left:-260px;top:0;
-  width:260px;height:100%;
-  background:#020617;
-  padding:22px 18px;
-  z-index:100;transition:.3s;
-}
-.side-menu.open{left:0}
-.side-menu .user{font-weight:900;margin-bottom:14px}
-.side-menu a{
-  display:block;padding:12px 0;
-  color:#e5e7eb;text-decoration:none;
-  font-weight:900;
-  border-bottom:1px solid rgba(255,255,255,.08)
-}
-.side-menu a.logout{color:#fb7185}
+/* CONTAINER */
+.container{max-width:720px;margin:auto;padding:20px 18px 140px}
+.title{font-size:26px;font-weight:900}
+.sub{font-size:13px;color:var(--muted);margin-bottom:16px}
 
-/* CONTENT */
-.container{max-width:720px;margin:auto;padding:26px 18px 160px}
-.title{font-size:28px;font-weight:900}
-.subtitle{font-size:14px;color:var(--muted);margin-bottom:14px}
-.search input{
-  width:100%;padding:14px;border-radius:14px;
-  border:1px solid rgba(148,163,184,.2);
-  background:#020617;color:#fff;
-}
-
-/* SERVICE CARD */
+/* SERVICE */
 .service{
-  background:#020617;
-  border:1px solid rgba(148,163,184,.14);
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.1);
   border-radius:20px;
   padding:18px;
   margin-bottom:18px;
 }
-.service-name{font-size:18px;font-weight:900}
-.service-desc{font-size:13px;color:var(--muted);margin:6px 0}
-.detail-btn{
-  background:none;border:none;
-  font-size:12px;font-weight:900;
-  color:var(--blue);
-  padding:0;cursor:pointer;
+.service h3{margin:0;font-size:18px}
+.desc{font-size:13px;color:var(--muted);margin:6px 0}
+.meta{font-size:12px;color:#86efac;font-weight:900}
+.price{font-size:20px;font-weight:900;margin-top:10px}
+.actions{
+  display:flex;gap:8px;margin-top:14px
 }
-.bottom{
-  display:flex;justify-content:space-between;
-  align-items:center;margin-top:12px;
-}
-.price{font-size:20px;font-weight:900}
 .btn{
-  border:none;padding:12px 22px;border-radius:999px;
+  flex:1;
+  border:none;
+  padding:12px;
+  border-radius:999px;
+  font-weight:900;
+  cursor:pointer;
+}
+.btn.primary{
   background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;font-weight:900;
+  color:#fff;
+}
+.btn.ghost{
+  background:#020617;
+  color:#cbd5f5;
+  border:1px solid rgba(255,255,255,.18);
 }
 
-/* DETAIL POPUP */
-.detail-overlay{
+/* DETAIL MODAL */
+.overlay{
   position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;z-index:200;
+  background:rgba(0,0,0,.65);
+  display:none;z-index:99;
 }
-.detail-box{
-  position:fixed;left:50%;bottom:-100%;
-  transform:translateX(-50%);
-  width:100%;max-width:520px;
+.modal{
+  position:fixed;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:92%;max-width:420px;
   background:#020617;
-  border-radius:22px 22px 0 0;
-  padding:20px;
-  z-index:210;
-  transition:.35s;
+  border-radius:22px;
+  padding:22px;
+  display:none;z-index:100;
+  box-shadow:0 30px 80px rgba(0,0,0,.7);
 }
-.detail-box.open{bottom:0}
-.detail-title{font-weight:900;font-size:16px;margin-bottom:10px}
-.detail-content{font-size:13px;line-height:1.7;color:#cbd5e1}
-.detail-close{
-  margin-top:16px;width:100%;
-  padding:12px;border:none;
-  border-radius:14px;
+.modal h4{margin:0 0 8px}
+.modal ul{padding-left:18px;font-size:13px;color:#cbd5f5}
+.modal li{margin-bottom:6px}
+.close{
+  margin-top:14px;
+  width:100%;
+  padding:12px;
+  border-radius:999px;
+  border:none;
   font-weight:900;
   background:linear-gradient(135deg,var(--blue),var(--purple));
   color:#fff;
@@ -140,72 +116,60 @@ body{
 
 <body>
 
-<header class="header">
-  <button class="menu-btn" onclick="openMenu()">☰</button>
+<div class="header">
+  <div></div>
   <div class="center">SocialBoostTH</div>
   <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
-</header>
+</div>
 
 <div class="container">
   <div class="title">เลือกบริการ</div>
-  <div class="subtitle">ระบบอัตโนมัติ • ปลอดภัย • 24 ชั่วโมง</div>
-  <div class="search">
-    <input placeholder="🔍 ค้นหาบริการ">
-  </div>
+  <div class="sub">ระบบอัตโนมัติ • ปลอดภัย • 24 ชม.</div>
+
   <div id="services"></div>
 </div>
 
-<div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
-<div class="side-menu" id="sideMenu">
-  <div class="user">👤 <span id="username"></span></div>
-  <a href="services.html">📦 บริการ</a>
-  <a href="orders.html">🧾 คำสั่งซื้อ</a>
-  <a href="topup.html">💰 เติมเงิน</a>
-  <a class="logout" onclick="logout()">🚪 ออกจากระบบ</a>
-</div>
-
-<!-- DETAIL POPUP -->
-<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
-<div class="detail-box" id="detailBox">
-  <div class="detail-title">รายละเอียดบริการ</div>
-  <div class="detail-content" id="detailContent"></div>
-  <button class="detail-close" onclick="closeDetail()">ปิด</button>
+<!-- DETAIL -->
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<div class="modal" id="modal">
+  <h4 id="detailName">-</h4>
+  <ul id="detailList"></ul>
+  <button class="close" onclick="closeDetail()">ปิด</button>
 </div>
 
 <script>
 const API="https://script.google.com/macros/s/AKfycbxsz0AEvBctJc9UrbenP4yYarsPfFZsdSsuUBFQ78xnQ3_fgHp7O9vJr6RaXlmlt8lv5w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const userId=localStorage.getItem('user_id');
-const username=localStorage.getItem('username');
-if(!userId||!username){location.href='login.html'}
-document.getElementById('username').textContent=username;
+const credit=Number(localStorage.getItem('credit')||0);
+document.getElementById('credit').textContent=credit.toFixed(2);
 
-/* MENU */
-const sideMenu=document.getElementById('sideMenu');
-const overlay=document.getElementById('menuOverlay');
-function openMenu(){sideMenu.classList.add('open');overlay.style.display='block'}
-function closeMenu(){sideMenu.classList.remove('open');overlay.style.display='none'}
-function logout(){localStorage.clear();location.href='login.html'}
-
-/* CREDIT */
-document.getElementById('credit').textContent=
-  Number(localStorage.getItem('credit')||0).toFixed(2);
-
-/* SERVICES */
 const box=document.getElementById('services');
+
+/* LOAD SERVICES */
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
 .then(r=>r.json())
 .then(res=>{
   (res.services||[]).forEach(s=>{
     box.insertAdjacentHTML('beforeend',`
       <div class="service">
-        <div class="service-name">${s.display_name}</div>
-        <div class="service-desc">${s.short_desc||''}</div>
-        <button class="detail-btn" onclick="showDetail()">📄 ดูรายละเอียดบริการ</button>
-        <div class="bottom">
-          <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
-          <button class="btn" onclick="selectService('${s.service_id}')">เลือก</button>
+        <h3>${s.display_name}</h3>
+        <div class="desc">${s.short_desc||''}</div>
+        <div class="meta">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
+        <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
+
+        <div class="actions">
+          <button class="btn ghost"
+            onclick='openDetail("${s.display_name}",
+              ["เริ่มงานภายใน 1–3 ชม.",
+               "รับประกันตามเงื่อนไข",
+               "ไม่ต้องใช้รหัสผ่าน",
+               "ระบบอัตโนมัติ 24 ชม."])'>
+            ดูรายละเอียด
+          </button>
+          <button class="btn primary" onclick="selectService('${s.service_id}')">
+            เลือก
+          </button>
         </div>
       </div>
     `);
@@ -214,27 +178,21 @@ fetch(`${API}?action=getServices&api_key=${API_KEY}`)
 
 function selectService(id){
   localStorage.setItem('service_id',id);
-  location.href='order.html';
+  location.href='orders.html';
 }
 
 /* DETAIL */
-const overlayDetail=document.getElementById('detailOverlay');
-const boxDetail=document.getElementById('detailBox');
-const detailContent=document.getElementById('detailContent');
-
-function showDetail(){
-  overlayDetail.style.display='block';
-  boxDetail.classList.add('open');
-  detailContent.innerHTML=`
-    ⏱ เริ่มระบบภายใน 0–3 ชั่วโมง<br><br>
-    ⚡ ความเร็วประมาณ 1–3 วัน<br><br>
-    ♻️ รับประกันยอด (ตามเงื่อนไข)<br><br>
-    ❗ โปรไฟล์ต้องเป็นสาธารณะ
-  `;
+function openDetail(name,items){
+  document.getElementById('detailName').textContent=name;
+  const ul=document.getElementById('detailList');
+  ul.innerHTML='';
+  items.forEach(i=>ul.insertAdjacentHTML('beforeend',`<li>${i}</li>`));
+  document.getElementById('overlay').style.display='block';
+  document.getElementById('modal').style.display='block';
 }
 function closeDetail(){
-  overlayDetail.style.display='none';
-  boxDetail.classList.remove('open');
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('modal').style.display='none';
 }
 </script>
 
