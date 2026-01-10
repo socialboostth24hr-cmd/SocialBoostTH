@@ -87,7 +87,7 @@ h1{
 .status{
   display:flex;justify-content:center;align-items:center;
   gap:8px;font-size:13px;font-weight:800;
-  color:#a7f3d0;margin-bottom:12px;
+  color:#a7f3d0;margin-bottom:6px;
 }
 .status-dot{
   width:10px;height:10px;border-radius:50%;
@@ -101,12 +101,12 @@ h1{
   100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
 }
 
-/* ===== LIVE USERS ===== */
+/* ===== LIVE USERS (แก้ข้อความตรงนี้อย่างเดียว) ===== */
 .live-users{
   text-align:center;
   font-size:13px;
   font-weight:800;
-  color:#fde047;
+  color:#86efac;
   margin-bottom:18px;
 }
 .live-users .num{
@@ -197,8 +197,9 @@ label{font-size:13px;font-weight:700;margin-bottom:6px;display:block}
     <span class="status-dot"></span> ระบบออนไลน์
   </div>
 
+  <!-- 🔥 เปลี่ยนข้อความตรงนี้ -->
   <div class="live-users" id="liveBox">
-    ⚡ มีผู้ใช้งานอยู่ <b class="num" id="liveCount">842</b> คน
+    🟢 <b class="num" id="liveCount">842</b> คนกำลังใช้งาน
   </div>
 
   <div class="field">
@@ -214,7 +215,6 @@ label{font-size:13px;font-weight:700;margin-bottom:6px;display:block}
     </div>
   </div>
 
-  <!-- REMEMBER ME -->
   <div class="remember">
     <input type="checkbox" id="remember">
     <label for="remember">จำการเข้าสู่ระบบ</label>
@@ -235,11 +235,9 @@ label{font-size:13px;font-weight:700;margin-bottom:6px;display:block}
 <div class="order-toast" id="orderToast"></div>
 
 <script>
-/* ===== CONFIG ===== */
 const API="https://script.google.com/macros/s/AKfycbxsz0AEvBctJc9UrbenP4yYarsPfFZsdSsuUBFQ78xnQ3_fgHp7O9vJr6RaXlmlt8lv5w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-/* ===== ELEMENTS ===== */
 const elUsername=document.getElementById('username');
 const elPassword=document.getElementById('password');
 const elError=document.getElementById('error');
@@ -247,19 +245,16 @@ const rememberEl=document.getElementById('remember');
 const liveBox=document.getElementById('liveBox');
 const liveCount=document.getElementById('liveCount');
 
-/* ===== RESTORE REMEMBER ===== */
 const remembered = localStorage.getItem('remember_username');
 if(remembered){
   elUsername.value = remembered;
   rememberEl.checked = true;
 }
 
-/* ===== PASSWORD ===== */
 function togglePass(){
   elPassword.type = elPassword.type==='password'?'text':'password';
 }
 
-/* ===== LOGIN ===== */
 function login(){
   elError.textContent='';
   if(!elUsername.value||!elPassword.value){
@@ -271,19 +266,15 @@ function login(){
     .then(r=>r.json())
     .then(res=>{
       if(!res.success) throw 0;
-
       localStorage.setItem('user_id',res.user.user_id);
       localStorage.setItem('username',res.user.username);
       localStorage.setItem('credit',res.user.credit);
-      localStorage.setItem('login_at',Date.now()); // ✅ สำคัญ
-      localStorage.setItem('remember',rememberEl.checked?'1':'0');
-
+      localStorage.setItem('login_at',Date.now());
       if(rememberEl.checked){
         localStorage.setItem('remember_username',res.user.username);
       }else{
         localStorage.removeItem('remember_username');
       }
-
       location.href='services.html';
     })
     .catch(()=>{
@@ -291,13 +282,13 @@ function login(){
     });
 }
 
-/* ===== LIVE USERS EFFECT ===== */
+/* ===== RANDOM USERS ===== */
 let current=Number(liveCount.textContent);
 function range(){
   const h=new Date().getHours();
-  if(h<=6) return [100,600];
-  if(h<=15) return [600,1400];
-  return [1200,2267];
+  if(h<=6) return [120,620];
+  if(h<=15) return [700,1500];
+  return [1400,2600];
 }
 setInterval(()=>{
   const [a,b]=range();
@@ -308,28 +299,6 @@ setInterval(()=>{
   liveCount.textContent=current;
   setTimeout(()=>liveBox.classList.remove('up','down'),500);
 },6000);
-
-/* ===== PARTICLES ===== */
-const pBox=document.getElementById('particles');
-for(let i=0;i<24;i++){
-  const p=document.createElement('div');
-  p.className='particle';
-  p.style.left=Math.random()*100+'%';
-  p.style.bottom='-20px';
-  p.style.animationDuration=(20+Math.random()*20)+'s';
-  pBox.appendChild(p);
-}
-
-/* ===== ORDER TOAST ===== */
-const services=['TikTok Followers','TikTok Likes','TikTok Views','TikTok Shares'];
-const toast=document.getElementById('orderToast');
-setInterval(()=>{
-  const sec=20+Math.floor(Math.random()*40);
-  const s=services[Math.floor(Math.random()*services.length)];
-  toast.innerHTML=`🔥 มีคำสั่งซื้อใหม่ ${s}<br>เมื่อ ${sec} วินาทีที่แล้ว`;
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),4200);
-},9000);
 </script>
 
 </body>
