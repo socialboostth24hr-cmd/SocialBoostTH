@@ -13,7 +13,7 @@
   --pink:#ec4899;
   --muted:#94a3b8;
   --success:#22c55e;
-  --warning:#f59e0b;
+  --warn:#f59e0b;
 }
 *{box-sizing:border-box}
 body{
@@ -51,37 +51,14 @@ body{
   padding:20px;
   margin-bottom:16px;
   border:1px solid rgba(255,255,255,.06);
-  box-shadow:0 25px 70px rgba(0,0,0,.6);
 }
 
 /* BALANCE */
 .balance{
-  font-size:28px;
+  font-size:30px;
   font-weight:900;
-  margin-top:6px;
 }
 .balance span{font-size:14px;color:var(--muted)}
-
-/* LIVE */
-.live{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:13px;
-  font-weight:900;
-  color:#86efac;
-}
-.dot{
-  width:10px;height:10px;border-radius:50%;
-  background:#22c55e;
-  box-shadow:0 0 0 0 rgba(34,197,94,.7);
-  animation:pulse 1.8s infinite;
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}
-  70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}
-  100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
-}
 
 /* QUICK */
 .quick{
@@ -98,12 +75,6 @@ body{
   text-decoration:none;
   color:#fff;
 }
-.quick span{
-  display:block;
-  font-size:12px;
-  color:var(--muted);
-  margin-top:4px;
-}
 
 /* ORDERS */
 .order{
@@ -114,40 +85,12 @@ body{
   cursor:pointer;
 }
 .order span{color:var(--muted)}
-.badge{
-  padding:4px 12px;
-  border-radius:999px;
-  font-size:12px;
+.status{
   font-weight:900;
 }
-.pending{background:rgba(245,158,11,.15);color:var(--warning)}
-.processing{background:rgba(56,189,248,.15);color:var(--blue)}
-.success{background:rgba(34,197,94,.18);color:var(--success)}
-
-/* NOTE */
-.note{
-  font-size:13px;
-  color:#cbd5f5;
-  line-height:1.6;
-}
-
-/* TOAST */
-.toast{
-  position:fixed;
-  left:16px;
-  bottom:-80px;
-  background:rgba(15,23,42,.95);
-  border:1px solid rgba(139,92,246,.35);
-  color:#fff;
-  padding:14px 18px;
-  border-radius:16px;
-  font-size:13px;
-  font-weight:900;
-  box-shadow:0 20px 50px rgba(0,0,0,.6);
-  transition:.4s;
-  z-index:50;
-}
-.toast.show{bottom:22px}
+.pending{color:var(--warn)}
+.processing{color:var(--blue)}
+.success{color:var(--success)}
 </style>
 </head>
 
@@ -160,107 +103,80 @@ body{
   <!-- CREDIT -->
   <div class="card">
     <div>ยอดเครดิตของคุณ</div>
-    <div class="balance"><span id="credit">0.00</span> <span>บาท</span></div>
-  </div>
-
-  <!-- LIVE -->
-  <div class="card">
-    <div class="live">
-      <span class="dot"></span>
-      <b id="liveCount">---</b> คนกำลังใช้งาน
-    </div>
+    <div class="balance" id="credit">0.00 <span>บาท</span></div>
   </div>
 
   <!-- QUICK -->
   <div class="card">
     <div class="quick">
-      <a href="services.html">🛒<span>สั่งซื้อ</span></a>
-      <a href="orders.html">📦<span>คำสั่งซื้อ</span></a>
-      <a href="topup.html">💳<span>เติมเงิน</span></a>
+      <a href="services.html">🛒<br>สั่งซื้อ</a>
+      <a href="orders.html">📦<br>คำสั่งซื้อ</a>
+      <a href="topup.html">💳<br>เติมเงิน</a>
     </div>
   </div>
 
-  <!-- ORDERS REAL -->
+  <!-- ORDERS -->
   <div class="card">
     <b>ออเดอร์ล่าสุด</b>
-    <div id="orderList"></div>
-  </div>
-
-  <!-- NOTE -->
-  <div class="card">
-    <b>💚 ข้อความถึงลูกค้า</b>
-    <div class="note">
-      ระบบอัตโนมัติ 24 ชั่วโมง<br>
-      ทุกคำสั่งซื้อมีประวัติตรวจสอบได้<br>
-      หากมีปัญหา ติดต่อแอดมินได้ทันที
+    <div id="ordersBox" style="margin-top:10px;color:#94a3b8">
+      กำลังโหลด…
     </div>
   </div>
 
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxsz0AEvBctJc9UrbenP4yYarsPfFZsdSsuUBFQ78xnQ3_fgHp7O9vJr6RaXlmlt8lv5w/exec";
 const API_KEY = "SBTH-SECURE-2026";
 
+/* AUTH */
 const userId = localStorage.getItem('user_id');
-if(!userId) location.replace('login.html');
-
-/* CREDIT (REAL) */
-fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
-.then(r=>r.json())
-.then(res=>{
-  if(res.success){
-    document.getElementById('credit').textContent = Number(res.user.credit||0).toFixed(2);
-    localStorage.setItem('credit',res.user.credit);
-  }
-});
-
-/* LIVE USERS (FAKE FOR TRUST) */
-const liveEl=document.getElementById('liveCount');
-setInterval(()=>{
-  liveEl.textContent = 200 + Math.floor(Math.random()*1000);
-},5000);
-
-/* REAL ORDERS */
-const listEl=document.getElementById('orderList');
-fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
-.then(r=>r.json())
-.then(res=>{
-  const orders=(res.orders||[]).slice(-3).reverse();
-  if(!orders.length){
-    listEl.innerHTML='<div style="color:#94a3b8">ยังไม่มีคำสั่งซื้อ</div>';
-    return;
-  }
-  orders.forEach(o=>{
-    const cls=o.status||'pending';
-    listEl.insertAdjacentHTML('beforeend',`
-      <div class="order" onclick="goDetail('${o.order_id}')">
-        <span>#${o.order_id}</span>
-        <span class="badge ${cls}">
-          ${cls==='success'?'สำเร็จ':cls==='processing'?'กำลังดำเนินการ':'รอดำเนินการ'}
-        </span>
-      </div>
-    `);
-  });
-});
-
-function goDetail(id){
-  localStorage.setItem('order_id',id);
-  location.href='orderdetail.html';
+if(!userId){
+  location.replace('login.html');
 }
 
-/* TOAST */
-const toast=document.getElementById('toast');
-const services=['TikTok Followers','TikTok Likes','TikTok Views'];
-setInterval(()=>{
-  const s=services[Math.floor(Math.random()*services.length)];
-  const m=1+Math.floor(Math.random()*5);
-  toast.innerHTML=`🔥 มีลูกค้าสั่ง <b>${s}</b><br>เมื่อ ${m} นาทีที่แล้ว`;
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),4200);
-},9000);
+/* CREDIT REAL */
+function loadCredit(){
+  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
+    .then(r=>r.json())
+    .then(res=>{
+      if(!res.success) return;
+      document.getElementById('credit').innerHTML =
+        Number(res.user.credit).toFixed(2)+' <span>บาท</span>';
+      localStorage.setItem('credit',res.user.credit);
+    });
+}
+
+/* ORDERS REAL */
+function loadOrders(){
+  fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
+    .then(r=>r.json())
+    .then(res=>{
+      const box=document.getElementById('ordersBox');
+      const orders=res.orders||[];
+      if(!orders.length){
+        box.textContent='ยังไม่มีคำสั่งซื้อ';
+        return;
+      }
+      box.innerHTML='';
+      orders.slice(-5).reverse().forEach(o=>{
+        box.insertAdjacentHTML('beforeend',`
+          <div class="order" onclick="openOrder('${o.order_id}')">
+            <span>#${o.order_id.slice(0,8)}…</span>
+            <span class="status ${o.status}">${o.status}</span>
+          </div>
+        `);
+      });
+    });
+}
+
+function openOrder(id){
+  localStorage.setItem('order_id',id);
+  location.href='order-detail.html';
+}
+
+loadCredit();
+loadOrders();
 </script>
 
 </body>
