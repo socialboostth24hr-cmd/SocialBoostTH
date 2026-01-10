@@ -141,16 +141,23 @@ body{
 const API="https://script.google.com/macros/s/AKfycbxsz0AEvBctJc9UrbenP4yYarsPfFZsdSsuUBFQ78xnQ3_fgHp7O9vJr6RaXlmlt8lv5w/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const credit=Number(localStorage.getItem('credit')||0);
-document.getElementById('credit').textContent=credit.toFixed(2);
+/* CREDIT */
+const credit = Number(localStorage.getItem('credit')||0);
+document.getElementById('credit').textContent = credit.toFixed(2);
 
-const box=document.getElementById('services');
+const box = document.getElementById('services');
 
-/* LOAD SERVICES */
+/* LOAD SERVICES (รองรับ API 2 แบบ) */
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
 .then(r=>r.json())
 .then(res=>{
-  (res.services||[]).forEach(s=>{
+  const list = Array.isArray(res) ? res : (res.services || []);
+  if(!list.length){
+    box.innerHTML = '<div style="color:#94a3b8">ไม่พบบริการ</div>';
+    return;
+  }
+
+  list.forEach(s=>{
     box.insertAdjacentHTML('beforeend',`
       <div class="service">
         <h3>${s.display_name}</h3>
@@ -161,10 +168,12 @@ fetch(`${API}?action=getServices&api_key=${API_KEY}`)
         <div class="actions">
           <button class="btn ghost"
             onclick='openDetail("${s.display_name}",
-              ["เริ่มงานภายใน 1–3 ชม.",
-               "รับประกันตามเงื่อนไข",
-               "ไม่ต้องใช้รหัสผ่าน",
-               "ระบบอัตโนมัติ 24 ชม."])'>
+              [
+                "⏱ เริ่มงานภายใน 1–3 ชั่วโมง",
+                "✅ ระบบอัตโนมัติ 24 ชั่วโมง",
+                "🔒 ไม่ต้องใช้รหัสผ่าน",
+                "💎 รับประกันตามเงื่อนไข"
+              ])'>
             ดูรายละเอียด
           </button>
           <button class="btn primary" onclick="selectService('${s.service_id}')">
@@ -174,8 +183,12 @@ fetch(`${API}?action=getServices&api_key=${API_KEY}`)
       </div>
     `);
   });
+})
+.catch(()=>{
+  box.innerHTML='<div style="color:#fb7185">โหลดบริการไม่สำเร็จ</div>';
 });
 
+/* SELECT */
 function selectService(id){
   localStorage.setItem('service_id',id);
   location.href='orders.html';
