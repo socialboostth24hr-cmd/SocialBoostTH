@@ -8,8 +8,7 @@
 <style>
 :root{
   --bg:#020617;
-  --card:#0b1020;
-  --border:#1e293b;
+  --card:#0b1220;
   --blue:#38bdf8;
   --purple:#8b5cf6;
   --green:#22c55e;
@@ -21,7 +20,7 @@
 body{
   margin:0;
   font-family:system-ui,-apple-system;
-  background:linear-gradient(180deg,#020617,#020617);
+  background:linear-gradient(180deg,#020617,#020314);
   color:#f8fafc;
 }
 
@@ -33,7 +32,6 @@ body{
   padding:14px 16px;
   text-align:center;
   font-weight:900;
-  font-size:18px;
   background:linear-gradient(90deg,var(--blue),var(--purple));
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
@@ -41,47 +39,54 @@ body{
 
 /* CONTAINER */
 .container{
-  max-width:760px;
+  max-width:720px;
   margin:auto;
-  padding:20px 16px 120px;
+  padding:16px 16px 120px;
 }
 
-/* ORDER CARD */
-.order{
-  background:var(--card);
-  border:1px solid var(--border);
+/* CARD */
+.card{
+  background:linear-gradient(180deg,#0e1628,#070b18);
   border-radius:18px;
   padding:16px;
   margin-bottom:14px;
+  border:1px solid rgba(255,255,255,.08);
   cursor:pointer;
 }
 .row{
   display:flex;
   justify-content:space-between;
-  font-size:14px;
-  margin-top:6px;
+  align-items:center;
 }
-.row span{color:var(--muted)}
-
-.status{
-  display:inline-block;
-  padding:4px 12px;
-  border-radius:999px;
-  font-size:12px;
+.id{
   font-weight:900;
+  font-size:14px;
 }
-.pending{background:rgba(250,204,21,.15);color:var(--yellow)}
-.processing{background:rgba(56,189,248,.15);color:var(--blue)}
-.success{background:rgba(34,197,94,.15);color:var(--green)}
-.cancel{background:rgba(239,68,68,.15);color:var(--red)}
-
-.empty{
-  text-align:center;
-  padding:40px 0;
+.date{
+  font-size:12px;
   color:var(--muted);
 }
 
-/* BOTTOM */
+/* STATUS */
+.status{
+  font-size:12px;
+  font-weight:900;
+  padding:6px 14px;
+  border-radius:999px;
+}
+.pending{background:rgba(250,204,21,.15);color:var(--yellow)}
+.processing{background:rgba(56,189,248,.15);color:var(--blue)}
+.success{background:rgba(34,197,94,.18);color:var(--green)}
+.cancel{background:rgba(239,68,68,.18);color:var(--red)}
+
+/* EMPTY */
+.empty{
+  text-align:center;
+  padding:50px 10px;
+  color:var(--muted);
+}
+
+/* BOTTOM BTN */
 .bottom{
   position:fixed;
   bottom:16px;
@@ -92,9 +97,9 @@ body{
 }
 .bottom a{
   display:block;
+  text-align:center;
   padding:16px;
   border-radius:999px;
-  text-align:center;
   font-weight:900;
   text-decoration:none;
   color:#fff;
@@ -107,68 +112,70 @@ body{
 
 <div class="header">คำสั่งซื้อของฉัน</div>
 
-<div class="container" id="list">
+<div class="container" id="orderList">
   <div class="empty">⏳ กำลังโหลดคำสั่งซื้อ…</div>
 </div>
 
 <div class="bottom">
-  <a href="services.html">🛒 สั่งซื้อบริการเพิ่ม</a>
+  <a href="services.html">➕ สั่งซื้อเพิ่ม</a>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const API_BASE = "https://script.google.com/macros/s/AKfycbwOyS7QmjMMLvomajpk0gJgPmW5wlgwjQ2qmbfQ_e5XGX1D5YYmQ8zeUB_WFti5k6zNKg/exec";
+/* ===== CONFIG ===== */
+const API_BASE = "https://script.google.com/macros/s/AKfycbxAK7GDFGG-W_cKJeZ6YVLG2CeJKRcnamrYCyeUW2M68kjjMjvRCh2jqUjYEtOWFGpmSw/exec";
 const API_KEY  = "SBTH-SECURE-2026";
 
-/* ================= AUTH ================= */
+/* AUTH */
 const userId = localStorage.getItem("user_id");
 if(!userId){
-  location.href = "login.html";
+  location.href="login.html";
 }
 
-const list = document.getElementById("list");
+const box = document.getElementById("orderList");
 
-/* ================= LOAD ORDERS ================= */
+/* STATUS TEXT */
+function statusText(s){
+  if(s==="pending") return "รอดำเนินการ";
+  if(s==="processing") return "กำลังดำเนินการ";
+  if(s==="success") return "สำเร็จ";
+  if(s==="cancel") return "ยกเลิก";
+  return "-";
+}
+
+/* LOAD ORDERS */
 fetch(`${API_BASE}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
   .then(r=>r.json())
   .then(res=>{
     const orders = res.orders || [];
     if(!orders.length){
-      list.innerHTML = `<div class="empty">ยังไม่มีคำสั่งซื้อ</div>`;
+      box.innerHTML = `<div class="empty">ยังไม่มีคำสั่งซื้อ</div>`;
       return;
     }
 
-    list.innerHTML = "";
+    box.innerHTML = "";
     orders.reverse().forEach(o=>{
       const div = document.createElement("div");
-      div.className="order";
+      div.className = "card";
       div.innerHTML = `
         <div class="row">
-          <b>#${o.order_id}</b>
-          <div class="status ${o.status}">${o.status}</div>
-        </div>
-        <div class="row">
-          <span>จำนวน</span>
-          <b>${o.qty}</b>
-        </div>
-        <div class="row">
-          <span>ราคารวม</span>
-          <b>${Number(o.final_total).toFixed(2)} บาท</b>
-        </div>
-        <div class="row">
-          <span>วันที่</span>
-          <span>${new Date(o.datetime).toLocaleString()}</span>
+          <div>
+            <div class="id">#${o.order_id}</div>
+            <div class="date">${new Date(o.datetime).toLocaleString()}</div>
+          </div>
+          <div class="status ${o.status}">
+            ${statusText(o.status)}
+          </div>
         </div>
       `;
       div.onclick = ()=>{
-        localStorage.setItem("order_id",o.order_id);
+        localStorage.setItem("order_id", o.order_id);
         location.href="order_detail.html";
       };
-      list.appendChild(div);
+      box.appendChild(div);
     });
   })
   .catch(()=>{
-    list.innerHTML = `<div class="empty">❌ โหลดข้อมูลไม่สำเร็จ</div>`;
+    box.innerHTML = `<div class="empty">โหลดข้อมูลไม่สำเร็จ</div>`;
   });
 </script>
 
