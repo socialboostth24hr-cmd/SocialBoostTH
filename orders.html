@@ -1,130 +1,129 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>ออเดอร์ของฉัน | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Orders | SocialBoostTH</title>
 
 <style>
-:root{
-  --bg:#0b0f1a;
-  --card:#020617;
-  --blue:#38bdf8;
-  --purple:#8b5cf6;
-  --muted:#94a3b8;
-  --warn:#f59e0b;
-  --success:#22c55e;
-  --danger:#ef4444;
-}
-*{box-sizing:border-box}
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #0b0f14;
+    color: #e5e7eb;
+  }
+  header {
+    padding: 16px;
+    text-align: center;
+    background: #111827;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .container {
+    padding: 16px;
+  }
+  .order {
+    background: #111827;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid #1f2937;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .label {
+    color: #9ca3af;
+  }
+  .status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+  }
+  .pending { background: #f59e0b; color: #000; }
+  .done { background: #10b981; color: #000; }
+  .error { background: #ef4444; color: #fff; }
 
-body{
-  margin:0;
-  font-family:system-ui,-apple-system;
-  background:linear-gradient(180deg,#020617,var(--bg));
-  color:#f8fafc;
-}
-
-.header{
-  padding:14px;
-  text-align:center;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--blue),var(--purple));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.container{
-  max-width:720px;
-  margin:auto;
-  padding:16px 16px 100px;
-}
-
-.card{
-  background:var(--card);
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:12px;
-  border:1px solid rgba(255,255,255,.1);
-  cursor:pointer;
-}
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-}
-
-.small{font-size:12px;color:var(--muted)}
-
-.status{
-  font-weight:900;
-}
-.pending{color:var(--warn)}
-.processing{color:var(--blue)}
-.success{color:var(--success)}
-.cancel{color:var(--danger)}
-
-.empty{
-  text-align:center;
-  padding:40px;
-  color:var(--muted);
-}
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #9ca3af;
+  }
 </style>
 </head>
 
 <body>
 
-<div class="header">ออเดอร์ของฉัน</div>
+<header>ออเดอร์ของฉัน</header>
 
-<div class="container" id="box">
-  <div class="empty">กำลังโหลด…</div>
+<div class="container" id="orders">
+  <div class="loading">กำลังโหลดข้อมูล...</div>
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const API = "https://script.google.com/macros/s/AKfycbwOyS7QmjMMLvomajpk0gJgPmW5wlgwjQ2qmbfQ_e5XGX1D5YYmQ8zeUB_WFti5k6zNKg/exec";
-const API_KEY = "SBTH-SECURE-2026";
+/* ===============================
+   CONFIG (ใส่ให้แล้ว ไม่ต้องแก้)
+   =============================== */
+const API_BASE = "https://script.google.com/macros/s/AKfycbxAK7GDFGG-W_cKJeZ6YVLG2CeJKRcnamrYCyeUW2M68kjjMjvRCh2jqUjYEtOWFGpmSw/exec";
+const API_KEY  = "SBTH-SECURE-2026";
 
-/* AUTH */
-const userId = localStorage.getItem("user_id");
-if(!userId) location.href="login.html";
+/* ตัวอย่าง user_id (ปกติเอาจาก localStorage) */
+const USER_ID = localStorage.getItem("user_id") || "U001";
 
-/* DOM */
-const box=document.getElementById("box");
+/* ===============================
+   LOAD ORDERS
+   =============================== */
+fetch(`${API_BASE}?action=getOrders&api_key=${API_KEY}&user_id=${USER_ID}`)
+  .then(res => res.json())
+  .then(data => {
+    const box = document.getElementById("orders");
+    box.innerHTML = "";
 
-/* LOAD ORDERS */
-fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
-.then(r=>r.json())
-.then(res=>{
-  const orders=res.orders||[];
-  if(!orders.length){
-    box.innerHTML='<div class="empty">ยังไม่มีออเดอร์</div>';
-    return;
-  }
+    if (!data.success || !data.orders.length) {
+      box.innerHTML = "<div class='loading'>ยังไม่มีออเดอร์</div>";
+      return;
+    }
 
-  box.innerHTML='';
-  orders.reverse().forEach(o=>{
-    box.insertAdjacentHTML("beforeend",`
-      <div class="card" onclick="openOrder('${o.order_id}')">
+    data.orders.reverse().forEach(o => {
+      const statusClass =
+        o.status === "pending" ? "pending" :
+        o.status === "done" ? "done" : "error";
+
+      const el = document.createElement("div");
+      el.className = "order";
+      el.innerHTML = `
         <div class="row">
-          <b>#${o.order_id}</b>
-          <span class="status ${o.status}">${o.status}</span>
+          <div class="label">Order ID</div>
+          <div>${o.order_id}</div>
         </div>
-        <div class="row small">
-          <span>${o.service_id} • ${o.qty}</span>
-          <span>${Number(o.final_total).toFixed(2)}฿</span>
+        <div class="row">
+          <div class="label">Service</div>
+          <div>${o.service_id}</div>
         </div>
-        <div class="small">${new Date(o.datetime).toLocaleString()}</div>
-      </div>
-    `);
+        <div class="row">
+          <div class="label">จำนวน</div>
+          <div>${o.qty}</div>
+        </div>
+        <div class="row">
+          <div class="label">ราคา</div>
+          <div>${o.final_total} เครดิต</div>
+        </div>
+        <div class="row">
+          <div class="label">สถานะ</div>
+          <div class="status ${statusClass}">${o.status || "-"}</div>
+        </div>
+      `;
+      box.appendChild(el);
+    });
+  })
+  .catch(() => {
+    document.getElementById("orders").innerHTML =
+      "<div class='loading'>โหลดข้อมูลไม่สำเร็จ</div>";
   });
-});
-
-function openOrder(id){
-  localStorage.setItem("order_id",id);
-  location.href="order_detail.html"; // ทำทีหลัง
-}
 </script>
 
 </body>
