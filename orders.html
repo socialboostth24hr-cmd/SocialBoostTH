@@ -1,211 +1,156 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-<meta charset="UTF-8">
-<title>คำสั่งซื้อของฉัน | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+/* =========================
+   ORDERS.GS
+   ใช้กับระบบ Wallet (B)
+   ========================= */
 
-<style>
-:root{
-  --black:#0b0f1a;
-  --blue:#38bdf8;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
-  --muted:#94a3b8;
-  --success:#22c55e;
-  --warning:#f59e0b;
-  --danger:#ef4444;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system;
-  background:
-    radial-gradient(900px 420px at top,#1e293b,transparent),
-    linear-gradient(180deg,var(--black),#060913);
-  color:#f1f5f9;
-}
+/**
+ * GET : ดึงออเดอร์ของผู้ใช้
+ * action=getOrders
+ */
+function getOrders(e) {
+  const userId = e.parameter.user_id;
+  if (!userId) return error_("MISSING_USER_ID");
 
-/* HEADER */
-.header{
-  position:sticky;top:0;z-index:20;
-  background:rgba(2,6,23,.85);
-  backdrop-filter:blur(14px);
-  padding:14px 16px;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center;
-}
-.back{
-  border:none;
-  padding:6px 14px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  color:#fff;
-  font-weight:900;
-  cursor:pointer;
-}
-.center{
-  text-align:center;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  const sh = SpreadsheetApp.getActive().getSheetByName("orders");
+  if (!sh) return error_("ORDERS_SHEET_NOT_FOUND");
+
+  const rows = sh.getDataRange().getValues().slice(1);
+
+  const orders = rows
+    .filter(r => String(r[1]) === String(userId))
+    .map(r => ({
+      order_id: r[0],
+      user_id: r[1],
+      service_id: r[2],
+      qty: Number(r[3]),
+      price_per_100: Number(r[4]),
+      discount: Number(r[5]),
+      final_total: Number(r[6]),
+      link: r[7],
+      comment_text: r[8] || "",
+      datetime: r[9],
+      status: r[10],
+      start_amount: r[11] || "",
+      end_amount: r[12] || ""
+    }));
+
+  return success_({ orders });
 }
 
-/* CONTAINER */
-.container{
-  max-width:720px;
-  margin:auto;
-  padding:18px 18px 120px;
-}
+/**
+ * POST : สร้างออเดอร์ใหม่
+ * action=createOrder
+ */
+function createOrder(data) {
+  const {
+    user_id,
+    service_id,
+    qty,
+    link,
+    comment_text
+  } = data;
 
-/* CARD */
-.card{
-  background:linear-gradient(180deg,#111827,#0b1020);
-  border-radius:22px;
-  padding:18px;
-  margin-bottom:14px;
-  border:1px solid rgba(255,255,255,.06);
-  box-shadow:0 25px 70px rgba(0,0,0,.6);
-  cursor:pointer;
-}
-.order{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-}
-.order b{font-size:14px}
-.order span{font-size:12px;color:var(--muted)}
+  if (!user_id || !service_id || !qty || !link) {
+    return error_("MISSING_REQUIRED_FIELDS");
+  }
 
-/* STATUS */
-.status{
-  padding:5px 12px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:900;
-}
-.pending{background:rgba(245,158,11,.15);color:var(--warning)}
-.processing{background:rgba(56,189,248,.15);color:var(--blue)}
-.success{background:rgba(34,197,94,.18);color:var(--success)}
-.cancel{background:rgba(239,68,68,.18);color:var(--danger)}
+  // ตรวจ link เบื้องต้น
+  if (!/^https?:\/\//i.test(link)) {
+    return error_("INVALID_LINK_FORMAT");
+  }
 
-/* EMPTY */
-.empty{
-  text-align:center;
-  padding:40px 10px;
-  color:var(--muted);
-  font-size:14px;
-}
+  const ss = SpreadsheetApp.getActive();
+  const shUsers   = ss.getSheetByName("users");
+  const shOrders  = ss.getSheetByName("orders");
+  const shWallet  = ss.getSheetByName("wallet");
+  const shServices= ss.getSheetByName("services");
+  const shDiscount= ss.getSheetByName("discounts");
 
-/* BOTTOM BTN */
-.bottom{
-  position:fixed;
-  bottom:16px;
-  left:50%;
-  transform:translateX(-50%);
-  width:calc(100% - 32px);
-  max-width:480px;
-}
-.bottom a{
-  display:block;
-  text-align:center;
-  padding:16px;
-  border-radius:999px;
-  font-weight:900;
-  text-decoration:none;
-  color:#fff;
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-}
-</style>
-</head>
+  /* ---------- USER ---------- */
+  const users = shUsers.getDataRange().getValues();
+  const uRowIndex = users.findIndex(r => String(r[0]) === String(user_id));
+  if (uRowIndex < 1) return error_("USER_NOT_FOUND");
 
-<body>
+  let credit = Number(users[uRowIndex][4]);
+  if (credit <= 0) return error_("NO_CREDIT");
 
-<header class="header">
-  <button class="back" onclick="history.back()">←</button>
-  <div class="center">คำสั่งซื้อของฉัน</div>
-  <div></div>
-</header>
+  /* ---------- SERVICE ---------- */
+  const services = shServices.getDataRange().getValues().slice(1);
+  const s = services.find(r => r[0] === service_id && r[15] === "on");
+  if (!s) return error_("SERVICE_NOT_FOUND");
 
-<div class="container" id="list">
-  <div class="empty">กำลังโหลดคำสั่งซื้อ…</div>
-</div>
+  const minQty = Number(s[3]);
+  const basePrice100 = Number(s[4]);
 
-<div class="bottom">
-  <a href="services.html">🛒 สั่งซื้อบริการเพิ่ม</a>
-</div>
+  if (qty < minQty) return error_("QTY_LESS_THAN_MIN");
 
-<script>
-/* ===== CONFIG (API จริงตัวเดียว) ===== */
-const API = "https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
-const API_KEY = "SBTH-SECURE-2026";
+  let pricePerUnit = basePrice100 / 100;
+  let discountPercent = 0;
 
-/* AUTH */
-const userId = localStorage.getItem("user_id");
-if(!userId){
-  location.replace("login.html");
-}
-
-/* UTIL */
-const list = document.getElementById("list");
-
-function statusText(s){
-  if(s==="pending") return "รอดำเนินการ";
-  if(s==="processing") return "กำลังดำเนินการ";
-  if(s==="success") return "สำเร็จ";
-  if(s==="cancel") return "ยกเลิก";
-  return "-";
-}
-function statusClass(s){
-  if(s==="pending") return "pending";
-  if(s==="processing") return "processing";
-  if(s==="success") return "success";
-  if(s==="cancel") return "cancel";
-  return "pending";
-}
-function formatDate(o){
-  const d = o.datetime || o.created_at || o.date;
-  return d ? new Date(d).toLocaleString() : "-";
-}
-
-/* LOAD ORDERS */
-fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
-  .then(r=>r.json())
-  .then(res=>{
-    const orders = res.orders || [];
-    if(!orders.length){
-      list.innerHTML = `<div class="empty">ยังไม่มีคำสั่งซื้อ</div>`;
-      return;
-    }
-
-    list.innerHTML = "";
-    orders.slice().reverse().forEach(o=>{
-      const div = document.createElement("div");
-      div.className="card";
-      div.innerHTML = `
-        <div class="order">
-          <div>
-            <b>#${o.order_id}</b><br>
-            <span>${formatDate(o)}</span>
-          </div>
-          <div class="status ${statusClass(o.status)}">
-            ${statusText(o.status)}
-          </div>
-        </div>
-      `;
-      div.onclick = ()=>{
-        localStorage.setItem("order_id", o.order_id);
-        location.href = "order_detail.html";
-      };
-      list.appendChild(div);
+  /* ---------- DISCOUNT ---------- */
+  if (shDiscount) {
+    const discounts = shDiscount.getDataRange().getValues().slice(1);
+    discounts.forEach(r => {
+      if (
+        r[0] === service_id &&
+        qty >= Number(r[1]) &&
+        qty <= Number(r[2])
+      ) {
+        discountPercent = Number(r[3]);
+        pricePerUnit = Number(r[4]) / 100;
+      }
     });
-  })
-  .catch(()=>{
-    list.innerHTML = `<div class="empty">โหลดข้อมูลไม่สำเร็จ</div>`;
-  });
-</script>
+  }
 
-</body>
-</html>
+  const finalTotal = Number((qty * pricePerUnit).toFixed(2));
+
+  // ห้ามติดลบ
+  if (credit < finalTotal) {
+    return error_("INSUFFICIENT_BALANCE");
+  }
+
+  /* ---------- CREATE ORDER ---------- */
+  const orderId = "OD" + Date.now();
+  const now = new Date();
+
+  shOrders.appendRow([
+    orderId,          // A order_id
+    user_id,          // B user_id
+    service_id,       // C service_id
+    qty,              // D qty
+    basePrice100,     // E price_per_100
+    discountPercent,  // F discount
+    finalTotal,       // G final_total
+    link,             // H link
+    comment_text || "", // I comments (ใช้เฉพาะบริการ comment)
+    now,              // J datetime
+    "pending",        // K status
+    "",               // L start_amount
+    ""                // M end_amount
+  ]);
+
+  /* ---------- WALLET ---------- */
+  const newBalance = Number((credit - finalTotal).toFixed(2));
+
+  // update credit users
+  shUsers.getRange(uRowIndex + 1, 5).setValue(newBalance);
+
+  // wallet log
+  if (shWallet) {
+    shWallet.appendRow([
+      "WL" + Date.now(),
+      user_id,
+      "USE_ORDER",
+      -finalTotal,
+      "ORDER",
+      newBalance,
+      now
+    ]);
+  }
+
+  return success_({
+    order_id: orderId,
+    final_total: finalTotal,
+    balance_after: newBalance
+  });
+}
