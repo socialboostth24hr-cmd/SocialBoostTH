@@ -59,7 +59,6 @@ body{
   margin:auto;
   padding:20px 18px 140px;
 }
-
 .card{
   background:linear-gradient(180deg,#111827,#0b1020);
   border-radius:26px;
@@ -68,7 +67,6 @@ body{
   border:1px solid rgba(255,255,255,.06);
   box-shadow:0 30px 80px rgba(0,0,0,.55);
 }
-
 .row{
   display:flex;
   justify-content:space-between;
@@ -78,6 +76,7 @@ body{
 .row span{color:var(--muted)}
 .row b{font-weight:900}
 
+/* STATUS */
 .status{
   display:inline-block;
   margin-top:14px;
@@ -121,6 +120,7 @@ body{
   color:#22c55e;
 }
 
+/* BUTTON */
 .buy-again{
   position:fixed;
   bottom:16px;
@@ -137,6 +137,10 @@ body{
   text-align:center;
   text-decoration:none;
 }
+.empty{
+  text-align:center;
+  color:var(--muted);
+}
 </style>
 </head>
 
@@ -149,7 +153,7 @@ body{
 </header>
 
 <div class="container">
-  <div id="loading" style="text-align:center;color:#94a3b8">กำลังโหลด…</div>
+  <div id="loading" class="empty">กำลังโหลด…</div>
 
   <div class="card" id="detail" style="display:none">
     <div class="row"><b>รหัสคำสั่งซื้อ</b><span id="oid"></span></div>
@@ -183,46 +187,59 @@ body{
 <a class="buy-again" href="services.html">🔁 ซื้อบริการอีกครั้ง</a>
 
 <script>
+/* ===== CONFIG REAL ===== */
 const API="https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
 const API_KEY="SBTH-SECURE-2026";
 
-const orderId = localStorage.getItem('order_id');
-const userId  = localStorage.getItem('user_id');
-if(!orderId || !userId) location.href='orders.html';
+const orderId = localStorage.getItem("order_id");
+const userId  = localStorage.getItem("user_id");
+if(!orderId || !userId) location.href="orders.html";
 
 const $=id=>document.getElementById(id);
 
 async function load(){
-  const sRes = await fetch(`${API}?action=getServices&api_key=${API_KEY}`);
-  const services = (await sRes.json()).services || [];
-  const map={}; services.forEach(s=>map[s.service_id]=s.display_name);
+  try{
+    /* services */
+    const sRes = await fetch(`${API}?action=getServices&api_key=${API_KEY}`);
+    const services = (await sRes.json()).services || [];
+    const map={}; services.forEach(s=>map[s.service_id]=s.display_name);
 
-  const oRes = await fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`);
-  const orders = (await oRes.json()).orders || [];
-  const o = orders.find(x=>x.order_id===orderId);
-  if(!o) return;
+    /* orders */
+    const oRes = await fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`);
+    const orders = (await oRes.json()).orders || [];
+    const o = orders.find(x=>x.order_id===orderId);
 
-  $('loading').style.display='none';
-  $('detail').style.display='block';
+    if(!o){
+      $('loading').textContent="ไม่พบคำสั่งซื้อนี้";
+      return;
+    }
 
-  $('oid').textContent=o.order_id;
-  $('service').textContent=map[o.service_id]||o.service_id;
-  $('qty').textContent=o.qty;
-  $('price').textContent=Number(o.total||o.final_total||0).toFixed(2)+' บาท';
-  $('date').textContent=new Date(o.datetime).toLocaleString();
-  $('link').textContent=o.link||'-';
+    $('loading').style.display="none";
+    $('detail').style.display="block";
 
-  const st=$('status');
-  st.className='status '+(o.status||'pending');
-  st.textContent=
-    o.status==='success'?'✅ สำเร็จ':
-    o.status==='processing'?'🚀 กำลังดำเนินการ':
-    o.status==='cancel'?'❌ ยกเลิก':'⏳ รอดำเนินการ';
+    $('oid').textContent=o.order_id;
+    $('service').textContent=map[o.service_id] || o.service_id;
+    $('qty').textContent=o.qty;
+    $('price').textContent=Number(o.total || o.final_total || 0).toFixed(2)+" บาท";
+    $('date').textContent=new Date(o.datetime).toLocaleString();
+    $('link').textContent=o.link || "-";
 
-  if(o.status==='success' && o.start_count && o.end_count){
-    $('progress').style.display='block';
-    $('start').textContent=o.start_count;
-    $('end').textContent=o.end_count;
+    const st=$('status');
+    st.className="status "+(o.status||"pending");
+    st.textContent=
+      o.status==="success"?"✅ สำเร็จ":
+      o.status==="processing"?"🚀 กำลังดำเนินการ":
+      o.status==="cancel"?"❌ ยกเลิก":"⏳ รอดำเนินการ";
+
+    if(o.status==="success" && o.start_count && o.end_count){
+      $('progress').style.display="block";
+      $('start').textContent=o.start_count;
+      $('end').textContent=o.end_count;
+    }
+
+  }catch(err){
+    console.error(err);
+    $('loading').textContent="โหลดข้อมูลไม่สำเร็จ";
   }
 }
 load();
