@@ -20,8 +20,6 @@ body{
   background:linear-gradient(180deg,#020617,var(--bg));
   color:#f8fafc;
 }
-
-/* HEADER */
 .header{
   position:sticky;top:0;z-index:20;
   display:flex;justify-content:space-between;align-items:center;
@@ -42,17 +40,13 @@ body{
   background:#020617;
   border:1px solid rgba(255,255,255,.15);
 }
-
-/* CONTAINER */
 .container{
   max-width:720px;
   margin:auto;
   padding:20px 16px 120px;
 }
-h1{margin:0 0 6px;font-size:26px}
-.sub{font-size:13px;color:var(--muted);margin-bottom:16px}
-
-/* SERVICE CARD */
+h1{margin:0;font-size:26px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
 .service{
   background:var(--card);
   border:1px solid rgba(255,255,255,.12);
@@ -63,59 +57,18 @@ h1{margin:0 0 6px;font-size:26px}
 .service h3{margin:0;font-size:17px}
 .desc{font-size:13px;color:var(--muted);margin:6px 0}
 .meta{font-size:12px;color:#86efac;font-weight:900}
-.price{margin-top:10px;font-size:18px;font-weight:900}
-
+.price{font-size:18px;font-weight:900;margin-top:8px}
 .actions{display:flex;gap:8px;margin-top:14px}
 .btn{
-  flex:1;
-  padding:12px;
-  border-radius:999px;
-  border:none;
-  font-weight:900;
-  cursor:pointer;
+  flex:1;padding:12px;border-radius:999px;
+  border:none;font-weight:900;cursor:pointer
 }
 .primary{
   background:linear-gradient(135deg,var(--blue),var(--purple));
   color:#fff;
 }
-.ghost{
-  background:#020617;
-  color:#cbd5f5;
-  border:1px solid rgba(255,255,255,.2);
-}
-
-/* STATE */
 .center{text-align:center;color:var(--muted);padding:40px 0}
 .error{color:#fb7185}
-
-/* MODAL */
-.overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  z-index:50;
-}
-.modal{
-  position:fixed;left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  width:90%;max-width:420px;
-  background:#020617;
-  border-radius:20px;
-  padding:22px;
-  display:none;
-  z-index:60;
-}
-.modal ul{padding-left:18px;font-size:13px;line-height:1.7}
-.close{
-  width:100%;
-  margin-top:12px;
-  padding:12px;
-  border-radius:999px;
-  border:none;
-  font-weight:900;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;
-}
 </style>
 </head>
 
@@ -132,84 +85,69 @@ h1{margin:0 0 6px;font-size:26px}
   <div id="services" class="center">⏳ กำลังโหลดบริการ…</div>
 </div>
 
-<!-- DETAIL MODAL -->
-<div class="overlay" id="overlay" onclick="closeDetail()"></div>
-<div class="modal" id="modal">
-  <h3 id="detailName">-</h3>
-  <ul id="detailList"></ul>
-  <button class="close" onclick="closeDetail()">ปิด</button>
-</div>
-
 <script>
-/* ===== CONFIG (API ตัวจริงตัวเดียว) ===== */
+/* ===== CONFIG ===== */
 const API = "https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
 const API_KEY = "SBTH-SECURE-2026";
 
 /* AUTH */
 const userId = localStorage.getItem("user_id");
-if(!userId){
-  location.replace("login.html");
-}
+if(!userId) location.replace("login.html");
 
 /* CREDIT */
 document.getElementById("credit").textContent =
-  Number(localStorage.getItem("credit") || 0).toFixed(2);
+  Number(localStorage.getItem("credit")||0).toFixed(2);
 
-const box = document.getElementById("services");
+const box=document.getElementById("services");
 
-/* LOAD SERVICES */
+/* LOAD SERVICES (SAFE MODE) */
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
-  .then(r=>r.json())
-  .then(res=>{
-    const list = res.services || [];
-    if(!list.length){
-      box.innerHTML = `<div class="center error">❌ ไม่พบบริการ</div>`;
+  .then(r=>r.text())
+  .then(t=>{
+    let data;
+    try{
+      data = JSON.parse(t);
+    }catch(e){
+      console.error("JSON PARSE ERROR:",t);
+      throw "INVALID_JSON";
+    }
+
+    const services = data.services || [];
+    if(!services.length){
+      box.innerHTML = `<div class="center error">❌ ยังไม่มีบริการในระบบ</div>`;
       return;
     }
+
     box.innerHTML = "";
-    list.forEach(s=>{
+    services.forEach(s=>{
       box.insertAdjacentHTML("beforeend",`
         <div class="service">
           <h3>${s.display_name}</h3>
-          <div class="desc">${s.short_desc || ""}</div>
+          <div class="desc">${s.short_desc||""}</div>
           <div class="meta">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
           <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
           <div class="actions">
-            <button class="btn ghost" onclick="openDetail('${s.display_name}')">
-              ดูรายละเอียด
-            </button>
             <button class="btn primary" onclick="selectService('${s.service_id}')">
-              เลือก
+              เลือกบริการ
             </button>
           </div>
         </div>
       `);
     });
   })
-  .catch(()=>{
-    box.innerHTML = `<div class="center error">โหลดบริการไม่สำเร็จ</div>`;
+  .catch(err=>{
+    console.error("SERVICE LOAD FAIL",err);
+    box.innerHTML = `
+      <div class="center error">
+        ❌ โหลดบริการไม่สำเร็จ<br>
+        <small>กรุณาลองใหม่ หรือติดต่อแอดมิน</small>
+      </div>
+    `;
   });
 
 function selectService(id){
-  localStorage.setItem("service_id", id);
-  location.href = "order.html";   // หน้ากรอกจำนวน / ลิงก์
-}
-
-function openDetail(name){
-  document.getElementById("detailName").textContent = name;
-  document.getElementById("detailList").innerHTML = `
-    <li>⏱ เริ่มงานภายใน 1–3 ชั่วโมง</li>
-    <li>⚙️ ระบบอัตโนมัติ 24 ชั่วโมง</li>
-    <li>🔒 ไม่ต้องใช้รหัสผ่าน</li>
-    <li>💎 รับประกันตามเงื่อนไขร้าน</li>
-  `;
-  document.getElementById("overlay").style.display = "block";
-  document.getElementById("modal").style.display = "block";
-}
-
-function closeDetail(){
-  document.getElementById("overlay").style.display = "none";
-  document.getElementById("modal").style.display = "none";
+  localStorage.setItem("service_id",id);
+  location.href="order.html";
 }
 </script>
 
