@@ -133,7 +133,7 @@ h1{margin:0 0 6px;font-size:26px}
 </div>
 
 <!-- DETAIL MODAL -->
-<div class="overlay" id="overlay"></div>
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
 <div class="modal" id="modal">
   <h3 id="detailName">-</h3>
   <ul id="detailList"></ul>
@@ -141,19 +141,21 @@ h1{margin:0 0 6px;font-size:26px}
 </div>
 
 <script>
-/* ===== CONFIG (ตัวเดียวกับทั้งเว็บ) ===== */
+/* ===== CONFIG (API ตัวจริงตัวเดียว) ===== */
 const API = "https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
 const API_KEY = "SBTH-SECURE-2026";
 
 /* AUTH */
-const userId = localStorage.getItem('user_id');
-if(!userId) location.replace('index.html');
+const userId = localStorage.getItem("user_id");
+if(!userId){
+  location.replace("login.html");
+}
 
 /* CREDIT */
-document.getElementById('credit').textContent =
-  Number(localStorage.getItem('credit') || 0).toFixed(2);
+document.getElementById("credit").textContent =
+  Number(localStorage.getItem("credit") || 0).toFixed(2);
 
-const box = document.getElementById('services');
+const box = document.getElementById("services");
 
 /* LOAD SERVICES */
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
@@ -161,48 +163,53 @@ fetch(`${API}?action=getServices&api_key=${API_KEY}`)
   .then(res=>{
     const list = res.services || [];
     if(!list.length){
-      box.innerHTML='<div class="center error">❌ ไม่พบบริการ</div>';
+      box.innerHTML = `<div class="center error">❌ ไม่พบบริการ</div>`;
       return;
     }
-    box.innerHTML='';
+    box.innerHTML = "";
     list.forEach(s=>{
-      box.insertAdjacentHTML('beforeend',`
+      box.insertAdjacentHTML("beforeend",`
         <div class="service">
           <h3>${s.display_name}</h3>
-          <div class="desc">${s.short_desc || ''}</div>
+          <div class="desc">${s.short_desc || ""}</div>
           <div class="meta">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
           <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
           <div class="actions">
-            <button class="btn ghost" onclick="openDetail('${s.display_name}')">ดูรายละเอียด</button>
-            <button class="btn primary" onclick="selectService('${s.service_id}')">เลือก</button>
+            <button class="btn ghost" onclick="openDetail('${s.display_name}')">
+              ดูรายละเอียด
+            </button>
+            <button class="btn primary" onclick="selectService('${s.service_id}')">
+              เลือก
+            </button>
           </div>
         </div>
       `);
     });
   })
   .catch(()=>{
-    box.innerHTML='<div class="center error">โหลดบริการไม่สำเร็จ</div>';
+    box.innerHTML = `<div class="center error">โหลดบริการไม่สำเร็จ</div>`;
   });
 
 function selectService(id){
-  localStorage.setItem('service_id',id);
-  location.href='order.html'; // หน้าสั่งซื้อ
+  localStorage.setItem("service_id", id);
+  location.href = "order.html";   // หน้ากรอกจำนวน / ลิงก์
 }
 
 function openDetail(name){
-  document.getElementById('detailName').textContent=name;
-  document.getElementById('detailList').innerHTML=`
+  document.getElementById("detailName").textContent = name;
+  document.getElementById("detailList").innerHTML = `
     <li>⏱ เริ่มงานภายใน 1–3 ชั่วโมง</li>
     <li>⚙️ ระบบอัตโนมัติ 24 ชั่วโมง</li>
     <li>🔒 ไม่ต้องใช้รหัสผ่าน</li>
     <li>💎 รับประกันตามเงื่อนไขร้าน</li>
   `;
-  document.getElementById('overlay').style.display='block';
-  document.getElementById('modal').style.display='block';
+  document.getElementById("overlay").style.display = "block";
+  document.getElementById("modal").style.display = "block";
 }
+
 function closeDetail(){
-  document.getElementById('overlay').style.display='none';
-  document.getElementById('modal').style.display='none';
+  document.getElementById("overlay").style.display = "none";
+  document.getElementById("modal").style.display = "none";
 }
 </script>
 
