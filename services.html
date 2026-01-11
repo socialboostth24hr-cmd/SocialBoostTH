@@ -45,8 +45,6 @@ body{
   margin:auto;
   padding:20px 16px 120px;
 }
-h1{margin:0;font-size:26px}
-.sub{color:var(--muted);font-size:13px;margin-bottom:18px}
 .service{
   background:var(--card);
   border:1px solid rgba(255,255,255,.12);
@@ -57,17 +55,21 @@ h1{margin:0;font-size:26px}
 .service h3{margin:0;font-size:17px}
 .desc{font-size:13px;color:var(--muted);margin:6px 0}
 .meta{font-size:12px;color:#86efac;font-weight:900}
-.price{font-size:18px;font-weight:900;margin-top:8px}
+.price{margin-top:10px;font-size:18px;font-weight:900}
 .actions{display:flex;gap:8px;margin-top:14px}
 .btn{
   flex:1;padding:12px;border-radius:999px;
-  border:none;font-weight:900;cursor:pointer
+  border:none;font-weight:900;cursor:pointer;
 }
 .primary{
   background:linear-gradient(135deg,var(--blue),var(--purple));
   color:#fff;
 }
-.center{text-align:center;color:var(--muted);padding:40px 0}
+.ghost{
+  background:#020617;color:#cbd5f5;
+  border:1px solid rgba(255,255,255,.2);
+}
+.center{text-align:center;color:var(--muted);padding:60px 0}
 .error{color:#fb7185}
 </style>
 </head>
@@ -76,78 +78,93 @@ h1{margin:0;font-size:26px}
 
 <div class="header">
   <div class="logo">SocialBoostTH</div>
-  <div class="wallet">เครดิต: <span id="credit">0.00</span></div>
+  <div class="wallet">
+    เครดิต: <span id="credit">0.00</span>
+  </div>
 </div>
 
 <div class="container">
   <h1>เลือกบริการ</h1>
-  <div class="sub">ระบบอัตโนมัติ • ปลอดภัย • 24 ชั่วโมง</div>
+  <div style="color:#94a3b8;font-size:13px;margin-bottom:16px">
+    ระบบอัตโนมัติ • ปลอดภัย • 24 ชั่วโมง
+  </div>
+
   <div id="services" class="center">⏳ กำลังโหลดบริการ…</div>
 </div>
 
 <script>
-/* ===== CONFIG ===== */
+/* ========= CONFIG ========= */
 const API = "https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
 const API_KEY = "SBTH-SECURE-2026";
 
 /* AUTH */
 const userId = localStorage.getItem("user_id");
-if(!userId) location.replace("login.html");
+if(!userId){
+  location.replace("login.html");
+}
 
 /* CREDIT */
 document.getElementById("credit").textContent =
-  Number(localStorage.getItem("credit")||0).toFixed(2);
+  Number(localStorage.getItem("credit") || 0).toFixed(2);
 
-const box=document.getElementById("services");
+const box = document.getElementById("services");
 
-/* LOAD SERVICES (SAFE MODE) */
+/* ===== LOAD SERVICES (FIXED) ===== */
 fetch(`${API}?action=getServices&api_key=${API_KEY}`)
-  .then(r=>r.text())
-  .then(t=>{
-    let data;
-    try{
-      data = JSON.parse(t);
-    }catch(e){
-      console.error("JSON PARSE ERROR:",t);
-      throw "INVALID_JSON";
+  .then(r => r.json())
+  .then(res => {
+
+    console.log("SERVICES API:", res); // 👈 debug
+
+    if(!res.success){
+      box.innerHTML = `
+        <div class="center error">
+          ❌ API Error<br>
+          <small>${res.error || 'unknown error'}</small>
+        </div>`;
+      return;
     }
 
-    const services = data.services || [];
-    if(!services.length){
-      box.innerHTML = `<div class="center error">❌ ยังไม่มีบริการในระบบ</div>`;
+    const list = res.services || [];
+    if(list.length === 0){
+      box.innerHTML = `<div class="center">ยังไม่มีบริการ</div>`;
       return;
     }
 
     box.innerHTML = "";
-    services.forEach(s=>{
-      box.insertAdjacentHTML("beforeend",`
+    list.forEach(s => {
+      box.insertAdjacentHTML("beforeend", `
         <div class="service">
           <h3>${s.display_name}</h3>
-          <div class="desc">${s.short_desc||""}</div>
+          <div class="desc">${s.short_desc || ""}</div>
           <div class="meta">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
           <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
           <div class="actions">
-            <button class="btn primary" onclick="selectService('${s.service_id}')">
-              เลือกบริการ
+            <button class="btn ghost"
+              onclick="alert('เริ่มงานภายใน 1–3 ชม.\\nระบบอัตโนมัติ 24 ชม.')">
+              ดูรายละเอียด
+            </button>
+            <button class="btn primary"
+              onclick="selectService('${s.service_id}')">
+              เลือก
             </button>
           </div>
         </div>
       `);
     });
   })
-  .catch(err=>{
-    console.error("SERVICE LOAD FAIL",err);
+  .catch(err => {
+    console.error(err);
     box.innerHTML = `
       <div class="center error">
         ❌ โหลดบริการไม่สำเร็จ<br>
-        <small>กรุณาลองใหม่ หรือติดต่อแอดมิน</small>
-      </div>
-    `;
+        <small>เชื่อมต่อ API ไม่ได้</small>
+      </div>`;
   });
 
 function selectService(id){
-  localStorage.setItem("service_id",id);
-  location.href="order.html";
+  localStorage.setItem("service_id", id);
+  location.href = "order.html";
 }
 </script>
 
