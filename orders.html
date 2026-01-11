@@ -1,156 +1,131 @@
-/* =========================
-   ORDERS.GS
-   ใช้กับระบบ Wallet (B)
-   ========================= */
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ออเดอร์ของฉัน | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-/**
- * GET : ดึงออเดอร์ของผู้ใช้
- * action=getOrders
- */
-function getOrders(e) {
-  const userId = e.parameter.user_id;
-  if (!userId) return error_("MISSING_USER_ID");
+<style>
+:root{
+  --bg:#0b0f1a;
+  --card:#020617;
+  --blue:#38bdf8;
+  --purple:#8b5cf6;
+  --muted:#94a3b8;
+  --warn:#f59e0b;
+  --success:#22c55e;
+  --danger:#ef4444;
+}
+*{box-sizing:border-box}
 
-  const sh = SpreadsheetApp.getActive().getSheetByName("orders");
-  if (!sh) return error_("ORDERS_SHEET_NOT_FOUND");
-
-  const rows = sh.getDataRange().getValues().slice(1);
-
-  const orders = rows
-    .filter(r => String(r[1]) === String(userId))
-    .map(r => ({
-      order_id: r[0],
-      user_id: r[1],
-      service_id: r[2],
-      qty: Number(r[3]),
-      price_per_100: Number(r[4]),
-      discount: Number(r[5]),
-      final_total: Number(r[6]),
-      link: r[7],
-      comment_text: r[8] || "",
-      datetime: r[9],
-      status: r[10],
-      start_amount: r[11] || "",
-      end_amount: r[12] || ""
-    }));
-
-  return success_({ orders });
+body{
+  margin:0;
+  font-family:system-ui,-apple-system;
+  background:linear-gradient(180deg,#020617,var(--bg));
+  color:#f8fafc;
 }
 
-/**
- * POST : สร้างออเดอร์ใหม่
- * action=createOrder
- */
-function createOrder(data) {
-  const {
-    user_id,
-    service_id,
-    qty,
-    link,
-    comment_text
-  } = data;
+.header{
+  padding:14px;
+  text-align:center;
+  font-weight:900;
+  background:linear-gradient(90deg,var(--blue),var(--purple));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
 
-  if (!user_id || !service_id || !qty || !link) {
-    return error_("MISSING_REQUIRED_FIELDS");
+.container{
+  max-width:720px;
+  margin:auto;
+  padding:16px 16px 100px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:12px;
+  border:1px solid rgba(255,255,255,.1);
+  cursor:pointer;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+}
+
+.small{font-size:12px;color:var(--muted)}
+
+.status{
+  font-weight:900;
+}
+.pending{color:var(--warn)}
+.processing{color:var(--blue)}
+.success{color:var(--success)}
+.cancel{color:var(--danger)}
+
+.empty{
+  text-align:center;
+  padding:40px;
+  color:var(--muted);
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">ออเดอร์ของฉัน</div>
+
+<div class="container" id="box">
+  <div class="empty">กำลังโหลด…</div>
+</div>
+
+<script>
+/* ===== CONFIG ===== */
+const API = "https://script.google.com/macros/s/AKfycbwOyS7QmjMMLvomajpk0gJgPmW5wlgwjQ2qmbfQ_e5XGX1D5YYmQ8zeUB_WFti5k6zNKg/exec";
+const API_KEY = "SBTH-SECURE-2026";
+
+/* AUTH */
+const userId = localStorage.getItem("user_id");
+if(!userId) location.href="login.html";
+
+/* DOM */
+const box=document.getElementById("box");
+
+/* LOAD ORDERS */
+fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
+.then(r=>r.json())
+.then(res=>{
+  const orders=res.orders||[];
+  if(!orders.length){
+    box.innerHTML='<div class="empty">ยังไม่มีออเดอร์</div>';
+    return;
   }
 
-  // ตรวจ link เบื้องต้น
-  if (!/^https?:\/\//i.test(link)) {
-    return error_("INVALID_LINK_FORMAT");
-  }
-
-  const ss = SpreadsheetApp.getActive();
-  const shUsers   = ss.getSheetByName("users");
-  const shOrders  = ss.getSheetByName("orders");
-  const shWallet  = ss.getSheetByName("wallet");
-  const shServices= ss.getSheetByName("services");
-  const shDiscount= ss.getSheetByName("discounts");
-
-  /* ---------- USER ---------- */
-  const users = shUsers.getDataRange().getValues();
-  const uRowIndex = users.findIndex(r => String(r[0]) === String(user_id));
-  if (uRowIndex < 1) return error_("USER_NOT_FOUND");
-
-  let credit = Number(users[uRowIndex][4]);
-  if (credit <= 0) return error_("NO_CREDIT");
-
-  /* ---------- SERVICE ---------- */
-  const services = shServices.getDataRange().getValues().slice(1);
-  const s = services.find(r => r[0] === service_id && r[15] === "on");
-  if (!s) return error_("SERVICE_NOT_FOUND");
-
-  const minQty = Number(s[3]);
-  const basePrice100 = Number(s[4]);
-
-  if (qty < minQty) return error_("QTY_LESS_THAN_MIN");
-
-  let pricePerUnit = basePrice100 / 100;
-  let discountPercent = 0;
-
-  /* ---------- DISCOUNT ---------- */
-  if (shDiscount) {
-    const discounts = shDiscount.getDataRange().getValues().slice(1);
-    discounts.forEach(r => {
-      if (
-        r[0] === service_id &&
-        qty >= Number(r[1]) &&
-        qty <= Number(r[2])
-      ) {
-        discountPercent = Number(r[3]);
-        pricePerUnit = Number(r[4]) / 100;
-      }
-    });
-  }
-
-  const finalTotal = Number((qty * pricePerUnit).toFixed(2));
-
-  // ห้ามติดลบ
-  if (credit < finalTotal) {
-    return error_("INSUFFICIENT_BALANCE");
-  }
-
-  /* ---------- CREATE ORDER ---------- */
-  const orderId = "OD" + Date.now();
-  const now = new Date();
-
-  shOrders.appendRow([
-    orderId,          // A order_id
-    user_id,          // B user_id
-    service_id,       // C service_id
-    qty,              // D qty
-    basePrice100,     // E price_per_100
-    discountPercent,  // F discount
-    finalTotal,       // G final_total
-    link,             // H link
-    comment_text || "", // I comments (ใช้เฉพาะบริการ comment)
-    now,              // J datetime
-    "pending",        // K status
-    "",               // L start_amount
-    ""                // M end_amount
-  ]);
-
-  /* ---------- WALLET ---------- */
-  const newBalance = Number((credit - finalTotal).toFixed(2));
-
-  // update credit users
-  shUsers.getRange(uRowIndex + 1, 5).setValue(newBalance);
-
-  // wallet log
-  if (shWallet) {
-    shWallet.appendRow([
-      "WL" + Date.now(),
-      user_id,
-      "USE_ORDER",
-      -finalTotal,
-      "ORDER",
-      newBalance,
-      now
-    ]);
-  }
-
-  return success_({
-    order_id: orderId,
-    final_total: finalTotal,
-    balance_after: newBalance
+  box.innerHTML='';
+  orders.reverse().forEach(o=>{
+    box.insertAdjacentHTML("beforeend",`
+      <div class="card" onclick="openOrder('${o.order_id}')">
+        <div class="row">
+          <b>#${o.order_id}</b>
+          <span class="status ${o.status}">${o.status}</span>
+        </div>
+        <div class="row small">
+          <span>${o.service_id} • ${o.qty}</span>
+          <span>${Number(o.final_total).toFixed(2)}฿</span>
+        </div>
+        <div class="small">${new Date(o.datetime).toLocaleString()}</div>
+      </div>
+    `);
   });
+});
+
+function openOrder(id){
+  localStorage.setItem("order_id",id);
+  location.href="order_detail.html"; // ทำทีหลัง
 }
+</script>
+
+</body>
+</html>
