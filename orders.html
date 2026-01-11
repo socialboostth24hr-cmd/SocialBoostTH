@@ -2,181 +2,107 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>คำสั่งซื้อของฉัน | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders | SocialBoostTH</title>
 
 <style>
 :root{
-  --bg:#020617;
-  --card:#0b1220;
-  --blue:#38bdf8;
-  --purple:#8b5cf6;
-  --green:#22c55e;
-  --yellow:#facc15;
-  --red:#ef4444;
+  --bg:#0b0f1a;
+  --card:#12182a;
+  --line:#1f2a44;
+  --text:#e5e7eb;
   --muted:#94a3b8;
+  --primary:#8b5cf6;
+  --success:#22c55e;
+  --pending:#facc15;
+  --danger:#ef4444;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system;
-  background:linear-gradient(180deg,#020617,#020314);
-  color:#f8fafc;
-}
+*{box-sizing:border-box;font-family:-apple-system,Segoe UI,Roboto}
+body{margin:0;background:var(--bg);color:var(--text)}
+header{padding:16px;border-bottom:1px solid var(--line);font-size:20px;font-weight:700}
+.container{max-width:900px;margin:auto;padding:16px}
 
-/* HEADER */
-.header{
-  position:sticky;top:0;z-index:10;
-  background:rgba(2,6,23,.9);
-  backdrop-filter:blur(12px);
-  padding:14px 16px;
-  text-align:center;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--blue),var(--purple));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-/* CONTAINER */
-.container{
-  max-width:720px;
-  margin:auto;
-  padding:16px 16px 120px;
-}
-
-/* CARD */
-.card{
-  background:linear-gradient(180deg,#0e1628,#070b18);
-  border-radius:18px;
+.order-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
   padding:16px;
   margin-bottom:14px;
-  border:1px solid rgba(255,255,255,.08);
-  cursor:pointer;
 }
-.row{
+
+.order-top{
   display:flex;
   justify-content:space-between;
   align-items:center;
-}
-.id{
-  font-weight:900;
-  font-size:14px;
-}
-.date{
-  font-size:12px;
-  color:var(--muted);
+  margin-bottom:10px;
 }
 
-/* STATUS */
-.status{
-  font-size:12px;
-  font-weight:900;
-  padding:6px 14px;
+.badge{
+  padding:4px 10px;
   border-radius:999px;
-}
-.pending{background:rgba(250,204,21,.15);color:var(--yellow)}
-.processing{background:rgba(56,189,248,.15);color:var(--blue)}
-.success{background:rgba(34,197,94,.18);color:var(--green)}
-.cancel{background:rgba(239,68,68,.18);color:var(--red)}
-
-/* EMPTY */
-.empty{
-  text-align:center;
-  padding:50px 10px;
-  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
 }
 
-/* BOTTOM BTN */
-.bottom{
-  position:fixed;
-  bottom:16px;
-  left:50%;
-  transform:translateX(-50%);
-  width:calc(100% - 32px);
-  max-width:480px;
-}
-.bottom a{
-  display:block;
-  text-align:center;
-  padding:16px;
-  border-radius:999px;
-  font-weight:900;
-  text-decoration:none;
-  color:#fff;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-}
+.pending{background:#facc1520;color:var(--pending)}
+.processing{background:#38bdf820;color:#38bdf8}
+.completed{background:#22c55e20;color:var(--success)}
+.cancelled{background:#ef444420;color:var(--danger)}
+
+.row{font-size:14px;color:var(--muted);margin-top:4px}
+.link{color:var(--primary);word-break:break-all}
+.price{font-weight:700;margin-top:6px}
+.empty{text-align:center;color:var(--muted);margin-top:60px}
 </style>
 </head>
 
 <body>
+<header>📦 ออเดอร์ของฉัน</header>
 
-<div class="header">คำสั่งซื้อของฉัน</div>
-
-<div class="container" id="orderList">
-  <div class="empty">⏳ กำลังโหลดคำสั่งซื้อ…</div>
-</div>
-
-<div class="bottom">
-  <a href="services.html">➕ สั่งซื้อเพิ่ม</a>
+<div class="container" id="ordersBox">
+  <div class="empty">กำลังโหลดข้อมูล…</div>
 </div>
 
 <script>
-/* ===== CONFIG ===== */
+/* ================= CONFIG ================= */
 const API_BASE = "https://script.google.com/macros/s/AKfycbxAK7GDFGG-W_cKJeZ6YVLG2CeJKRcnamrYCyeUW2M68kjjMjvRCh2jqUjYEtOWFGpmSw/exec";
 const API_KEY  = "SBTH-SECURE-2026";
 
-/* AUTH */
-const userId = localStorage.getItem("user_id");
-if(!userId){
-  location.href="login.html";
-}
+/* ====== ดึง user_id (สมมติ login แล้ว) ====== */
+const user_id = localStorage.getItem("user_id") || "U001";
 
-const box = document.getElementById("orderList");
-
-/* STATUS TEXT */
-function statusText(s){
-  if(s==="pending") return "รอดำเนินการ";
-  if(s==="processing") return "กำลังดำเนินการ";
-  if(s==="success") return "สำเร็จ";
-  if(s==="cancel") return "ยกเลิก";
-  return "-";
-}
-
-/* LOAD ORDERS */
-fetch(`${API_BASE}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
-  .then(r=>r.json())
-  .then(res=>{
-    const orders = res.orders || [];
-    if(!orders.length){
-      box.innerHTML = `<div class="empty">ยังไม่มีคำสั่งซื้อ</div>`;
-      return;
-    }
-
-    box.innerHTML = "";
-    orders.reverse().forEach(o=>{
-      const div = document.createElement("div");
-      div.className = "card";
-      div.innerHTML = `
-        <div class="row">
-          <div>
-            <div class="id">#${o.order_id}</div>
-            <div class="date">${new Date(o.datetime).toLocaleString()}</div>
-          </div>
-          <div class="status ${o.status}">
-            ${statusText(o.status)}
-          </div>
-        </div>
-      `;
-      div.onclick = ()=>{
-        localStorage.setItem("order_id", o.order_id);
-        location.href="order_detail.html";
-      };
-      box.appendChild(div);
-    });
-  })
-  .catch(()=>{
-    box.innerHTML = `<div class="empty">โหลดข้อมูลไม่สำเร็จ</div>`;
+/* ================= LOAD ORDERS ================= */
+fetch(`${API_BASE}?action=getOrders&api_key=${API_KEY}&user_id=${user_id}`)
+.then(r=>r.json())
+.then(res=>{
+  const box=document.getElementById("ordersBox");
+  box.innerHTML="";
+  if(!res.success || res.orders.length===0){
+    box.innerHTML='<div class="empty">ยังไม่มีออเดอร์</div>';
+    return;
+  }
+  res.orders.forEach(o=>{
+    const div=document.createElement("div");
+    div.className="order-card";
+    div.innerHTML=`
+      <div class="order-top">
+        <div class="order-id">${o.order_id}</div>
+        <div class="badge ${o.status}">${o.status}</div>
+      </div>
+      <div class="row">บริการ: ${o.service_id}</div>
+      <div class="row">จำนวน: ${o.qty}</div>
+      <div class="row link">ลิงก์: ${o.link}</div>
+      ${o.comment_text ? `<div class="row">คอมเมนท์: ${o.comment_text}</div>` : ``}
+      <div class="price">฿ ${o.final_total}</div>
+      <div class="row">เวลา: ${new Date(o.datetime).toLocaleString()}</div>
+    `;
+    box.appendChild(div);
   });
+})
+.catch(err=>{
+  document.getElementById("ordersBox").innerHTML=
+    '<div class="empty">เกิดข้อผิดพลาดในการโหลดข้อมูล</div>';
+});
 </script>
 
 </body>
