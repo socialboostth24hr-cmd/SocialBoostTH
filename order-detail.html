@@ -17,7 +17,6 @@
   --danger:#ef4444;
 }
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:system-ui,-apple-system;
@@ -102,7 +101,7 @@ body{
   color:#38bdf8;
 }
 
-/* START / END */
+/* PROGRESS */
 .progress-box{
   margin-top:14px;
   padding:14px;
@@ -122,14 +121,6 @@ body{
   color:#22c55e;
 }
 
-/* NOTE */
-.note{
-  font-size:13px;
-  color:#cbd5f5;
-  line-height:1.6;
-}
-
-/* BUY AGAIN */
 .buy-again{
   position:fixed;
   bottom:16px;
@@ -187,21 +178,12 @@ body{
     <b>ลิงก์ที่สั่ง</b>
     <div class="link-box" id="link"></div>
   </div>
-
-  <div class="card">
-    <b>💚 ข้อความถึงลูกค้า</b>
-    <div class="note">
-      คำสั่งซื้อของคุณอยู่ภายใต้ระบบอัตโนมัติ<br>
-      หากสถานะเป็น “กำลังดำเนินการ” กรุณารอระบบทำงานจนเสร็จ<br>
-      ทางร้านรับประกันออเดอร์ทุกคำสั่งซื้อ สามารถติดต่อแอดมินได้ตลอด
-    </div>
-  </div>
 </div>
 
 <a class="buy-again" href="services.html">🔁 ซื้อบริการอีกครั้ง</a>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbwbGEMA1-x1c63RENR3wMQE6QQtYhCKQ50i8R-mW3WRJZxMc8adY0RmpZFI6-VaF5aX0w/exec";
+const API="https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
 const API_KEY="SBTH-SECURE-2026";
 
 const orderId = localStorage.getItem('order_id');
@@ -211,13 +193,12 @@ if(!orderId || !userId) location.href='orders.html';
 const $=id=>document.getElementById(id);
 
 async function load(){
-  const servicesRes = await fetch(`${API}?action=getServices&api_key=${API_KEY}`);
-  const services = (await servicesRes.json()).services||[];
-  const serviceMap={};
-  services.forEach(s=>serviceMap[s.service_id]=s.display_name);
+  const sRes = await fetch(`${API}?action=getServices&api_key=${API_KEY}`);
+  const services = (await sRes.json()).services || [];
+  const map={}; services.forEach(s=>map[s.service_id]=s.display_name);
 
-  const r = await fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`);
-  const orders = (await r.json()).orders||[];
+  const oRes = await fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`);
+  const orders = (await oRes.json()).orders || [];
   const o = orders.find(x=>x.order_id===orderId);
   if(!o) return;
 
@@ -225,15 +206,15 @@ async function load(){
   $('detail').style.display='block';
 
   $('oid').textContent=o.order_id;
-  $('service').textContent=serviceMap[o.service_id]||o.service_id;
+  $('service').textContent=map[o.service_id]||o.service_id;
   $('qty').textContent=o.qty;
-  $('price').textContent=Number(o.final_total).toFixed(2)+' บาท';
+  $('price').textContent=Number(o.total||o.final_total||0).toFixed(2)+' บาท';
   $('date').textContent=new Date(o.datetime).toLocaleString();
   $('link').textContent=o.link||'-';
 
-  const s=$('status');
-  s.className='status '+(o.status||'pending');
-  s.textContent=
+  const st=$('status');
+  st.className='status '+(o.status||'pending');
+  st.textContent=
     o.status==='success'?'✅ สำเร็จ':
     o.status==='processing'?'🚀 กำลังดำเนินการ':
     o.status==='cancel'?'❌ ยกเลิก':'⏳ รอดำเนินการ';
