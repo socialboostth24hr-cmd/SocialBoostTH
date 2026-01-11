@@ -1,162 +1,247 @@
-/* =========================
-   ORDERS.GS
-   ========================= */
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>สั่งซื้อบริการ | SocialBoostTH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-/**
- * สร้างออเดอร์ใหม่
- * action=createOrder (POST)
- */
-function createOrder(data) {
-  const ss = SpreadsheetApp.getActive();
-  const shOrders = ss.getSheetByName("orders");
-  const shUsers = ss.getSheetByName("users");
-  const shDiscounts = ss.getSheetByName("discounts");
-
-  const userId = data.user_id;
-  const serviceId = data.service_id;
-  const qty = Number(data.qty);
-  const link = (data.link || "").trim();
-  const commentText = data.comment_text || "";
-
-  if (!userId || !serviceId || !qty || !link) {
-    return error_("MISSING_REQUIRED_FIELDS");
-  }
-
-  // --- validate link เบื้องต้น ---
-  if (!link.startsWith("http")) {
-    return error_("INVALID_LINK");
-  }
-
-  // --- ดึง user ---
-  const users = shUsers.getDataRange().getValues();
-  const uRow = users.find(r => r[0] === userId && r[5] === "active");
-  if (!uRow) return error_("USER_NOT_FOUND");
-
-  let credit = Number(uRow[4]);
-
-  // --- ราคาพื้นฐานจาก services ---
-  const service = getServiceById_(serviceId);
-  if (!service) return error_("SERVICE_NOT_FOUND");
-
-  if (qty < service.min_qty) return error_("QTY_LESS_THAN_MIN");
-
-  let pricePerUnit = service.price_per_100 / 100;
-
-  // --- คำนวณส่วนลดจาก discounts ---
-  let discountPercent = 0;
-  const discounts = shDiscounts.getDataRange().getValues().slice(1);
-  discounts.forEach(r => {
-    if (r[0] === serviceId && qty >= r[1] && qty <= r[2]) {
-      discountPercent = Number(r[3]);
-      pricePerUnit = Number(r[4]);
-    }
-  });
-
-  const rawTotal = qty * pricePerUnit;
-  const finalTotal = Number(rawTotal.toFixed(2));
-
-  // --- wallet ห้ามติดลบ ---
-  if (credit < finalTotal) {
-    return error_("INSUFFICIENT_BALANCE");
-  }
-
-  // --- สร้าง order ---
-  const orderId = "OD" + Date.now();
-  const now = new Date();
-
-  shOrders.appendRow([
-    orderId,
-    userId,
-    serviceId,
-    qty,
-    service.price_per_100,
-    discountPercent,
-    finalTotal,
-    link,
-    commentText,
-    now,
-    "pending",
-    "",
-    ""
-  ]);
-
-  // --- ตัดเครดิต + wallet log ---
-  credit = credit - finalTotal;
-  updateUserCredit_(userId, credit);
-  createWalletLog_(userId, -finalTotal, "USE_ORDER", orderId);
-
-  return success_({
-    order_id: orderId,
-    final_total: finalTotal,
-    balance_after: credit
-  });
+<style>
+:root{
+  --bg:#0b0f1a;
+  --card:#020617;
+  --blue:#38bdf8;
+  --purple:#8b5cf6;
+  --pink:#ec4899;
+  --muted:#94a3b8;
+  --danger:#ef4444;
+  --success:#22c55e;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system;
+  background:linear-gradient(180deg,#020617,var(--bg));
+  color:#f8fafc;
 }
 
-/**
- * ดึงออเดอร์ของ user
- * action=getOrders
- */
-function getOrders(e) {
-  const userId = e.parameter.user_id;
-  if (!userId) return error_("MISSING_USER_ID");
-
-  const sh = SpreadsheetApp.getActive().getSheetByName("orders");
-  const rows = sh.getDataRange().getValues().slice(1);
-
-  const orders = rows
-    .filter(r => r[1] === userId)
-    .map(r => ({
-      order_id: r[0],
-      service_id: r[2],
-      qty: r[3],
-      final_total: r[6],
-      link: r[7],
-      comment_text: r[8],
-      datetime: r[9],
-      status: r[10]
-    }));
-
-  return success_({ orders });
+.header{
+  position:sticky;top:0;z-index:10;
+  background:rgba(2,6,23,.9);
+  backdrop-filter:blur(12px);
+  padding:14px 16px;
+  font-weight:900;
+  text-align:center;
+  background:linear-gradient(90deg,var(--blue),var(--purple));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
-/* =========================
-   HELPERS (เฉพาะ order)
-   ========================= */
+.container{
+  max-width:520px;
+  margin:auto;
+  padding:20px 16px 140px;
+}
 
-function getServiceById_(serviceId) {
-  const sh = SpreadsheetApp.getActive().getSheetByName("services");
-  const rows = sh.getDataRange().getValues().slice(1);
-  for (const r of rows) {
-    if (r[0] === serviceId && r[15] === "on") {
-      return {
-        service_id: r[0],
-        min_qty: Number(r[3]),
-        price_per_100: Number(r[4])
-      };
-    }
+.card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:16px;
+}
+
+label{
+  font-size:13px;
+  font-weight:900;
+}
+
+input, textarea{
+  width:100%;
+  margin-top:6px;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:#020617;
+  color:#fff;
+  font-size:14px;
+}
+
+textarea{
+  resize:none;
+  min-height:120px;
+}
+
+.hint{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.summary{
+  font-size:14px;
+}
+.summary div{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+}
+
+.total{
+  font-size:18px;
+  font-weight:900;
+  color:var(--success);
+}
+
+.error{
+  color:var(--danger);
+  font-weight:900;
+  font-size:13px;
+  text-align:center;
+}
+
+.btn{
+  position:fixed;
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+  width:calc(100% - 32px);
+  max-width:480px;
+  padding:16px;
+  border-radius:999px;
+  border:none;
+  font-size:16px;
+  font-weight:900;
+  color:#fff;
+  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">สั่งซื้อบริการ</div>
+
+<div class="container">
+
+  <div class="card">
+    <label>ลิงก์ที่ต้องการ</label>
+    <input id="link" placeholder="https://www.tiktok.com/@username">
+    <div class="hint">รองรับลิงก์ http / https เท่านั้น</div>
+  </div>
+
+  <div class="card">
+    <label>จำนวน</label>
+    <input id="qty" type="number" min="1">
+    <div class="hint" id="minHint"></div>
+  </div>
+
+  <div class="card" id="commentBox" style="display:none">
+    <label>คอมเมนต์ (1 บรรทัด = 1 คอมเมนต์)</label>
+    <textarea id="comments" placeholder="พิมพ์ทีละบรรทัด"></textarea>
+    <div class="hint">จำนวนคอมเมนต์: <b id="commentCount">0</b></div>
+  </div>
+
+  <div class="card summary">
+    <div><span>ราคา</span><span id="price">-</span></div>
+    <div><span>ส่วนลด</span><span id="discount">-</span></div>
+    <div class="total"><span>รวมทั้งสิ้น</span><span id="total">-</span></div>
+  </div>
+
+  <div class="error" id="error"></div>
+
+</div>
+
+<button class="btn" onclick="submitOrder()">สั่งซื้อ</button>
+
+<script>
+/* ===== CONFIG ===== */
+const API = "https://script.google.com/macros/s/AKfycbwOyS7QmjMMLvomajpk0gJgPmW5wlgwjQ2qmbfQ_e5XGX1D5YYmQ8zeUB_WFti5k6zNKg/exec";
+const API_KEY = "SBTH-SECURE-2026";
+
+/* ===== STATE ===== */
+const userId    = localStorage.getItem("user_id");
+const serviceId = localStorage.getItem("service_id");
+let serviceData = null;
+
+if(!userId || !serviceId){
+  location.href="services.html";
+}
+
+/* ===== DOM ===== */
+const qtyEl = document.getElementById("qty");
+const linkEl = document.getElementById("link");
+const errorEl = document.getElementById("error");
+
+/* ===== LOAD SERVICE ===== */
+fetch(`${API}?action=getServices&api_key=${API_KEY}`)
+.then(r=>r.json())
+.then(res=>{
+  serviceData = res.services.find(s=>s.service_id===serviceId);
+  if(!serviceData){
+    errorEl.textContent="ไม่พบบริการ";
+    return;
   }
-  return null;
+
+  document.getElementById("minHint").textContent =
+    "ขั้นต่ำ " + serviceData.min_qty + " " + serviceData.unit;
+
+  if(serviceData.service_type==="COMMENT"){
+    document.getElementById("commentBox").style.display="block";
+  }
+});
+
+qtyEl.addEventListener("input",calculate);
+document.getElementById("comments").addEventListener("input",()=>{
+  const lines = document.getElementById("comments").value.split("\n").filter(x=>x.trim());
+  document.getElementById("commentCount").textContent = lines.length;
+  qtyEl.value = lines.length;
+  calculate();
+});
+
+function calculate(){
+  if(!serviceData) return;
+  const qty = Number(qtyEl.value||0);
+  if(qty < serviceData.min_qty) return;
+
+  const price = (qty * serviceData.price_per_100 / 100).toFixed(2);
+  document.getElementById("price").textContent = price + " บาท";
+  document.getElementById("discount").textContent = "-";
+  document.getElementById("total").textContent = price + " บาท";
 }
 
-function updateUserCredit_(userId, newCredit) {
-  const sh = SpreadsheetApp.getActive().getSheetByName("users");
-  const rows = sh.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    if (rows[i][0] === userId) {
-      sh.getRange(i + 1, 5).setValue(newCredit);
+/* ===== SUBMIT ===== */
+function submitOrder(){
+  errorEl.textContent="";
+
+  if(!/^https?:\/\//i.test(linkEl.value)){
+    errorEl.textContent="ลิงก์ไม่ถูกต้อง";
+    return;
+  }
+
+  const payload={
+    api_key:API_KEY,
+    action:"createOrder",
+    user_id:userId,
+    service_id:serviceId,
+    qty:Number(qtyEl.value),
+    link:linkEl.value,
+    comment_text:document.getElementById("comments").value
+  };
+
+  fetch(API,{
+    method:"POST",
+    body:JSON.stringify(payload)
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.success){
+      errorEl.textContent=res.error || "ทำรายการไม่สำเร็จ";
       return;
     }
-  }
+    location.href="orders.html";
+  });
 }
+</script>
 
-function createWalletLog_(userId, amount, type, refId) {
-  const sh = SpreadsheetApp.getActive().getSheetByName("topup_log");
-  sh.appendRow([
-    "WL" + Date.now(),
-    userId,
-    type,
-    amount,
-    refId,
-    new Date()
-  ]);
-}
+</body>
+</html>
