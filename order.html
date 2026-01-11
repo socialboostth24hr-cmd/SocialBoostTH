@@ -1,129 +1,199 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>My Orders | SocialBoostTH</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สั่งซื้อบริการ | SocialBoostTH</title>
 
 <style>
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #0b0f14;
-    color: #e5e7eb;
-  }
-  header {
-    padding: 16px;
-    text-align: center;
-    background: #111827;
-    font-size: 18px;
-    font-weight: 600;
-  }
-  .container {
-    padding: 16px;
-  }
-  .order {
-    background: #111827;
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 12px;
-    border: 1px solid #1f2937;
-  }
-  .row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 14px;
-  }
-  .label {
-    color: #9ca3af;
-  }
-  .status {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    display: inline-block;
-  }
-  .pending { background: #f59e0b; color: #000; }
-  .done { background: #10b981; color: #000; }
-  .error { background: #ef4444; color: #fff; }
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#0b0f14;
+  color:#e5e7eb;
+}
+header{
+  padding:16px;
+  text-align:center;
+  font-size:18px;
+  font-weight:700;
+  background:#111827;
+}
+.container{padding:16px;max-width:520px;margin:auto}
 
-  .loading {
-    text-align: center;
-    padding: 40px;
-    color: #9ca3af;
-  }
+.card{
+  background:#111827;
+  border:1px solid #1f2937;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+label{
+  display:block;
+  font-size:13px;
+  color:#9ca3af;
+  margin-bottom:6px;
+}
+
+input,textarea{
+  width:100%;
+  background:#020617;
+  color:#fff;
+  border:1px solid #1f2937;
+  padding:12px;
+  border-radius:10px;
+  font-size:14px;
+}
+
+textarea{min-height:120px}
+
+.hint{
+  font-size:12px;
+  color:#9ca3af;
+  margin-top:6px;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-top:6px;
+}
+
+.total{
+  font-size:18px;
+  font-weight:700;
+  margin-top:10px;
+}
+
+button{
+  width:100%;
+  margin-top:16px;
+  padding:14px;
+  font-size:16px;
+  font-weight:700;
+  border-radius:12px;
+  background:linear-gradient(135deg,#38bdf8,#8b5cf6,#ec4899);
+  border:none;
+  color:#fff;
+  cursor:pointer;
+}
+
+.error{
+  color:#ef4444;
+  font-size:13px;
+  margin-top:8px;
+}
+
+.hide{display:none}
 </style>
 </head>
 
 <body>
 
-<header>ออเดอร์ของฉัน</header>
+<header>สั่งซื้อบริการ</header>
 
-<div class="container" id="orders">
-  <div class="loading">กำลังโหลดข้อมูล...</div>
+<div class="container">
+
+  <!-- SERVICE -->
+  <div class="card">
+    <label>บริการ</label>
+    <input id="serviceName" disabled>
+  </div>
+
+  <!-- LINK -->
+  <div class="card">
+    <label>ลิงก์ (Link)</label>
+    <input id="link" placeholder="https://www.tiktok.com/@username">
+    <div class="hint">ต้องเป็นลิงก์ http / TikTok</div>
+  </div>
+
+  <!-- COMMENT (เฉพาะบริการ comment) -->
+  <div class="card hide" id="commentBox">
+    <label>คอมเมนท์ (1 บรรทัด = 1 คอมเมนท์)</label>
+    <textarea id="comments" placeholder="พิมพ์ 1 บรรทัด ต่อ 1 คอมเมนท์"></textarea>
+    <div class="hint">จำนวนคอมเมนท์: <b id="commentCount">0</b></div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="card">
+    <div class="row"><span>จำนวน</span><span id="qty">0</span></div>
+    <div class="row"><span>ราคา</span><span id="price">-</span></div>
+    <div class="total">รวม <span id="total">0</span> เครดิต</div>
+    <div id="err" class="error"></div>
+  </div>
+
+  <button onclick="submitOrder()">ยืนยันสั่งซื้อ</button>
+
 </div>
 
 <script>
-/* ===============================
-   CONFIG (ใส่ให้แล้ว ไม่ต้องแก้)
-   =============================== */
+/* ================= CONFIG ================= */
 const API_BASE = "https://script.google.com/macros/s/AKfycbxAK7GDFGG-W_cKJeZ6YVLG2CeJKRcnamrYCyeUW2M68kjjMjvRCh2jqUjYEtOWFGpmSw/exec";
 const API_KEY  = "SBTH-SECURE-2026";
 
-/* ตัวอย่าง user_id (ปกติเอาจาก localStorage) */
-const USER_ID = localStorage.getItem("user_id") || "U001";
+const user_id    = localStorage.getItem("user_id") || "U001";
+const service_id = localStorage.getItem("service_id") || "S01";
+const service_type = localStorage.getItem("service_type") || "INT"; // INT / COMMENT
 
-/* ===============================
-   LOAD ORDERS
-   =============================== */
-fetch(`${API_BASE}?action=getOrders&api_key=${API_KEY}&user_id=${USER_ID}`)
-  .then(res => res.json())
-  .then(data => {
-    const box = document.getElementById("orders");
-    box.innerHTML = "";
+/* ================= INIT ================= */
+document.getElementById("serviceName").value = service_id;
 
-    if (!data.success || !data.orders.length) {
-      box.innerHTML = "<div class='loading'>ยังไม่มีออเดอร์</div>";
-      return;
-    }
+/* comment only */
+if(service_type === "COMMENT"){
+  document.getElementById("commentBox").classList.remove("hide");
+}
 
-    data.orders.reverse().forEach(o => {
-      const statusClass =
-        o.status === "pending" ? "pending" :
-        o.status === "done" ? "done" : "error";
+/* COUNT COMMENTS */
+document.getElementById("comments")?.addEventListener("input",()=>{
+  const lines = document.getElementById("comments").value
+    .split("\n")
+    .filter(l=>l.trim()!=="");
+  document.getElementById("commentCount").innerText = lines.length;
+  document.getElementById("qty").innerText = lines.length;
+});
 
-      const el = document.createElement("div");
-      el.className = "order";
-      el.innerHTML = `
-        <div class="row">
-          <div class="label">Order ID</div>
-          <div>${o.order_id}</div>
-        </div>
-        <div class="row">
-          <div class="label">Service</div>
-          <div>${o.service_id}</div>
-        </div>
-        <div class="row">
-          <div class="label">จำนวน</div>
-          <div>${o.qty}</div>
-        </div>
-        <div class="row">
-          <div class="label">ราคา</div>
-          <div>${o.final_total} เครดิต</div>
-        </div>
-        <div class="row">
-          <div class="label">สถานะ</div>
-          <div class="status ${statusClass}">${o.status || "-"}</div>
-        </div>
-      `;
-      box.appendChild(el);
-    });
+/* ================= SUBMIT ================= */
+function submitOrder(){
+  const link = document.getElementById("link").value.trim();
+  const comments = document.getElementById("comments")?.value || "";
+  const qty = service_type==="COMMENT"
+    ? comments.split("\n").filter(l=>l.trim()!=="").length
+    : 1;
+
+  if(!/^https?:\/\//i.test(link)){
+    return showErr("ลิงก์ไม่ถูกต้อง");
+  }
+  if(qty<=0){
+    return showErr("จำนวนต้องมากกว่า 0");
+  }
+
+  showErr("กำลังสร้างออเดอร์...");
+
+  fetch(API_BASE,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"createOrder",
+      api_key:API_KEY,
+      user_id,
+      service_id,
+      qty,
+      link,
+      comment_text: comments
+    })
   })
-  .catch(() => {
-    document.getElementById("orders").innerHTML =
-      "<div class='loading'>โหลดข้อมูลไม่สำเร็จ</div>";
-  });
+  .then(r=>r.json())
+  .then(res=>{
+    if(!res.success) return showErr(res.error||"ไม่สามารถสั่งซื้อได้");
+    location.href="orders.html";
+  })
+  .catch(()=>showErr("เชื่อมต่อระบบไม่ได้"));
+}
+
+function showErr(t){
+  document.getElementById("err").innerText=t;
+}
 </script>
 
 </body>
