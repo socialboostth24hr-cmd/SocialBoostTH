@@ -7,136 +7,171 @@
 
 <style>
 :root{
-  --bg:#0b0f1a;
-  --card:#020617;
-  --blue:#38bdf8;
-  --purple:#8b5cf6;
-  --green:#22c55e;
-  --yellow:#facc15;
-  --red:#ef4444;
+  --bg:#020617;
+  --card:#0b1220;
+  --border:#1f2937;
   --muted:#94a3b8;
+  --blue:#38bdf8;
+  --yellow:#f59e0b;
+  --green:#22c55e;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui,-apple-system;
-  background:linear-gradient(180deg,#020617,var(--bg));
-  color:#f8fafc;
+  background:linear-gradient(180deg,#020617,#020617);
+  color:#e5e7eb;
 }
-.header{
-  padding:16px;
-  text-align:center;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--blue),var(--purple));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.container{
-  max-width:640px;
+.wrap{
+  max-width:720px;
   margin:auto;
-  padding:16px 16px 120px;
+  padding:18px 16px 100px;
+}
+h1{
+  margin:0 0 14px;
+  font-size:26px;
 }
 .card{
   background:var(--card);
-  border-radius:20px;
+  border:1px solid var(--border);
+  border-radius:18px;
   padding:16px;
   margin-bottom:14px;
-  border:1px solid rgba(255,255,255,.08);
 }
 .row{
   display:flex;
   justify-content:space-between;
-  font-size:14px;
-  margin-top:6px;
+  gap:10px;
 }
-.muted{color:var(--muted)}
-.status{
-  padding:6px 14px;
+.small{font-size:12px;color:var(--muted)}
+.badge{
+  padding:4px 12px;
   border-radius:999px;
   font-size:12px;
-  font-weight:900;
-  display:inline-block;
+  font-weight:800;
 }
-.pending{background:rgba(250,204,21,.15);color:var(--yellow)}
+.pending{background:rgba(245,158,11,.15);color:var(--yellow)}
 .processing{background:rgba(56,189,248,.15);color:var(--blue)}
 .success{background:rgba(34,197,94,.18);color:var(--green)}
-.cancel{background:rgba(239,68,68,.18);color:var(--red)}
+.price-box{
+  display:flex;
+  gap:10px;
+  margin-top:8px;
+}
+.price{
+  background:#020617;
+  padding:6px 12px;
+  border-radius:10px;
+  font-size:13px;
+}
+.price b{font-size:14px}
+.link{
+  margin-top:6px;
+  color:var(--blue);
+  cursor:pointer;
+  font-size:13px;
+}
+.detail-btn{
+  margin-top:10px;
+  padding:10px;
+  border-radius:999px;
+  border:none;
+  background:linear-gradient(135deg,#38bdf8,#8b5cf6);
+  color:#fff;
+  font-weight:900;
+  width:100%;
+}
 .empty{
   text-align:center;
   color:var(--muted);
-  padding:40px 0;
+  padding:40px 10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">ออเดอร์ของฉัน</div>
-
-<div class="container" id="list">
-  <div class="empty">กำลังโหลดออเดอร์…</div>
+<div class="wrap">
+  <h1>📦 ออเดอร์ของฉัน</h1>
+  <div id="list" class="empty">กำลังโหลด…</div>
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const API_BASE = "https://script.google.com/macros/s/AKfycbwOyS7QmjMMLvomajpk0gJgPmW5wlgwjQ2qmbfQ_e5XGX1D5YYmQ8zeUB_WFti5k6zNKg/exec";
+/* ================= CONFIG ================= */
+const API_BASE = "https://script.google.com/macros/s/AKfycbyB5X9n_8U8huJJKC3O3r2n-gv-59oifcnzi2D6AaLcs5ul4-jFFbrcmzKglG5LYFX6iA/exec";
 const API_KEY  = "SBTH-SECURE-2026";
 
-/* AUTH */
+/* ================= AUTH ================= */
 const user_id = localStorage.getItem("user_id");
-if(!user_id) location.href="login.html";
-
-const list = document.getElementById("list");
-
-function statusText(s){
-  if(s==="pending") return "รอดำเนินการ";
-  if(s==="processing") return "กำลังทำงาน";
-  if(s==="success") return "สำเร็จ";
-  if(s==="cancel") return "ยกเลิก";
-  return s;
+if(!user_id){
+  location.href="login.html";
 }
 
-/* LOAD ORDERS */
+/* ================= UTILS ================= */
+function formatTH(dateStr){
+  const d=new Date(dateStr);
+  return d.toLocaleString("th-TH",{dateStyle:"medium",timeStyle:"short"});
+}
+function shortLink(url){
+  if(!url) return "-";
+  return url.length>38 ? url.slice(0,35)+"…" : url;
+}
+function statusBadge(s){
+  if(s==="processing") return `<span class="badge processing">กำลังทำ</span>`;
+  if(s==="success") return `<span class="badge success">สำเร็จ</span>`;
+  return `<span class="badge pending">รอดำเนินการ</span>`;
+}
+
+/* ================= LOAD ORDERS ================= */
 fetch(`${API_BASE}?action=getOrders&api_key=${API_KEY}&user_id=${user_id}`)
-.then(r=>r.json())
-.then(res=>{
-  const orders = res.orders || [];
-  if(!orders.length){
-    list.innerHTML = `<div class="empty">ยังไม่มีออเดอร์</div>`;
-    return;
-  }
-  list.innerHTML="";
-  orders.reverse().forEach(o=>{
-    const el=document.createElement("div");
-    el.className="card";
-    el.innerHTML=`
-      <div class="row">
-        <b>#${o.order_id}</b>
-        <span class="status ${o.status}">${statusText(o.status)}</span>
-      </div>
-      <div class="row muted">
-        <span>บริการ</span>
-        <span>${o.service_id}</span>
-      </div>
-      <div class="row muted">
-        <span>จำนวน</span>
-        <span>${o.qty}</span>
-      </div>
-      <div class="row">
-        <b>จ่ายจริง</b>
-        <b style="color:var(--green)">${Number(o.final_total).toFixed(2)} บาท</b>
-      </div>
-      <div class="row muted">
-        <span>วันที่</span>
-        <span>${new Date(o.datetime).toLocaleString()}</span>
-      </div>
-    `;
-    list.appendChild(el);
+  .then(r=>r.json())
+  .then(res=>{
+    const list=document.getElementById("list");
+    if(!res.success || !res.orders.length){
+      list.innerHTML=`<div class="empty">ยังไม่มีออเดอร์</div>`;
+      return;
+    }
+
+    list.innerHTML="";
+    res.orders.reverse().forEach(o=>{
+      const card=document.createElement("div");
+      card.className="card";
+
+      card.innerHTML=`
+        <div class="row">
+          <b>#${o[0]}</b>
+          ${statusBadge(o[10])}
+        </div>
+
+        <div class="small">${formatTH(o[9])}</div>
+
+        <div class="price-box">
+          <div class="price">ปกติ<br><b>${o[4]}</b></div>
+          <div class="price">ส่วนลด<br><b>${o[5]}%</b></div>
+          <div class="price">จ่ายจริง<br><b>${o[6]}</b></div>
+        </div>
+
+        <div class="link" onclick="window.open('${o[7]}')">
+          🔗 ${shortLink(o[7])}
+        </div>
+
+        <button class="detail-btn" onclick="openDetail('${o[0]}')">
+          ดูรายละเอียด
+        </button>
+      `;
+      list.appendChild(card);
+    });
+  })
+  .catch(()=>{
+    document.getElementById("list").innerHTML=
+      `<div class="empty">โหลดออเดอร์ไม่สำเร็จ</div>`;
   });
-})
-.catch(()=>{
-  list.innerHTML=`<div class="empty">โหลดข้อมูลไม่สำเร็จ</div>`;
-});
+
+/* ================= DETAIL ================= */
+function openDetail(orderId){
+  localStorage.setItem("order_id",orderId);
+  location.href="order_detail.html";
+}
 </script>
 
 </body>
