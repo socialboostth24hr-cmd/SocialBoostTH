@@ -2,142 +2,30 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
-
-<style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  min-height:100vh;
-  font-family:'Montserrat',system-ui;
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:
-    radial-gradient(600px 300px at top,#1e40af55,transparent),
-    linear-gradient(180deg,#020617,#0b0216 60%,#14062b);
-}
-
-/* wrapper */
-.wrap{
-  width:100%;
-  max-width:420px;
-  padding:28px 20px 36px;
-  text-align:center;
-  animation:fadeIn .9s ease;
-}
-
-/* logo */
-.logo{
-  font-size:clamp(36px,9vw,52px);
-  font-weight:900;
-  line-height:1.05;
-  background:linear-gradient(90deg,#38bdf8,#8b5cf6,#ec4899);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  text-shadow:0 0 40px rgba(139,92,246,.45);
-  margin-bottom:10px;
-}
-
-/* subtitle */
-.sub{
-  font-size:14px;
-  line-height:1.6;
-  opacity:.9;
-  margin-bottom:22px;
-}
-
-/* chips */
-.features{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  justify-content:center;
-  margin-bottom:26px;
-}
-.badge{
-  padding:8px 14px;
-  font-size:12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(6px);
-  border:1px solid rgba(255,255,255,.12);
-  white-space:nowrap;
-}
-
-/* tap */
-.tap{
-  margin-top:10px;
-  font-size:14px;
-  opacity:.95;
-  animation:pulse 1.4s infinite;
-}
-
-/* loader */
-.loader{
-  margin:22px auto 0;
-  width:220px;
-  height:6px;
-  background:rgba(255,255,255,.15);
-  border-radius:999px;
-  overflow:hidden;
-  display:none;
-}
-.loader div{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#38bdf8,#8b5cf6,#ec4899);
-  animation:load 2.2s linear forwards;
-}
-
-/* animations */
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes pulse{0%{opacity:.4}50%{opacity:1}100%{opacity:.4}}
-@keyframes load{to{width:100%}}
-</style>
+<title>SocialBoostTH | Digital Marketing Services</title>
+<meta name="description" content="SocialBoostTH ให้บริการด้านการตลาดดิจิทัล ไม่เกี่ยวข้องกับเจ้าของแพลตฟอร์มโซเชียลมีเดีย">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-
 <body>
 
-<div class="wrap" onclick="start()">
-  <div class="logo">SocialBoostTH</div>
-  <div class="sub">
-    แพลตฟอร์มปั๊มโซเชียลอัตโนมัติ<br>
-    ระบบเสถียร เปิดบริการ 24 ชั่วโมง
-  </div>
+<h1>SocialBoostTH</h1>
+<p>เราให้บริการด้านระบบการตลาดดิจิทัล และเครื่องมือจัดการโซเชียลมีเดีย</p>
 
-  <div class="features">
-    <div class="badge">⚡ Auto System</div>
-    <div class="badge">🔒 Secure</div>
-    <div class="badge">🚀 Fast</div>
-    <div class="badge">🎯 Real Growth</div>
-  </div>
+<h2>บริการของเรา</h2>
+<ul>
+  <li>ระบบจัดการแคมเปญโซเชียล</li>
+  <li>เครื่องมือวิเคราะห์ข้อมูล</li>
+  <li>โซลูชันสำหรับผู้ดูแลเพจ</li>
+</ul>
 
-  <div class="tap">🔊 แตะเพื่อเข้าสู่ระบบ</div>
+<p><strong>หมายเหตุ:</strong> เว็บไซต์นี้ไม่ได้เป็นตัวแทน หรือมีความเกี่ยวข้องกับ TikTok, Meta หรือแพลตฟอร์มใด ๆ</p>
 
-  <div class="loader" id="loader">
-    <div></div>
-  </div>
-</div>
-
-<audio id="sound" preload="auto">
-  <source src="https://assets.mixkit.co/sfx/preview/mixkit-game-click-1114.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-function start(){
-  const audio=document.getElementById('sound');
-  const loader=document.getElementById('loader');
-  audio.volume=0.35;
-  audio.play().catch(()=>{});
-  loader.style.display='block';
-  setTimeout(()=>location.href='login.html',2200);
-}
-</script>
+<p>
+<a href="services.html">บริการ</a> |
+<a href="about.html">เกี่ยวกับเรา</a> |
+<a href="terms.html">เงื่อนไข</a> |
+<a href="privacy.html">ความเป็นส่วนตัว</a>
+</p>
 
 </body>
 </html>
