@@ -2,247 +2,194 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>รายละเอียดคำสั่งซื้อ | SocialBoostTH</title>
+<title>รายละเอียดออเดอร์ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 :root{
-  --black:#0b0f1a;
-  --blue:#38bdf8;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
+  --bg:#020617;
+  --card:#0b1220;
+  --border:#1f2937;
   --muted:#94a3b8;
-  --success:#22c55e;
-  --warning:#f59e0b;
-  --danger:#ef4444;
+  --blue:#38bdf8;
+  --yellow:#f59e0b;
+  --green:#22c55e;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui,-apple-system;
-  background:
-    radial-gradient(900px 420px at top,#1e293b,transparent),
-    linear-gradient(180deg,var(--black),#060913);
-  color:#f1f5f9;
+  background:#020617;
+  color:#e5e7eb;
 }
-
-/* HEADER */
+.wrap{
+  max-width:720px;
+  margin:auto;
+  padding:18px 16px 120px;
+}
 .header{
-  position:sticky;top:0;z-index:20;
-  background:rgba(2,6,23,.85);
-  backdrop-filter:blur(14px);
-  padding:12px 16px;
-  display:grid;
-  grid-template-columns:auto 1fr auto;
+  display:flex;
   align-items:center;
+  gap:10px;
+  margin-bottom:16px;
 }
 .back{
   border:none;
-  padding:6px 14px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
+  background:#0b1220;
   color:#fff;
-  font-weight:900;
+  padding:8px 14px;
+  border-radius:999px;
   cursor:pointer;
 }
-.center{
-  text-align:center;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-/* CONTAINER */
-.container{
-  max-width:720px;
-  margin:auto;
-  padding:20px 18px 140px;
-}
 .card{
-  background:linear-gradient(180deg,#111827,#0b1020);
-  border-radius:26px;
-  padding:22px;
-  margin-bottom:18px;
-  border:1px solid rgba(255,255,255,.06);
-  box-shadow:0 30px 80px rgba(0,0,0,.55);
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
 }
 .row{
   display:flex;
   justify-content:space-between;
-  margin-top:10px;
-  font-size:14px;
+  margin-bottom:10px;
+  gap:12px;
 }
-.row span{color:var(--muted)}
-.row b{font-weight:900}
-
-/* STATUS */
-.status{
-  display:inline-block;
-  margin-top:14px;
-  padding:6px 16px;
+.small{font-size:13px;color:var(--muted)}
+.badge{
+  padding:5px 14px;
   border-radius:999px;
   font-size:12px;
   font-weight:900;
 }
-.pending{background:rgba(245,158,11,.15);color:var(--warning)}
+.pending{background:rgba(245,158,11,.15);color:var(--yellow)}
 .processing{background:rgba(56,189,248,.15);color:var(--blue)}
-.success{background:rgba(34,197,94,.18);color:var(--success)}
-.cancel{background:rgba(239,68,68,.18);color:var(--danger)}
-
-.link-box{
-  background:#020617;
-  padding:14px;
-  border-radius:16px;
-  word-break:break-all;
-  font-size:13px;
-  margin-top:10px;
-  color:#38bdf8;
-}
-
-/* PROGRESS */
-.progress-box{
-  margin-top:14px;
-  padding:14px;
-  border-radius:16px;
-  background:linear-gradient(180deg,#0f172a,#020617);
-  border:1px solid rgba(255,255,255,.08);
-  font-size:13px;
-}
-.progress-row{
+.success{background:rgba(34,197,94,.18);color:var(--green)}
+.price-box{
   display:flex;
-  justify-content:space-between;
-  margin-top:6px;
+  gap:10px;
 }
-.progress-row span{color:var(--muted)}
-.progress-val{
-  font-weight:900;
-  color:#22c55e;
-}
-
-/* BUTTON */
-.buy-again{
-  position:fixed;
-  bottom:16px;
-  left:50%;
-  transform:translateX(-50%);
-  width:calc(100% - 32px);
-  max-width:480px;
-  padding:16px;
-  border-radius:999px;
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;
-  font-weight:900;
-  font-size:16px;
+.price{
+  flex:1;
+  background:#020617;
+  border-radius:12px;
+  padding:10px;
   text-align:center;
-  text-decoration:none;
+  font-size:13px;
+}
+.price b{font-size:16px}
+.link{
+  color:var(--blue);
+  word-break:break-all;
+  cursor:pointer;
+  font-size:14px;
+}
+.comment{
+  white-space:pre-line;
+  background:#020617;
+  border-radius:12px;
+  padding:12px;
+  font-size:13px;
 }
 .empty{
   text-align:center;
   color:var(--muted);
+  padding:40px 0;
 }
 </style>
 </head>
 
 <body>
 
-<header class="header">
-  <button class="back" onclick="history.back()">←</button>
-  <div class="center">รายละเอียดคำสั่งซื้อ</div>
-  <div></div>
-</header>
-
-<div class="container">
-  <div id="loading" class="empty">กำลังโหลด…</div>
-
-  <div class="card" id="detail" style="display:none">
-    <div class="row"><b>รหัสคำสั่งซื้อ</b><span id="oid"></span></div>
-    <div class="row"><b>บริการ</b><span id="service"></span></div>
-    <div class="row"><b>จำนวน</b><span id="qty"></span></div>
-    <div class="row"><b>ราคารวม</b><span id="price"></span></div>
-    <div class="row"><b>วันที่</b><span id="date"></span></div>
-    <div class="status" id="status"></div>
+<div class="wrap">
+  <div class="header">
+    <button class="back" onclick="history.back()">←</button>
+    <h2 style="margin:0">รายละเอียดออเดอร์</h2>
   </div>
 
-  <div class="card" id="progress" style="display:none">
-    <b>ผลลัพธ์ออเดอร์</b>
-    <div class="progress-box">
-      <div class="progress-row">
-        <span>ยอดเริ่มต้น</span>
-        <div class="progress-val" id="start"></div>
-      </div>
-      <div class="progress-row">
-        <span>ยอดสิ้นสุด</span>
-        <div class="progress-val" id="end"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <b>ลิงก์ที่สั่ง</b>
-    <div class="link-box" id="link"></div>
-  </div>
+  <div id="content" class="empty">กำลังโหลด…</div>
 </div>
 
-<a class="buy-again" href="services.html">🔁 ซื้อบริการอีกครั้ง</a>
-
 <script>
-/* ===== CONFIG REAL ===== */
-const API="https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
-const API_KEY="SBTH-SECURE-2026";
+/* ================= CONFIG ================= */
+const API_BASE = "https://script.google.com/macros/s/AKfycbyB5X9n_8U8huJJKC3O3r2n-gv-59oifcnzi2D6AaLcs5ul4-jFFbrcmzKglG5LYFX6iA/exec";
+const API_KEY  = "SBTH-SECURE-2026";
 
-const orderId = localStorage.getItem("order_id");
-const userId  = localStorage.getItem("user_id");
-if(!orderId || !userId) location.href="orders.html";
+/* ================= AUTH ================= */
+const user_id  = localStorage.getItem("user_id");
+const order_id = localStorage.getItem("order_id");
 
-const $=id=>document.getElementById(id);
-
-async function load(){
-  try{
-    /* services */
-    const sRes = await fetch(`${API}?action=getServices&api_key=${API_KEY}`);
-    const services = (await sRes.json()).services || [];
-    const map={}; services.forEach(s=>map[s.service_id]=s.display_name);
-
-    /* orders */
-    const oRes = await fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`);
-    const orders = (await oRes.json()).orders || [];
-    const o = orders.find(x=>x.order_id===orderId);
-
-    if(!o){
-      $('loading').textContent="ไม่พบคำสั่งซื้อนี้";
-      return;
-    }
-
-    $('loading').style.display="none";
-    $('detail').style.display="block";
-
-    $('oid').textContent=o.order_id;
-    $('service').textContent=map[o.service_id] || o.service_id;
-    $('qty').textContent=o.qty;
-    $('price').textContent=Number(o.total || o.final_total || 0).toFixed(2)+" บาท";
-    $('date').textContent=new Date(o.datetime).toLocaleString();
-    $('link').textContent=o.link || "-";
-
-    const st=$('status');
-    st.className="status "+(o.status||"pending");
-    st.textContent=
-      o.status==="success"?"✅ สำเร็จ":
-      o.status==="processing"?"🚀 กำลังดำเนินการ":
-      o.status==="cancel"?"❌ ยกเลิก":"⏳ รอดำเนินการ";
-
-    if(o.status==="success" && o.start_count && o.end_count){
-      $('progress').style.display="block";
-      $('start').textContent=o.start_count;
-      $('end').textContent=o.end_count;
-    }
-
-  }catch(err){
-    console.error(err);
-    $('loading').textContent="โหลดข้อมูลไม่สำเร็จ";
-  }
+if(!user_id || !order_id){
+  location.href="orders.html";
 }
-load();
+
+/* ================= UTILS ================= */
+function formatTH(d){
+  return new Date(d).toLocaleString("th-TH",
+    {dateStyle:"medium",timeStyle:"short"});
+}
+function badge(s){
+  if(s==="processing") return `<span class="badge processing">กำลังทำ</span>`;
+  if(s==="success") return `<span class="badge success">สำเร็จ</span>`;
+  return `<span class="badge pending">รอดำเนินการ</span>`;
+}
+
+/* ================= LOAD ================= */
+fetch(`${API_BASE}?action=getOrders&api_key=${API_KEY}&user_id=${user_id}`)
+.then(r=>r.json())
+.then(res=>{
+  if(!res.success){
+    document.getElementById("content").innerHTML="โหลดไม่สำเร็จ";
+    return;
+  }
+
+  const o = res.orders.find(x=>x[0]===order_id);
+  if(!o){
+    document.getElementById("content").innerHTML="ไม่พบออเดอร์";
+    return;
+  }
+
+  document.getElementById("content").innerHTML=`
+    <div class="card">
+      <div class="row">
+        <b>รหัสออเดอร์</b>
+        <b>#${o[0]}</b>
+      </div>
+      <div class="row">
+        <span class="small">วันที่</span>
+        <span class="small">${formatTH(o[9])}</span>
+      </div>
+      <div class="row">
+        <span class="small">สถานะ</span>
+        ${badge(o[10])}
+      </div>
+    </div>
+
+    <div class="card">
+      <b>💰 ค่าใช้จ่าย</b>
+      <div class="price-box" style="margin-top:10px">
+        <div class="price">ราคาปกติ<br><b>${o[4]}</b></div>
+        <div class="price">ส่วนลด<br><b>${o[5]}%</b></div>
+        <div class="price">จ่ายจริง<br><b>${o[6]}</b></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <b>🔗 ลิงก์ที่สั่ง</b>
+      <div class="link" onclick="window.open('${o[7]}')" style="margin-top:6px">
+        ${o[7]}
+      </div>
+    </div>
+
+    ${o[8] ? `
+    <div class="card">
+      <b>💬 คอมเมนท์</b>
+      <div class="comment" style="margin-top:8px">${o[8]}</div>
+    </div>` : ""}
+  `;
+})
+.catch(()=>{
+  document.getElementById("content").innerHTML="โหลดข้อมูลผิดพลาด";
+});
 </script>
 
 </body>
