@@ -2,298 +2,35 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>เข้าสู่ระบบ | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<title>เข้าสู่ระบบ | Socialboostth24hr</title>
 <style>
-:root{
-  --black:#0b0f1a;
-  --blue:#38bdf8;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
-  --green:#22c55e;
-}
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:system-ui,-apple-system;
-  background:
-    radial-gradient(900px 360px at top,#1e293b,transparent),
-    linear-gradient(180deg,#050714,#020314);
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#f1f5f9;
-  overflow:hidden;
-}
-
-/* BACKGROUND */
-.bg-glow{
-  position:absolute;
-  width:520px;height:520px;
-  background:radial-gradient(circle,var(--purple),transparent 65%);
-  opacity:.28;
-  filter:blur(90px);
-  animation:float 9s ease-in-out infinite;
-}
-@keyframes float{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-45px)}
-}
-
-/* PARTICLES */
-.particles{position:fixed;inset:0;pointer-events:none}
-.particle{
-  position:absolute;width:6px;height:6px;border-radius:50%;
-  background:rgba(139,92,246,.35);
-  filter:blur(1px);
-  animation:floatParticle linear infinite;
-}
-@keyframes floatParticle{
-  from{transform:translateY(0)}
-  to{transform:translateY(-120vh)}
-}
-
-/* CARD */
-.card{
-  width:100%;
-  max-width:420px;
-  background:linear-gradient(180deg,#0e1324,#090d1d);
-  border-radius:28px;
-  padding:36px 30px 30px;
-  box-shadow:0 50px 120px rgba(0,0,0,.7),
-             0 0 0 1px rgba(139,92,246,.25);
-  position:relative;
-  z-index:2;
-}
-
-.logo{width:84px;display:block;margin:0 auto 14px}
-
-h1{
-  text-align:center;
-  font-size:28px;margin:0;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.sub{text-align:center;color:#cbd5e1;font-size:14px;margin:6px 0 10px}
-
-/* LIVE USERS */
-.live-users{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:8px;
-  font-size:13px;
-  font-weight:900;
-  color:#86efac;
-  margin-bottom:18px;
-}
-.live-dot{
-  width:10px;height:10px;
-  border-radius:50%;
-  background:#22c55e;
-  box-shadow:0 0 0 0 rgba(34,197,94,.7);
-  animation:pulse 1.8s infinite;
-}
-@keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(34,197,94,.7)}
-  70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}
-  100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}
-}
-.live-users .num{min-width:48px;text-align:center}
-
-/* INPUT */
-.field{margin-bottom:18px}
-label{font-size:13px;font-weight:700;margin-bottom:6px;display:block}
-.input{
-  display:flex;align-items:center;gap:10px;
-  padding:15px 16px;border-radius:16px;
-  background:linear-gradient(180deg,rgba(17,24,39,.95),rgba(2,6,23,.95));
-  border:1px solid rgba(148,163,184,.25)
-}
-.input input{
-  flex:1;border:none;outline:none;
-  background:transparent;color:#fff;font-size:15px
-}
-.toggle{
-  border:none;background:rgba(255,255,255,.1);
-  padding:6px 14px;border-radius:999px;
-  font-size:12px;font-weight:800;color:#e5e7eb;cursor:pointer
-}
-
-/* REMEMBER */
-.remember{
-  display:flex;align-items:center;gap:8px;
-  font-size:13px;color:#cbd5e1;
-  margin:-6px 0 16px;
-}
-.remember input{accent-color:#8b5cf6}
-
-/* BUTTON */
-.login-btn{
-  width:100%;
-  border:none;border-radius:22px;
-  padding:17px;font-size:16px;font-weight:900;
-  color:#fff;
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  cursor:pointer;
-  box-shadow:0 18px 45px rgba(139,92,246,.55);
-}
-
-/* LINE */
-.or{text-align:center;color:#94a3b8;margin:18px 0 14px;font-size:13px}
-.line-btn{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:16px;background:linear-gradient(180deg,#22c55e,#16a34a);
-  color:#fff;border-radius:24px;font-weight:900;text-decoration:none;
-  box-shadow:0 18px 45px rgba(34,197,94,.5);
-}
-.line-btn img{width:22px}
-
-/* ERROR */
-.error{text-align:center;color:#fb7185;margin-top:12px;font-weight:800}
-
-/* ORDER TOAST */
-.order-toast{
-  position:fixed;left:20px;bottom:-90px;
-  padding:14px 18px;
-  background:rgba(15,23,42,.96);
-  border:1px solid rgba(139,92,246,.35);
-  border-radius:16px;
-  font-size:13px;font-weight:800;
-  color:#e5e7eb;
-  box-shadow:0 20px 50px rgba(0,0,0,.6);
-  transition:.45s;z-index:5;
-}
-.order-toast.show{bottom:24px}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont;background:#f6f7f9}
+.card{max-width:380px;margin:8vh auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+h1{font-size:22px;margin-bottom:20px;text-align:center}
+input{width:100%;padding:14px;margin-bottom:14px;border-radius:10px;border:1px solid #ddd;font-size:16px}
+button{width:100%;padding:14px;border:0;border-radius:10px;font-size:16px;background:#27ae60;color:#fff}
+.link{text-align:center;margin-top:14px;font-size:14px}
+.link a{text-decoration:none;color:#27ae60}
+small{display:block;text-align:center;color:#888;margin-top:16px}
 </style>
 </head>
-
 <body>
 
-<div class="bg-glow"></div>
-<div class="particles" id="particles"></div>
-
 <div class="card">
-  <img src="https://raw.githubusercontent.com/socialboostth24hr-cmd/SocialBoostTH/main/logo.png" class="logo">
   <h1>เข้าสู่ระบบ</h1>
-  <div class="sub">ระบบให้บริการอัตโนมัติ 24 ชั่วโมง</div>
 
-  <!-- LIVE USERS -->
-  <div class="live-users" id="liveBox">
-    <span class="live-dot"></span>
-    <b class="num" id="liveCount">842</b> คนกำลังใช้งาน
+  <input type="text" placeholder="Username หรือ Email">
+  <input type="password" placeholder="Password">
+
+  <button>เข้าสู่ระบบ</button>
+
+  <div class="link">
+    ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิก</a>
   </div>
 
-  <div class="field">
-    <label>ชื่อผู้ใช้งาน</label>
-    <div class="input"><input id="username"></div>
-  </div>
-
-  <div class="field">
-    <label>รหัสผ่าน</label>
-    <div class="input">
-      <input type="password" id="password">
-      <button class="toggle" onclick="togglePass()">แสดง</button>
-    </div>
-  </div>
-
-  <div class="remember">
-    <input type="checkbox" id="remember">
-    <label for="remember">จำการเข้าสู่ระบบ</label>
-  </div>
-
-  <button class="login-btn" onclick="login()">เข้าสู่ระบบ</button>
-
-  <div class="or">ยังไม่มีบัญชี?</div>
-
-  <a class="line-btn" href="https://line.me/R/ti/p/@geg4960w" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/LINE_logo.svg">
-    สมัครสมาชิก ( LINE Official )
-  </a>
-
-  <div id="error" class="error"></div>
+  <small>ระบบนี้ใช้เพื่อเข้าใช้งานแพลตฟอร์มเท่านั้น</small>
 </div>
-
-<!-- ORDER TOAST -->
-<div class="order-toast" id="orderToast"></div>
-
-<script>
-const API="https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";
-const API_KEY="SBTH-SECURE-2026";
-
-const elUsername=document.getElementById('username');
-const elPassword=document.getElementById('password');
-const elError=document.getElementById('error');
-const rememberEl=document.getElementById('remember');
-const liveCount=document.getElementById('liveCount');
-
-/* PASSWORD */
-function togglePass(){
-  elPassword.type = elPassword.type==='password'?'text':'password';
-}
-
-/* LOGIN */
-function login(){
-  elError.textContent='';
-  if(!elUsername.value||!elPassword.value){
-    elError.textContent='กรุณากรอกชื่อผู้ใช้และรหัสผ่าน';
-    return;
-  }
-  fetch(`${API}?action=login&api_key=${API_KEY}&username=${encodeURIComponent(elUsername.value)}&password=${encodeURIComponent(elPassword.value)}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if(!res.success) throw 0;
-      localStorage.setItem('user_id',res.user.user_id);
-      localStorage.setItem('username',res.user.username);
-      localStorage.setItem('credit',res.user.credit);
-      if(rememberEl.checked){
-        localStorage.setItem('remember_username',res.user.username);
-      }
-      location.href='services.html';
-    })
-    .catch(()=>elError.textContent='ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
-}
-
-/* LIVE USERS RANDOM */
-let current=Number(liveCount.textContent);
-function range(){
-  const h=new Date().getHours();
-  if(h<=6) return [150,600];
-  if(h<=15) return [600,1400];
-  return [1200,2600];
-}
-setInterval(()=>{
-  const [a,b]=range();
-  current=Math.floor(a+Math.random()*(b-a));
-  liveCount.textContent=current;
-},6000);
-
-/* PARTICLES */
-const pBox=document.getElementById('particles');
-for(let i=0;i<24;i++){
-  const p=document.createElement('div');
-  p.className='particle';
-  p.style.left=Math.random()*100+'%';
-  p.style.bottom='-20px';
-  p.style.animationDuration=(20+Math.random()*20)+'s';
-  pBox.appendChild(p);
-}
-
-/* ORDER TOAST */
-const toast=document.getElementById('orderToast');
-const services=['TikTok ผู้ติดตาม','TikTok ถูกใจ','TikTok วิว','TikTok คอมเมนต์'];
-setInterval(()=>{
-  const sec=10+Math.floor(Math.random()*40);
-  const s=services[Math.floor(Math.random()*services.length)];
-  toast.innerHTML=`🔥 มีคำสั่งซื้อใหม่<br>${s}<br><span style="color:#94a3b8">${sec} วินาทีที่ผ่านมา</span>`;
-  toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'),4200);
-},9000);
-</script>
 
 </body>
 </html>
