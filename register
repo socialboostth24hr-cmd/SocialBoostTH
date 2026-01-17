@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สมัครสมาชิก | Socialboostth24hr</title>
+<style>
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont;background:#f6f7f9}
+.card{max-width:420px;margin:6vh auto;background:#fff;padding:24px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+h1{font-size:22px;margin-bottom:18px;text-align:center}
+input{width:100%;padding:14px;margin-bottom:12px;border-radius:10px;border:1px solid #ddd;font-size:16px}
+button{width:100%;padding:14px;border:0;border-radius:10px;font-size:16px;background:#27ae60;color:#fff}
+.note{font-size:13px;color:#888;margin:8px 0}
+.link{text-align:center;margin-top:14px;font-size:14px}
+.link a{text-decoration:none;color:#27ae60}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>สมัครสมาชิก</h1>
+
+  <input type="text" placeholder="Username">
+  <div class="note">ใช้สำหรับเข้าสู่ระบบ (a-z, 0-9, _)</div>
+
+  <input type="text" placeholder="ชื่อที่ใช้แสดง">
+  <input type="email" placeholder="Email">
+  <input type="password" placeholder="Password">
+
+  <button>สร้างบัญชี</button>
+
+  <div class="link">
+    มีบัญชีแล้ว? <a href="login.html">เข้าสู่ระบบ</a>
+  </div>
+</div>
+
+</body>
+</html>
