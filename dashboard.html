@@ -2,182 +2,44 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard | SocialBoostTH</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
+<title>Dashboard | Socialboostth24hr</title>
 <style>
-:root{
-  --black:#0b0f1a;
-  --blue:#38bdf8;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
-  --muted:#94a3b8;
-  --success:#22c55e;
-  --warn:#f59e0b;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system;
-  background:
-    radial-gradient(900px 420px at top,#1e293b,transparent),
-    linear-gradient(180deg,var(--black),#060913);
-  color:#f1f5f9;
-}
-
-/* HEADER */
-.header{
-  position:sticky;top:0;z-index:20;
-  padding:14px 16px;
-  text-align:center;
-  font-weight:900;
-  font-size:18px;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-/* CONTAINER */
-.container{
-  max-width:720px;
-  margin:auto;
-  padding:18px 18px 120px;
-}
-
-/* CARD */
-.card{
-  background:linear-gradient(180deg,#111827,#0b1020);
-  border-radius:24px;
-  padding:20px;
-  margin-bottom:16px;
-  border:1px solid rgba(255,255,255,.06);
-}
-
-/* BALANCE */
-.balance{
-  font-size:30px;
-  font-weight:900;
-}
-.balance span{font-size:14px;color:var(--muted)}
-
-/* QUICK */
-.quick{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
-.quick a{
-  background:#020617;
-  border-radius:18px;
-  padding:16px 10px;
-  text-align:center;
-  font-weight:900;
-  text-decoration:none;
-  color:#fff;
-}
-
-/* ORDERS */
-.order{
-  display:flex;
-  justify-content:space-between;
-  margin-top:10px;
-  font-size:14px;
-  cursor:pointer;
-}
-.order span{color:var(--muted)}
-.status{
-  font-weight:900;
-}
-.pending{color:var(--warn)}
-.processing{color:var(--blue)}
-.success{color:var(--success)}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont;background:#f4f6f8}
+.container{max-width:480px;margin:auto;padding:20px}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 6px 20px rgba(0,0,0,.06);margin-bottom:16px}
+h2{margin:0;font-size:20px}
+.balance{font-size:32px;font-weight:600;margin:10px 0;color:#27ae60}
+.btn{display:block;width:100%;padding:14px;margin-top:10px;border-radius:12px;text-align:center;text-decoration:none;font-size:16px}
+.green{background:#27ae60;color:#fff}
+.gray{background:#ecf0f1;color:#333}
+.menu a{display:block;padding:14px;border-bottom:1px solid #eee;text-decoration:none;color:#333}
+.menu a:last-child{border:0}
+small{color:#888}
 </style>
 </head>
-
 <body>
-
-<div class="header">Dashboard</div>
 
 <div class="container">
 
-  <!-- CREDIT -->
   <div class="card">
-    <div>ยอดเครดิตของคุณ</div>
-    <div class="balance" id="credit">0.00 <span>บาท</span></div>
+    <h2>สวัสดี user_aim 👋</h2>
+    <small>ยินดีต้อนรับสู่ Socialboostth24hr</small>
+
+    <div class="balance">350 บาท</div>
+    <small>เครดิตคงเหลือ</small>
+
+    <a href="#" class="btn green">➕ เติมเครดิต</a>
+    <a href="#" class="btn gray">🛒 สั่งบริการ</a>
   </div>
 
-  <!-- QUICK -->
-  <div class="card">
-    <div class="quick">
-      <a href="services.html">🛒<br>สั่งซื้อ</a>
-      <a href="orders.html">📦<br>คำสั่งซื้อ</a>
-      <a href="topup.html">💳<br>เติมเงิน</a>
-    </div>
-  </div>
-
-  <!-- ORDERS -->
-  <div class="card">
-    <b>ออเดอร์ล่าสุด</b>
-    <div id="ordersBox" style="margin-top:10px;color:#94a3b8">
-      กำลังโหลด…
-    </div>
+  <div class="card menu">
+    <a href="#">📦 ออเดอร์ของฉัน</a>
+    <a href="#">🧾 ประวัติการใช้งาน</a>
+    <a href="#">🚪 ออกจากระบบ</a>
   </div>
 
 </div>
-
-<script>
-const API = "const API = "const API = "https://script.google.com/macros/s/AKfycbzasQWFnaCBZtRKSwRID-UzoTjh3ydUH60dvyckuGZ2tsEqV6dfasvArIxDFehLopm_cA/exec";";";
-const API_KEY = "SBTH-SECURE-2026";
-
-/* AUTH */
-const userId = localStorage.getItem('user_id');
-if(!userId){
-  location.replace('login.html');
-}
-
-/* CREDIT REAL */
-function loadCredit(){
-  fetch(`${API}?action=getUser&api_key=${API_KEY}&user_id=${userId}`)
-    .then(r=>r.json())
-    .then(res=>{
-      if(!res.success) return;
-      document.getElementById('credit').innerHTML =
-        Number(res.user.credit).toFixed(2)+' <span>บาท</span>';
-      localStorage.setItem('credit',res.user.credit);
-    });
-}
-
-/* ORDERS REAL */
-function loadOrders(){
-  fetch(`${API}?action=getOrders&api_key=${API_KEY}&user_id=${userId}`)
-    .then(r=>r.json())
-    .then(res=>{
-      const box=document.getElementById('ordersBox');
-      const orders=res.orders||[];
-      if(!orders.length){
-        box.textContent='ยังไม่มีคำสั่งซื้อ';
-        return;
-      }
-      box.innerHTML='';
-      orders.slice(-5).reverse().forEach(o=>{
-        box.insertAdjacentHTML('beforeend',`
-          <div class="order" onclick="openOrder('${o.order_id}')">
-            <span>#${o.order_id.slice(0,8)}…</span>
-            <span class="status ${o.status}">${o.status}</span>
-          </div>
-        `);
-      });
-    });
-}
-
-function openOrder(id){
-  localStorage.setItem('order_id',id);
-  location.href='order-detail.html';
-}
-
-loadCredit();
-loadOrders();
-</script>
 
 </body>
 </html>
