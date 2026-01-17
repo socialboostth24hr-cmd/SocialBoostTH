@@ -1,285 +1,200 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<title>เลือกบริการ | SocialBoostTH</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Services | SocialBoostTH</title>
 
-<style>
-:root{
-  --bg:#0b0f1a;
-  --card:#020617;
-  --border:rgba(255,255,255,.08);
-  --blue:#38bdf8;
-  --purple:#8b5cf6;
-  --pink:#ec4899;
-  --muted:#94a3b8;
-  --success:#22c55e;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system;
-  background:linear-gradient(180deg,#020617,var(--bg));
-  color:#f8fafc;
-}
+  <meta name="description"
+    content="บริการและระบบภายในแพลตฟอร์ม SocialBoostTH สำหรับการจัดการและติดตามงานด้านโซเชียลมีเดียอย่างเป็นระบบ" />
 
-/* HEADER */
-.header{
-  position:sticky;top:0;z-index:10;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 16px;
-  background:rgba(2,6,23,.92);
-  backdrop-filter:blur(12px);
-}
-.logo{
-  font-weight:900;
-  font-size:18px;
-  background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-.wallet{
-  font-size:13px;
-  padding:6px 14px;
-  border-radius:999px;
-  background:#020617;
-  border:1px solid var(--border);
-}
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f1220;
+      color: #fff;
+    }
 
-/* CONTAINER */
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:22px 16px 140px;
-}
-h1{
-  margin:0;
-  font-size:26px;
-  font-weight:900;
-}
-.sub{
-  color:var(--muted);
-  font-size:13px;
-  margin-top:4px;
-}
+    header {
+      padding: 18px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:16px;
-  margin-top:22px;
-}
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
 
-/* SERVICE CARD */
-.service{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:18px;
-  display:flex;
-  flex-direction:column;
-  transition:.25s;
-}
-.service:hover{
-  transform:translateY(-3px);
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
-}
-.service h3{
-  margin:0;
-  font-size:17px;
-  font-weight:900;
-}
-.desc{
-  font-size:13px;
-  color:var(--muted);
-  margin:8px 0 10px;
-}
-.meta{
-  font-size:12px;
-  color:#86efac;
-  font-weight:900;
-}
-.price{
-  font-size:18px;
-  font-weight:900;
-  margin:14px 0;
-}
+    header a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      opacity: 0.9;
+    }
 
-/* ACTIONS */
-.actions{
-  display:flex;
-  gap:8px;
-  margin-top:auto;
-}
-.btn{
-  flex:1;
-  padding:12px;
-  border-radius:999px;
-  border:none;
-  font-weight:900;
-  cursor:pointer;
-}
-.primary{
-  background:linear-gradient(135deg,var(--blue),var(--purple),var(--pink));
-  color:#fff;
-}
-.ghost{
-  background:#020617;
-  border:1px solid var(--border);
-  color:#cbd5f5;
-}
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 50px 22px 30px;
+    }
 
-/* STATE */
-.center{
-  text-align:center;
-  color:var(--muted);
-  padding:50px 0;
-}
-.error{color:#fb7185}
+    .title h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
 
-/* MODAL */
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  z-index:50;
-}
-.modal{
-  position:fixed;
-  left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  width:90%;
-  max-width:460px;
-  background:#020617;
-  border-radius:22px;
-  padding:24px;
-  display:none;
-  z-index:60;
-}
-.modal h3{
-  margin:0 0 10px;
-}
-.modal ul{
-  padding-left:18px;
-  font-size:13px;
-  line-height:1.7;
-  color:#e5e7eb;
-}
-.close{
-  margin-top:14px;
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:999px;
-  font-weight:900;
-  background:linear-gradient(135deg,var(--blue),var(--purple));
-  color:#fff;
-}
-</style>
+    .title p {
+      font-size: 16px;
+      color: #cbd0ff;
+      max-width: 680px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 40px;
+    }
+
+    .card {
+      background: #1b1f46;
+      border-radius: 18px;
+      padding: 24px;
+      transition: 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.3);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 18px;
+      color: #27ff9a;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #d2d6ff;
+      line-height: 1.6;
+    }
+
+    .note {
+      margin-top: 50px;
+      background: #151833;
+      border-radius: 18px;
+      padding: 26px;
+      color: #c7cbff;
+    }
+
+    footer {
+      padding: 28px 22px;
+      text-align: center;
+      font-size: 13px;
+      color: #9aa0ff;
+    }
+
+    footer a {
+      color: #9aa0ff;
+      text-decoration: none;
+      margin: 0 8px;
+    }
+  </style>
 </head>
 
 <body>
 
-<header class="header">
-  <div class="logo">SocialBoostTH</div>
-  <div class="wallet">
-    เครดิต: <b><span id="credit">0.00</span></b>
-  </div>
+<header>
+  <h1>SocialBoostTH</h1>
+  <a href="login.html">เข้าสู่ระบบ</a>
 </header>
 
 <div class="container">
-  <h1>เลือกบริการ</h1>
-  <div class="sub">ระบบอัตโนมัติ • ปลอดภัย • 24 ชั่วโมง</div>
 
-  <div id="services" class="center">⏳ กำลังโหลดบริการ…</div>
+  <section class="title">
+    <h2>บริการภายในแพลตฟอร์ม</h2>
+    <p>
+      SocialBoostTH ออกแบบระบบบริการเพื่อช่วยให้การจัดการงานด้านโซเชียลมีเดีย
+      เป็นไปอย่างเป็นระบบ ตรวจสอบได้ และเหมาะกับการใช้งานจริง
+    </p>
+  </section>
+
+  <section class="grid">
+
+    <div class="card">
+      <h3>ระบบจัดการคำสั่งงาน</h3>
+      <p>
+        ช่วยจัดระเบียบและควบคุมคำสั่งงานในแต่ละบริการ
+        พร้อมติดตามสถานะการดำเนินงานแบบเป็นขั้นตอน
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>แดชบอร์ดผู้ใช้งาน</h3>
+      <p>
+        พื้นที่แสดงข้อมูลเฉพาะของแต่ละบัญชีผู้ใช้งาน
+        รวมถึงสถานะ ประวัติ และภาพรวมการใช้งาน
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>ระบบสมาชิก</h3>
+      <p>
+        แยกการเข้าถึงข้อมูลตามบัญชีผู้ใช้งาน
+        เพื่อความเป็นส่วนตัวและการบริหารจัดการที่ชัดเจน
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>การติดตามสถานะ</h3>
+      <p>
+        ผู้ใช้งานสามารถตรวจสอบความคืบหน้าของงาน
+        ผ่านระบบติดตามที่ออกแบบมาให้เข้าใจง่าย
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>รองรับการใช้งานบนมือถือ</h3>
+      <p>
+        อินเทอร์เฟซถูกออกแบบให้เหมาะกับการใช้งานบนมือถือ
+        แท็บเล็ต และอุปกรณ์หลากหลายขนาดหน้าจอ
+      </p>
+    </div>
+
+    <div class="card">
+      <h3>ระบบหลังบ้าน</h3>
+      <p>
+        เครื่องมือสำหรับการจัดการข้อมูล การดูแลระบบ
+        และการควบคุมการดำเนินงานภายในแพลตฟอร์ม
+      </p>
+    </div>
+
+  </section>
+
+  <section class="note">
+    <strong>ข้อชี้แจง</strong><br><br>
+    เว็บไซต์นี้เป็นแพลตฟอร์มอิสระ
+    ไม่มีความเกี่ยวข้องหรือเป็นเจ้าของโดยตรงกับ
+    TikTok, Meta, Google หรือแพลตฟอร์มโซเชียลมีเดียใด ๆ
+  </section>
+
 </div>
 
-<!-- DETAIL MODAL -->
-<div class="overlay" id="overlay" onclick="closeDetail()"></div>
-<div class="modal" id="modal">
-  <h3 id="detailName">-</h3>
-  <ul id="detailList"></ul>
-  <button class="close" onclick="closeDetail()">ปิด</button>
-</div>
+<footer>
+  <a href="index.html">หน้าแรก</a> |
+  <a href="about.html">เกี่ยวกับเรา</a> |
+  <a href="privacy.html">นโยบายความเป็นส่วนตัว</a> |
+  <a href="contact.html">ติดต่อเรา</a>
+</footer>
 
-<script>
-/* ===== CONFIG ===== */
-const API_BASE = "https://script.google.com/macros/s/AKfycbwOyS7QmjMMLvomajpk0gJgPmW5wlgwjQ2qmbfQ_e5XGX1D5YYmQ8zeUB_WFti5k6zNKg/exec";
-const API_KEY  = "SBTH-SECURE-2026";
-
-/* AUTH */
-const userId = localStorage.getItem("user_id");
-if(!userId){
-  location.href="login.html";
-}
-
-/* CREDIT */
-document.getElementById("credit").textContent =
-  Number(localStorage.getItem("credit")||0).toFixed(2);
-
-const box = document.getElementById("services");
-
-/* LOAD SERVICES */
-fetch(`${API_BASE}?action=getServices&api_key=${API_KEY}`)
-.then(r=>r.json())
-.then(res=>{
-  const list = res.services || [];
-  if(!list.length){
-    box.innerHTML = `<div class="center error">❌ ไม่พบบริการ</div>`;
-    return;
-  }
-  box.className="grid";
-  box.innerHTML="";
-
-  list.forEach(s=>{
-    box.insertAdjacentHTML("beforeend",`
-      <div class="service">
-        <h3>${s.display_name}</h3>
-        <div class="desc">${s.short_desc||""}</div>
-        <div class="meta">ขั้นต่ำ ${s.min_qty} ${s.unit}</div>
-        <div class="price">${s.price_per_100} บาท / 100 ${s.unit}</div>
-        <div class="actions">
-          <button class="btn ghost" onclick="openDetail('${s.display_name}')">
-            รายละเอียด
-          </button>
-          <button class="btn primary" onclick="selectService('${s.service_id}')">
-            เลือก
-          </button>
-        </div>
-      </div>
-    `);
-  });
-})
-.catch(()=>{
-  box.innerHTML = `<div class="center error">โหลดบริการไม่สำเร็จ</div>`;
-});
-
-/* SELECT */
-function selectService(id){
-  localStorage.setItem("service_id", id);
-  location.href = "order.html";
-}
-
-/* DETAIL */
-function openDetail(name){
-  document.getElementById("detailName").textContent = name;
-  document.getElementById("detailList").innerHTML = `
-    <li>⏱ เริ่มงานภายใน 0–3 ชั่วโมง</li>
-    <li>⚙️ ระบบอัตโนมัติ 24 ชั่วโมง</li>
-    <li>🔒 ไม่ต้องใช้รหัสผ่านบัญชี</li>
-    <li>💎 รับประกันตามเงื่อนไขบริการ</li>
-  `;
-  overlay.style.display="block";
-  modal.style.display="block";
-}
-function closeDetail(){
-  overlay.style.display="none";
-  modal.style.display="none";
+</body>
+</html>
 }
 </script>
 
